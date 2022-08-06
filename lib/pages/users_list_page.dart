@@ -1,9 +1,174 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/show_overlay_popup.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../theme/theme.dart';
+
+List<PlutoColumn> get _cols {
+  return [
+    PlutoColumn(
+        title: "Name",
+        field: "name",
+        width: 170.0,
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: ctx.cell.value,
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+          );
+        }),
+    PlutoColumn(
+        width: 110.0,
+        title: "Username",
+        field: "username",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: ctx.cell.value,
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+          );
+        }),
+    PlutoColumn(
+        width: 113.0,
+        title: "Department",
+        field: "department",
+        type: PlutoColumnType.text()),
+    PlutoColumn(
+        width: 266.0,
+        title: "Main Location",
+        field: "main_location",
+        type: PlutoColumnType.text()),
+    PlutoColumn(
+        width: 85.0,
+        title: "Payroll",
+        field: "payroll",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: "View",
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+            icon: const HeroIcon(
+              HeroIcons.link,
+              color: ThemeColors.blue3,
+              size: 12,
+            ),
+          );
+        }),
+    PlutoColumn(
+        width: 85.0,
+        title: "Reviews",
+        field: "reviews",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: "View",
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+            icon: const HeroIcon(
+              HeroIcons.link,
+              color: ThemeColors.blue3,
+              size: 12,
+            ),
+          );
+        }),
+    PlutoColumn(
+        width: 85.0,
+        title: "Visa",
+        field: "visa",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: "View",
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+            icon: const HeroIcon(
+              HeroIcons.link,
+              color: ThemeColors.blue3,
+              size: 12,
+            ),
+          );
+        }),
+    PlutoColumn(
+        width: 266.0,
+        title: "Absences",
+        field: "absences",
+        type: PlutoColumnType.text()),
+    PlutoColumn(
+        width: 133.0,
+        title: "Preferred Shifts",
+        field: "preferred_shifts",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: "View",
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+            icon: const HeroIcon(
+              HeroIcons.link,
+              color: ThemeColors.blue3,
+              size: 12,
+            ),
+          );
+        }),
+    PlutoColumn(
+        width: 133.0,
+        title: "Qualifications",
+        field: "qualifications",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return KText(
+            text: "View",
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            isSelectable: false,
+            onTap: () {
+              print(ctx.cell.value);
+            },
+            icon: const HeroIcon(
+              HeroIcons.link,
+              color: ThemeColors.blue3,
+              size: 12,
+            ),
+          );
+        }),
+  ];
+}
 
 final ValueNotifier<PlutoGridStateManager?> usersPageStateManger =
     ValueNotifier(null);
@@ -37,170 +202,12 @@ class _Body extends StatelessWidget {
   _Body({Key? key}) : super(key: key);
 
   final GlobalKey _actionsMenuKey = GlobalKey();
+  final GlobalKey _columnsMenuKey = GlobalKey();
 
-  List<PlutoColumn> get cols {
-    return [
-      PlutoColumn(
-          title: "Name",
-          field: "name",
-          width: 170.0,
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-            );
-          }),
-      PlutoColumn(
-          width: 110.0,
-          title: "Username",
-          field: "username",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-            );
-          }),
-      PlutoColumn(
-          width: 113.0,
-          title: "Department",
-          field: "department",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-          width: 266.0,
-          title: "Main Location",
-          field: "main_location",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-          width: 85.0,
-          title: "Payroll",
-          field: "payroll",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "View",
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-              icon: const HeroIcon(
-                HeroIcons.link,
-                color: ThemeColors.blue3,
-                size: 12,
-              ),
-            );
-          }),
-      PlutoColumn(
-          width: 85.0,
-          title: "Reviews",
-          field: "reviews",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "View",
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-              icon: const HeroIcon(
-                HeroIcons.link,
-                color: ThemeColors.blue3,
-                size: 12,
-              ),
-            );
-          }),
-      PlutoColumn(
-          width: 85.0,
-          title: "Visa",
-          field: "visa",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "View",
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-              icon: const HeroIcon(
-                HeroIcons.link,
-                color: ThemeColors.blue3,
-                size: 12,
-              ),
-            );
-          }),
-      PlutoColumn(
-          width: 266.0,
-          title: "Absences",
-          field: "absences",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-          width: 133.0,
-          title: "Preferred Shifts",
-          field: "preferred_shifts",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "View",
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-              icon: const HeroIcon(
-                HeroIcons.link,
-                color: ThemeColors.blue3,
-                size: 12,
-              ),
-            );
-          }),
-      PlutoColumn(
-          width: 133.0,
-          title: "Qualifications",
-          field: "qualifications",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "View",
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
-              icon: const HeroIcon(
-                HeroIcons.link,
-                color: ThemeColors.blue3,
-                size: 12,
-              ),
-            );
-          }),
-    ];
-  }
+  final List<ColumnHiderValues> columnHideValues = _cols
+      .map<ColumnHiderValues>(
+          (e) => ColumnHiderValues(value: e.field, label: e.title))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +218,7 @@ class _Body extends StatelessWidget {
       child: SpacedColumn(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _header(),
+          _header(context),
           // ValueListenableBuilder(
           //     valueListenable: usersPageStateManger,
           //     builder: (_, PlutoGridStateManager? sm, __) {
@@ -228,7 +235,7 @@ class _Body extends StatelessWidget {
     ));
   }
 
-  Widget _header() {
+  Widget _header(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -269,17 +276,9 @@ class _Body extends StatelessWidget {
                     state.showButtonMenu();
                   }),
             ),
-            ButtonMediumSecondary(
-                leftIcon: const HeroIcon(HeroIcons.cog,
-                    color: ThemeColors.blue3, size: 20),
-                text: "Columns",
-                onPressed: () {
-                  if (usersPageStateManger.value != null) {
-                    usersPageStateManger.value!.hideColumn(
-                        usersPageStateManger.value!.columns.first, true);
-                  }
-                }),
-          ])
+            TableColumnHiderWidget(
+                gKey: _columnsMenuKey, columns: columnHideValues),
+          ]),
         ],
       ),
     );
@@ -513,7 +512,7 @@ class _Body extends StatelessWidget {
           ),
         }),
       ],
-      cols: cols,
+      cols: _cols,
     );
   }
 

@@ -16,3 +16,6 @@ export '../comps/text_input_widget.dart';
 export '../comps/tables.dart';
 export '../comps/dropdown_widget.dart';
 export '../comps/table_pagination_widget.dart';
+export '../comps/table_column_hider_widget.dart';
+export '../comps/popup_layout.dart';
+export '../comps/toogle_checkbox_widget.dart';

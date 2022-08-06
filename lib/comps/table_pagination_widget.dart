@@ -42,11 +42,8 @@ class _TablePaginationWidgetState extends State<TablePaginationWidget> {
       children: [
         _PreviousNextButton(onTap: _onPreviousPage),
         const SizedBox(width: 7.0),
-        for (int i = showingNumbers.first; i <= showingNumbers.length; i++)
-          if (i == currentPage)
-            _isSelectedBtn()
-          else
-            _isUnSelectedBtn(showingNumbers[i]),
+        for (int i = 1; i <= t; i++)
+          if (i == currentPage) _isSelectedBtn() else _isUnSelectedBtn(i),
         const SizedBox(width: 7.0),
         _PreviousNextButton(isNext: true, onTap: _onNextPage),
       ],
