@@ -12,11 +12,13 @@ class ColumnHiderValues {
 class TableColumnHiderWidget extends StatelessWidget {
   final GlobalKey gKey;
   final List<ColumnHiderValues> columns;
-  const TableColumnHiderWidget({required this.gKey, required this.columns});
+
+  final ValueChanged<ColumnHiderValues> onChanged;
+  const TableColumnHiderWidget(
+      {required this.gKey, required this.columns, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    print('rebuild');
     return PopupMenuButton(
       key: gKey,
       shape: RoundedRectangleBorder(
@@ -26,12 +28,14 @@ class TableColumnHiderWidget extends StatelessWidget {
       itemBuilder: (_) =>
           columns.map<PopupMenuItem>((e) => _buildItem(e)).toList(),
       onSelected: (dynamic val) {
-        columns.firstWhere((element) {
+        final ColumnHiderValues _v = columns.firstWhere((element) {
           if (val == element.value) {
             element.isChecked = !element.isChecked;
           }
           return val == element.value;
         });
+
+        onChanged(_v);
       },
       child: ButtonMediumSecondary(
           leftIcon:
@@ -63,11 +67,9 @@ class TableColumnHiderWidget extends StatelessWidget {
                   inactiveColor: ThemeColors.gray11,
                   onToggle: (bool value) {
                     setState(() {
-                      e.isChecked = !e.isChecked;
-                      print(columns
-                          .firstWhere((element) => element.value == e.value)
-                          .isChecked);
+                      e.isChecked = value;
                     });
+                    onChanged(e);
                   }),
               KText(
                 text: e.label,

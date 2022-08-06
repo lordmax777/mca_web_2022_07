@@ -219,12 +219,11 @@ class _Body extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _header(context),
-          // ValueListenableBuilder(
-          //     valueListenable: usersPageStateManger,
-          //     builder: (_, PlutoGridStateManager? sm, __) {
-          //       print(sm?.columns.first ?? "Return Null");
-          //       return _body();
-          //     }),
+          ValueListenableBuilder(
+              valueListenable: usersPageStateManger,
+              builder: (_, PlutoGridStateManager? sm, __) {
+                return _body();
+              }),
           const Divider(
             color: ThemeColors.gray11,
             thickness: 1.0,
@@ -277,7 +276,17 @@ class _Body extends StatelessWidget {
                   }),
             ),
             TableColumnHiderWidget(
-                gKey: _columnsMenuKey, columns: columnHideValues),
+                gKey: _columnsMenuKey,
+                columns: columnHideValues,
+                onChanged: (value) {
+                  print(value.isChecked);
+                  if (usersPageStateManger.value != null) {
+                    PlutoGridStateManager state = usersPageStateManger.value!;
+                    PlutoColumn _c = state.refColumns.originalList
+                        .firstWhere((e) => e.field == value.value);
+                    state.hideColumn(_c, !value.isChecked);
+                  }
+                }),
           ]),
         ],
       ),
@@ -289,7 +298,7 @@ class _Body extends StatelessWidget {
       rows: [
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
@@ -321,7 +330,7 @@ class _Body extends StatelessWidget {
         }),
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
@@ -353,7 +362,7 @@ class _Body extends StatelessWidget {
         }),
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
@@ -385,7 +394,7 @@ class _Body extends StatelessWidget {
         }),
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
@@ -417,7 +426,7 @@ class _Body extends StatelessWidget {
         }),
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
@@ -449,7 +458,7 @@ class _Body extends StatelessWidget {
         }),
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
@@ -481,7 +490,7 @@ class _Body extends StatelessWidget {
         }),
         PlutoRow(cells: {
           "name": PlutoCell(
-            value: "Bianca Walmsley",
+            value: "Bianca",
           ),
           "username": PlutoCell(
             value: "30000",
