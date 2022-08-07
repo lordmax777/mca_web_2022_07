@@ -30,9 +30,6 @@ class _TablePaginationWidgetState extends State<TablePaginationWidget> {
       }
     }
 
-    print("showingNumbers");
-    print(showingNumbers);
-    print("showingNumbers");
     // If list of numbers are more than 8, then show 3 dots in the middle;
     // If list of numbers are less than 8, then show all numbers;
 

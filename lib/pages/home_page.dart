@@ -50,12 +50,7 @@ class _HomePageState extends State<HomePage> {
         drawerEnableOpenDragGesture: false,
         key: _scaffoldKey,
         appBar: NavbarWidget(scaffoldKey: _scaffoldKey),
-        body: const Center(
-          child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.0),
-              // constraints: const BoxConstraints(maxWidth: 1448),
-              child: AutoRouter()),
-        ),
+        body: const AutoRouter(),
       ),
     );
   }

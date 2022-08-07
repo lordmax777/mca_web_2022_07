@@ -21,6 +21,7 @@ class TableColumnHiderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton(
       key: gKey,
+      offset: const Offset(0.0, 50.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),

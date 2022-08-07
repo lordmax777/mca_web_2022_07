@@ -1,9 +1,9 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:mca_web_2022_07/comps/show_overlay_popup.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
+import '../app.dart';
 import '../theme/theme.dart';
 
 List<PlutoColumn> get _cols {
@@ -21,6 +21,7 @@ List<PlutoColumn> get _cols {
             fontSize: 14,
             isSelectable: false,
             onTap: () {
+              appRouter.navigate(UserDetailsRoute());
               print(ctx.cell.value);
             },
           );
@@ -181,18 +182,14 @@ class UsersListPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       onDispose: (_) => usersPageStateManger.dispose(),
-      builder: (_, state) => SizedBox(
-        width: double.infinity,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: SpacedColumn(verticalSpace: 16.0, children: [
-            PagesTitleWidget(
-              title: 'User Management',
-              onRightBtnClick: () {},
-            ),
-            _Body(),
-          ]),
-        ),
+      builder: (_, state) => PageWrapper(
+        child: SpacedColumn(verticalSpace: 16.0, children: [
+          PagesTitleWidget(
+            title: 'User Management',
+            onRightBtnClick: () {},
+          ),
+          _Body(),
+        ]),
       ),
     );
   }
@@ -246,6 +243,7 @@ class _Body extends StatelessWidget {
               leftIcon: HeroIcons.search),
           SpacedRow(horizontalSpace: 16.0, children: [
             PopupMenuButton(
+              offset: const Offset(0.0, 50.0),
               key: _actionsMenuKey,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24.0),
@@ -279,7 +277,6 @@ class _Body extends StatelessWidget {
                 gKey: _columnsMenuKey,
                 columns: columnHideValues,
                 onChanged: (value) {
-                  print(value.isChecked);
                   if (usersPageStateManger.value != null) {
                     PlutoGridStateManager state = usersPageStateManger.value!;
                     PlutoColumn _c = state.refColumns.originalList

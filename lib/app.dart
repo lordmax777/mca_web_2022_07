@@ -6,7 +6,7 @@ import 'package:mca_web_2022_07/intl_conf/intl/l10n.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 
-final _appRouter = AppRouter();
+final appRouter = AppRouter();
 
 class ResumeApp extends StatelessWidget {
   const ResumeApp({Key? key}) : super(key: key);
@@ -15,9 +15,9 @@ class ResumeApp extends StatelessWidget {
     return StoreProvider(
       store: appStore,
       child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerDelegate: _appRouter.delegate(),
-        routeInformationParser: _appRouter.defaultRouteParser(),
+        // debugShowCheckedModeBanner: false,
+        routerDelegate: appRouter.delegate(),
+        routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [
           AppIntl
               .delegate, // Add this line. The name comes from class_name in pubspec.yaml

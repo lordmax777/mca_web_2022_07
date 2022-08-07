@@ -187,7 +187,7 @@ class ButtonMediumSecondary extends StatelessWidget {
                 ? ThemeColors.blue3.withOpacity(0.4)
                 : ThemeColors.blue3,
             fontSize: 14,
-            fontWeight: FWeight.medium,
+            fontWeight: FWeight.bold,
           ));
     }
     return ElevatedButton(
@@ -200,7 +200,7 @@ class ButtonMediumSecondary extends StatelessWidget {
           textColor: onPressed == null
               ? ThemeColors.blue3.withOpacity(0.4)
               : ThemeColors.blue3,
-          fontWeight: FWeight.medium,
+          fontWeight: FWeight.bold,
         ));
   }
 }

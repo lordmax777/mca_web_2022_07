@@ -82,6 +82,6 @@ class _Title extends StatelessWidget {
   }
 
   Widget _getTitle() {
-    return KText(text: "MCA Timesheet", fontSize: 18);
+    return KText(text: "MCA Timesheet", isSelectable: false, fontSize: 18);
   }
 }

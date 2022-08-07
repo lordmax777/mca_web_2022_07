@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 class ThemeText {
   static const String _fontFamilyR = "Regular";
   static const String _fontFamilyM = "Medium";
+  static const String _fontFamilyB = "Bold";
   static const regular = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
@@ -31,5 +31,13 @@ class ThemeText {
     fontFamily: _fontFamilyR,
     color: ThemeColors.gray2,
     fontSize: 14.0,
+  );
+
+  static const tabTextStyle = TextStyle(
+    fontWeight: FontWeight.w800,
+    fontStyle: FontStyle.normal,
+    fontFamily: _fontFamilyB,
+    color: ThemeColors.black,
+    fontSize: 16.0,
   );
 }

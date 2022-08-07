@@ -34,11 +34,11 @@ class KText extends StatelessWidget {
         fontF = "Regular";
         break;
       case FWeight.medium:
-        fontW = FontWeight.w500;
+        fontW = FontWeight.w700;
         fontF = "Medium";
         break;
       case FWeight.bold:
-        fontW = FontWeight.w700;
+        fontW = FontWeight.w800;
         fontF = "Bold";
         break;
       case FWeight.light:
