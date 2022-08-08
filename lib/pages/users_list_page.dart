@@ -1,13 +1,22 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../app.dart';
+import '../manager/models/model_exporter.dart';
 import '../theme/theme.dart';
 
 List<PlutoColumn> get _cols {
   return [
+    PlutoColumn(
+      title: "user",
+      field: "user",
+      type: PlutoColumnType.text(),
+      hide: true,
+    ),
     PlutoColumn(
         title: "Name",
         field: "name",
@@ -22,7 +31,6 @@ List<PlutoColumn> get _cols {
             isSelectable: false,
             onTap: () {
               appRouter.navigate(UserDetailsRoute());
-              print(ctx.cell.value);
             },
           );
         }),
@@ -39,7 +47,7 @@ List<PlutoColumn> get _cols {
             fontSize: 14,
             isSelectable: false,
             onTap: () {
-              print(ctx.cell.value);
+              appRouter.navigate(UserDetailsRoute());
             },
           );
         }),
@@ -171,9 +179,6 @@ List<PlutoColumn> get _cols {
   ];
 }
 
-final ValueNotifier<PlutoGridStateManager?> usersPageStateManger =
-    ValueNotifier(null);
-
 class UsersListPage extends StatelessWidget {
   const UsersListPage({Key? key}) : super(key: key);
 
@@ -181,51 +186,111 @@ class UsersListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      onDispose: (_) => usersPageStateManger.dispose(),
+      onInit: (store) async {
+        await appStore.dispatch(GetAccessTokenAction(
+            domain: Constants.domain,
+            username: Constants.username,
+            password: Constants.password));
+        await appStore.dispatch(GetUsersListAction());
+        // usersPageStateManger.addListener(() {
+        //   if (usersPageStateManger.value != null) {
+        //     usersPageStateManger.value!.setPage(1);
+        //     usersPageStateManger.value!.setPageSize(10);
+        //   }
+        // });
+      },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           PagesTitleWidget(
             title: 'User Management',
             onRightBtnClick: () {},
           ),
-          _Body(),
+          if (state.usersState.usersList.isNotEmpty)
+            _Body(state: state)
+          else
+            const CircularProgressIndicator()
         ]),
       ),
     );
   }
 }
 
-class _Body extends StatelessWidget {
-  _Body({Key? key}) : super(key: key);
+class _Body extends StatefulWidget {
+  AppState state;
+  int _itemCount = 0;
+  _Body({Key? key, required this.state}) : super(key: key) {
+    _itemCount = state.usersState.usersList.length;
+  }
 
+  @override
+  State<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<_Body> {
   final GlobalKey _actionsMenuKey = GlobalKey();
   final GlobalKey _columnsMenuKey = GlobalKey();
 
+  final List<UserRes> _users = [];
+
   final List<ColumnHiderValues> columnHideValues = _cols
+      .skipWhile((value) => value.hide)
+      .toList()
       .map<ColumnHiderValues>(
           (e) => ColumnHiderValues(value: e.field, label: e.title))
       .toList();
+
+  late PlutoGridStateManager usersPageStateManger;
+
+  void _setSm(PlutoGridStateManager sm) {
+    setState(() {
+      usersPageStateManger = sm;
+    });
+    // usersPageStateManger.appendRows(_users
+    //     .map<PlutoRow>(
+    //       (e) => PlutoRow(cells: {
+    //         "user": PlutoCell(value: e),
+    //         "name": PlutoCell(value: "${e.firstName} ${e.lastName}"),
+    //         "username": PlutoCell(value: e.username),
+    //         "department": PlutoCell(value: e.groupId ?? "-"),
+    //         "main_location": PlutoCell(value: e.locationId ?? "-"),
+    //         "payroll": PlutoCell(value: "-"),
+    //         "reviews": PlutoCell(value: "-"),
+    //         "visa": PlutoCell(value: "-"),
+    //         "absences": PlutoCell(value: "-"),
+    //         "preferred_shifts": PlutoCell(value: "-"),
+    //         "qualifications": PlutoCell(value: "-"),
+    //       }),
+    //     )
+    //     .toList());
+    // usersPageStateManger.setPage(1);
+    // usersPageStateManger.setPageSize(10);
+  }
+
+  int _pageSize = 10;
+  int _page = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _users.clear();
+    _users.addAll(widget.state.usersState.usersList);
+  }
 
   @override
   Widget build(BuildContext context) {
     return TableWrapperWidget(
         child: SizedBox(
       width: double.infinity,
-      // height: 794,
       child: SpacedColumn(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _header(context),
-          ValueListenableBuilder(
-              valueListenable: usersPageStateManger,
-              builder: (_, PlutoGridStateManager? sm, __) {
-                return _body();
-              }),
+          _body(),
           const Divider(
-            color: ThemeColors.gray11,
-            thickness: 1.0,
+            color: ThemeColors.transparent,
+            thickness: 0.0,
           ),
-          _footer(),
         ],
       ),
     ));
@@ -277,8 +342,8 @@ class _Body extends StatelessWidget {
                 gKey: _columnsMenuKey,
                 columns: columnHideValues,
                 onChanged: (value) {
-                  if (usersPageStateManger.value != null) {
-                    PlutoGridStateManager state = usersPageStateManger.value!;
+                  if (usersPageStateManger != null) {
+                    PlutoGridStateManager state = usersPageStateManger;
                     PlutoColumn _c = state.refColumns.originalList
                         .firstWhere((e) => e.field == value.value);
                     state.hideColumn(_c, !value.isChecked);
@@ -292,239 +357,31 @@ class _Body extends StatelessWidget {
 
   Widget _body() {
     return UsersListTable(
-      rows: [
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Dummy Absences",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Dummy Absences",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Annual Holiday Entitlement: None",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Annual Holiday Entitlement: None",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Annual Holiday Entitlement: None",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Annual Holiday Entitlement: None",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-        PlutoRow(cells: {
-          "name": PlutoCell(
-            value: "Bianca",
-          ),
-          "username": PlutoCell(
-            value: "30000",
-          ),
-          "department": PlutoCell(
-            value: "Managers",
-          ),
-          "main_location": PlutoCell(
-            value: "18-20 Laystall Street EC1 R4PG",
-          ),
-          "payroll": PlutoCell(
-            value: "Dummy Payroll",
-          ),
-          "reviews": PlutoCell(
-            value: "Dummy Reviews",
-          ),
-          "visa": PlutoCell(
-            value: "Dummy Visa",
-          ),
-          "absences": PlutoCell(
-            value: "Dummy Absences",
-          ),
-          "preferred_shifts": PlutoCell(
-            value: "Dummy Preferred Shifts",
-          ),
-          "qualifications": PlutoCell(
-            value: "Dummy Qualifications",
-          ),
-        }),
-      ],
+      onSmReady: _setSm,
+      footer: _footer,
+      rows: _users
+          .map<PlutoRow>(
+            (e) => PlutoRow(cells: {
+              "user": PlutoCell(value: e),
+              "name": PlutoCell(value: "${e.firstName} ${e.lastName}"),
+              "username": PlutoCell(value: e.username),
+              "department": PlutoCell(value: e.groupId ?? "-"),
+              "main_location": PlutoCell(value: e.locationId ?? "-"),
+              "payroll": PlutoCell(value: "-"),
+              "reviews": PlutoCell(value: "-"),
+              "visa": PlutoCell(value: "-"),
+              "absences": PlutoCell(value: "-"),
+              "preferred_shifts": PlutoCell(value: "-"),
+              "qualifications": PlutoCell(value: "-"),
+            }),
+          )
+          .toList(),
       cols: _cols,
     );
   }
 
-  Widget _footer() {
-    return Container(
-      // color: Colors.redAccent[100],
+  Widget _footer(PlutoGridStateManager stateManager) {
+    return Padding(
       padding: const EdgeInsets.only(
           left: 16.0, right: 32.0, top: 16.0, bottom: 16.0),
       child: SpacedRow(
@@ -541,18 +398,30 @@ class _Body extends StatelessWidget {
                       isSelectable: false),
                   DropdownWidget(
                     hintText: "Entries",
-                    items: const ["1", "2", "10"],
+                    items: Constants.tablePageSizes
+                        .map<String>((e) => e.toString())
+                        .toList(),
                     dropdownBtnWidth: 120,
-                    onChanged: (_) {},
-                    value: "10",
+                    onChanged: (pageS) {
+                      _pageSize = int.parse(pageS);
+                      print("page size: $pageS");
+                      stateManager.setPageSize(int.parse(pageS));
+                    },
+                    value: Constants.tablePageSizes.first.toString(),
                   ),
                   KText(
-                      text: "of 200 entries",
+                      text: "of ${usersPageStateManger.rows.length} entries",
                       textColor: ThemeColors.black,
                       fontSize: 14.0,
                       isSelectable: false),
                 ]),
-            TablePaginationWidget(totalPages: 7, onPageChanged: (int i) {}),
+            TablePaginationWidget(
+                totalPages: (widget._itemCount / _pageSize).ceil(),
+                onPageChanged: (int i) {
+                  _page = i;
+                  stateManager.setPage(i);
+                  print("page: $i");
+                }),
           ]),
     );
   }

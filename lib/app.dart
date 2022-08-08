@@ -8,8 +8,8 @@ import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 
 final appRouter = AppRouter();
 
-class ResumeApp extends StatelessWidget {
-  const ResumeApp({Key? key}) : super(key: key);
+class McaWebApp extends StatelessWidget {
+  const McaWebApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return StoreProvider(

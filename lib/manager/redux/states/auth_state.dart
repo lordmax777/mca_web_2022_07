@@ -1,30 +1,44 @@
 import 'package:flutter/material.dart';
 
+import '../../models/model_exporter.dart';
+
 @immutable
 class AuthState {
-  final String errorMessage;
+  final AuthRes? authRes;
   AuthState({
-    required this.errorMessage,
+    required this.authRes,
   });
 
   factory AuthState.initial() {
     return AuthState(
-      errorMessage: "",
+      authRes: null,
     );
   }
 
   AuthState copyWith({
-    String? errorMessage,
+    AuthRes? authRes,
   }) {
     return AuthState(
-      errorMessage: errorMessage ?? this.errorMessage,
+      authRes: authRes ?? this.authRes,
     );
   }
 }
 
 class UpdateAuthAction {
-  String? errorMessage;
+  AuthRes? authRes;
   UpdateAuthAction({
-    this.errorMessage,
+    this.authRes,
+  });
+}
+
+class GetAccessTokenAction {
+  final String domain;
+  final String username;
+  final String password;
+
+  GetAccessTokenAction({
+    required this.domain,
+    required this.username,
+    required this.password,
   });
 }

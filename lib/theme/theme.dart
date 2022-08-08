@@ -4,6 +4,9 @@ export 'package:simpleicons/heroicons.dart';
 
 export 'package:flutter/material.dart';
 
+//Utils
+export '../utils/constants.dart';
+
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
 export '../comps/spaced_column.dart';

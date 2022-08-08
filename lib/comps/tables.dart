@@ -6,7 +6,14 @@ import '../theme/theme.dart';
 class UsersListTable extends StatelessWidget {
   final List<PlutoColumn> cols;
   final List<PlutoRow> rows;
-  const UsersListTable({Key? key, required this.rows, required this.cols})
+  final void Function(PlutoGridStateManager) onSmReady;
+  final Widget Function(PlutoGridStateManager) footer;
+  const UsersListTable(
+      {Key? key,
+      required this.rows,
+      required this.onSmReady,
+      required this.cols,
+      required this.footer})
       : super(key: key);
 
   @override
@@ -59,8 +66,17 @@ class UsersListTable extends StatelessWidget {
                   isEqual ? PlutoAutoSizeMode.none : PlutoAutoSizeMode.scale),
         ),
         columns: _cols,
-        rows: rows,
-        onLoaded: (e) => usersPageStateManger.value = e.stateManager,
+        rows: [],
+        onChanged: (event) {},
+        onLoaded: (e) {
+          e.stateManager.appendRows(rows);
+          e.stateManager.setPage(1);
+          e.stateManager.setPageSize(0);
+          onSmReady(e.stateManager);
+        },
+        createFooter: (stateManager) {
+          return footer(stateManager);
+        },
       ),
     );
   }

@@ -93,6 +93,7 @@ class _TablePaginationWidgetState extends State<TablePaginationWidget> {
     setState(() {
       currentPage = i;
     });
+    widget.onPageChanged(currentPage);
   }
 
   void _onPreviousPage() {

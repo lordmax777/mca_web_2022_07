@@ -27,7 +27,7 @@ class UserDetailsPage extends StatelessWidget {
         _UserDetailsQuickViewWidget(
           userDetails: _userDetails,
         ),
-        _Body(),
+        const _Body(),
       ],
     ));
   }

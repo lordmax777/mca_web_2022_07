@@ -4,6 +4,8 @@ import '../theme/theme.dart';
 
 class DropdownWidget extends StatefulWidget {
   final ValueChanged? onChanged;
+
+  ///Pass the first item of the items list. This param is deprecated
   final dynamic value;
   final List items;
   final HeroIcons? leftIcon;
@@ -40,6 +42,14 @@ class DropdownWidget extends StatefulWidget {
 }
 
 class _DropdownWidgetState extends State<DropdownWidget> {
+  dynamic _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -49,11 +59,15 @@ class _DropdownWidgetState extends State<DropdownWidget> {
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
         underline: const SizedBox(),
-        onChanged: widget.onChanged,
+        onChanged: (value) {
+          setState(() {
+            _value = value;
+          });
+          widget.onChanged?.call(value);
+        },
         isExpanded: true,
         focusColor: ThemeColors.transparent,
         onMenuStateChange: (bool changed) {},
-        // style: ThemeTextRegular.base.copyWith(color: ThemeColors.black),
         dropdownDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           boxShadow: [
@@ -63,7 +77,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 blurRadius: 4)
           ],
         ),
-        value: widget.value,
+        value: _value,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
         customButton: Container(
@@ -145,7 +159,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                   textColor: ThemeColors.gray8,
                 ),
                 KText(
-                  text: widget.value.toString(),
+                  text: _value.toString(),
                   isSelectable: false,
                   fontSize: 14.0,
                   fontWeight: FWeight.medium,
