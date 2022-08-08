@@ -246,12 +246,29 @@ class _BodyState extends State<_Body> {
   int _pageSize = 10;
   int _page = 1;
 
+  final TextEditingController _searchController = TextEditingController();
+
   void _setSm(PlutoGridStateManager sm) {
     setState(() {
       usersPageStateManger = sm;
       usersPageStateManger.setPage(2);
       usersPageStateManger.setPageSize(10);
       usersPageStateManger.setPage(_page);
+      _searchController.addListener(() {
+        if (_searchController.text.isNotEmpty) {
+          //TODO: Search each cell value
+          print("Searching => ${_searchController.text}");
+          usersPageStateManger.setFilter(
+            (element) {
+              return element.cells['name']?.value
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase());
+            },
+          );
+          return;
+        }
+        usersPageStateManger.setFilter((element) => true);
+      });
       _isSmLoaded = true;
     });
   }
@@ -291,6 +308,7 @@ class _BodyState extends State<_Body> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextInputWidget(
+              controller: _searchController,
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
