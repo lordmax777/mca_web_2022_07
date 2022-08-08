@@ -42,14 +42,6 @@ class DropdownWidget extends StatefulWidget {
 }
 
 class _DropdownWidgetState extends State<DropdownWidget> {
-  dynamic _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _value = widget.value;
-  }
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -59,12 +51,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
         underline: const SizedBox(),
-        onChanged: (value) {
-          setState(() {
-            _value = value;
-          });
-          widget.onChanged?.call(value);
-        },
+        onChanged: widget.onChanged,
         isExpanded: true,
         focusColor: ThemeColors.transparent,
         onMenuStateChange: (bool changed) {},
@@ -77,7 +64,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 blurRadius: 4)
           ],
         ),
-        value: _value,
+        value: widget.value,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
         customButton: Container(
@@ -159,7 +146,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                   textColor: ThemeColors.gray8,
                 ),
                 KText(
-                  text: _value.toString(),
+                  text: widget.value.toString(),
                   isSelectable: false,
                   fontSize: 14.0,
                   fontWeight: FWeight.medium,

@@ -66,17 +66,14 @@ class UsersListTable extends StatelessWidget {
                   isEqual ? PlutoAutoSizeMode.none : PlutoAutoSizeMode.scale),
         ),
         columns: _cols,
-        rows: [],
-        onChanged: (event) {},
+        rows: rows,
         onLoaded: (e) {
-          e.stateManager.appendRows(rows);
-          e.stateManager.setPage(1);
-          e.stateManager.setPageSize(0);
           onSmReady(e.stateManager);
         },
-        createFooter: (stateManager) {
-          return footer(stateManager);
-        },
+        // createFooter: (stateManager) {
+        // PlutoPagination();
+        //   return footer(stateManager);
+        // },
       ),
     );
   }

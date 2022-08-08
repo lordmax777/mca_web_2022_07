@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
@@ -240,34 +241,20 @@ class _BodyState extends State<_Body> {
       .toList();
 
   late PlutoGridStateManager usersPageStateManger;
+  bool _isSmLoaded = false;
+
+  int _pageSize = 10;
+  int _page = 1;
 
   void _setSm(PlutoGridStateManager sm) {
     setState(() {
       usersPageStateManger = sm;
+      usersPageStateManger.setPage(2);
+      usersPageStateManger.setPageSize(10);
+      usersPageStateManger.setPage(_page);
+      _isSmLoaded = true;
     });
-    // usersPageStateManger.appendRows(_users
-    //     .map<PlutoRow>(
-    //       (e) => PlutoRow(cells: {
-    //         "user": PlutoCell(value: e),
-    //         "name": PlutoCell(value: "${e.firstName} ${e.lastName}"),
-    //         "username": PlutoCell(value: e.username),
-    //         "department": PlutoCell(value: e.groupId ?? "-"),
-    //         "main_location": PlutoCell(value: e.locationId ?? "-"),
-    //         "payroll": PlutoCell(value: "-"),
-    //         "reviews": PlutoCell(value: "-"),
-    //         "visa": PlutoCell(value: "-"),
-    //         "absences": PlutoCell(value: "-"),
-    //         "preferred_shifts": PlutoCell(value: "-"),
-    //         "qualifications": PlutoCell(value: "-"),
-    //       }),
-    //     )
-    //     .toList());
-    // usersPageStateManger.setPage(1);
-    // usersPageStateManger.setPageSize(10);
   }
-
-  int _pageSize = 10;
-  int _page = 1;
 
   @override
   void initState() {
@@ -288,9 +275,10 @@ class _BodyState extends State<_Body> {
           _header(context),
           _body(),
           const Divider(
-            color: ThemeColors.transparent,
-            thickness: 0.0,
+            color: ThemeColors.gray11,
+            thickness: 1.0,
           ),
+          if (_isSmLoaded) _footer(usersPageStateManger),
         ],
       ),
     ));
@@ -359,7 +347,7 @@ class _BodyState extends State<_Body> {
     return UsersListTable(
       onSmReady: _setSm,
       footer: _footer,
-      rows: _users
+      rows: widget.state.usersState.usersList
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
               "user": PlutoCell(value: e),
@@ -402,27 +390,37 @@ class _BodyState extends State<_Body> {
                         .map<String>((e) => e.toString())
                         .toList(),
                     dropdownBtnWidth: 120,
-                    onChanged: (pageS) {
-                      _pageSize = int.parse(pageS);
-                      print("page size: $pageS");
-                      stateManager.setPageSize(int.parse(pageS));
-                    },
-                    value: Constants.tablePageSizes.first.toString(),
+                    onChanged: (value) =>
+                        _onPageSizeChange(value, stateManager),
+                    //TODO: if _pageSize is less than the last item of tablePageSizes, show that item instead of last item!
+                    value: _pageSize.toString(),
                   ),
                   KText(
-                      text: "of ${usersPageStateManger.rows.length} entries",
+                      text: "of ${_users.length} entries",
                       textColor: ThemeColors.black,
                       fontSize: 14.0,
                       isSelectable: false),
                 ]),
             TablePaginationWidget(
-                totalPages: (widget._itemCount / _pageSize).ceil(),
-                onPageChanged: (int i) {
-                  _page = i;
-                  stateManager.setPage(i);
-                  print("page: $i");
-                }),
+                currentPage: _page,
+                totalPages: stateManager
+                    .totalPage, //(widget._itemCount / _pageSize).ceil(),
+                onPageChanged: (int i) => _onPageChange(i, stateManager)),
           ]),
     );
+  }
+
+  void _onPageSizeChange(pageS, PlutoGridStateManager stateManager) {
+    _pageSize = int.parse(pageS);
+    stateManager.setPageSize(_pageSize);
+    usersPageStateManger.setPage(1);
+    _page = 1;
+    setState(() {});
+  }
+
+  void _onPageChange(int page, PlutoGridStateManager stateManager) {
+    _page = page;
+    stateManager.setPage(_page);
+    setState(() {});
   }
 }

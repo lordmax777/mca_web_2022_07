@@ -1,34 +1,19 @@
 import '../theme/theme.dart';
 
-class TablePaginationWidget extends StatefulWidget {
+class TablePaginationWidget extends StatelessWidget {
   final int totalPages;
   final ValueChanged<int> onPageChanged;
+  final int currentPage;
   const TablePaginationWidget(
-      {Key? key, required this.totalPages, required this.onPageChanged})
+      {Key? key,
+      required this.totalPages,
+      required this.onPageChanged,
+      required this.currentPage})
       : super(key: key);
 
   @override
-  State<TablePaginationWidget> createState() => _TablePaginationWidgetState();
-}
-
-class _TablePaginationWidgetState extends State<TablePaginationWidget> {
-  int currentPage = 1;
-
-  @override
   Widget build(BuildContext context) {
-    int t = widget.totalPages;
-    List<int> showingNumbers = [];
-    showingNumbers.add(1);
-    if (t > 1) {
-      for (int i = 2; i <= t; i++) {
-        if (t > 6) {
-          //Add dots in the middle
-
-        } else {
-          showingNumbers.add(i);
-        }
-      }
-    }
+    int t = totalPages;
 
     // If list of numbers are more than 8, then show 3 dots in the middle;
     // If list of numbers are less than 8, then show all numbers;
@@ -90,10 +75,7 @@ class _TablePaginationWidgetState extends State<TablePaginationWidget> {
   }
 
   void _onNumberTap(int i) {
-    setState(() {
-      currentPage = i;
-    });
-    widget.onPageChanged(currentPage);
+    onPageChanged(i);
   }
 
   void _onPreviousPage() {
@@ -102,25 +84,19 @@ class _TablePaginationWidgetState extends State<TablePaginationWidget> {
     if (currentPage == 1) {
       return;
     }
-    setState(() {
-      currentPage -= 1;
-    });
-    widget.onPageChanged(currentPage);
+    onPageChanged(currentPage - 1);
   }
 
   void _onNextPage() {
-    final int _lastPage = widget.totalPages;
+    final int lastPage = totalPages;
 
     //If currentPage is lastPage, then do nothing;
     //If currentPage is < lastPage, then set currentPage to currentPage + 1;
 
-    if (currentPage == _lastPage) {
+    if (currentPage == lastPage) {
       return;
     }
-    setState(() {
-      currentPage += 1;
-    });
-    widget.onPageChanged(currentPage);
+    onPageChanged(currentPage + 1);
   }
 }
 
@@ -159,25 +135,6 @@ class _PreviousNextButton extends StatelessWidget {
                   size: 15, color: ThemeColors.gray2),
             ],
           ));
-      return Material(
-        color: ThemeColors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: SpacedRow(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              horizontalSpace: 8.0,
-              children: [
-                KText(
-                    isSelectable: false,
-                    text: "Next",
-                    fontSize: 14.0,
-                    textColor: ThemeColors.gray3,
-                    fontWeight: FWeight.medium),
-                const HeroIcon(HeroIcons.right,
-                    size: 15, color: ThemeColors.gray2),
-              ]),
-        ),
-      );
     }
     return TextButton(
         style: ButtonStyle(
