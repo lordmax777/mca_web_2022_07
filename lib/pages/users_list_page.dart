@@ -30,6 +30,8 @@ List<PlutoColumn> get _cols {
             fontSize: 14,
             isSelectable: false,
             onTap: () {
+              appStore.dispatch(UpdateUsersStateAction(
+                  selectedUser: ctx.row.cells['user']?.value));
               appRouter.navigate(UserDetailsRoute());
             },
           );
@@ -47,6 +49,8 @@ List<PlutoColumn> get _cols {
             fontSize: 14,
             isSelectable: false,
             onTap: () {
+              appStore.dispatch(UpdateUsersStateAction(
+                  selectedUser: ctx.row.cells['user']?.value));
               appRouter.navigate(UserDetailsRoute());
             },
           );
@@ -247,40 +251,45 @@ class _BodyState extends State<_Body> {
       usersPageStateManger.setPage(0);
       usersPageStateManger.setPageSize(10);
       usersPageStateManger.setPage(_page);
-      _searchController.addListener(() {
-        if (_searchController.text.isNotEmpty) {
-          if (usersPageStateManger.page > 1) {
-            usersPageStateManger.setPage(1);
-          }
-          usersPageStateManger.setFilter(
-            (element) {
-              final String _search = _searchController.text.toLowerCase();
-              bool searched = element.cells['name']?.value
+      usersPageStateManger.sortAscending(usersPageStateManger.refColumns.first);
+      _setFilter();
+      _isSmLoaded = true;
+    });
+  }
+
+  void _setFilter() {
+    _searchController.addListener(() {
+      if (_searchController.text.isNotEmpty) {
+        if (usersPageStateManger.page > 1) {
+          usersPageStateManger.setPage(1);
+        }
+        usersPageStateManger.setFilter(
+          (element) {
+            final String _search = _searchController.text.toLowerCase();
+            bool searched = element.cells['name']?.value
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase());
+            if (!searched) {
+              searched = element.cells['username']?.value
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase());
               if (!searched) {
-                searched = element.cells['username']?.value
+                searched = element.cells['department']?.value
                     .toLowerCase()
                     .contains(_searchController.text.toLowerCase());
                 if (!searched) {
-                  searched = element.cells['department']?.value
+                  searched = element.cells['main_location']?.value
                       .toLowerCase()
                       .contains(_searchController.text.toLowerCase());
-                  if (!searched) {
-                    searched = element.cells['main_location']?.value
-                        .toLowerCase()
-                        .contains(_searchController.text.toLowerCase());
-                  }
                 }
               }
-              return searched;
-            },
-          );
-          return;
-        }
-        usersPageStateManger.setFilter((element) => true);
-      });
-      _isSmLoaded = true;
+            }
+            return searched;
+          },
+        );
+        return;
+      }
+      usersPageStateManger.setFilter((element) => true);
     });
   }
 

@@ -1,35 +1,46 @@
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+
 import '../theme/theme.dart';
 
 class _UserDetails {
   final String name;
   final String email;
   final String phone;
+  final String id;
 
-  _UserDetails({required this.name, required this.email, required this.phone});
+  _UserDetails(
+      {required this.name,
+      required this.email,
+      required this.phone,
+      required this.id});
 }
 
 class UserDetailsPage extends StatelessWidget {
   UserDetailsPage({Key? key}) : super(key: key);
 
   final _UserDetails _userDetails = _UserDetails(
-    name: 'John Doe',
-    email: 'dummy@mail.com',
-    phone: '+1-555-555-5555',
-  );
+      name: 'John Doe',
+      email: 'dummy@mail.com',
+      phone: '+1-555-555-5555',
+      id: "no_id_yet");
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-        child: SpacedColumn(
-      verticalSpace: 16.0,
-      children: [
-        PageGobackWidget(text: _userDetails.name),
-        _UserDetailsQuickViewWidget(
-          userDetails: _userDetails,
-        ),
-        const _Body(),
-      ],
-    ));
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          print(state.usersState.selectedUser?.toJson());
+          return PageWrapper(
+              child: SpacedColumn(
+            verticalSpace: 16.0,
+            children: [
+              PageGobackWidget(text: _userDetails.name),
+              _UserDetailsQuickViewWidget(userDetails: _userDetails),
+              const _Body(),
+            ],
+          ));
+        });
   }
 }
 

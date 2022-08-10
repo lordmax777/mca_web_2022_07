@@ -50,5 +50,6 @@ UsersState _updateUsersStateAction(
     UsersState state, UpdateUsersStateAction action) {
   return state.copyWith(
     usersList: action.usersList ?? state.usersList,
+    selectedUser: action.selectedUser ?? state.selectedUser,
   );
 }
