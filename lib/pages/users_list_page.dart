@@ -1,4 +1,3 @@
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
@@ -193,12 +192,6 @@ class UsersListPage extends StatelessWidget {
             username: Constants.username,
             password: Constants.password));
         await appStore.dispatch(GetUsersListAction());
-        // usersPageStateManger.addListener(() {
-        //   if (usersPageStateManger.value != null) {
-        //     usersPageStateManger.value!.setPage(1);
-        //     usersPageStateManger.value!.setPageSize(10);
-        //   }
-        // });
       },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
@@ -251,18 +244,36 @@ class _BodyState extends State<_Body> {
   void _setSm(PlutoGridStateManager sm) {
     setState(() {
       usersPageStateManger = sm;
-      usersPageStateManger.setPage(2);
+      usersPageStateManger.setPage(0);
       usersPageStateManger.setPageSize(10);
       usersPageStateManger.setPage(_page);
       _searchController.addListener(() {
         if (_searchController.text.isNotEmpty) {
-          //TODO: Search each cell value
-          print("Searching => ${_searchController.text}");
+          if (usersPageStateManger.page > 1) {
+            usersPageStateManger.setPage(1);
+          }
           usersPageStateManger.setFilter(
             (element) {
-              return element.cells['name']?.value
+              final String _search = _searchController.text.toLowerCase();
+              bool searched = element.cells['name']?.value
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase());
+              if (!searched) {
+                searched = element.cells['username']?.value
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase());
+                if (!searched) {
+                  searched = element.cells['department']?.value
+                      .toLowerCase()
+                      .contains(_searchController.text.toLowerCase());
+                  if (!searched) {
+                    searched = element.cells['main_location']?.value
+                        .toLowerCase()
+                        .contains(_searchController.text.toLowerCase());
+                  }
+                }
+              }
+              return searched;
             },
           );
           return;

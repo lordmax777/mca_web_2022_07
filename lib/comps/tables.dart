@@ -42,34 +42,38 @@ class UsersListTable extends StatelessWidget {
     }
     var _w = MediaQuery.of(context).size.width;
     var _tableSize = 0.0;
-    print(_w);
     for (var c in cols) {
       _tableSize += c.width;
     }
-    print(_tableSize);
     bool isEqual = _tableSize == _w;
+
+    double _h = 625;
+    // print("height: ${_cols.length}");
+    // if (_cols.length > 11) {
+    //   for (int i = 0; i < _cols.length; i++) {
+    //     _h += 48.0;
+    //   }
+    // }
     return SizedBox(
-      height: 625,
+      height: _h,
       child: PlutoGrid(
         configuration: PlutoGridConfiguration(
-          style: const PlutoGridStyleConfig(
-            columnHeight: 48.0,
-            rowHeight: 48.0,
-            borderColor: ThemeColors.transparent,
-            gridBorderColor: ThemeColors.transparent,
-            activatedBorderColor: ThemeColors.transparent,
-            activatedColor: ThemeColors.blue12,
-            columnTextStyle: ThemeText.tableColumnTextStyle,
-          ),
-          columnSize: PlutoGridColumnSizeConfig(
-              autoSizeMode:
-                  isEqual ? PlutoAutoSizeMode.none : PlutoAutoSizeMode.scale),
-        ),
+            style: const PlutoGridStyleConfig(
+              columnHeight: 48.0,
+              rowHeight: 48.0,
+              borderColor: ThemeColors.transparent,
+              gridBorderColor: ThemeColors.transparent,
+              activatedBorderColor: ThemeColors.transparent,
+              activatedColor: ThemeColors.blue12,
+              columnTextStyle: ThemeText.tableColumnTextStyle,
+            ),
+            columnSize: PlutoGridColumnSizeConfig(
+                autoSizeMode: isEqual
+                    ? PlutoAutoSizeMode.none
+                    : PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
-        onLoaded: (e) {
-          onSmReady(e.stateManager);
-        },
+        onLoaded: (e) => onSmReady(e.stateManager),
         // createFooter: (stateManager) {
         // PlutoPagination();
         //   return footer(stateManager);
