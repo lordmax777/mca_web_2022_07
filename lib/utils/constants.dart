@@ -39,5 +39,6 @@ class Constants {
 
   static const Map<String, String> userAccountStatusTypes = {
     "active": "Active",
+    "inactive": "Inactive",
   };
 }

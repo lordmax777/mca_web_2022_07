@@ -155,15 +155,16 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   final List<Tab> tabs = const [
-    Tab(text: 'General'),
-    Tab(text: 'Payroll'),
-    Tab(text: 'Reviews'),
-    Tab(text: 'Visa, Work Permits'),
-    Tab(text: 'Preferred Shifts'),
-    Tab(text: 'Qualifications'),
-    Tab(text: 'Mobile and Status'),
+    Tab(text: 'General', key: Key('general_tab')),
+    Tab(text: 'Payroll', key: Key('payroll_tab')),
+    Tab(text: 'Reviews', key: Key('reviews_tab')),
+    Tab(text: 'Visa, Work Permits', key: Key('visa_tab')),
+    Tab(text: 'Preferred Shifts', key: Key('preferred_shifts_tab')),
+    Tab(text: 'Qualifications', key: Key('qualifications_tab')),
+    Tab(text: 'Mobile and Status', key: Key('mobile_status_tab')),
   ];
 
+  final List<Widget> _generalItems = [];
   @override
   void initState() {
     super.initState();
@@ -171,6 +172,18 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
     _tabController.addListener(() {
       setState(() {});
     });
+
+    _generalItems.add(_buildItem(
+        const _PersonalDetailsWidget(), _PersonalDetailsWidget.title));
+    _generalItems.add(_buildItem(const _UsernameAndPayrollInfoWidget(),
+        _UsernameAndPayrollInfoWidget.title));
+    _generalItems.add(_buildItem(const _RolesDepsAndLoginOptionsWidget(),
+        _RolesDepsAndLoginOptionsWidget.title));
+    _generalItems.add(_buildItem(const _AddressWidget(), _AddressWidget.title));
+    _generalItems.add(_buildItem(
+        const _EthnicAndReligionWidget(), _EthnicAndReligionWidget.title));
+    _generalItems.add(
+        _buildItem(const _NextOfKinInfoWidget(), _NextOfKinInfoWidget.title));
   }
 
   @override
@@ -196,22 +209,33 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
               tabs: tabs,
             ),
           ),
-          ListView.separated(
-            separatorBuilder: (context, index) => const Divider(
-                color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 6,
-            itemBuilder: (context, index) {
-              return _buildList();
-            },
-          ),
+          _getTabChild(),
+          const Divider(color: ThemeColors.gray11, thickness: 1.0),
+          const _SaveAndCancelButtonsWidget(),
         ],
       ),
     );
   }
 
-  Widget _buildList() {
+  Widget _getTabChild() {
+    switch (_tabController.index) {
+      case 0:
+        return ListView.separated(
+          separatorBuilder: (context, index) => const Divider(
+              color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _generalItems.length,
+          itemBuilder: (context, index) {
+            return _generalItems[index];
+          },
+        );
+      default:
+        return const SizedBox();
+    }
+  }
+
+  Widget _buildItem(Widget child, String title) {
     bool a = true;
     return StatefulBuilder(
       builder: (context, ss) {
@@ -229,23 +253,27 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
           // childrenPadding: EdgeInsets.symmetric(vertical: 16.0),
           leading: HeroIcon(!a ? HeroIcons.up : HeroIcons.down, size: 18.0),
           title: KText(
-            text: "Personal Details",
+            text: title,
             isSelectable: false,
             fontWeight: FWeight.bold,
             fontSize: 16.0,
             textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
           ),
           expandedAlignment: Alignment.topLeft,
-          children: [
-            // _buildPersonalDetails(),
-            _buildUsernameAndPayrollInformation(),
-          ],
+          children: [child],
         );
       },
     );
   }
+}
 
-  Widget _buildPersonalDetails() {
+class _PersonalDetailsWidget extends StatelessWidget {
+  static const String title = "Personal Details";
+
+  const _PersonalDetailsWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width * 0.2;
     return SpacedRow(horizontalSpace: 64.0, children: [
       SpacedColumn(verticalSpace: 16.0, children: [
@@ -352,8 +380,15 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
           ]),
     ]);
   }
+}
 
-  Widget _buildUsernameAndPayrollInformation() {
+class _UsernameAndPayrollInfoWidget extends StatelessWidget {
+  static const String title = "Username and Payroll Information";
+
+  const _UsernameAndPayrollInfoWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width * 0.2;
     return SpacedColumn(
         verticalSpace: 32.0,
@@ -382,5 +417,305 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
             isRequired: true,
           ),
         ]);
+  }
+}
+
+class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
+  static const String title = "Roles, Department and Login Options";
+
+  const _RolesDepsAndLoginOptionsWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final dpWidth = MediaQuery.of(context).size.width * 0.2;
+    return SpacedRow(horizontalSpace: 64.0, children: [
+      _buildLeftPart(dpWidth),
+      _buildRightPart(dpWidth),
+    ]);
+  }
+
+  Widget _buildRightPart(double dpWidth) {
+    return SpacedColumn(
+        verticalSpace: 32.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "National Insurance",
+          ),
+          DropdownWidget(
+            hintText: "Department Manager",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+          DropdownWidget(
+            hintText: "Location Manager",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+        ]);
+  }
+
+  Widget _buildLeftPart(double dpWidth) {
+    return SpacedColumn(
+        verticalSpace: 32.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownWidget(
+            isRequired: true,
+            hintText: "Role",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+          DropdownWidget(
+            isRequired: true,
+            hintText: "Department",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+          DropdownWidget(
+            isRequired: true,
+            hintText: "Location",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+          const SizedBox(height: 0.0),
+          DropdownWidget(
+            isRequired: true,
+            hintText: "Display Language",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+          TextInputWidget(
+            keyboardType: TextInputType.multiline,
+            maxLines: 4,
+            width: dpWidth,
+            labelText: "Notes",
+          ),
+          const SizedBox(height: 0.0),
+          _buildCheckboxes(),
+        ]);
+  }
+
+  Widget _buildCheckboxes() {
+    return SpacedColumn(
+        verticalSpace: 32.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SpacedRow(
+            horizontalSpace: 4.0,
+            children: [
+              KText(
+                  text: 'Login Methods',
+                  fontSize: 14.0,
+                  fontWeight: FWeight.bold,
+                  isSelectable: false,
+                  textColor: ThemeColors.gray2),
+              KText(
+                  text: '*',
+                  fontSize: 14.0,
+                  fontWeight: FWeight.bold,
+                  isSelectable: false,
+                  textColor: ThemeColors.red3),
+            ],
+          ),
+          SpacedColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              verticalSpace: 16.0,
+              children: [
+                _chbx(true, (_) {}, 'Web'),
+                _chbx(true, (_) {}, 'Mobile'),
+                _chbx(true, (_) {}, 'Tablet'),
+                _chbx(false, (_) {}, 'Mobile Admin'),
+                _chbx(true, (_) {}, 'API'),
+              ]),
+          SpacedRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            horizontalSpace: 8.0,
+            children: [
+              CheckboxWidget(value: true, onChanged: (_) {}),
+              KText(
+                text: "User is required to login",
+                fontSize: 14.0,
+                textColor: ThemeColors.gray2,
+                isSelectable: false,
+                fontWeight: FWeight.bold,
+              )
+            ],
+          ),
+        ]);
+  }
+
+  Widget _chbx(bool value, ValueChanged<bool> onChanged, String text) {
+    return SpacedRow(
+      horizontalSpace: 8.0,
+      children: [
+        ToggleCheckboxWidget(
+            value: value,
+            width: 32.0,
+            height: 16.0,
+            toggleSize: 14.0,
+            padding: 1.0,
+            activeColor: ThemeColors.blue3,
+            inactiveColor: ThemeColors.gray11,
+            onToggle: onChanged),
+        KText(
+          text: text,
+          fontSize: 14.0,
+          textColor: ThemeColors.gray2,
+          isSelectable: false,
+        )
+      ],
+    );
+  }
+}
+
+class _AddressWidget extends StatelessWidget {
+  static const String title = "Address";
+
+  const _AddressWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final dpWidth = MediaQuery.of(context).size.width * 0.2;
+    return SpacedRow(
+      horizontalSpace: 24.0,
+      children: [
+        SpacedColumn(
+            verticalSpace: 32.0,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextInputWidget(
+                width: (dpWidth * 1.7),
+                labelText: "Street Address",
+                isRequired: true,
+              ),
+              SpacedRow(
+                horizontalSpace: dpWidth / 3.8,
+                children: [
+                  TextInputWidget(
+                    width: dpWidth / 1.4,
+                    labelText: "City/Town",
+                    isRequired: true,
+                  ),
+                  TextInputWidget(
+                    width: dpWidth / 1.4,
+                    labelText: "County",
+                  ),
+                ],
+              ),
+              DropdownWidget(
+                isRequired: true,
+                hintText: "Country",
+                dropdownBtnWidth: (dpWidth * 1.7),
+                dropdownOptionsWidth: (dpWidth * 2) + 24.0,
+                onChanged: (_) {},
+                items: [],
+              ),
+            ]),
+        TextInputWidget(
+          width: dpWidth / 2,
+          labelText: "Post Code",
+        ),
+      ],
+    );
+  }
+}
+
+class _EthnicAndReligionWidget extends StatelessWidget {
+  static const String title = "Ethnic and Religion";
+
+  const _EthnicAndReligionWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final dpWidth = MediaQuery.of(context).size.width * .3;
+    return SpacedColumn(
+        verticalSpace: 32.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownWidget(
+            hintText: "Ethnic",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          ),
+          DropdownWidget(
+            hintText: "Religion",
+            dropdownBtnWidth: dpWidth,
+            dropdownOptionsWidth: dpWidth,
+            onChanged: (_) {},
+            items: [],
+          )
+        ]);
+  }
+}
+
+class _NextOfKinInfoWidget extends StatelessWidget {
+  static const String title = "Next of Kin Information";
+
+  const _NextOfKinInfoWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final dpWidth = MediaQuery.of(context).size.width * .3;
+    return SpacedColumn(
+        verticalSpace: 32.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Next of Kin",
+          ),
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Next of Kin Relation",
+          ),
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Next of Kin Phone Number",
+          ),
+        ]);
+  }
+}
+
+class _SaveAndCancelButtonsWidget extends StatelessWidget {
+  const _SaveAndCancelButtonsWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SpacedRow(
+        mainAxisAlignment: MainAxisAlignment.end,
+        horizontalSpace: 14.0,
+        children: [
+          ButtonLargeSecondary(
+            paddingWithoutIcon: true,
+            text: "Cancel",
+            onPressed: () {},
+            bgColor: ThemeColors.white,
+          ),
+          ButtonLarge(
+            icon: const HeroIcon(HeroIcons.check),
+            text: "Save Changes",
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
   }
 }

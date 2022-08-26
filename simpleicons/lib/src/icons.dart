@@ -58,6 +58,7 @@ class HeroIcons {
 
   /// Align Text Left icon
   static const alignTextLeft = HeroIcons._('align-text-left');
+  static const check = HeroIcons._('check');
 
   /// Align Text Right icon
   static const alignTextRight = HeroIcons._('align-text-right');

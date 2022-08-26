@@ -14,9 +14,12 @@ class TextInputWidget extends StatefulWidget {
   final bool enabled;
   final bool disableAll;
   final bool isPassword;
+  final TextInputType keyboardType;
+  final int maxLines;
   TextInputWidget(
       {Key? key,
       this.defaultBorderColor,
+      this.maxLines = 1,
       this.enabled = true,
       this.disableAll = false,
       this.controller,
@@ -25,6 +28,7 @@ class TextInputWidget extends StatefulWidget {
       this.isPassword = false,
       this.labelText,
       this.leftIcon,
+      this.keyboardType = TextInputType.text,
       this.heigth,
       this.onTap,
       this.width,
@@ -49,6 +53,8 @@ class _TextInputWidgetState extends State<TextInputWidget> {
       child: TextField(
         obscureText: widget.isPassword ? _obscureText : false,
         onTap: widget.onTap,
+        keyboardType: widget.keyboardType,
+        maxLines: widget.maxLines,
         mouseCursor: widget.disableAll
             ? SystemMouseCursors.forbidden
             : SystemMouseCursors.text,
@@ -79,10 +85,12 @@ class _TextInputWidgetState extends State<TextInputWidget> {
                         text: widget.labelText!,
                         textColor: ThemeColors.gray8,
                         fontSize: 16.0,
+                        mainAxisSize: MainAxisSize.min,
                         fontWeight: FWeight.regular),
                     if (widget.isRequired)
                       KText(
                           text: "*",
+                          mainAxisSize: MainAxisSize.min,
                           textColor: ThemeColors.red3,
                           fontSize: 16.0,
                           fontWeight: FWeight.regular),
@@ -96,6 +104,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
           prefixIconColor: ThemeColors.gray11,
           prefixIcon: _getLeftIcon(),
           hintText: widget.hintText,
+          hintMaxLines: 2,
           filled: widget.disableAll,
           fillColor: ThemeColors.gray12,
           hintStyle: ThemeText.regular

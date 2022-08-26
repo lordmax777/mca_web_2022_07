@@ -16,6 +16,7 @@ class DropdownWidget extends StatefulWidget {
   final bool? showDropdownIcon;
   final double? dropdownMaxHeight;
   final Color? dropdownBtnColor;
+  final bool isRequired;
 
   /// Dropdown-button-width, Dropdown-Options-Width
   ///  are changeable.
@@ -24,6 +25,7 @@ class DropdownWidget extends StatefulWidget {
       {Key? key,
       required this.items,
       this.onChanged,
+      this.isRequired = false,
       this.value,
       this.leftIcon,
       this.dropdownBtnWidth = 115,
@@ -107,11 +109,23 @@ class _DropdownWidgetState extends State<DropdownWidget> {
               : widget.showDropdownIcon!
                   ? widget.dropdownBtnWidth! - 60
                   : widget.dropdownBtnWidth! - 30,
-          child: KText(
-            text: widget.hintText!,
-            isSelectable: false,
-            fontSize: 16.0,
-            textColor: ThemeColors.gray8,
+          child: SpacedRow(
+            horizontalSpace: 4.0,
+            children: [
+              KText(
+                text: widget.hintText!,
+                isSelectable: false,
+                fontSize: 16.0,
+                textColor: ThemeColors.gray8,
+              ),
+              if (widget.isRequired)
+                KText(
+                  text: "*",
+                  isSelectable: false,
+                  fontSize: 16.0,
+                  textColor: ThemeColors.red3,
+                ),
+            ],
           ),
         ),
       if (widget.showDropdownIcon!)
@@ -140,11 +154,23 @@ class _DropdownWidgetState extends State<DropdownWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                KText(
-                  text: widget.hintText!,
-                  isSelectable: false,
-                  fontSize: 14.0,
-                  textColor: ThemeColors.gray8,
+                SpacedRow(
+                  horizontalSpace: 4.0,
+                  children: [
+                    KText(
+                      text: widget.hintText!,
+                      isSelectable: false,
+                      fontSize: 14.0,
+                      textColor: ThemeColors.gray8,
+                    ),
+                    if (widget.isRequired)
+                      KText(
+                        text: "*",
+                        isSelectable: false,
+                        fontSize: 16.0,
+                        textColor: ThemeColors.red3,
+                      ),
+                  ],
                 ),
                 KText(
                   text: widget.value.toString(),

@@ -67,6 +67,74 @@ class ButtonMedium extends StatelessWidget {
   }
 }
 
+class ButtonLarge extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String text;
+  Color? bgColor;
+  HeroIcon? icon;
+  ButtonLarge(
+      {Key? key, this.onPressed, required this.text, this.icon, this.bgColor})
+      : super(key: key) {
+    bgColor ??= ThemeColors.blue3;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ButtonStyle style = ButtonStyle(
+      padding: MaterialStateProperty.all(
+          const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0)),
+      backgroundColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return ThemeColors.blue3.withOpacity(0.4);
+        } else if (states.contains(MaterialState.pressed)) {
+          return ThemeColors.blue3;
+        } else if (states.contains(MaterialState.hovered)) {
+          return ThemeColors.blue6;
+        } else {
+          return bgColor;
+        }
+      }),
+      overlayColor: MaterialStateProperty.all(Colors.transparent),
+      splashFactory: NoSplash.splashFactory,
+      side: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.pressed)) {
+          return const BorderSide(color: ThemeColors.blue10, width: 4.0);
+        } else {
+          return const BorderSide(color: ThemeColors.gray11, width: 0.0);
+        }
+      }),
+      elevation: MaterialStateProperty.all(0.0),
+      shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0))),
+    );
+    if (icon != null) {
+      return ElevatedButton.icon(
+          style: style,
+          onPressed: onPressed,
+          icon: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: icon!,
+          ),
+          label: KText(
+            text: text,
+            rowCenter: true,
+            isSelectable: false,
+            fontSize: 16,
+            fontWeight: FWeight.medium,
+          ));
+    }
+    return ElevatedButton(
+        style: style,
+        onPressed: onPressed,
+        child: KText(
+          text: text,
+          isSelectable: false,
+          fontSize: 16,
+          fontWeight: FWeight.bold,
+        ));
+  }
+}
+
 class ButtonSmall extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
@@ -202,6 +270,85 @@ class ButtonMediumSecondary extends StatelessWidget {
               ? ThemeColors.blue3.withOpacity(0.4)
               : ThemeColors.blue3,
           fontWeight: FWeight.bold,
+        ));
+  }
+}
+
+class ButtonLargeSecondary extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String text;
+  Color? bgColor;
+  HeroIcon? leftIcon;
+  final bool paddingWithoutIcon;
+  ButtonLargeSecondary(
+      {Key? key,
+      this.onPressed,
+      this.paddingWithoutIcon = false,
+      required this.text,
+      this.leftIcon,
+      this.bgColor})
+      : super(key: key) {
+    bgColor ??= ThemeColors.transparent;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ButtonStyle style = ButtonStyle(
+      padding: MaterialStateProperty.all(
+          const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0)),
+      backgroundColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return ThemeColors.transparent;
+        } else {
+          return bgColor;
+        }
+      }),
+      side: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.pressed)) {
+          return const BorderSide(color: ThemeColors.blue3, width: 2.0);
+        } else if (states.contains(MaterialState.hovered)) {
+          return const BorderSide(color: ThemeColors.blue6, width: 1.0);
+        } else {
+          return const BorderSide(color: ThemeColors.gray11, width: 1.0);
+        }
+      }),
+      elevation: MaterialStateProperty.all(0.0),
+      shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0))),
+    );
+    if (leftIcon != null) {
+      return ElevatedButton.icon(
+          style: style,
+          onPressed: onPressed,
+          icon: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: leftIcon!,
+          ),
+          label: KText(
+            text: text,
+            isSelectable: false,
+            textColor: onPressed == null
+                ? ThemeColors.blue3.withOpacity(0.4)
+                : ThemeColors.blue3,
+            fontSize: 16,
+            fontWeight: FWeight.bold,
+          ));
+    }
+    return ElevatedButton(
+        style: style,
+        onPressed: onPressed,
+        child: Padding(
+          padding:
+              paddingWithoutIcon ? const EdgeInsets.all(6.0) : EdgeInsets.zero,
+          child: KText(
+            text: text,
+            isSelectable: false,
+            fontSize: 16,
+            textColor: onPressed == null
+                ? ThemeColors.blue3.withOpacity(0.4)
+                : ThemeColors.blue3,
+            fontWeight: FWeight.bold,
+          ),
         ));
   }
 }

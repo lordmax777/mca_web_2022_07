@@ -473,3 +473,33 @@ class _ToggleCheckboxWidgetState extends State<ToggleCheckboxWidget>
     return const Text("");
   }
 }
+
+class CheckboxWidget extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool?> onChanged;
+  const CheckboxWidget({Key? key, required this.value, required this.onChanged})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scale: 1.2,
+      child: Checkbox(
+        value: value,
+        onChanged: onChanged,
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        fillColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.hovered)) {
+            return ThemeColors.blue5;
+          }
+          return ThemeColors.blue3;
+        }),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        side: const BorderSide(color: Color(0xFFA4B1D1), width: 2.0),
+        tristate: false,
+      ),
+    );
+  }
+}
