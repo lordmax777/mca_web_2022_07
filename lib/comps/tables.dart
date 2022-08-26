@@ -26,18 +26,18 @@ class UsersListTable extends StatelessWidget {
       col.enableColumnDrag = false;
       col.enableAutoEditing = false;
       col.enableEditingMode = false;
-      col.titleSpan = TextSpan(
-        text: col.title,
-        children: const [
-          WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: Padding(
-                padding: EdgeInsets.only(left: 6.0),
-                child: HeroIcon(HeroIcons.caretVerticalSmall,
-                    size: 15, color: ThemeColors.gray2),
-              )),
-        ],
-      );
+      // col.titleSpan = TextSpan(
+      //   text: col.title,
+      //   children: const [
+      //     WidgetSpan(
+      //         alignment: PlaceholderAlignment.middle,
+      //         child: Padding(
+      //           padding: EdgeInsets.only(left: 6.0),
+      //           child: HeroIcon(HeroIcons.caretVerticalSmall,
+      //               size: 15, color: ThemeColors.gray2),
+      //         )),
+      //   ],
+      // );
       _cols.add(col);
     }
     var _w = MediaQuery.of(context).size.width;
@@ -66,6 +66,7 @@ class UsersListTable extends StatelessWidget {
               activatedBorderColor: ThemeColors.transparent,
               activatedColor: ThemeColors.blue12,
               columnTextStyle: ThemeText.tableColumnTextStyle,
+              enableRowColorAnimation: true,
             ),
             columnSize: PlutoGridColumnSizeConfig(
                 autoSizeMode: isEqual

@@ -23,7 +23,9 @@ final _errorReducer = combineReducers<ErrorState>(
 
 ErrorState _updateErrorState(ErrorState state, UpdateErrorAction action) {
   return state.copyWith(
-    storeInfoError: action.storeInfoError ?? state.storeInfoError,
+    usersListError: action.usersListError ?? state.usersListError,
+    tokenError: action.tokenError ?? state.tokenError,
+    userDetailsError: action.userDetailsError ?? state.userDetailsError,
   );
 }
 
@@ -51,5 +53,6 @@ UsersState _updateUsersStateAction(
   return state.copyWith(
     usersList: action.usersList ?? state.usersList,
     selectedUser: action.selectedUser ?? state.selectedUser,
+    userDetails: action.userDetails ?? state.userDetails,
   );
 }

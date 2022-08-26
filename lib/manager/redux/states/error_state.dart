@@ -1,5 +1,68 @@
 import 'package:flutter/material.dart';
 
+//error_state.dart
+
+@immutable
+
+///State name
+class ErrorState {
+  ///State values are defined here, and are final
+  final ErrorModel usersListError;
+  final ErrorModel tokenError;
+  final ErrorModel userDetailsError;
+
+  ///Always parameters are required and are named params
+  const ErrorState({
+    required this.usersListError,
+    required this.tokenError,
+    required this.userDetailsError,
+  });
+
+  ///Initial factory function, which must be named same as shown
+  factory ErrorState.initial() {
+    ///Return the State with all initial values of State values
+    ///Make sure to put proper initial values
+    return ErrorState(
+      usersListError: ErrorModel(),
+      tokenError: ErrorModel(),
+      userDetailsError:   ErrorModel(),
+    );
+  }
+
+  ///copyWith function which is responsible for mutating the state.
+  ///It returns the current state and has named, nullable parameters.
+  ///Param names are same as actual state param names.
+  ErrorState copyWith({
+    ErrorModel? usersListError,
+    ErrorModel? tokenError,
+    ErrorModel? userDetailsError,
+  }) {
+    ///Return the state only by checking its values for nullability.
+    ///If null return old value, else return the copyWith param value
+    return ErrorState(
+      usersListError: usersListError ?? this.usersListError,
+      tokenError: tokenError ?? this.tokenError,
+      userDetailsError: userDetailsError ?? this.userDetailsError,
+    );
+  }
+}
+
+///Update Action
+class UpdateErrorAction {
+  ///Define changeable values as nullable with proper type
+  final ErrorModel? usersListError;
+  final ErrorModel? tokenError;
+  final ErrorModel? userDetailsError;
+
+  ///Add values as named params
+  ///These are responsible for mutating the state with the given new values.
+  UpdateErrorAction({
+    this.usersListError,
+    this.tokenError,
+    this.userDetailsError,
+  });
+}
+
 class ErrorModel {
   ///If needs to save data before fail
   final dynamic data;
@@ -28,54 +91,5 @@ class ErrorModel {
     this.errorCode,
     this.data,
     this.retries = 0,
-  });
-}
-
-//error_state.dart
-
-@immutable
-
-///State name
-class ErrorState {
-  ///State values are defined here, and are final
-  final ErrorModel storeInfoError;
-
-  ///Always parameters are required and are named params
-  const ErrorState({
-    required this.storeInfoError,
-  });
-
-  ///Initial factory function, which must be named same as shown
-  factory ErrorState.initial() {
-    ///Return the State with all initial values of State values
-    ///Make sure to put proper initial values
-    return ErrorState(
-      storeInfoError: ErrorModel(),
-    );
-  }
-
-  ///copyWith function which is responsible for mutating the state.
-  ///It returns the current state and has named, nullable parameters.
-  ///Param names are same as actual state param names.
-  ErrorState copyWith({
-    ErrorModel? storeInfoError,
-  }) {
-    ///Return the state only by checking its values for nullability.
-    ///If null return old value, else return the copyWith param value
-    return ErrorState(
-      storeInfoError: storeInfoError ?? this.storeInfoError,
-    );
-  }
-}
-
-///Update Action
-class UpdateErrorAction {
-  ///Define changeable values as nullable with proper type
-  final ErrorModel? storeInfoError;
-
-  ///Add values as named params
-  ///These are responsible for mutating the state with the given new values.
-  UpdateErrorAction({
-    this.storeInfoError,
   });
 }

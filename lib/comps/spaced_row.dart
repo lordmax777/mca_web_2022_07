@@ -6,11 +6,13 @@ class SpacedRow extends StatelessWidget {
   List<Widget> children;
   MainAxisAlignment? mainAxisAlignment;
   CrossAxisAlignment? crossAxisAlignment;
+  MainAxisSize mainAxisSize;
 
   SpacedRow(
       {this.horizontalSpace = 0.0,
       required this.children,
       this.mainAxisAlignment = MainAxisAlignment.start,
+      this.mainAxisSize = MainAxisSize.max,
       this.crossAxisAlignment = CrossAxisAlignment.start});
 
   @override
@@ -28,6 +30,7 @@ class SpacedRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: mainAxisAlignment!,
       crossAxisAlignment: crossAxisAlignment!,
+      mainAxisSize: mainAxisSize,
       children: widgets,
     );
   }

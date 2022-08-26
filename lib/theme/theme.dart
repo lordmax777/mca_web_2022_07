@@ -24,3 +24,4 @@ export '../comps/popup_layout.dart';
 export '../comps/toogle_checkbox_widget.dart';
 export '../comps/page_wrapper.dart';
 export '../comps/page_goback_widget.dart';
+export '../comps/error_wrapper.dart';

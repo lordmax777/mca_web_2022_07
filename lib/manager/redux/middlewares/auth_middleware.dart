@@ -6,6 +6,7 @@ import '../../../theme/theme.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../states/auth_state.dart';
+import '../states/error_state.dart';
 
 class AuthMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -20,6 +21,8 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
 
   Future<AuthRes?> _getAccessTokenAction(
       AppState state, GetAccessTokenAction action, NextDispatcher next) async {
+    next(UpdateErrorAction(tokenError: ErrorModel(isLoading: true)));
+
     final ApiResponse res = await restClient()
         .getAccessToken(Constants.grant_type, action.domain, Constants.clientId,
             Constants.clientSecret, action.username, action.password)
@@ -28,7 +31,17 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     if (res.success) {
       final AuthRes r = AuthRes.fromJson(res.data);
       next(UpdateAuthAction(authRes: r));
+      next(UpdateErrorAction(
+          tokenError: ErrorModel(isError: false, isLoading: false)));
       return r;
+    } else {
+      next(UpdateErrorAction(
+          tokenError: ErrorModel(
+              errorCode: res.resCode,
+              isLoading: false,
+              action: action,
+              errorMessage: res.resMessage,
+              retries: state.errorState.tokenError.retries + 1)));
     }
     return null;
   }

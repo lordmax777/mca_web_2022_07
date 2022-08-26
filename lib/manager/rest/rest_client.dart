@@ -24,6 +24,21 @@ abstract class RestClient {
 
   @GET("/api/fe/managedusers")
   Future<HttpResponse> getUsersList();
+
+  @GET("/api/fe/locations")
+  Future<HttpResponse> getLocationsList();
+
+  @GET("/api/fe/lists")
+  Future<HttpResponse> getLists();
+
+  @GET("/api/fe/statuses")
+  Future<HttpResponse> getStatusesList();
+
+  @GET("/api/fe/formats")
+  Future<HttpResponse> getFormatsList();
+
+  @GET("/api/fe/userdetails/{id}/details")
+  Future<HttpResponse> getUserDetails(@Path() String id);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

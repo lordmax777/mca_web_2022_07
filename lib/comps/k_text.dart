@@ -12,12 +12,16 @@ class KText extends StatelessWidget {
   final bool isSelectable;
   final HeroIcon? icon;
   final VoidCallback? onTap;
+  final bool rowCenter;
+  final MainAxisSize mainAxisSize;
   KText(
       {Key? key,
       required this.text,
       this.style,
+      this.rowCenter = false,
       this.onTap,
       this.textAlign,
+      this.mainAxisSize = MainAxisSize.max,
       this.fontWeight,
       this.icon,
       this.fontSize,
@@ -34,11 +38,11 @@ class KText extends StatelessWidget {
         fontF = "Regular";
         break;
       case FWeight.medium:
-        fontW = FontWeight.w700;
+        fontW = FontWeight.w500;
         fontF = "Medium";
         break;
       case FWeight.bold:
-        fontW = FontWeight.w800;
+        fontW = FontWeight.w700;
         fontF = "Bold";
         break;
       case FWeight.light:
@@ -76,23 +80,36 @@ class KText extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: SpacedRow(
+            mainAxisSize: mainAxisSize,
+            mainAxisAlignment:
+                rowCenter ? MainAxisAlignment.center : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             horizontalSpace: 4.0,
             children: [
-              Text(text, style: style, textAlign: textAlign),
+              Text(text, maxLines: 2, style: style, textAlign: textAlign),
               if (icon != null) icon!,
             ],
           ),
         ),
       );
     }
-    return SpacedRow(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      horizontalSpace: 4.0,
-      children: [
-        Text(text, style: style, textAlign: textAlign),
-        if (icon != null) icon!,
-      ],
-    );
+    if (icon != null) {
+      return SpacedRow(
+        mainAxisSize: mainAxisSize,
+        mainAxisAlignment:
+            rowCenter ? MainAxisAlignment.center : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 4.0,
+        children: [
+          Text(text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: style,
+              textAlign: textAlign),
+          if (icon != null) icon!,
+        ],
+      );
+    }
+    return Text(text, maxLines: 2, style: style, textAlign: textAlign);
   }
 }

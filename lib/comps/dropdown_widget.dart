@@ -110,8 +110,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
           child: KText(
             text: widget.hintText!,
             isSelectable: false,
-            fontSize: 14.0,
-            textColor: ThemeColors.gray6,
+            fontSize: 16.0,
+            textColor: ThemeColors.gray8,
           ),
         ),
       if (widget.showDropdownIcon!)
@@ -137,6 +137,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                     ? widget.dropdownBtnWidth! - 60
                     : widget.dropdownBtnWidth! - 30,
             child: SpacedColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 KText(

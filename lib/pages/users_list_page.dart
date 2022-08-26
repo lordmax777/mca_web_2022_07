@@ -1,187 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-
-import '../app.dart';
-import '../manager/models/model_exporter.dart';
+import '../manager/model_exporter.dart';
 import '../theme/theme.dart';
-
-List<PlutoColumn> get _cols {
-  return [
-    PlutoColumn(
-      title: "user",
-      field: "user",
-      type: PlutoColumnType.text(),
-      hide: true,
-    ),
-    PlutoColumn(
-        title: "Name",
-        field: "name",
-        width: 170.0,
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: ctx.cell.value,
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              appStore.dispatch(UpdateUsersStateAction(
-                  selectedUser: ctx.row.cells['user']?.value));
-              appRouter.navigate(UserDetailsRoute());
-            },
-          );
-        }),
-    PlutoColumn(
-        width: 110.0,
-        title: "Username",
-        field: "username",
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: ctx.cell.value,
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              appStore.dispatch(UpdateUsersStateAction(
-                  selectedUser: ctx.row.cells['user']?.value));
-              appRouter.navigate(UserDetailsRoute());
-            },
-          );
-        }),
-    PlutoColumn(
-        width: 113.0,
-        title: "Department",
-        field: "department",
-        type: PlutoColumnType.text()),
-    PlutoColumn(
-        width: 266.0,
-        title: "Main Location",
-        field: "main_location",
-        type: PlutoColumnType.text()),
-    PlutoColumn(
-        width: 85.0,
-        title: "Payroll",
-        field: "payroll",
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: "View",
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              print(ctx.cell.value);
-            },
-            icon: const HeroIcon(
-              HeroIcons.link,
-              color: ThemeColors.blue3,
-              size: 12,
-            ),
-          );
-        }),
-    PlutoColumn(
-        width: 85.0,
-        title: "Reviews",
-        field: "reviews",
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: "View",
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              print(ctx.cell.value);
-            },
-            icon: const HeroIcon(
-              HeroIcons.link,
-              color: ThemeColors.blue3,
-              size: 12,
-            ),
-          );
-        }),
-    PlutoColumn(
-        width: 85.0,
-        title: "Visa",
-        field: "visa",
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: "View",
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              print(ctx.cell.value);
-            },
-            icon: const HeroIcon(
-              HeroIcons.link,
-              color: ThemeColors.blue3,
-              size: 12,
-            ),
-          );
-        }),
-    PlutoColumn(
-        width: 266.0,
-        title: "Absences",
-        field: "absences",
-        type: PlutoColumnType.text()),
-    PlutoColumn(
-        width: 133.0,
-        title: "Preferred Shifts",
-        field: "preferred_shifts",
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: "View",
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              print(ctx.cell.value);
-            },
-            icon: const HeroIcon(
-              HeroIcons.link,
-              color: ThemeColors.blue3,
-              size: 12,
-            ),
-          );
-        }),
-    PlutoColumn(
-        width: 133.0,
-        title: "Qualifications",
-        field: "qualifications",
-        type: PlutoColumnType.text(),
-        renderer: (ctx) {
-          return KText(
-            text: "View",
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            isSelectable: false,
-            onTap: () {
-              print(ctx.cell.value);
-            },
-            icon: const HeroIcon(
-              HeroIcons.link,
-              color: ThemeColors.blue3,
-              size: 12,
-            ),
-          );
-        }),
-  ];
-}
 
 class UsersListPage extends StatelessWidget {
   const UsersListPage({Key? key}) : super(key: key);
@@ -203,10 +28,10 @@ class UsersListPage extends StatelessWidget {
             title: 'User Management',
             onRightBtnClick: () {},
           ),
-          if (state.usersState.usersList.isNotEmpty)
-            _Body(state: state)
-          else
-            const CircularProgressIndicator()
+          ErrorWrapper(errors: [
+            state.errorState.tokenError,
+            state.errorState.usersListError
+          ], child: _Body(state: state))
         ]),
       ),
     );
@@ -215,10 +40,7 @@ class UsersListPage extends StatelessWidget {
 
 class _Body extends StatefulWidget {
   AppState state;
-  int _itemCount = 0;
-  _Body({Key? key, required this.state}) : super(key: key) {
-    _itemCount = state.usersState.usersList.length;
-  }
+  _Body({Key? key, required this.state}) : super(key: key);
 
   @override
   State<_Body> createState() => _BodyState();
@@ -230,12 +52,7 @@ class _BodyState extends State<_Body> {
 
   final List<UserRes> _users = [];
 
-  final List<ColumnHiderValues> columnHideValues = _cols
-      .skipWhile((value) => value.hide)
-      .toList()
-      .map<ColumnHiderValues>(
-          (e) => ColumnHiderValues(value: e.field, label: e.title))
-      .toList();
+  final List<ColumnHiderValues> columnHideValues = [];
 
   late PlutoGridStateManager usersPageStateManger;
   bool _isSmLoaded = false;
@@ -296,8 +113,187 @@ class _BodyState extends State<_Body> {
   @override
   void initState() {
     super.initState();
+    columnHideValues.clear();
+    columnHideValues.addAll(_cols
+        .skipWhile((value) => value.hide)
+        .toList()
+        .map<ColumnHiderValues>(
+            (e) => ColumnHiderValues(value: e.field, label: e.title))
+        .toList());
     _users.clear();
     _users.addAll(widget.state.usersState.usersList);
+  }
+
+  List<PlutoColumn> get _cols {
+    return [
+      PlutoColumn(
+        title: "user",
+        field: "user",
+        type: PlutoColumnType.text(),
+        hide: true,
+      ),
+      PlutoColumn(
+          title: "Name",
+          field: "name",
+          width: 170.0,
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: ctx.cell.value,
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () => _onUserDetailsNavigationClick(ctx),
+            );
+          }),
+      PlutoColumn(
+          width: 110.0,
+          title: "Username",
+          field: "username",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: ctx.cell.value,
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () => _onUserDetailsNavigationClick(ctx),
+            );
+          }),
+      PlutoColumn(
+          width: 113.0,
+          title: "Department",
+          field: "department",
+          type: PlutoColumnType.text()),
+      PlutoColumn(
+          width: 266.0,
+          title: "Main Location",
+          field: "main_location",
+          type: PlutoColumnType.text()),
+      PlutoColumn(
+          width: 85.0,
+          title: "Payroll",
+          field: "payroll",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: "View",
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () {
+                print(ctx.cell.value);
+              },
+              icon: const HeroIcon(
+                HeroIcons.link,
+                color: ThemeColors.blue3,
+                size: 12,
+              ),
+            );
+          }),
+      PlutoColumn(
+          width: 85.0,
+          title: "Reviews",
+          field: "reviews",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: "View",
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () {
+                print(ctx.cell.value);
+              },
+              icon: const HeroIcon(
+                HeroIcons.link,
+                color: ThemeColors.blue3,
+                size: 12,
+              ),
+            );
+          }),
+      PlutoColumn(
+          width: 85.0,
+          title: "Visa",
+          field: "visa",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: "View",
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () {
+                print(ctx.cell.value);
+              },
+              icon: const HeroIcon(
+                HeroIcons.link,
+                color: ThemeColors.blue3,
+                size: 12,
+              ),
+            );
+          }),
+      PlutoColumn(
+          width: 266.0,
+          title: "Absences",
+          field: "absences",
+          type: PlutoColumnType.text()),
+      PlutoColumn(
+          width: 133.0,
+          title: "Preferred Shifts",
+          field: "preferred_shifts",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: "View",
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () {
+                print(ctx.cell.value);
+              },
+              icon: const HeroIcon(
+                HeroIcons.link,
+                color: ThemeColors.blue3,
+                size: 12,
+              ),
+            );
+          }),
+      PlutoColumn(
+          width: 133.0,
+          title: "Qualifications",
+          field: "qualifications",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return KText(
+              text: "View",
+              textColor: ThemeColors.blue3,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              onTap: () {
+                print(ctx.cell.value);
+              },
+              icon: const HeroIcon(
+                HeroIcons.link,
+                color: ThemeColors.blue3,
+                size: 12,
+              ),
+            );
+          }),
+    ];
+  }
+
+  void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx) {
+    appStore.dispatch(
+        UpdateUsersStateAction(selectedUser: ctx.row.cells['user']?.value));
+    context.navigateTo(UserDetailsRoute());
   }
 
   @override
@@ -368,12 +364,10 @@ class _BodyState extends State<_Body> {
                 gKey: _columnsMenuKey,
                 columns: columnHideValues,
                 onChanged: (value) {
-                  if (usersPageStateManger != null) {
-                    PlutoGridStateManager state = usersPageStateManger;
-                    PlutoColumn _c = state.refColumns.originalList
-                        .firstWhere((e) => e.field == value.value);
-                    state.hideColumn(_c, !value.isChecked);
-                  }
+                  PlutoGridStateManager state = usersPageStateManger;
+                  PlutoColumn _c = state.refColumns.originalList
+                      .firstWhere((e) => e.field == value.value);
+                  state.hideColumn(_c, !value.isChecked);
                 }),
           ]),
         ],

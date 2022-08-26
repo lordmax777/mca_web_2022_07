@@ -19,4 +19,25 @@ class Constants {
 
   // Etc
   static const List<int> tablePageSizes = [10, 50, 100];
+
+  static const Map<String, String> userTitleTypes = {
+    "mr": "Mr",
+    "mrs": "Mrs",
+    "miss": "Miss",
+    "dr": "Dr",
+    "prof": "Prof.",
+  };
+
+  static const Map<String, String> userMartialStatusTypes = {
+    "notDisclosed": "Not Disclosed",
+    "single": "Single",
+    "married": "Married/Civil Partner",
+    "divorced": "Divorced",
+    "widowed": "Widowed/Surviving Civil Partner",
+    "separated": "Separated",
+  };
+
+  static const Map<String, String> userAccountStatusTypes = {
+    "active": "Active",
+  };
 }

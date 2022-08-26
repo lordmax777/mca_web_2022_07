@@ -1,45 +1,66 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
 
 import '../theme/theme.dart';
 
 class _UserDetails {
-  final String name;
-  final String email;
-  final String phone;
-  final String id;
+  String name;
+  String email;
+  String phone;
+  String id;
+  String nameWithUsername;
 
   _UserDetails(
       {required this.name,
       required this.email,
       required this.phone,
+      required this.nameWithUsername,
       required this.id});
 }
 
 class UserDetailsPage extends StatelessWidget {
   UserDetailsPage({Key? key}) : super(key: key);
 
-  final _UserDetails _userDetails = _UserDetails(
-      name: 'John Doe',
-      email: 'dummy@mail.com',
-      phone: '+1-555-555-5555',
-      id: "no_id_yet");
-
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
+        onInit: (store) async {
+          await appStore.dispatch(GetUserDetailsAction());
+        },
         builder: (context, state) {
-          print(state.usersState.selectedUser?.toJson());
-          return PageWrapper(
-              child: SpacedColumn(
-            verticalSpace: 16.0,
-            children: [
-              PageGobackWidget(text: _userDetails.name),
-              _UserDetailsQuickViewWidget(userDetails: _userDetails),
-              const _Body(),
-            ],
-          ));
+          final e1 = state.errorState.userDetailsError;
+          final user = state.usersState.userDetails;
+
+          final _UserDetails userDetails = _UserDetails(
+              name: '-',
+              email: '-',
+              phone: '-',
+              id: '-',
+              nameWithUsername: "-");
+
+          if (user != null) {
+            userDetails.nameWithUsername =
+                "${user.first_name} ${user.last_name} (${state.usersState.selectedUser?.username ?? "-"})";
+            userDetails.name = "${user.first_name} ${user.last_name}";
+            userDetails.id = state.usersState.selectedUser!.id.toString();
+            userDetails.phone =
+                user.phones.mobile.isEmpty ? "-" : user.phones.mobile;
+            userDetails.email = "-";
+          }
+          return ErrorWrapper(
+            errors: [e1],
+            child: PageWrapper(
+                child: SpacedColumn(
+              verticalSpace: 16.0,
+              children: [
+                PageGobackWidget(text: userDetails.nameWithUsername),
+                _UserDetailsQuickViewWidget(userDetails: userDetails),
+                const _Body(),
+              ],
+            )),
+          );
         });
   }
 }
@@ -175,14 +196,191 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
               tabs: tabs,
             ),
           ),
-          Container(
-            width: 100,
-            height: 100,
-            color: Colors.red,
-            child: Text(tabs[_tabController.index].text.toString()),
-          )
+          ListView.separated(
+            separatorBuilder: (context, index) => const Divider(
+                color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 6,
+            itemBuilder: (context, index) {
+              return _buildList();
+            },
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildList() {
+    bool a = true;
+    return StatefulBuilder(
+      builder: (context, ss) {
+        return ExpansionTile(
+          childrenPadding:
+              const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
+          tilePadding:
+              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
+          trailing: const SizedBox(),
+          onExpansionChanged: (value) {
+            ss(() {
+              a = !value;
+            });
+          },
+          // childrenPadding: EdgeInsets.symmetric(vertical: 16.0),
+          leading: HeroIcon(!a ? HeroIcons.up : HeroIcons.down, size: 18.0),
+          title: KText(
+            text: "Personal Details",
+            isSelectable: false,
+            fontWeight: FWeight.bold,
+            fontSize: 16.0,
+            textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
+          ),
+          expandedAlignment: Alignment.topLeft,
+          children: [
+            // _buildPersonalDetails(),
+            _buildUsernameAndPayrollInformation(),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPersonalDetails() {
+    final dpWidth = MediaQuery.of(context).size.width * 0.2;
+    return SpacedRow(horizontalSpace: 64.0, children: [
+      SpacedColumn(verticalSpace: 16.0, children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(24.0),
+          child: Container(
+            width: 100,
+            height: 100,
+            color: Colors.deepPurple,
+          ),
+        ),
+        SpacedRow(
+          horizontalSpace: 8.0,
+          children: [
+            ButtonSmallSecondary(
+              leftIcon: const HeroIcon(HeroIcons.upload,
+                  size: 20.0, color: ThemeColors.blue3),
+              text: "Upload Photo",
+              onPressed: () {},
+            ),
+            ButtonSmallSecondary(
+              leftIcon: const HeroIcon(HeroIcons.bin,
+                  size: 20.0, color: ThemeColors.red3),
+              text: "",
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ]),
+      SpacedColumn(
+          verticalSpace: 32.0,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownWidget(
+              hintText: "Title",
+              value: "Mr",
+              dropdownBtnWidth: dpWidth,
+              dropdownOptionsWidth: dpWidth,
+              onChanged: (_) {},
+              items: Constants.userTitleTypes.values.toList(),
+            ),
+            TextInputWidget(
+              width: dpWidth,
+              labelText: "First Name",
+              isRequired: true,
+            ),
+            TextInputWidget(
+              width: dpWidth,
+              labelText: "Last Name",
+              isRequired: true,
+            ),
+            DropdownWidget(
+              hintText: "Nationality",
+              dropdownBtnWidth: dpWidth,
+              dropdownOptionsWidth: dpWidth,
+              onChanged: (_) {},
+              items: Constants.userTitleTypes.values.toList(),
+            ),
+            TextInputWidget(
+              width: dpWidth,
+              enabled: false,
+              labelText: "Date of Birth",
+              leftIcon: HeroIcons.calendar,
+              onTap: () {
+                showDatePicker(
+                  context: context,
+                  initialDate: DateTime(2015),
+                  firstDate: DateTime(2015),
+                  lastDate: DateTime(2035),
+                );
+              },
+            ),
+          ]),
+      SpacedColumn(
+          verticalSpace: 32.0,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownWidget(
+              hintText: "Martial Status",
+              dropdownBtnWidth: dpWidth,
+              dropdownOptionsWidth: dpWidth,
+              onChanged: (_) {},
+              items: Constants.userMartialStatusTypes.values.toList(),
+            ),
+            TextInputWidget(
+              width: dpWidth,
+              labelText: "Email Address",
+            ),
+            TextInputWidget(
+              width: dpWidth,
+              labelText: "Phone Number",
+            ),
+            TextInputWidget(
+              width: dpWidth,
+              labelText: "Phone Landline",
+            ),
+            DropdownWidget(
+              hintText: "Account Status",
+              dropdownBtnWidth: dpWidth,
+              dropdownOptionsWidth: dpWidth,
+              onChanged: (_) {},
+              items: Constants.userAccountStatusTypes.values.toList(),
+            ),
+          ]),
+    ]);
+  }
+
+  Widget _buildUsernameAndPayrollInformation() {
+    final dpWidth = MediaQuery.of(context).size.width * 0.2;
+    return SpacedColumn(
+        verticalSpace: 32.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Username",
+            controller: TextEditingController(text: "12345678"),
+            disableAll: true,
+          ),
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Payroll Code",
+          ),
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Password",
+            isPassword: true,
+            isRequired: true,
+          ),
+          TextInputWidget(
+            width: dpWidth,
+            labelText: "Repeat Password",
+            isPassword: true,
+            isRequired: true,
+          ),
+        ]);
   }
 }
