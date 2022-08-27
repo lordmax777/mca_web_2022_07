@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/pages/home_page.dart';
-import 'package:mca_web_2022_07/pages/user_details_page.dart';
-import 'package:mca_web_2022_07/pages/users_list_page.dart';
+import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
+
+import '../../pages/user/user_details_page.dart';
 
 @MaterialAutoRouter(
   // transitionsBuilder: TransitionsBuilders.fadeIn,

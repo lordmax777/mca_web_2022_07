@@ -1,4 +1,4 @@
-import '../theme/theme.dart';
+import '../../theme/theme.dart';
 
 class TablePaginationWidget extends StatelessWidget {
   final int totalPages;

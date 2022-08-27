@@ -17,11 +17,9 @@ class ButtonMedium extends StatelessWidget {
       padding: MaterialStateProperty.all(const EdgeInsets.all(16.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.disabled)) {
-          return ThemeColors.blue3.withOpacity(0.4);
-        } else if (states.contains(MaterialState.pressed)) {
-          return ThemeColors.blue3;
+          return bgColor!.withOpacity(0.6);
         } else if (states.contains(MaterialState.hovered)) {
-          return ThemeColors.blue6;
+          return bgColor!.withOpacity(0.8);
         } else {
           return bgColor;
         }
@@ -30,7 +28,7 @@ class ButtonMedium extends StatelessWidget {
       splashFactory: NoSplash.splashFactory,
       side: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return const BorderSide(color: ThemeColors.blue10, width: 4.0);
+          return BorderSide(color: bgColor!, width: 4.0);
         } else {
           return const BorderSide(color: ThemeColors.gray11, width: 0.0);
         }
@@ -85,11 +83,9 @@ class ButtonLarge extends StatelessWidget {
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.disabled)) {
-          return ThemeColors.blue3.withOpacity(0.4);
-        } else if (states.contains(MaterialState.pressed)) {
-          return ThemeColors.blue3;
+          return bgColor!.withOpacity(0.6);
         } else if (states.contains(MaterialState.hovered)) {
-          return ThemeColors.blue6;
+          return bgColor!.withOpacity(0.8);
         } else {
           return bgColor;
         }
@@ -98,7 +94,7 @@ class ButtonLarge extends StatelessWidget {
       splashFactory: NoSplash.splashFactory,
       side: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return const BorderSide(color: ThemeColors.blue10, width: 4.0);
+          return BorderSide(color: bgColor!, width: 4.0);
         } else {
           return const BorderSide(color: ThemeColors.gray11, width: 0.0);
         }

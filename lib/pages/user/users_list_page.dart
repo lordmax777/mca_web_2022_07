@@ -5,8 +5,9 @@ import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import '../manager/model_exporter.dart';
-import '../theme/theme.dart';
+
+import '../../manager/model_exporter.dart';
+import '../../theme/theme.dart';
 
 class UsersListPage extends StatelessWidget {
   const UsersListPage({Key? key}) : super(key: key);
@@ -51,78 +52,16 @@ class _BodyState extends State<_Body> {
   final GlobalKey _columnsMenuKey = GlobalKey();
 
   final List<UserRes> _users = [];
-
   final List<ColumnHiderValues> columnHideValues = [];
 
   late PlutoGridStateManager usersPageStateManger;
+
   bool _isSmLoaded = false;
 
   int _pageSize = 10;
   int _page = 1;
 
   final TextEditingController _searchController = TextEditingController();
-
-  void _setSm(PlutoGridStateManager sm) {
-    setState(() {
-      usersPageStateManger = sm;
-      usersPageStateManger.setPage(0);
-      usersPageStateManger.setPageSize(10);
-      usersPageStateManger.setPage(_page);
-      usersPageStateManger.sortAscending(usersPageStateManger.refColumns.first);
-      _setFilter();
-      _isSmLoaded = true;
-    });
-  }
-
-  void _setFilter() {
-    _searchController.addListener(() {
-      if (_searchController.text.isNotEmpty) {
-        if (usersPageStateManger.page > 1) {
-          usersPageStateManger.setPage(1);
-        }
-        usersPageStateManger.setFilter(
-          (element) {
-            final String _search = _searchController.text.toLowerCase();
-            bool searched = element.cells['name']?.value
-                .toLowerCase()
-                .contains(_searchController.text.toLowerCase());
-            if (!searched) {
-              searched = element.cells['username']?.value
-                  .toLowerCase()
-                  .contains(_searchController.text.toLowerCase());
-              if (!searched) {
-                searched = element.cells['department']?.value
-                    .toLowerCase()
-                    .contains(_searchController.text.toLowerCase());
-                if (!searched) {
-                  searched = element.cells['main_location']?.value
-                      .toLowerCase()
-                      .contains(_searchController.text.toLowerCase());
-                }
-              }
-            }
-            return searched;
-          },
-        );
-        return;
-      }
-      usersPageStateManger.setFilter((element) => true);
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    columnHideValues.clear();
-    columnHideValues.addAll(_cols
-        .skipWhile((value) => value.hide)
-        .toList()
-        .map<ColumnHiderValues>(
-            (e) => ColumnHiderValues(value: e.field, label: e.title))
-        .toList());
-    _users.clear();
-    _users.addAll(widget.state.usersState.usersList);
-  }
 
   List<PlutoColumn> get _cols {
     return [
@@ -290,6 +229,68 @@ class _BodyState extends State<_Body> {
     ];
   }
 
+  void _setSm(PlutoGridStateManager sm) {
+    setState(() {
+      usersPageStateManger = sm;
+      usersPageStateManger.setPage(0);
+      usersPageStateManger.setPageSize(10);
+      usersPageStateManger.setPage(_page);
+      // usersPageStateManger.sortAscending(_cols.first);
+      _setFilter();
+      _isSmLoaded = true;
+    });
+  }
+
+  void _setFilter() {
+    _searchController.addListener(() {
+      if (_searchController.text.isNotEmpty) {
+        if (usersPageStateManger.page > 1) {
+          usersPageStateManger.setPage(1);
+        }
+        usersPageStateManger.setFilter(
+          (element) {
+            final String _search = _searchController.text.toLowerCase();
+            bool searched = element.cells['name']?.value
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase());
+            if (!searched) {
+              searched = element.cells['username']?.value
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase());
+              if (!searched) {
+                searched = element.cells['department']?.value
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase());
+                if (!searched) {
+                  searched = element.cells['main_location']?.value
+                      .toLowerCase()
+                      .contains(_searchController.text.toLowerCase());
+                }
+              }
+            }
+            return searched;
+          },
+        );
+        return;
+      }
+      usersPageStateManger.setFilter((element) => true);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    columnHideValues.clear();
+    columnHideValues.addAll(_cols
+        .skipWhile((value) => value.hide)
+        .toList()
+        .map<ColumnHiderValues>(
+            (e) => ColumnHiderValues(value: e.field, label: e.title))
+        .toList());
+    _users.clear();
+    _users.addAll(widget.state.usersState.usersList);
+  }
+
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx) {
     appStore.dispatch(
         UpdateUsersStateAction(selectedUser: ctx.row.cells['user']?.value));
@@ -378,7 +379,6 @@ class _BodyState extends State<_Body> {
   Widget _body() {
     return UsersListTable(
       onSmReady: _setSm,
-      footer: _footer,
       rows: widget.state.usersState.usersList
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {

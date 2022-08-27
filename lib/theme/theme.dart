@@ -6,6 +6,8 @@ export 'package:flutter/material.dart';
 
 //Utils
 export '../utils/constants.dart';
+export '../pages/user/user_detail_general_tab.dart';
+export '../pages/user/user_detail_payroll_tab.dart';
 
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
@@ -14,12 +16,12 @@ export '../comps/spaced_row.dart';
 export '../comps/sidebar_widget.dart';
 export '../comps/pages_title_widget.dart';
 export '../comps/button_widget.dart';
-export '../comps/table_wrapper_widget.dart';
+export '../comps/tables/table_wrapper_widget.dart';
 export '../comps/text_input_widget.dart';
-export '../comps/tables.dart';
+export '../comps/tables/tables.dart';
 export '../comps/dropdown_widget.dart';
-export '../comps/table_pagination_widget.dart';
-export '../comps/table_column_hider_widget.dart';
+export '../comps/tables/table_pagination_widget.dart';
+export '../comps/tables/table_column_hider_widget.dart';
 export '../comps/popup_layout.dart';
 export '../comps/toogle_checkbox_widget.dart';
 export '../comps/page_wrapper.dart';

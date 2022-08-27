@@ -1,4 +1,4 @@
-import '../theme/theme.dart';
+import '../../theme/theme.dart';
 
 class TableWrapperWidget extends StatelessWidget {
   final Widget child;

@@ -1,19 +1,15 @@
 import 'package:pluto_grid/pluto_grid.dart';
-
-import '../pages/users_list_page.dart';
-import '../theme/theme.dart';
+import '../../theme/theme.dart';
 
 class UsersListTable extends StatelessWidget {
   final List<PlutoColumn> cols;
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
-  final Widget Function(PlutoGridStateManager) footer;
   const UsersListTable(
       {Key? key,
       required this.rows,
       required this.onSmReady,
-      required this.cols,
-      required this.footer})
+      required this.cols})
       : super(key: key);
 
   @override
@@ -26,18 +22,6 @@ class UsersListTable extends StatelessWidget {
       col.enableColumnDrag = false;
       col.enableAutoEditing = false;
       col.enableEditingMode = false;
-      // col.titleSpan = TextSpan(
-      //   text: col.title,
-      //   children: const [
-      //     WidgetSpan(
-      //         alignment: PlaceholderAlignment.middle,
-      //         child: Padding(
-      //           padding: EdgeInsets.only(left: 6.0),
-      //           child: HeroIcon(HeroIcons.caretVerticalSmall,
-      //               size: 15, color: ThemeColors.gray2),
-      //         )),
-      //   ],
-      // );
       _cols.add(col);
     }
     var _w = MediaQuery.of(context).size.width;
@@ -48,12 +32,7 @@ class UsersListTable extends StatelessWidget {
     bool isEqual = _tableSize == _w;
 
     double _h = 625;
-    // print("height: ${_cols.length}");
-    // if (_cols.length > 11) {
-    //   for (int i = 0; i < _cols.length; i++) {
-    //     _h += 48.0;
-    //   }
-    // }
+
     return SizedBox(
       height: _h,
       child: PlutoGrid(
@@ -75,10 +54,6 @@ class UsersListTable extends StatelessWidget {
         columns: _cols,
         rows: rows,
         onLoaded: (e) => onSmReady(e.stateManager),
-        // createFooter: (stateManager) {
-        // PlutoPagination();
-        //   return footer(stateManager);
-        // },
       ),
     );
   }
