@@ -27,10 +27,12 @@ class UserDetailsPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          await appStore.dispatch(GetUserDetailsAction());
+          await appStore.dispatch(GetUserDetailsDetailAction());
+          await appStore.dispatch(GetUserDetailsContractsAction());
         },
         builder: (context, state) {
           final e1 = state.errorState.userDetailsError;
+          final e2 = state.errorState.userDetailsContractsError;
           final user = state.usersState.userDetails;
 
           final _UserDetails userDetails = _UserDetails(
@@ -50,7 +52,7 @@ class UserDetailsPage extends StatelessWidget {
             userDetails.email = "-";
           }
           return ErrorWrapper(
-            errors: [e1],
+            errors: [e1, e2],
             child: PageWrapper(
                 child: SpacedColumn(
               verticalSpace: 16.0,

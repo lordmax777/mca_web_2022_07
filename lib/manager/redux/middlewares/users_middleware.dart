@@ -15,8 +15,10 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     switch (action.runtimeType) {
       case GetUsersListAction:
         return _getUsersListAction(store.state, action, next);
-      case GetUserDetailsAction:
-        return _getUserDetailsAction(store.state, action, next);
+      case GetUserDetailsDetailAction:
+        return _getUserDetailsDetailAction(store.state, action, next);
+      case GetUserDetailsContractsAction:
+        return _getUserDetailsContractsAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -51,8 +53,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     return null;
   }
 
-  Future<UserDetailsMd?> _getUserDetailsAction(
-      AppState state, GetUserDetailsAction action, NextDispatcher next) async {
+  Future<UserDetailsMd?> _getUserDetailsDetailAction(AppState state,
+      GetUserDetailsDetailAction action, NextDispatcher next) async {
     final int? id = state.usersState.selectedUser?.id;
     if (id == null) {
       appRouter.navigateBack();
@@ -78,6 +80,47 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
               action: action,
               errorMessage: res.resMessage,
               retries: state.errorState.userDetailsError.retries + 1)));
+    }
+    return null;
+  }
+
+  Future<List<ContractMd>?> _getUserDetailsContractsAction(AppState state,
+      GetUserDetailsContractsAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    next(UpdateErrorAction(
+        userDetailsContractsError: ErrorModel(isLoading: true)));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsContracts(id.toString())
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      final r = res.data['contracts'];
+      final List<ContractMd> list = [];
+
+      for (var e in r) {
+        list.add(ContractMd.fromJson(e));
+      }
+
+      next(UpdateUsersStateAction(userDetailContracts: list));
+
+      next(UpdateErrorAction(
+          userDetailsContractsError:
+              ErrorModel(isError: false, isLoading: false)));
+      return list;
+    } else {
+      next(UpdateErrorAction(
+          userDetailsContractsError: ErrorModel(
+              errorCode: res.resCode,
+              isLoading: false,
+              action: action,
+              errorMessage: res.resMessage,
+              retries:
+                  state.errorState.userDetailsContractsError.retries + 1)));
     }
     return null;
   }

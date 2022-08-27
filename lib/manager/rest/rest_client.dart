@@ -37,8 +37,32 @@ abstract class RestClient {
   @GET("/api/fe/formats")
   Future<HttpResponse> getFormatsList();
 
+  @GET("/api/fe/userdetails/{id}/photos")
+  Future<HttpResponse> getUserDetailsPhotos(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/contracts")
+  Future<HttpResponse> getUserDetailsContracts(@Path() String id);
+
   @GET("/api/fe/userdetails/{id}/details")
   Future<HttpResponse> getUserDetails(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/reviews")
+  Future<HttpResponse> getUserDetailsReviews(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/visas")
+  Future<HttpResponse> getUserDetailsVisas(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/preferredshifts")
+  Future<HttpResponse> getUserDetailsPreferredShifts(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/qualifications")
+  Future<HttpResponse> getUserDetailsQalifications(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/mobile")
+  Future<HttpResponse> getUserDetailsMobile(@Path() String id);
+
+  @GET("/api/fe/userdetails/{id}/status")
+  Future<HttpResponse> getUserDetailsStatus(@Path() String id);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

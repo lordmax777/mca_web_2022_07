@@ -10,12 +10,14 @@ class ErrorState {
   final ErrorModel usersListError;
   final ErrorModel tokenError;
   final ErrorModel userDetailsError;
+  final ErrorModel userDetailsContractsError;
 
   ///Always parameters are required and are named params
   const ErrorState({
     required this.usersListError,
     required this.tokenError,
     required this.userDetailsError,
+    required this.userDetailsContractsError,
   });
 
   ///Initial factory function, which must be named same as shown
@@ -25,7 +27,8 @@ class ErrorState {
     return ErrorState(
       usersListError: ErrorModel(),
       tokenError: ErrorModel(),
-      userDetailsError:   ErrorModel(),
+      userDetailsError: ErrorModel(),
+      userDetailsContractsError: ErrorModel(),
     );
   }
 
@@ -36,6 +39,7 @@ class ErrorState {
     ErrorModel? usersListError,
     ErrorModel? tokenError,
     ErrorModel? userDetailsError,
+    ErrorModel? userDetailsContractsError,
   }) {
     ///Return the state only by checking its values for nullability.
     ///If null return old value, else return the copyWith param value
@@ -43,6 +47,8 @@ class ErrorState {
       usersListError: usersListError ?? this.usersListError,
       tokenError: tokenError ?? this.tokenError,
       userDetailsError: userDetailsError ?? this.userDetailsError,
+      userDetailsContractsError:
+          userDetailsContractsError ?? this.userDetailsContractsError,
     );
   }
 }
@@ -53,6 +59,7 @@ class UpdateErrorAction {
   final ErrorModel? usersListError;
   final ErrorModel? tokenError;
   final ErrorModel? userDetailsError;
+  final ErrorModel? userDetailsContractsError;
 
   ///Add values as named params
   ///These are responsible for mutating the state with the given new values.
@@ -60,6 +67,7 @@ class UpdateErrorAction {
     this.usersListError,
     this.tokenError,
     this.userDetailsError,
+    this.userDetailsContractsError,
   });
 }
 

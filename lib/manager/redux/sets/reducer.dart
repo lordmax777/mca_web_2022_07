@@ -26,6 +26,8 @@ ErrorState _updateErrorState(ErrorState state, UpdateErrorAction action) {
     usersListError: action.usersListError ?? state.usersListError,
     tokenError: action.tokenError ?? state.tokenError,
     userDetailsError: action.userDetailsError ?? state.userDetailsError,
+    userDetailsContractsError:
+        action.userDetailsContractsError ?? state.userDetailsContractsError,
   );
 }
 
@@ -54,5 +56,7 @@ UsersState _updateUsersStateAction(
     usersList: action.usersList ?? state.usersList,
     selectedUser: action.selectedUser ?? state.selectedUser,
     userDetails: action.userDetails ?? state.userDetails,
+    userDetailContracts:
+        action.userDetailContracts ?? state.userDetailContracts,
   );
 }

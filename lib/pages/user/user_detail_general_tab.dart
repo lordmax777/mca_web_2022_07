@@ -359,7 +359,7 @@ class AddressWidget extends StatelessWidget {
               ),
             ]),
         TextInputWidget(
-          width: dpWidth / 2,
+          width: dpWidth / 1.5,
           labelText: "Post Code",
         ),
       ],

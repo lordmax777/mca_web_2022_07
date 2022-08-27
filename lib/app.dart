@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/intl_conf/intl/l10n.dart';
@@ -15,7 +16,6 @@ class McaWebApp extends StatelessWidget {
     return StoreProvider(
       store: appStore,
       child: MaterialApp.router(
-        // debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [
