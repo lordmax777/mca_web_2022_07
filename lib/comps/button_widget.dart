@@ -70,8 +70,15 @@ class ButtonLarge extends StatelessWidget {
   final String text;
   Color? bgColor;
   HeroIcon? icon;
+  final bool paddingWithoutIcon;
+
   ButtonLarge(
-      {Key? key, this.onPressed, required this.text, this.icon, this.bgColor})
+      {Key? key,
+      this.onPressed,
+      this.paddingWithoutIcon = false,
+      required this.text,
+      this.icon,
+      this.bgColor})
       : super(key: key) {
     bgColor ??= ThemeColors.blue3;
   }
@@ -122,11 +129,15 @@ class ButtonLarge extends StatelessWidget {
     return ElevatedButton(
         style: style,
         onPressed: onPressed,
-        child: KText(
-          text: text,
-          isSelectable: false,
-          fontSize: 16,
-          fontWeight: FWeight.bold,
+        child: Padding(
+          padding:
+              paddingWithoutIcon ? const EdgeInsets.all(6.0) : EdgeInsets.zero,
+          child: KText(
+            text: text,
+            isSelectable: false,
+            fontSize: 16,
+            fontWeight: FWeight.bold,
+          ),
         ));
   }
 }

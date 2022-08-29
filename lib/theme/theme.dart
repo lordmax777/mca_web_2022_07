@@ -11,6 +11,7 @@ export '../pages/user/user_detail_general_tab.dart';
 export '../pages/user/user_detail_payroll_tab.dart';
 export '../pages/user/user_detail_payroll_tab_new_contract_page.dart';
 export '../pages/user/user_detail_reviews_tab.dart';
+export '../pages/user/user_detail_reviews_tab_new_review_popup.dart';
 
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
