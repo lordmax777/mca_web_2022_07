@@ -8,3 +8,4 @@ export 'models/user_details_md.dart';
 export 'models/contract_md.dart';
 export 'models/reviews_md.dart';
 export 'models/visa_md.dart';
+export 'models/qualifs_md.dart';

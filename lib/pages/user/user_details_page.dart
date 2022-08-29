@@ -33,13 +33,15 @@ class UserDetailsPage extends StatelessWidget {
           await fetch(GetUserDetailsContractsAction());
           await fetch(GetUserDetailsReviewsAction());
           await fetch(GetUserDetailsVisasAction());
+          await fetch(GetUserDetailsQualifsAction());
         },
         builder: (context, state) {
           final e1 = state.usersState.userDetails.error;
           final e2 = state.usersState.userDetailContracts.error;
           final e3 = state.usersState.userDetailReviews.error;
           final e4 = state.usersState.userDetailVisas.error;
-          final List<ErrorModel> errors = [e1, e2, e3, e4];
+          final e5 = state.usersState.userDetailQualifs.error;
+          final List<ErrorModel> errors = [e1, e2, e3, e4, e5];
 
           final user = state.usersState.userDetails.data;
 
@@ -253,6 +255,8 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
         return ReviewsWidget(state: appStore.state);
       case 3:
         return VisaWidget(state: appStore.state);
+      case 5:
+        return QaulifsWidget(state: appStore.state);
       default:
         return const SizedBox();
     }

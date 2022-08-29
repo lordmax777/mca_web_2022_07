@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 part 'auth.g.dart';
 
-@JsonSerializable(anyMap: true)
+@JsonSerializable()
 class AuthRes {
   String access_token;
   int expires_in;

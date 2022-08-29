@@ -10,6 +10,7 @@ class UsersState {
   final StateValue<List<ContractMd>> userDetailContracts;
   final StateValue<List<ReviewMd>> userDetailReviews;
   final StateValue<List<VisaMd>> userDetailVisas;
+  final StateValue<List<QualifsMd>> userDetailQualifs;
   UsersState({
     required this.usersList,
     required this.selectedUser,
@@ -17,6 +18,7 @@ class UsersState {
     required this.userDetailContracts,
     required this.userDetailReviews,
     required this.userDetailVisas,
+    required this.userDetailQualifs,
   });
 
   factory UsersState.initial() {
@@ -27,6 +29,7 @@ class UsersState {
       userDetailContracts: StateValue(error: ErrorModel(), data: []),
       userDetailReviews: StateValue(error: ErrorModel(), data: []),
       userDetailVisas: StateValue(error: ErrorModel(), data: []),
+      userDetailQualifs: StateValue(error: ErrorModel(), data: []),
     );
   }
 
@@ -37,6 +40,7 @@ class UsersState {
     StateValue<List<ContractMd>>? userDetailContracts,
     StateValue<List<ReviewMd>>? userDetailReviews,
     StateValue<List<VisaMd>>? userDetailVisas,
+    StateValue<List<QualifsMd>>? userDetailQualifs,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
@@ -45,6 +49,7 @@ class UsersState {
       userDetailContracts: userDetailContracts ?? this.userDetailContracts,
       userDetailReviews: userDetailReviews ?? this.userDetailReviews,
       userDetailVisas: userDetailVisas ?? this.userDetailVisas,
+      userDetailQualifs: userDetailQualifs ?? this.userDetailQualifs,
     );
   }
 }
@@ -56,6 +61,7 @@ class UpdateUsersStateAction {
   StateValue<List<ContractMd>>? userDetailContracts;
   StateValue<List<ReviewMd>>? userDetailReviews;
   StateValue<List<VisaMd>>? userDetailVisas;
+  StateValue<List<QualifsMd>>? userDetailQualifs;
   UpdateUsersStateAction({
     this.usersList,
     this.selectedUser,
@@ -63,6 +69,7 @@ class UpdateUsersStateAction {
     this.userDetailContracts,
     this.userDetailReviews,
     this.userDetailVisas,
+    this.userDetailQualifs,
   });
 }
 
@@ -75,3 +82,5 @@ class GetUserDetailsContractsAction {}
 class GetUserDetailsReviewsAction {}
 
 class GetUserDetailsVisasAction {}
+
+class GetUserDetailsQualifsAction {}

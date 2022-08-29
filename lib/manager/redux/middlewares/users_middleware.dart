@@ -23,6 +23,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getUserDetailsReviewsAction(store.state, action, next);
       case GetUserDetailsVisasAction:
         return _getUserDetailsVisasAction(store.state, action, next);
+      case GetUserDetailsQualifsAction:
+        return _getUserDetailsQualifsAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -236,6 +238,53 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           state.usersState.userDetailVisas.error.retries + 1;
 
       next(UpdateUsersStateAction(userDetailVisas: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<List<QualifsMd>>> _getUserDetailsQualifsAction(
+      AppState state,
+      GetUserDetailsQualifsAction action,
+      NextDispatcher next) async {
+    StateValue<List<QualifsMd>> stateValue = StateValue(
+        data: [],
+        error: ErrorModel<GetUserDetailsQualifsAction>(
+            isLoading: true, action: action));
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return stateValue;
+    }
+
+    next(UpdateUsersStateAction(userDetailQualifs: stateValue));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsQalifications(id.toString())
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final r = res.data['qualifications'];
+      final List<QualifsMd> list = [];
+
+      for (var e in r) {
+        list.add(QualifsMd.fromJson(e));
+      }
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+
+      next(UpdateUsersStateAction(userDetailQualifs: stateValue));
+    } else {
+      stateValue.error.retries =
+          state.usersState.userDetailQualifs.error.retries + 1;
+
+      next(UpdateUsersStateAction(userDetailQualifs: stateValue));
     }
     return stateValue;
   }

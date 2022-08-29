@@ -6,7 +6,7 @@ part of 'auth.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthRes _$AuthResFromJson(Map json) => AuthRes(
+AuthRes _$AuthResFromJson(Map<String, dynamic> json) => AuthRes(
       access_token: json['access_token'] as String,
       expires_in: json['expires_in'] as int,
       refresh_token: json['refresh_token'] as String,
