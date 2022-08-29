@@ -6,57 +6,79 @@ import 'package:pluto_grid/pluto_grid.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
-class PayrollWidget extends StatefulWidget {
+class ReviewsWidget extends StatefulWidget {
   AppState state;
-  PayrollWidget({Key? key, required this.state}) : super(key: key);
+  ReviewsWidget({Key? key, required this.state}) : super(key: key);
 
   @override
-  State<PayrollWidget> createState() => _PayrollWidgetState();
+  State<ReviewsWidget> createState() => _ReviewsWidgetState();
 }
 
-class _PayrollWidgetState extends State<PayrollWidget> {
+class _ReviewsWidgetState extends State<ReviewsWidget> {
   final GlobalKey _columnsMenuKey = GlobalKey();
   bool _isSmLoaded = false;
   late PlutoGridStateManager userDetailsPayrollSm;
   final List<ColumnHiderValues> columnHideValues = [];
-  final List<ContractMd> _contracts = [];
+  final List<ReviewMd> _contracts = [];
 
   List<PlutoColumn> get _cols {
     return [
       PlutoColumn(
-          title: "Contract Type",
-          field: "contract_type",
+          width: 80.0,
+          title: "Conducted By",
+          field: "conducted_by",
           enableRowChecked: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 200.0,
-          title: "Start Date",
-          field: "start_date",
+          width: 50.0,
+          title: "Conducted On",
+          field: "date",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 200.0,
-          title: "End Date",
-          field: "end_date",
+          width: 100.0,
+          title: "Title",
+          field: "title",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          title: "Holiday Calculation",
-          field: "holiday_calculation",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-          title: "Weekly Hours",
-          field: "weekly_hours",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-          title: "Working Days",
-          field: "working_days",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-        title: "Annual Holiday Entitlement",
-        field: "annual_holiday_entitlement",
-        type: PlutoColumnType.text(),
-      ),
+          width: 80.0,
+          title: "Comment",
+          field: "comment",
+          enableSorting: false,
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return Tooltip(
+              decoration: const BoxDecoration(color: ThemeColors.transparent),
+              richMessage: TextSpan(children: [
+                WidgetSpan(
+                    child: TableWrapperWidget(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: ThemeColors.gray12,
+                        borderRadius: BorderRadius.circular(16.0),
+                        border: Border.all(color: ThemeColors.gray11),
+                      ),
+                      child: Text(ctx.cell.value.toString())),
+                )),
+              ]),
+              child: KText(
+                onTap: () {},
+                text: "Read Comment",
+                textColor: ThemeColors.blue3,
+                fontWeight: FWeight.regular,
+                fontSize: 14,
+                isSelectable: false,
+                icon: const HeroIcon(
+                  HeroIcons.eye,
+                  color: ThemeColors.blue3,
+                ),
+              ),
+            );
+          }),
       PlutoColumn(
           title: "Action",
+          enableSorting: false,
           field: "action",
           type: PlutoColumnType.text(),
           renderer: (ctx) {
@@ -72,7 +94,6 @@ class _PayrollWidgetState extends State<PayrollWidget> {
               icon: const HeroIcon(
                 HeroIcons.pen,
                 color: ThemeColors.blue3,
-                size: 12,
               ),
             );
           }),
@@ -90,7 +111,7 @@ class _PayrollWidgetState extends State<PayrollWidget> {
             (e) => ColumnHiderValues(value: e.field, label: e.title))
         .toList());
     _contracts.clear();
-    _contracts.addAll(widget.state.usersState.userDetailContracts.data!);
+    _contracts.addAll(widget.state.usersState.userDetailReviews.data!);
   }
 
   @override
@@ -148,16 +169,13 @@ class _PayrollWidgetState extends State<PayrollWidget> {
   Widget _body() {
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
-      rows: widget.state.usersState.userDetailContracts.data!
+      rows: widget.state.usersState.userDetailReviews.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
-              "contract_type": PlutoCell(value: e.contractType),
-              "start_date": PlutoCell(value: e.csd?.date ?? "-"),
-              "end_date": PlutoCell(value: e.ced?.date ?? "-"),
-              "holiday_calculation": PlutoCell(value: e.hct),
-              "weekly_hours": PlutoCell(value: e.awh),
-              "working_days": PlutoCell(value: e.wdpw),
-              "annual_holiday_entitlement": PlutoCell(value: e.ahe ?? "-"),
+              "conducted_by": PlutoCell(value: e.conducted_by),
+              "date": PlutoCell(value: e.date),
+              "title": PlutoCell(value: e.title),
+              "comment": PlutoCell(value: e.notes),
               "action": PlutoCell(value: e),
             }),
           )

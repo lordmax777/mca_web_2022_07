@@ -1,3 +1,4 @@
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -5,8 +6,8 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import '../../../theme/theme.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
+import '../sets/state_value.dart';
 import '../states/auth_state.dart';
-import '../states/error_state.dart';
 
 class AuthMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -19,30 +20,66 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  Future<AuthRes?> _getAccessTokenAction(
+  Future<StateValue<AuthRes>> _getAccessTokenAction(
       AppState state, GetAccessTokenAction action, NextDispatcher next) async {
-    next(UpdateErrorAction(tokenError: ErrorModel(isLoading: true)));
+    StateValue<AuthRes> stateValue = StateValue(
+        data: null,
+        error:
+            ErrorModel<GetAccessTokenAction>(isLoading: true, action: action));
+
+    next(UpdateAuthAction(authRes: stateValue));
 
     final ApiResponse res = await restClient()
         .getAccessToken(Constants.grant_type, action.domain, Constants.clientId,
             Constants.clientSecret, action.username, action.password)
         .nocodeErrorHandler();
 
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
     if (res.success) {
       final AuthRes r = AuthRes.fromJson(res.data);
-      next(UpdateAuthAction(authRes: r));
-      next(UpdateErrorAction(
-          tokenError: ErrorModel(isError: false, isLoading: false)));
-      return r;
+      stateValue.error.isError = false;
+      stateValue.data = r;
+
+      next(UpdateAuthAction(authRes: stateValue));
     } else {
-      next(UpdateErrorAction(
-          tokenError: ErrorModel(
-              errorCode: res.resCode,
-              isLoading: false,
-              action: action,
-              errorMessage: res.resMessage,
-              retries: state.errorState.tokenError.retries + 1)));
+      stateValue.error.retries = state.authState.authRes.error.retries + 1;
+
+      next(UpdateAuthAction(authRes: stateValue));
     }
-    return null;
+    return stateValue;
+  }
+}
+
+Future<void> fetch(action) async {
+  final res = await appStore.dispatch(action);
+
+  final ErrorModel e = res.error;
+
+  if (e.isError) {
+    print(res);
+    if (e.errorCode == 401) {
+      final re = e.rawError;
+      if (re != null && re.data is Map) {
+        final Map m = re.data;
+        if (m.containsKey('error_description')) {
+          final bool eee = m['error_description']
+              .contains("The access token provided has expired.");
+          if (eee) {
+            Logger.e('Token Expired');
+            //Get Token Again and Fetch the failed action
+            await appStore.dispatch(GetAccessTokenAction(
+                domain: Constants.domain,
+                username: Constants.username,
+                password: Constants.password));
+
+            await appStore.dispatch(action);
+          }
+        }
+      }
+    }
   }
 }

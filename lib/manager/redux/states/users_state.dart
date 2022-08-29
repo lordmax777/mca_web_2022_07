@@ -1,54 +1,61 @@
 import 'package:flutter/material.dart';
-
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import '../../model_exporter.dart';
 
 @immutable
 class UsersState {
-  final List<UserRes> usersList;
+  final StateValue<List<UserRes>> usersList;
   final UserRes? selectedUser;
-  final UserDetailsMd? userDetails;
-  final List<ContractMd> userDetailContracts;
+  final StateValue<UserDetailsMd?> userDetails;
+  final StateValue<List<ContractMd>> userDetailContracts;
+  final StateValue<List<ReviewMd>> userDetailReviews;
   UsersState({
     required this.usersList,
     required this.selectedUser,
     required this.userDetails,
     required this.userDetailContracts,
+    required this.userDetailReviews,
   });
 
   factory UsersState.initial() {
     return UsersState(
-      usersList: [],
+      usersList: StateValue(error: ErrorModel(), data: []),
       selectedUser: null,
-      userDetails: null,
-      userDetailContracts: [],
+      userDetails: StateValue(error: ErrorModel(), data: null),
+      userDetailContracts: StateValue(error: ErrorModel(), data: []),
+      userDetailReviews: StateValue(error: ErrorModel(), data: []),
     );
   }
 
   UsersState copyWith({
-    List<UserRes>? usersList,
+    StateValue<List<UserRes>>? usersList,
     UserRes? selectedUser,
-    UserDetailsMd? userDetails,
-    List<ContractMd>? userDetailContracts,
+    StateValue<UserDetailsMd?>? userDetails,
+    StateValue<List<ContractMd>>? userDetailContracts,
+    StateValue<List<ReviewMd>>? userDetailReviews,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
       selectedUser: selectedUser ?? this.selectedUser,
       userDetails: userDetails ?? this.userDetails,
       userDetailContracts: userDetailContracts ?? this.userDetailContracts,
+      userDetailReviews: userDetailReviews ?? this.userDetailReviews,
     );
   }
 }
 
 class UpdateUsersStateAction {
-  List<UserRes>? usersList;
   UserRes? selectedUser;
-  UserDetailsMd? userDetails;
-  List<ContractMd>? userDetailContracts;
+  StateValue<List<UserRes>>? usersList;
+  StateValue<UserDetailsMd>? userDetails;
+  StateValue<List<ContractMd>>? userDetailContracts;
+  StateValue<List<ReviewMd>>? userDetailReviews;
   UpdateUsersStateAction({
     this.usersList,
     this.selectedUser,
     this.userDetails,
     this.userDetailContracts,
+    this.userDetailReviews,
   });
 }
 
@@ -57,3 +64,5 @@ class GetUsersListAction {}
 class GetUserDetailsDetailAction {}
 
 class GetUserDetailsContractsAction {}
+
+class GetUserDetailsReviewsAction {}

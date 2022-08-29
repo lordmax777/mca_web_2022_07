@@ -11,9 +11,11 @@ class ApiResponse {
   bool success;
   dynamic data;
   RequestOptions? requestOptions;
+  Response<dynamic>? rawError;
 
   ApiResponse(
       {this.resMessage,
+      this.rawError,
       this.resCode,
       this.data,
       required this.success,
@@ -43,6 +45,7 @@ extension FutureExceptionHandler on Future {
         case DioError:
           final _dioError = (errrorRes as DioError);
           final _errorType = _dioError.type;
+          _apiResponse.rawError = _dioError.response;
           _apiResponse.requestOptions = _dioError.requestOptions;
           switch (_errorType) {
             case DioErrorType.response:

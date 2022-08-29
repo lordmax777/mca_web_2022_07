@@ -1,7 +1,10 @@
 import 'dart:ui';
 
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
+
 import '../manager/redux/sets/app_state.dart';
-import '../manager/redux/states/error_state.dart';
+import '../manager/redux/sets/state_value.dart';
 import '../theme/theme.dart';
 
 class ErrorWrapper extends StatefulWidget {
@@ -66,11 +69,11 @@ class _ErrorWrapperState extends State<ErrorWrapper> {
                     width: 150,
                     child: ButtonMedium(
                         text: 'Refresh',
-                        onPressed: () {
+                        onPressed: () async {
                           if (widget.onRetry != null) {
                             widget.onRetry!();
                           } else {
-                            appStore.dispatch(widget.errors
+                            await fetch(widget.errors
                                 .firstWhere((element) => element.isError)
                                 .action);
                           }

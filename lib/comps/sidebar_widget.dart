@@ -20,7 +20,6 @@ class YSLogoBanner extends StatelessWidget {
       );
 
   Mix get logoTextMix => Mix(
-      // textStyle(ThemeTextBold.xl2.copyWith(color: Colors.white)),
       letterSpacing(0.75));
 
   Mix flexboxMix = Mix();

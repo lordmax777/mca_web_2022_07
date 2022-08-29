@@ -79,21 +79,16 @@ class _TextInputWidgetState extends State<TextInputWidget> {
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           label: widget.labelText != null
               ? SpacedRow(
+                  horizontalSpace: 4.0,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    KText(
-                        text: widget.labelText!,
-                        textColor: ThemeColors.gray8,
-                        fontSize: 16.0,
-                        mainAxisSize: MainAxisSize.min,
-                        fontWeight: FWeight.regular),
+                    Text(widget.labelText!,
+                        style: ThemeText.regular.copyWith(
+                            color: ThemeColors.gray8, fontSize: 16.0)),
                     if (widget.isRequired)
-                      KText(
-                          text: "*",
-                          mainAxisSize: MainAxisSize.min,
-                          textColor: ThemeColors.red3,
-                          fontSize: 16.0,
-                          fontWeight: FWeight.regular),
+                      Text("*",
+                          style: ThemeText.regular.copyWith(
+                              color: ThemeColors.red3, fontSize: 16.0)),
                   ],
                 )
               : null,
@@ -104,7 +99,6 @@ class _TextInputWidgetState extends State<TextInputWidget> {
           prefixIconColor: ThemeColors.gray11,
           prefixIcon: _getLeftIcon(),
           hintText: widget.hintText,
-          hintMaxLines: 2,
           filled: widget.disableAll,
           fillColor: ThemeColors.gray12,
           hintStyle: ThemeText.regular
@@ -130,10 +124,13 @@ class _TextInputWidgetState extends State<TextInputWidget> {
       );
     }
     if (widget.rightIcon != null) {
-      return HeroIcon(
-        widget.rightIcon!,
-        size: 15,
-        color: ThemeColors.gray8,
+      return Padding(
+        padding: const EdgeInsets.only(right: 12.0),
+        child: HeroIcon(
+          widget.rightIcon!,
+          size: 15,
+          color: ThemeColors.gray8,
+        ),
       );
     }
     return null;

@@ -1,4 +1,5 @@
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
 
@@ -27,13 +28,15 @@ class UserDetailsPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          await appStore.dispatch(GetUserDetailsDetailAction());
-          await appStore.dispatch(GetUserDetailsContractsAction());
+          await fetch(GetUserDetailsDetailAction());
+          await fetch(GetUserDetailsContractsAction());
+          await fetch(GetUserDetailsReviewsAction());
         },
         builder: (context, state) {
-          final e1 = state.errorState.userDetailsError;
-          final e2 = state.errorState.userDetailsContractsError;
-          final user = state.usersState.userDetails;
+          final e1 = state.usersState.userDetails.error;
+          final e2 = state.usersState.userDetailContracts.error;
+          final e3 = state.usersState.userDetailReviews.error;
+          final user = state.usersState.userDetails.data;
 
           final _UserDetails userDetails = _UserDetails(
               name: '-',
@@ -52,7 +55,7 @@ class UserDetailsPage extends StatelessWidget {
             userDetails.email = "-";
           }
           return ErrorWrapper(
-            errors: [e1, e2],
+            errors: [e1, e2, e3],
             child: PageWrapper(
                 child: SpacedColumn(
               verticalSpace: 16.0,
@@ -202,8 +205,6 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
             ),
           ),
           _getTabChild(),
-          const Divider(color: ThemeColors.gray11, thickness: 1.0),
-          const SaveAndCancelButtonsWidget(),
         ],
       ),
     );
@@ -233,13 +234,18 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
               color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: _generalItems.length,
+          itemCount: _generalItems.length + 1,
           itemBuilder: (context, index) {
+            if (index == _generalItems.length) {
+              return const SaveAndCancelButtonsWidget();
+            }
             return _generalItems[index];
           },
         );
       case 1:
         return PayrollWidget(state: appStore.state);
+      case 2:
+        return ReviewsWidget(state: appStore.state);
       default:
         return const SizedBox();
     }

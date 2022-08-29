@@ -1,3 +1,6 @@
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+
 import '../../theme/theme.dart';
 
 class PersonalDetailsWidget extends StatelessWidget {
@@ -15,7 +18,11 @@ class PersonalDetailsWidget extends StatelessWidget {
           child: Container(
             width: 100,
             height: 100,
-            color: Colors.deepPurple,
+            color: ThemeColors.blue7,
+            child: const Center(
+              child: HeroIcon(HeroIcons.userCircle,
+                  size: 48.0, color: ThemeColors.white),
+            ),
           ),
         ),
         SpacedRow(

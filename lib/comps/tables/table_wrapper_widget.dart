@@ -2,7 +2,9 @@ import '../../theme/theme.dart';
 
 class TableWrapperWidget extends StatelessWidget {
   final Widget child;
-  const TableWrapperWidget({Key? key, required this.child}) : super(key: key);
+  final EdgeInsetsGeometry? padding;
+  const TableWrapperWidget({Key? key, required this.child, this.padding})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +26,13 @@ class TableWrapperWidget extends StatelessWidget {
               spreadRadius: 0,
             )
           ]),
-      child: child,
-    );
-    return PhysicalModel(
-      color: ThemeColors.white,
-      elevation: 0.8,
-      borderRadius: BorderRadius.circular(16.0),
-      shadowColor: ThemeColors.black,
-      child: child,
+      child: Padding(
+        padding: padding ?? EdgeInsets.zero,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16.0),
+          child: child,
+        ),
+      ),
     );
   }
 }

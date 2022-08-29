@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
@@ -17,11 +18,11 @@ class UsersListPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       onInit: (store) async {
-        await appStore.dispatch(GetAccessTokenAction(
+        await fetch(GetAccessTokenAction(
             domain: Constants.domain,
             username: Constants.username,
             password: Constants.password));
-        await appStore.dispatch(GetUsersListAction());
+        await fetch(GetUsersListAction());
       },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
@@ -30,8 +31,8 @@ class UsersListPage extends StatelessWidget {
             onRightBtnClick: () {},
           ),
           ErrorWrapper(errors: [
-            state.errorState.tokenError,
-            state.errorState.usersListError
+            state.authState.authRes.error,
+            state.usersState.usersList.error
           ], child: _Body(state: state))
         ]),
       ),
@@ -288,7 +289,7 @@ class _BodyState extends State<_Body> {
             (e) => ColumnHiderValues(value: e.field, label: e.title))
         .toList());
     _users.clear();
-    _users.addAll(widget.state.usersState.usersList);
+    _users.addAll(widget.state.usersState.usersList.data!);
   }
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx) {
@@ -379,7 +380,7 @@ class _BodyState extends State<_Body> {
   Widget _body() {
     return UsersListTable(
       onSmReady: _setSm,
-      rows: widget.state.usersState.usersList
+      rows: widget.state.usersState.usersList.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
               "user": PlutoCell(value: e),

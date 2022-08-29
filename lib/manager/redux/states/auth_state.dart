@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
-
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import '../../model_exporter.dart';
 
 @immutable
 class AuthState {
-  final AuthRes? authRes;
+  final StateValue<AuthRes?> authRes;
   AuthState({
     required this.authRes,
   });
 
   factory AuthState.initial() {
     return AuthState(
-      authRes: null,
+      authRes: StateValue(error: ErrorModel(), data: null),
     );
   }
 
-  AuthState copyWith({
-    AuthRes? authRes,
-  }) {
+  AuthState copyWith({StateValue<AuthRes?>? authRes}) {
     return AuthState(
       authRes: authRes ?? this.authRes,
     );
@@ -25,7 +23,7 @@ class AuthState {
 }
 
 class UpdateAuthAction {
-  AuthRes? authRes;
+  StateValue<AuthRes>? authRes;
   UpdateAuthAction({
     this.authRes,
   });

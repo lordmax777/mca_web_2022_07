@@ -66,5 +66,5 @@ abstract class RestClient {
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(
-        bearerToken: appStore.state.authState.authRes?.access_token)
+        bearerToken: appStore.state.authState.authRes.data?.access_token)
     .init());
