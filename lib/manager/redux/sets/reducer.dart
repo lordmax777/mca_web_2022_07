@@ -41,5 +41,6 @@ UsersState _updateUsersStateAction(
     userDetailContracts:
         action.userDetailContracts ?? state.userDetailContracts,
     userDetailReviews: action.userDetailReviews ?? state.userDetailReviews,
+    userDetailVisas: action.userDetailVisas ?? state.userDetailVisas,
   );
 }

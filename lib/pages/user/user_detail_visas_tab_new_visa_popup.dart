@@ -2,16 +2,16 @@ import 'package:auto_route/auto_route.dart';
 
 import '../../theme/theme.dart';
 
-class UserDetailReviewNewReviewPopupWidget extends StatefulWidget {
-  const UserDetailReviewNewReviewPopupWidget({Key? key}) : super(key: key);
+class UserDetailVisaNewVisaPopupWidget extends StatefulWidget {
+  const UserDetailVisaNewVisaPopupWidget({Key? key}) : super(key: key);
 
   @override
-  State<UserDetailReviewNewReviewPopupWidget> createState() =>
-      _UserDetailReviewNewReviewPopupWidgetState();
+  State<UserDetailVisaNewVisaPopupWidget> createState() =>
+      _UserDetailVisaNewVisaPopupWidgetState();
 }
 
-class _UserDetailReviewNewReviewPopupWidgetState
-    extends State<UserDetailReviewNewReviewPopupWidget> {
+class _UserDetailVisaNewVisaPopupWidgetState
+    extends State<UserDetailVisaNewVisaPopupWidget> {
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
@@ -35,7 +35,7 @@ class _UserDetailReviewNewReviewPopupWidgetState
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           KText(
-            text: 'New Review',
+            text: 'New Visa/Permit',
             fontSize: 18.0,
             fontWeight: FWeight.bold,
             isSelectable: false,
@@ -62,36 +62,73 @@ class _UserDetailReviewNewReviewPopupWidgetState
           const SizedBox(),
           TextInputWidget(
             isRequired: true,
-            width: dpWidth / 4,
+            width: dpWidth / 3 + 12,
             enabled: false,
-            labelText: "Title",
+            labelText: "Document #",
             onTap: () {},
           ),
           DropdownWidget(
-            hintText: "Conducted By",
-            dropdownBtnWidth: dpWidth / 4,
+            hintText: "Visa Type",
+            dropdownBtnWidth: dpWidth / 3 + 12,
             isRequired: true,
-            dropdownOptionsWidth: dpWidth / 4,
+            dropdownOptionsWidth: dpWidth / 3 + 12,
             onChanged: (_) {},
             items: [],
           ),
-          TextInputWidget(
-            isRequired: true,
-            width: dpWidth / 6,
-            enabled: false,
-            labelText: "Conducted On",
-            leftIcon: HeroIcons.calendar,
-            onTap: () {
-              showDatePicker(
-                context: context,
-                initialDate: DateTime(2015),
-                firstDate: DateTime(2015),
-                lastDate: DateTime(2035),
-              );
-            },
+          SpacedRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            horizontalSpace: 8.0,
+            children: [
+              CheckboxWidget(
+                value: true,
+                onChanged: (value) {},
+              ),
+              KText(
+                text: "Has Expiry Date",
+                fontSize: 14.0,
+                textColor: ThemeColors.gray2,
+                isSelectable: false,
+                fontWeight: FWeight.bold,
+              )
+            ],
+          ),
+          SpacedRow(
+            horizontalSpace: 12.0,
+            children: [
+              TextInputWidget(
+                isRequired: true,
+                width: dpWidth / 6,
+                enabled: false,
+                labelText: "Start Date",
+                leftIcon: HeroIcons.calendar,
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime(2015),
+                    firstDate: DateTime(2015),
+                    lastDate: DateTime(2035),
+                  );
+                },
+              ),
+              TextInputWidget(
+                isRequired: true,
+                width: dpWidth / 6,
+                enabled: false,
+                labelText: "Expire Date",
+                leftIcon: HeroIcons.calendar,
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime(2015),
+                    firstDate: DateTime(2015),
+                    lastDate: DateTime(2035),
+                  );
+                },
+              ),
+            ],
           ),
           TextInputWidget(
-            width: dpWidth / 4,
+            width: dpWidth / 3 + 12,
             enabled: false,
             labelText: "Comment",
             onTap: () {},
@@ -120,7 +157,7 @@ class _UserDetailReviewNewReviewPopupWidgetState
           ),
           ButtonLarge(
             paddingWithoutIcon: true,
-            text: 'Add Review',
+            text: 'Add Visa/Permit',
             onPressed: () {
               context.popRoute();
             },

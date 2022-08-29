@@ -21,6 +21,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getUserDetailsContractsAction(store.state, action, next);
       case GetUserDetailsReviewsAction:
         return _getUserDetailsReviewsAction(store.state, action, next);
+      case GetUserDetailsVisasAction:
+        return _getUserDetailsVisasAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -189,6 +191,51 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           state.usersState.userDetailReviews.error.retries + 1;
 
       next(UpdateUsersStateAction(userDetailReviews: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<List<VisaMd>>> _getUserDetailsVisasAction(AppState state,
+      GetUserDetailsVisasAction action, NextDispatcher next) async {
+    StateValue<List<VisaMd>> stateValue = StateValue(
+        data: [],
+        error: ErrorModel<GetUserDetailsVisasAction>(
+            isLoading: true, action: action));
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return stateValue;
+    }
+
+    next(UpdateUsersStateAction(userDetailVisas: stateValue));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsVisas(id.toString())
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final r = res.data['visas'];
+      final List<VisaMd> list = [];
+
+      for (var e in r) {
+        list.add(VisaMd.fromJson(e));
+      }
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+
+      next(UpdateUsersStateAction(userDetailVisas: stateValue));
+    } else {
+      stateValue.error.retries =
+          state.usersState.userDetailVisas.error.retries + 1;
+
+      next(UpdateUsersStateAction(userDetailVisas: stateValue));
     }
     return stateValue;
   }

@@ -9,12 +9,14 @@ class UsersState {
   final StateValue<UserDetailsMd?> userDetails;
   final StateValue<List<ContractMd>> userDetailContracts;
   final StateValue<List<ReviewMd>> userDetailReviews;
+  final StateValue<List<VisaMd>> userDetailVisas;
   UsersState({
     required this.usersList,
     required this.selectedUser,
     required this.userDetails,
     required this.userDetailContracts,
     required this.userDetailReviews,
+    required this.userDetailVisas,
   });
 
   factory UsersState.initial() {
@@ -24,6 +26,7 @@ class UsersState {
       userDetails: StateValue(error: ErrorModel(), data: null),
       userDetailContracts: StateValue(error: ErrorModel(), data: []),
       userDetailReviews: StateValue(error: ErrorModel(), data: []),
+      userDetailVisas: StateValue(error: ErrorModel(), data: []),
     );
   }
 
@@ -33,6 +36,7 @@ class UsersState {
     StateValue<UserDetailsMd?>? userDetails,
     StateValue<List<ContractMd>>? userDetailContracts,
     StateValue<List<ReviewMd>>? userDetailReviews,
+    StateValue<List<VisaMd>>? userDetailVisas,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
@@ -40,6 +44,7 @@ class UsersState {
       userDetails: userDetails ?? this.userDetails,
       userDetailContracts: userDetailContracts ?? this.userDetailContracts,
       userDetailReviews: userDetailReviews ?? this.userDetailReviews,
+      userDetailVisas: userDetailVisas ?? this.userDetailVisas,
     );
   }
 }
@@ -50,12 +55,14 @@ class UpdateUsersStateAction {
   StateValue<UserDetailsMd>? userDetails;
   StateValue<List<ContractMd>>? userDetailContracts;
   StateValue<List<ReviewMd>>? userDetailReviews;
+  StateValue<List<VisaMd>>? userDetailVisas;
   UpdateUsersStateAction({
     this.usersList,
     this.selectedUser,
     this.userDetails,
     this.userDetailContracts,
     this.userDetailReviews,
+    this.userDetailVisas,
   });
 }
 
@@ -66,3 +73,5 @@ class GetUserDetailsDetailAction {}
 class GetUserDetailsContractsAction {}
 
 class GetUserDetailsReviewsAction {}
+
+class GetUserDetailsVisasAction {}

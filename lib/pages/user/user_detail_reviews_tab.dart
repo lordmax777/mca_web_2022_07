@@ -158,7 +158,7 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
               text: "New Review",
               onPressed: () {
                 showOverlayPopup(
-                    body: UserDetailReviewNewReviewPopupWidget(),
+                    body: const UserDetailReviewNewReviewPopupWidget(),
                     context: context);
               },
             ),

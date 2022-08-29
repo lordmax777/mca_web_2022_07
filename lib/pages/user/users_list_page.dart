@@ -116,6 +116,7 @@ class _BodyState extends State<_Body> {
           width: 85.0,
           title: "Payroll",
           field: "payroll",
+          enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             return KText(
@@ -138,6 +139,7 @@ class _BodyState extends State<_Body> {
           width: 85.0,
           title: "Reviews",
           field: "reviews",
+          enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             return KText(
@@ -160,6 +162,7 @@ class _BodyState extends State<_Body> {
           width: 85.0,
           title: "Visa",
           field: "visa",
+          enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             return KText(
@@ -209,6 +212,7 @@ class _BodyState extends State<_Body> {
           width: 133.0,
           title: "Qualifications",
           field: "qualifications",
+          enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             return KText(

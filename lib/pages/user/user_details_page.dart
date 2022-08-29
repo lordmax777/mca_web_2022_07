@@ -1,6 +1,7 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
 
 import '../../theme/theme.dart';
@@ -31,11 +32,15 @@ class UserDetailsPage extends StatelessWidget {
           await fetch(GetUserDetailsDetailAction());
           await fetch(GetUserDetailsContractsAction());
           await fetch(GetUserDetailsReviewsAction());
+          await fetch(GetUserDetailsVisasAction());
         },
         builder: (context, state) {
           final e1 = state.usersState.userDetails.error;
           final e2 = state.usersState.userDetailContracts.error;
           final e3 = state.usersState.userDetailReviews.error;
+          final e4 = state.usersState.userDetailVisas.error;
+          final List<ErrorModel> errors = [e1, e2, e3, e4];
+
           final user = state.usersState.userDetails.data;
 
           final _UserDetails userDetails = _UserDetails(
@@ -55,7 +60,7 @@ class UserDetailsPage extends StatelessWidget {
             userDetails.email = "-";
           }
           return ErrorWrapper(
-            errors: [e1, e2, e3],
+            errors: errors,
             child: PageWrapper(
                 child: SpacedColumn(
               verticalSpace: 16.0,
@@ -246,6 +251,8 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
         return PayrollWidget(state: appStore.state);
       case 2:
         return ReviewsWidget(state: appStore.state);
+      case 3:
+        return VisaWidget(state: appStore.state);
       default:
         return const SizedBox();
     }
