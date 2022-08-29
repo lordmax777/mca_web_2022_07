@@ -28,7 +28,30 @@ class UsersListPage extends StatelessWidget {
         child: SpacedColumn(verticalSpace: 16.0, children: [
           PagesTitleWidget(
             title: 'User Management',
-            onRightBtnClick: () {},
+            onRightBtnClick: () async {
+              // for (int i = 30; i < 40; i++) {
+              //   appStore.dispatch(UpdateUsersStateAction(
+              //       selectedUser: UserRes(
+              //           id: appStore.state.usersState.usersList.data![i].id,
+              //           firstName: "",
+              //           fullname: "",
+              //           groupAdmin: false,
+              //           lastName: '',
+              //           lastStatus: '',
+              //           locationAdmin: false,
+              //           loginRequired: false,
+              //           title: '',
+              //           username: '')));
+
+              //   await fetch(GetUserDetailsDetailAction());
+              //   await fetch(GetUserDetailsContractsAction());
+              //   await fetch(GetUserDetailsReviewsAction());
+              //   await fetch(GetUserDetailsVisasAction());
+              //   await fetch(GetUserDetailsQualifsAction());
+              //   await fetch(GetUserDetailsStatusAction());
+              //   await fetch(GetUserDetailsMobileAction());
+              // }
+            },
           ),
           ErrorWrapper(errors: [
             state.authState.authRes.error,

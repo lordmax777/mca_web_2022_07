@@ -11,6 +11,9 @@ class UsersState {
   final StateValue<List<ReviewMd>> userDetailReviews;
   final StateValue<List<VisaMd>> userDetailVisas;
   final StateValue<List<QualifsMd>> userDetailQualifs;
+  final StateValue<StatussMd?> userDetailStatus;
+  final StateValue<bool> userDetailMobileIsRegistered;
+
   UsersState({
     required this.usersList,
     required this.selectedUser,
@@ -19,6 +22,8 @@ class UsersState {
     required this.userDetailReviews,
     required this.userDetailVisas,
     required this.userDetailQualifs,
+    required this.userDetailStatus,
+    required this.userDetailMobileIsRegistered,
   });
 
   factory UsersState.initial() {
@@ -30,6 +35,9 @@ class UsersState {
       userDetailReviews: StateValue(error: ErrorModel(), data: []),
       userDetailVisas: StateValue(error: ErrorModel(), data: []),
       userDetailQualifs: StateValue(error: ErrorModel(), data: []),
+      userDetailStatus: StateValue(error: ErrorModel(), data: null),
+      userDetailMobileIsRegistered:
+          StateValue(error: ErrorModel(), data: false),
     );
   }
 
@@ -41,6 +49,8 @@ class UsersState {
     StateValue<List<ReviewMd>>? userDetailReviews,
     StateValue<List<VisaMd>>? userDetailVisas,
     StateValue<List<QualifsMd>>? userDetailQualifs,
+    StateValue<StatussMd?>? userDetailStatus,
+    StateValue<bool>? userDetailMobileIsRegistered,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
@@ -50,6 +60,9 @@ class UsersState {
       userDetailReviews: userDetailReviews ?? this.userDetailReviews,
       userDetailVisas: userDetailVisas ?? this.userDetailVisas,
       userDetailQualifs: userDetailQualifs ?? this.userDetailQualifs,
+      userDetailStatus: userDetailStatus ?? this.userDetailStatus,
+      userDetailMobileIsRegistered:
+          userDetailMobileIsRegistered ?? this.userDetailMobileIsRegistered,
     );
   }
 }
@@ -62,6 +75,8 @@ class UpdateUsersStateAction {
   StateValue<List<ReviewMd>>? userDetailReviews;
   StateValue<List<VisaMd>>? userDetailVisas;
   StateValue<List<QualifsMd>>? userDetailQualifs;
+  StateValue<StatussMd>? userDetailStatus;
+  StateValue<bool>? userDetailMobileIsRegistered;
   UpdateUsersStateAction({
     this.usersList,
     this.selectedUser,
@@ -70,6 +85,8 @@ class UpdateUsersStateAction {
     this.userDetailReviews,
     this.userDetailVisas,
     this.userDetailQualifs,
+    this.userDetailStatus,
+    this.userDetailMobileIsRegistered,
   });
 }
 
@@ -84,3 +101,7 @@ class GetUserDetailsReviewsAction {}
 class GetUserDetailsVisasAction {}
 
 class GetUserDetailsQualifsAction {}
+
+class GetUserDetailsStatusAction {}
+
+class GetUserDetailsMobileAction {}

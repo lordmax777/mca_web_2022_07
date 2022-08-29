@@ -24,8 +24,8 @@ class ContractMd {
   bool? AHEonYS;
   int? initHolidays;
   String? jobDescription;
-  int? salaryPH;
-  int? salaryOT;
+  double? salaryPH;
+  double? salaryOT;
   String? jobTitleId;
 
   @override

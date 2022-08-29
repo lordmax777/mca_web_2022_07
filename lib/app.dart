@@ -11,6 +11,7 @@ final appRouter = AppRouter();
 
 class McaWebApp extends StatelessWidget {
   const McaWebApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return StoreProvider(

@@ -16,6 +16,7 @@ export '../pages/user/user_detail_visa_tab.dart';
 export '../pages/user/user_detail_visas_tab_new_visa_popup.dart';
 export '../pages/user/user_detail_qualifs_tab.dart';
 export '../pages/user/user_detail_visas_tab_new_qualif_popup.dart';
+export '../pages/user/user_detail_mobile_status_tab.dart';
 
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';

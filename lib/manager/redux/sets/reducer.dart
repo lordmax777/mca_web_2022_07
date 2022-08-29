@@ -43,5 +43,8 @@ UsersState _updateUsersStateAction(
     userDetailReviews: action.userDetailReviews ?? state.userDetailReviews,
     userDetailVisas: action.userDetailVisas ?? state.userDetailVisas,
     userDetailQualifs: action.userDetailQualifs ?? state.userDetailQualifs,
+    userDetailStatus: action.userDetailStatus ?? state.userDetailStatus,
+    userDetailMobileIsRegistered: action.userDetailMobileIsRegistered ??
+        state.userDetailMobileIsRegistered,
   );
 }

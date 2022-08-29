@@ -1,4 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:mix/mix.dart';
 
 import '../theme/theme.dart';
 
@@ -17,6 +18,7 @@ class DropdownWidget extends StatefulWidget {
   final double? dropdownMaxHeight;
   final Color? dropdownBtnColor;
   final bool isRequired;
+  final bool disableAll;
 
   /// Dropdown-button-width, Dropdown-Options-Width
   ///  are changeable.
@@ -26,6 +28,7 @@ class DropdownWidget extends StatefulWidget {
       required this.items,
       this.onChanged,
       this.isRequired = false,
+      this.disableAll = false,
       this.value,
       this.leftIcon,
       this.dropdownBtnWidth = 115,
@@ -53,7 +56,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
         underline: const SizedBox(),
-        onChanged: widget.onChanged,
+        onChanged: widget.disableAll ? null : widget.onChanged,
         isExpanded: true,
         focusColor: ThemeColors.transparent,
         onMenuStateChange: (bool changed) {},
@@ -79,7 +82,9 @@ class _DropdownWidgetState extends State<DropdownWidget> {
             ),
             // boxShadow: ThemeShadows.shadowSm,
             borderRadius: BorderRadius.circular(18.0),
-            color: widget.dropdownBtnColor ?? ThemeColors.white,
+            color: widget.disableAll
+                ? ThemeColors.gray12
+                : (widget.dropdownBtnColor ?? ThemeColors.white),
           ),
           child: SpacedRow(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -161,7 +166,9 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                       text: widget.hintText!,
                       isSelectable: false,
                       fontSize: 14.0,
-                      textColor: ThemeColors.gray8,
+                      textColor: widget.disableAll
+                          ? ThemeColors.gray8
+                          : ThemeColors.gray2,
                     ),
                     if (widget.isRequired)
                       KText(

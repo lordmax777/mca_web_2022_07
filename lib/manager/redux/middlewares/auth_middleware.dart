@@ -60,7 +60,6 @@ Future<void> fetch(action) async {
   final ErrorModel e = res.error;
 
   if (e.isError) {
-    print(res);
     if (e.errorCode == 401) {
       final re = e.rawError;
       if (re != null && re.data is Map) {

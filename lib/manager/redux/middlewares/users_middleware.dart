@@ -25,6 +25,10 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getUserDetailsVisasAction(store.state, action, next);
       case GetUserDetailsQualifsAction:
         return _getUserDetailsQualifsAction(store.state, action, next);
+      case GetUserDetailsStatusAction:
+        return _getUserDetailsStatusAction(store.state, action, next);
+      case GetUserDetailsMobileAction:
+        return _getUserDetailsMobileAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -285,6 +289,88 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           state.usersState.userDetailQualifs.error.retries + 1;
 
       next(UpdateUsersStateAction(userDetailQualifs: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<StatussMd>> _getUserDetailsStatusAction(AppState state,
+      GetUserDetailsStatusAction action, NextDispatcher next) async {
+    StateValue<StatussMd> stateValue = StateValue(
+        data: null,
+        error: ErrorModel<GetUserDetailsStatusAction>(
+            isLoading: true, action: action));
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return stateValue;
+    }
+
+    next(UpdateUsersStateAction(userDetailStatus: stateValue));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsStatus(id.toString())
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final r = res.data['status'];
+      final StatussMd list = StatussMd.fromJson(r);
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+
+      next(UpdateUsersStateAction(userDetailStatus: stateValue));
+    } else {
+      stateValue.error.retries =
+          state.usersState.userDetailStatus.error.retries + 1;
+
+      next(UpdateUsersStateAction(userDetailStatus: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<bool>> _getUserDetailsMobileAction(AppState state,
+      GetUserDetailsMobileAction action, NextDispatcher next) async {
+    StateValue<bool> stateValue = StateValue(
+        data: null,
+        error: ErrorModel<GetUserDetailsMobileAction>(
+            isLoading: true, action: action));
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return stateValue;
+    }
+
+    next(UpdateUsersStateAction(userDetailMobileIsRegistered: stateValue));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsMobile(id.toString())
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final r = res.data['mobile'];
+      final String list = r['registered'];
+
+      stateValue.error.isError = false;
+      stateValue.data = list == "true";
+
+      next(UpdateUsersStateAction(userDetailMobileIsRegistered: stateValue));
+    } else {
+      stateValue.error.retries =
+          state.usersState.userDetailMobileIsRegistered.error.retries + 1;
+
+      next(UpdateUsersStateAction(userDetailMobileIsRegistered: stateValue));
     }
     return stateValue;
   }

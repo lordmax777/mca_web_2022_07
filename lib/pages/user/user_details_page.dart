@@ -1,4 +1,5 @@
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
@@ -22,7 +23,7 @@ class _UserDetails {
 }
 
 class UserDetailsPage extends StatelessWidget {
-  UserDetailsPage({Key? key}) : super(key: key);
+  const UserDetailsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,8 @@ class UserDetailsPage extends StatelessWidget {
           await fetch(GetUserDetailsReviewsAction());
           await fetch(GetUserDetailsVisasAction());
           await fetch(GetUserDetailsQualifsAction());
+          await fetch(GetUserDetailsStatusAction());
+          await fetch(GetUserDetailsMobileAction());
         },
         builder: (context, state) {
           final e1 = state.usersState.userDetails.error;
@@ -41,7 +44,9 @@ class UserDetailsPage extends StatelessWidget {
           final e3 = state.usersState.userDetailReviews.error;
           final e4 = state.usersState.userDetailVisas.error;
           final e5 = state.usersState.userDetailQualifs.error;
-          final List<ErrorModel> errors = [e1, e2, e3, e4, e5];
+          final e6 = state.usersState.userDetailStatus.error;
+          final e7 = state.usersState.userDetailMobileIsRegistered.error;
+          final List<ErrorModel> errors = [e1, e2, e3, e4, e5, e6, e7];
 
           final user = state.usersState.userDetails.data;
 
@@ -151,7 +156,7 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
         ]);
   }
 
-  void _onSendMsg() {
+  void _onSendMsg() async {
     print('Send Message');
   }
 }
@@ -211,6 +216,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
               tabs: tabs,
             ),
           ),
+          const Divider(height: 0, color: ThemeColors.gray11),
           _getTabChild(),
         ],
       ),
@@ -255,8 +261,13 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
         return ReviewsWidget(state: appStore.state);
       case 3:
         return VisaWidget(state: appStore.state);
+      case 4:
+        //TODO: Preferred Shifts
+        return Container();
       case 5:
         return QaulifsWidget(state: appStore.state);
+      case 6:
+        return MobileStatusWidget(state: appStore.state);
       default:
         return const SizedBox();
     }
