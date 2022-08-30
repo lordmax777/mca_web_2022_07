@@ -9,7 +9,7 @@ class PreferredShiftMd {
   int dayId;
   int weekId;
   String day;
-  int hours;
+  num hours;
   LastTime start;
   LastTime finish;
   String location;

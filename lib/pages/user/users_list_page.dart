@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../manager/model_exporter.dart';
+import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 
 class UsersListPage extends StatelessWidget {
@@ -18,11 +19,11 @@ class UsersListPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       onInit: (store) async {
-        await Future.wait([]);
         await fetch(GetAccessTokenAction(
             domain: Constants.domain,
             username: Constants.username,
             password: Constants.password));
+        await fetch(GetAllParamListAction());
         await fetch(GetUsersListAction());
       },
       builder: (_, state) => PageWrapper(
@@ -30,7 +31,9 @@ class UsersListPage extends StatelessWidget {
           PagesTitleWidget(
             title: 'User Management',
             onRightBtnClick: () async {
-              // for (int i = 30; i < 40; i++) {
+              // for (int i = 60;
+              //     i < appStore.state.usersState.usersList.data!.length;
+              //     i++) {
               //   appStore.dispatch(UpdateUsersStateAction(
               //       selectedUser: UserRes(
               //           id: appStore.state.usersState.usersList.data![i].id,
@@ -44,19 +47,23 @@ class UsersListPage extends StatelessWidget {
               //           title: '',
               //           username: '')));
 
-              //   await fetch(GetUserDetailsDetailAction());
-              //   await fetch(GetUserDetailsContractsAction());
-              //   await fetch(GetUserDetailsReviewsAction());
-              //   await fetch(GetUserDetailsVisasAction());
-              //   await fetch(GetUserDetailsQualifsAction());
-              //   await fetch(GetUserDetailsStatusAction());
-              //   await fetch(GetUserDetailsMobileAction());
+              //   await Future.wait([
+              //     fetch(GetUserDetailsDetailAction()),
+              //     fetch(GetUserDetailsContractsAction()),
+              //     fetch(GetUserDetailsReviewsAction()),
+              //     fetch(GetUserDetailsVisasAction()),
+              //     fetch(GetUserDetailsQualifsAction()),
+              //     fetch(GetUserDetailsStatusAction()),
+              //     fetch(GetUserDetailsMobileAction()),
+              //     fetch(GetUserDetailsPreferredShiftsAction()),
+              //   ]);
               // }
             },
           ),
           ErrorWrapper(errors: [
             state.authState.authRes.error,
-            state.usersState.usersList.error
+            state.usersState.usersList.error,
+            state.generalState.paramList.error,
           ], child: _Body(state: state))
         ]),
       ),
@@ -107,6 +114,7 @@ class _BodyState extends State<_Body> {
               textColor: ThemeColors.blue3,
               fontWeight: FWeight.regular,
               fontSize: 14,
+              mainAxisSize: MainAxisSize.min,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx),
             );
@@ -127,7 +135,7 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 113.0,
+          width: 130.0,
           title: "Department",
           field: "department",
           type: PlutoColumnType.text()),
@@ -149,9 +157,7 @@ class _BodyState extends State<_Body> {
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
+              onTap: () => _onUserDetailsNavigationClick(ctx, index: 1),
               icon: const HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.blue3,
@@ -172,9 +178,7 @@ class _BodyState extends State<_Body> {
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
+              onTap: () => _onUserDetailsNavigationClick(ctx, index: 2),
               icon: const HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.blue3,
@@ -195,9 +199,7 @@ class _BodyState extends State<_Body> {
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
+              onTap: () => _onUserDetailsNavigationClick(ctx, index: 3),
               icon: const HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.blue3,
@@ -214,6 +216,7 @@ class _BodyState extends State<_Body> {
           width: 133.0,
           title: "Preferred Shifts",
           field: "preferred_shifts",
+          enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             return KText(
@@ -222,9 +225,7 @@ class _BodyState extends State<_Body> {
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
+              onTap: () => _onUserDetailsNavigationClick(ctx, index: 4),
               icon: const HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.blue3,
@@ -245,9 +246,7 @@ class _BodyState extends State<_Body> {
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              onTap: () {
-                print(ctx.cell.value);
-              },
+              onTap: () => _onUserDetailsNavigationClick(ctx, index: 5),
               icon: const HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.blue3,
@@ -320,10 +319,11 @@ class _BodyState extends State<_Body> {
     _users.addAll(widget.state.usersState.usersList.data!);
   }
 
-  void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx) {
+  void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
+      {int index = 0}) {
     appStore.dispatch(
         UpdateUsersStateAction(selectedUser: ctx.row.cells['user']?.value));
-    context.navigateTo(UserDetailsRoute());
+    context.navigateTo(UserDetailsRoute(tabIndex: index));
   }
 
   @override
@@ -410,23 +410,58 @@ class _BodyState extends State<_Body> {
       onSmReady: _setSm,
       rows: widget.state.usersState.usersList.data!
           .map<PlutoRow>(
-            (e) => PlutoRow(cells: {
-              "user": PlutoCell(value: e),
-              "name": PlutoCell(value: "${e.firstName} ${e.lastName}"),
-              "username": PlutoCell(value: e.username),
-              "department": PlutoCell(value: e.groupId ?? "-"),
-              "main_location": PlutoCell(value: e.locationId ?? "-"),
-              "payroll": PlutoCell(value: "-"),
-              "reviews": PlutoCell(value: "-"),
-              "visa": PlutoCell(value: "-"),
-              "absences": PlutoCell(value: "-"),
-              "preferred_shifts": PlutoCell(value: "-"),
-              "qualifications": PlutoCell(value: "-"),
-            }),
+            _buildItem,
           )
           .toList(),
       cols: _cols,
     );
+  }
+
+  PlutoRow _buildItem(UserRes e) {
+    final params = appStore.state.generalState.paramList.data!;
+    final String name = "${e.firstName} ${e.lastName}";
+    String dep = e.groupId ?? "-";
+    for (var el in params.groups) {
+      if (dep != "-") {
+        if (e.groupAdmin) {
+          dep = "Admin";
+        }
+        if (el.id == int.tryParse(dep)) {
+          dep = el.name;
+          if (e.groupAdmin) {
+            dep = '$dep & Admin';
+          }
+        }
+      }
+    }
+    String loc = e.locationId ?? "-";
+    for (var el in params.locations) {
+      if (loc != "-") {
+        if (e.locationAdmin) {
+          loc = "Admin";
+        }
+        if (el.id == int.tryParse(loc)) {
+          loc = el.name;
+          if (e.locationAdmin) {
+            loc = '$loc & Admin';
+          }
+        }
+      }
+    }
+
+    return PlutoRow(cells: {
+      "user": PlutoCell(value: e),
+      "name": PlutoCell(value: name),
+      "username": PlutoCell(value: e.username),
+      "department": PlutoCell(value: dep),
+      "main_location": PlutoCell(value: loc),
+      "payroll": PlutoCell(value: "-"),
+      "reviews": PlutoCell(value: "-"),
+      "visa": PlutoCell(value: "-"),
+      "absences": PlutoCell(value: "-"),
+      "preferred_shifts": PlutoCell(value: "-"),
+      "qualifications": PlutoCell(value: "-"),
+    });
   }
 
   Widget _footer(PlutoGridStateManager stateManager) {

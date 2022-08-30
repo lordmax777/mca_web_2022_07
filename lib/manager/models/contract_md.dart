@@ -13,11 +13,11 @@ class ContractMd {
   int id;
   ContractDate? csd;
   ContractDate? ced;
-  int? awh;
-  int? ahe;
-  int? ahew;
-  int? wdpw;
-  int? hct;
+  num? awh;
+  num? ahe;
+  num? ahew;
+  num? wdpw;
+  num? hct;
   String? lunchtime;
   String? lunchtimeUnpaid;
   int contractType;

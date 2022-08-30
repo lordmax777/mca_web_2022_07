@@ -11,7 +11,7 @@ PreferredShiftMd _$PreferredShiftMdFromJson(Map json) => PreferredShiftMd(
       dayId: json['dayId'] as int,
       finish:
           LastTime.fromJson(Map<String, dynamic>.from(json['finish'] as Map)),
-      hours: json['hours'] as int,
+      hours: json['hours'] as num,
       id: json['id'] as int,
       location: json['location'] as String,
       start: LastTime.fromJson(Map<String, dynamic>.from(json['start'] as Map)),

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mca_web_2022_07/manager/models/users_list.dart';
 part 'user_details_md.g.dart';
 
 @JsonSerializable(anyMap: true)
@@ -6,7 +7,7 @@ class UserDetailsMd {
   String title;
   String first_name;
   String last_name;
-  String? date_of_birth;
+  LastTime? date_of_birth;
   String nationality;
   String marital_status;
   String ethnic;

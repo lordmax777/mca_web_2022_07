@@ -22,7 +22,8 @@ class _UserDetails {
 }
 
 class UserDetailsPage extends StatelessWidget {
-  const UserDetailsPage({Key? key}) : super(key: key);
+  final int? tabIndex;
+  const UserDetailsPage({Key? key, this.tabIndex}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +78,7 @@ class UserDetailsPage extends StatelessWidget {
               children: [
                 PageGobackWidget(text: userDetails.nameWithUsername),
                 _UserDetailsQuickViewWidget(userDetails: userDetails),
-                const _Body(),
+                _Body(tabIndex: tabIndex),
               ],
             )),
           );
@@ -165,7 +166,10 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
 }
 
 class _Body extends StatefulWidget {
-  const _Body({Key? key}) : super(key: key);
+  final int? tabIndex;
+  _Body({Key? key, this.tabIndex}) : super(key: key) {
+    tabIndex ?? 0;
+  }
 
   @override
   State<_Body> createState() => _BodyState();
@@ -188,6 +192,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
+    _tabController.animateTo(widget.tabIndex!);
     _tabController.addListener(() {
       setState(() {});
     });

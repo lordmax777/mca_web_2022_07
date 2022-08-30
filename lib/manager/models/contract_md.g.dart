@@ -9,16 +9,16 @@ part of 'contract_md.dart';
 ContractMd _$ContractMdFromJson(Map json) => ContractMd(
       id: json['id'] as int,
       contractType: json['contractType'] as int,
-      awh: json['awh'] as int?,
+      awh: json['awh'] as num?,
       AHEonYS: json['AHEonYS'] as bool?,
-      hct: json['hct'] as int?,
+      hct: json['hct'] as num?,
       initHolidays: json['initHolidays'] as int?,
-      wdpw: json['wdpw'] as int?,
+      wdpw: json['wdpw'] as num?,
       jobTitleId: json['jobTitleId'] as String?,
       salaryPH: (json['salaryPH'] as num?)?.toDouble(),
       salaryOT: (json['salaryOT'] as num?)?.toDouble(),
-      ahe: json['ahe'] as int?,
-      ahew: json['ahew'] as int?,
+      ahe: json['ahe'] as num?,
+      ahew: json['ahew'] as num?,
       csd: json['csd'] == null
           ? null
           : ContractDate.fromJson(

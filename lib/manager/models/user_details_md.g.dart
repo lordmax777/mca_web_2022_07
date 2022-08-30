@@ -11,7 +11,10 @@ UserDetailsMd _$UserDetailsMdFromJson(Map json) => UserDetailsMd(
           Map<String, dynamic>.from(json['account'] as Map)),
       address: UserDetailsAddressMd.fromJson(
           Map<String, dynamic>.from(json['address'] as Map)),
-      date_of_birth: json['date_of_birth'] as String?,
+      date_of_birth: json['date_of_birth'] == null
+          ? null
+          : LastTime.fromJson(
+              Map<String, dynamic>.from(json['date_of_birth'] as Map)),
       ethnic: json['ethnic'] as String,
       first_name: json['first_name'] as String,
       last_name: json['last_name'] as String,

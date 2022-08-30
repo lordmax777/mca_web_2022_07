@@ -406,7 +406,12 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     stateValue.error.rawError = res.rawError;
 
     if (res.success) {
-      final r = res.data['preferredshifts'].values.toList();
+      var r;
+      if (res.data['preferredshifts'] is List) {
+        r = res.data['preferredshifts'];
+      } else {
+        r = res.data['preferredshifts'].values.toList();
+      }
       final List<PreferredShiftMd> list = [];
       for (var e in r) {
         for (var ea in e.values.toList()) {

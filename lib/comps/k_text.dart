@@ -66,6 +66,7 @@ class KText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isSelectable) {
       return SpacedRow(
+        mainAxisSize: mainAxisSize,
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 4.0,
         children: [
@@ -79,17 +80,20 @@ class KText extends StatelessWidget {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: onTap,
-          child: SpacedRow(
-            mainAxisSize: mainAxisSize,
-            mainAxisAlignment:
-                rowCenter ? MainAxisAlignment.center : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            horizontalSpace: 4.0,
-            children: [
-              Text(text, maxLines: 2, style: style, textAlign: textAlign),
-              if (icon != null) icon!,
-            ],
-          ),
+          child: icon == null
+              ? Text(text, maxLines: 2, style: style, textAlign: textAlign)
+              : SpacedRow(
+                  mainAxisSize: mainAxisSize,
+                  mainAxisAlignment: rowCenter
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  horizontalSpace: 4.0,
+                  children: [
+                    Text(text, maxLines: 2, style: style, textAlign: textAlign),
+                    icon!,
+                  ],
+                ),
         ),
       );
     }

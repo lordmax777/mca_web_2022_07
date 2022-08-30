@@ -34,8 +34,11 @@ class AppRouter extends _i5.RootStackRouter {
           routeData: routeData, child: const _i2.UsersListPage());
     },
     UserDetailsRoute.name: (routeData) {
+      final args = routeData.argsAs<UserDetailsRouteArgs>(
+          orElse: () => const UserDetailsRouteArgs());
       return _i5.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i3.UserDetailsPage());
+          routeData: routeData,
+          child: _i3.UserDetailsPage(key: args.key, tabIndex: args.tabIndex));
     },
     UserDetailsPayrollTabNewContractRoute.name: (routeData) {
       return _i5.MaterialPageX<dynamic>(
@@ -76,10 +79,26 @@ class UsersListRoute extends _i5.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.UserDetailsPage]
-class UserDetailsRoute extends _i5.PageRouteInfo<void> {
-  const UserDetailsRoute() : super(UserDetailsRoute.name, path: 'user-detail');
+class UserDetailsRoute extends _i5.PageRouteInfo<UserDetailsRouteArgs> {
+  UserDetailsRoute({_i4.Key? key, int? tabIndex})
+      : super(UserDetailsRoute.name,
+            path: 'user-detail',
+            args: UserDetailsRouteArgs(key: key, tabIndex: tabIndex));
 
   static const String name = 'UserDetailsRoute';
+}
+
+class UserDetailsRouteArgs {
+  const UserDetailsRouteArgs({this.key, this.tabIndex});
+
+  final _i4.Key? key;
+
+  final int? tabIndex;
+
+  @override
+  String toString() {
+    return 'UserDetailsRouteArgs{key: $key, tabIndex: $tabIndex}';
+  }
 }
 
 /// generated route for

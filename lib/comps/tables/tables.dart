@@ -22,6 +22,15 @@ class UsersListTable extends StatelessWidget {
       col.enableColumnDrag = false;
       col.enableAutoEditing = false;
       col.enableEditingMode = false;
+      col.renderer ??= (ctx) {
+        return KText(
+          text: ctx.cell.value,
+          textColor: ThemeColors.gray2,
+          fontWeight: FWeight.regular,
+          fontSize: 14,
+          isSelectable: false,
+        );
+      };
       _cols.add(col);
     }
     var _w = MediaQuery.of(context).size.width;
@@ -82,6 +91,15 @@ class UserDetailPayrollTabTable extends StatelessWidget {
       col.enableColumnDrag = false;
       col.enableAutoEditing = false;
       col.enableEditingMode = false;
+      col.renderer ??= (ctx) {
+        return KText(
+          text: ctx.cell.value,
+          textColor: ThemeColors.gray2,
+          fontWeight: FWeight.regular,
+          fontSize: 14,
+          isSelectable: false,
+        );
+      };
       _cols.add(col);
     }
     var _w = MediaQuery.of(context).size.width;

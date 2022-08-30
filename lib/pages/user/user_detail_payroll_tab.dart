@@ -152,12 +152,12 @@ class _PayrollWidgetState extends State<PayrollWidget> {
       rows: widget.state.usersState.userDetailContracts.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
-              "contract_type": PlutoCell(value: e.contractType),
+              "contract_type": PlutoCell(value: e.contractType.toString()),
               "start_date": PlutoCell(value: e.csd?.date ?? "-"),
               "end_date": PlutoCell(value: e.ced?.date ?? "-"),
-              "holiday_calculation": PlutoCell(value: e.hct),
-              "weekly_hours": PlutoCell(value: e.awh),
-              "working_days": PlutoCell(value: e.wdpw),
+              "holiday_calculation": PlutoCell(value: e.hct.toString()),
+              "weekly_hours": PlutoCell(value: e.awh.toString()),
+              "working_days": PlutoCell(value: e.wdpw.toString()),
               "annual_holiday_entitlement": PlutoCell(value: e.ahe ?? "-"),
               "action": PlutoCell(value: e),
             }),

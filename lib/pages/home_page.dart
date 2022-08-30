@@ -2,10 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/sidebar_widget.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../comps/nav_bar_widget.dart';
+import '../manager/redux/states/general_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
