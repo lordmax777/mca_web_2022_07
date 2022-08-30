@@ -13,6 +13,7 @@ class UsersState {
   final StateValue<List<QualifsMd>> userDetailQualifs;
   final StateValue<StatussMd?> userDetailStatus;
   final StateValue<bool> userDetailMobileIsRegistered;
+  final StateValue<List<PreferredShiftMd>> userDetailPreferredShift;
 
   UsersState({
     required this.usersList,
@@ -24,6 +25,7 @@ class UsersState {
     required this.userDetailQualifs,
     required this.userDetailStatus,
     required this.userDetailMobileIsRegistered,
+    required this.userDetailPreferredShift,
   });
 
   factory UsersState.initial() {
@@ -38,6 +40,7 @@ class UsersState {
       userDetailStatus: StateValue(error: ErrorModel(), data: null),
       userDetailMobileIsRegistered:
           StateValue(error: ErrorModel(), data: false),
+      userDetailPreferredShift: StateValue(error: ErrorModel(), data: []),
     );
   }
 
@@ -51,6 +54,7 @@ class UsersState {
     StateValue<List<QualifsMd>>? userDetailQualifs,
     StateValue<StatussMd?>? userDetailStatus,
     StateValue<bool>? userDetailMobileIsRegistered,
+    StateValue<List<PreferredShiftMd>>? userDetailPreferredShift,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
@@ -63,6 +67,8 @@ class UsersState {
       userDetailStatus: userDetailStatus ?? this.userDetailStatus,
       userDetailMobileIsRegistered:
           userDetailMobileIsRegistered ?? this.userDetailMobileIsRegistered,
+      userDetailPreferredShift:
+          userDetailPreferredShift ?? this.userDetailPreferredShift,
     );
   }
 }
@@ -77,6 +83,7 @@ class UpdateUsersStateAction {
   StateValue<List<QualifsMd>>? userDetailQualifs;
   StateValue<StatussMd>? userDetailStatus;
   StateValue<bool>? userDetailMobileIsRegistered;
+  StateValue<List<PreferredShiftMd>>? userDetailPreferredShift;
   UpdateUsersStateAction({
     this.usersList,
     this.selectedUser,
@@ -87,6 +94,7 @@ class UpdateUsersStateAction {
     this.userDetailQualifs,
     this.userDetailStatus,
     this.userDetailMobileIsRegistered,
+    this.userDetailPreferredShift,
   });
 }
 
@@ -105,3 +113,5 @@ class GetUserDetailsQualifsAction {}
 class GetUserDetailsStatusAction {}
 
 class GetUserDetailsMobileAction {}
+
+class GetUserDetailsPreferredShiftsAction {}

@@ -1,5 +1,4 @@
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
@@ -30,13 +29,16 @@ class UserDetailsPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          await fetch(GetUserDetailsDetailAction());
-          await fetch(GetUserDetailsContractsAction());
-          await fetch(GetUserDetailsReviewsAction());
-          await fetch(GetUserDetailsVisasAction());
-          await fetch(GetUserDetailsQualifsAction());
-          await fetch(GetUserDetailsStatusAction());
-          await fetch(GetUserDetailsMobileAction());
+          await Future.wait([
+            fetch(GetUserDetailsDetailAction()),
+            fetch(GetUserDetailsContractsAction()),
+            fetch(GetUserDetailsReviewsAction()),
+            fetch(GetUserDetailsVisasAction()),
+            fetch(GetUserDetailsPreferredShiftsAction()),
+            fetch(GetUserDetailsQualifsAction()),
+            fetch(GetUserDetailsStatusAction()),
+            fetch(GetUserDetailsMobileAction()),
+          ]);
         },
         builder: (context, state) {
           final e1 = state.usersState.userDetails.error;
@@ -46,7 +48,8 @@ class UserDetailsPage extends StatelessWidget {
           final e5 = state.usersState.userDetailQualifs.error;
           final e6 = state.usersState.userDetailStatus.error;
           final e7 = state.usersState.userDetailMobileIsRegistered.error;
-          final List<ErrorModel> errors = [e1, e2, e3, e4, e5, e6, e7];
+          final e8 = state.usersState.userDetailPreferredShift.error;
+          final List<ErrorModel> errors = [e1, e2, e3, e4, e5, e6, e7, e8];
 
           final user = state.usersState.userDetails.data;
 
@@ -181,8 +184,6 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
     Tab(text: 'Mobile and Status'),
   ];
 
-  final List<Widget> _generalItems = [];
-
   @override
   void initState() {
     super.initState();
@@ -190,7 +191,6 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
     _tabController.addListener(() {
       setState(() {});
     });
-    _addGeneralTabItems();
   }
 
   @override
@@ -223,38 +223,10 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
     );
   }
 
-  void _addGeneralTabItems() {
-    _generalItems.add(_buildExpanableItem(
-        const PersonalDetailsWidget(), PersonalDetailsWidget.title));
-    _generalItems.add(_buildExpanableItem(const UsernameAndPayrollInfoWidget(),
-        UsernameAndPayrollInfoWidget.title));
-    _generalItems.add(_buildExpanableItem(
-        const RolesDepsAndLoginOptionsWidget(),
-        RolesDepsAndLoginOptionsWidget.title));
-    _generalItems
-        .add(_buildExpanableItem(const AddressWidget(), AddressWidget.title));
-    _generalItems.add(_buildExpanableItem(
-        const EthnicAndReligionWidget(), EthnicAndReligionWidget.title));
-    _generalItems.add(_buildExpanableItem(
-        const NextOfKinInfoWidget(), NextOfKinInfoWidget.title));
-  }
-
   Widget _getTabChild() {
     switch (_tabController.index) {
       case 0:
-        return ListView.separated(
-          separatorBuilder: (context, index) => const Divider(
-              color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _generalItems.length + 1,
-          itemBuilder: (context, index) {
-            if (index == _generalItems.length) {
-              return const SaveAndCancelButtonsWidget();
-            }
-            return _generalItems[index];
-          },
-        );
+        return const GeneralWidget();
       case 1:
         return PayrollWidget(state: appStore.state);
       case 2:
@@ -262,8 +234,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       case 3:
         return VisaWidget(state: appStore.state);
       case 4:
-        //TODO: Preferred Shifts
-        return Container();
+        return const PrefferedShiftsWidget();
       case 5:
         return QaulifsWidget(state: appStore.state);
       case 6:
@@ -271,36 +242,5 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       default:
         return const SizedBox();
     }
-  }
-
-  Widget _buildExpanableItem(Widget child, String title) {
-    bool a = true;
-    return StatefulBuilder(
-      builder: (context, ss) {
-        return ExpansionTile(
-          childrenPadding:
-              const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
-          tilePadding:
-              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
-          trailing: const SizedBox(),
-          onExpansionChanged: (value) {
-            ss(() {
-              a = !value;
-            });
-          },
-          // childrenPadding: EdgeInsets.symmetric(vertical: 16.0),
-          leading: HeroIcon(!a ? HeroIcons.up : HeroIcons.down, size: 18.0),
-          title: KText(
-            text: title,
-            isSelectable: false,
-            fontWeight: FWeight.bold,
-            fontSize: 16.0,
-            textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
-          ),
-          expandedAlignment: Alignment.topLeft,
-          children: [child],
-        );
-      },
-    );
   }
 }

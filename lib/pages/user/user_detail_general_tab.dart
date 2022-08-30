@@ -1,7 +1,85 @@
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-
 import '../../theme/theme.dart';
+
+class GeneralWidget extends StatefulWidget {
+  const GeneralWidget({Key? key}) : super(key: key);
+
+  @override
+  State<GeneralWidget> createState() => _GeneralWidgetState();
+}
+
+class _GeneralWidgetState extends State<GeneralWidget> {
+  final List<Widget> _generalItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _addGeneralTabItems();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      separatorBuilder: (context, index) =>
+          const Divider(color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _generalItems.length + 1,
+      itemBuilder: (context, index) {
+        if (index == _generalItems.length) {
+          return const SaveAndCancelButtonsWidget();
+        }
+        return _generalItems[index];
+      },
+    );
+  }
+
+  void _addGeneralTabItems() {
+    _generalItems.add(_buildExpanableItem(
+        const PersonalDetailsWidget(), PersonalDetailsWidget.title));
+    _generalItems.add(_buildExpanableItem(const UsernameAndPayrollInfoWidget(),
+        UsernameAndPayrollInfoWidget.title));
+    _generalItems.add(_buildExpanableItem(
+        const RolesDepsAndLoginOptionsWidget(),
+        RolesDepsAndLoginOptionsWidget.title));
+    _generalItems
+        .add(_buildExpanableItem(const AddressWidget(), AddressWidget.title));
+    _generalItems.add(_buildExpanableItem(
+        const EthnicAndReligionWidget(), EthnicAndReligionWidget.title));
+    _generalItems.add(_buildExpanableItem(
+        const NextOfKinInfoWidget(), NextOfKinInfoWidget.title));
+  }
+
+  Widget _buildExpanableItem(Widget child, String title) {
+    bool a = true;
+    return StatefulBuilder(
+      builder: (context, ss) {
+        return ExpansionTile(
+          childrenPadding:
+              const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
+          tilePadding:
+              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
+          trailing: const SizedBox(),
+          onExpansionChanged: (value) {
+            ss(() {
+              a = !value;
+            });
+          },
+          // childrenPadding: EdgeInsets.symmetric(vertical: 16.0),
+          leading: HeroIcon(!a ? HeroIcons.up : HeroIcons.down, size: 18.0),
+          title: KText(
+            text: title,
+            isSelectable: false,
+            fontWeight: FWeight.bold,
+            fontSize: 16.0,
+            textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
+          ),
+          expandedAlignment: Alignment.topLeft,
+          children: [child],
+        );
+      },
+    );
+  }
+}
 
 class PersonalDetailsWidget extends StatelessWidget {
   static const String title = "Personal Details";

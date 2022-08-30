@@ -15,8 +15,11 @@ export '../pages/user/user_detail_reviews_tab_new_review_popup.dart';
 export '../pages/user/user_detail_visa_tab.dart';
 export '../pages/user/user_detail_visas_tab_new_visa_popup.dart';
 export '../pages/user/user_detail_qualifs_tab.dart';
-export '../pages/user/user_detail_visas_tab_new_qualif_popup.dart';
+export '../pages/user/user_detail_qualifs_tab_new_qualif_popup.dart';
 export '../pages/user/user_detail_mobile_status_tab.dart';
+export '../pages/user/user_detail_preffered_shifts_tab.dart';
+export '../pages/user/user_detail_preffered_shifts_tab.dart';
+export '../pages/user/user_detail_preffered_sifts_tab_new_shift_popup.dart';
 
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';

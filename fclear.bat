@@ -7,10 +7,10 @@ rem
 
 :build
 
-call flutter clean
+call fvm flutter clean
 rem When flutter sdk directory is changed, pubspec.lock should be deleted.
 del pubspec.lock
-call flutter pub get
+call fvm flutter pub get
 @REM call flutter run
 
 goto end

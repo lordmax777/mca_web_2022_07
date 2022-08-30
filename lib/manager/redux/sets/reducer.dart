@@ -46,5 +46,7 @@ UsersState _updateUsersStateAction(
     userDetailStatus: action.userDetailStatus ?? state.userDetailStatus,
     userDetailMobileIsRegistered: action.userDetailMobileIsRegistered ??
         state.userDetailMobileIsRegistered,
+    userDetailPreferredShift:
+        action.userDetailPreferredShift ?? state.userDetailPreferredShift,
   );
 }

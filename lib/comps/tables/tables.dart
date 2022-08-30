@@ -63,9 +63,11 @@ class UserDetailPayrollTabTable extends StatelessWidget {
   final List<PlutoColumn> cols;
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
+  final bool dynamicHeight;
   const UserDetailPayrollTabTable(
       {Key? key,
       required this.rows,
+      this.dynamicHeight = false,
       required this.onSmReady,
       required this.cols})
       : super(key: key);
@@ -90,7 +92,9 @@ class UserDetailPayrollTabTable extends StatelessWidget {
     bool isEqual = _tableSize == _w;
 
     double _h = 625;
-
+    if (dynamicHeight) {
+      _h = (rows.length * 48.0) + 80.0;
+    }
     return SizedBox(
       height: _h,
       child: PlutoGrid(

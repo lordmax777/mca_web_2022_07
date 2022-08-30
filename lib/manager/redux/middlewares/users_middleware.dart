@@ -1,3 +1,4 @@
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
@@ -29,6 +30,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getUserDetailsStatusAction(store.state, action, next);
       case GetUserDetailsMobileAction:
         return _getUserDetailsMobileAction(store.state, action, next);
+      case GetUserDetailsPreferredShiftsAction:
+        return _getUserDetailsPreferredShiftsAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -371,6 +374,57 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           state.usersState.userDetailMobileIsRegistered.error.retries + 1;
 
       next(UpdateUsersStateAction(userDetailMobileIsRegistered: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<List<PreferredShiftMd>>>
+      _getUserDetailsPreferredShiftsAction(
+          AppState state,
+          GetUserDetailsPreferredShiftsAction action,
+          NextDispatcher next) async {
+    StateValue<List<PreferredShiftMd>> stateValue = StateValue(
+        data: [],
+        error: ErrorModel<GetUserDetailsPreferredShiftsAction>(
+            isLoading: true, action: action));
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return stateValue;
+    }
+
+    next(UpdateUsersStateAction(userDetailPreferredShift: stateValue));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsPreferredShifts(id.toString())
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final r = res.data['preferredshifts'].values.toList();
+      final List<PreferredShiftMd> list = [];
+      for (var e in r) {
+        for (var ea in e.values.toList()) {
+          for (var eae in ea) {
+            list.add(PreferredShiftMd.fromJson(eae));
+          }
+        }
+      }
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+
+      next(UpdateUsersStateAction(userDetailPreferredShift: stateValue));
+    } else {
+      stateValue.error.retries =
+          state.usersState.userDetailPreferredShift.error.retries + 1;
+
+      next(UpdateUsersStateAction(userDetailPreferredShift: stateValue));
     }
     return stateValue;
   }

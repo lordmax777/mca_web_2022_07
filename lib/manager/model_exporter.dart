@@ -10,3 +10,4 @@ export 'models/reviews_md.dart';
 export 'models/visa_md.dart';
 export 'models/qualifs_md.dart';
 export 'models/status_md.dart';
+export 'models/preffered_shift_md_md.dart';
