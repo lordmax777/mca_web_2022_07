@@ -6,6 +6,7 @@ export 'package:flutter/material.dart';
 
 //Utils
 export '../utils/constants.dart';
+export '../utils/log_tester.dart';
 
 export '../pages/user/user_detail_general_tab.dart';
 export '../pages/user/user_detail_payroll_tab.dart';

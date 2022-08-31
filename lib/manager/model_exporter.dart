@@ -12,3 +12,4 @@ export 'models/qualifs_md.dart';
 export 'models/status_md.dart';
 export 'models/preffered_shift_md_md.dart';
 export 'models/list_all_md.dart';
+export 'models/photos_md.dart';

@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:mix/mix.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 import '../theme/theme.dart';
 
@@ -19,6 +19,7 @@ class DropdownWidget extends StatefulWidget {
   final Color? dropdownBtnColor;
   final bool isRequired;
   final bool disableAll;
+  final bool hasSearchBox;
 
   /// Dropdown-button-width, Dropdown-Options-Width
   ///  are changeable.
@@ -29,6 +30,7 @@ class DropdownWidget extends StatefulWidget {
       this.onChanged,
       this.isRequired = false,
       this.disableAll = false,
+      this.hasSearchBox = false,
       this.value,
       this.leftIcon,
       this.dropdownBtnWidth = 115,
@@ -47,19 +49,44 @@ class DropdownWidget extends StatefulWidget {
 }
 
 class _DropdownWidgetState extends State<DropdownWidget> {
+  List itemList = [];
+  final TextEditingController searchcontroller = TextEditingController();
+
+  @override
+  void dispose() {
+    searchcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      itemList.addAll(widget.items);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.dropdownBtnWidth,
       height: 56,
       child: DropdownButton2(
+        searchInnerWidget: widget.hasSearchBox
+            ? TextInputWidget(
+                hintText: 'Search',
+                defaultBorderColor: ThemeColors.gray10,
+                controller: searchcontroller,
+              )
+            : null,
+        searchController: searchcontroller,
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
         underline: const SizedBox(),
         onChanged: widget.disableAll ? null : widget.onChanged,
         isExpanded: true,
         focusColor: ThemeColors.transparent,
-        onMenuStateChange: (bool changed) {},
+        autofocus: true,
         dropdownDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           boxShadow: [
@@ -69,7 +96,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 blurRadius: 4)
           ],
         ),
-        value: widget.value,
+        // value: widget.value,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
         customButton: Container(
@@ -200,9 +227,10 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   }
 
   List<DropdownMenuItem<String>> _getItems() {
-    List listValues = widget.items;
+    List listValues = itemList;
     List<DropdownMenuItem<String>> _menuItems = [];
-    for (int i = 0; i < listValues.length; i++) {
+    int len = listValues.length;
+    for (int i = 0; i < len; i++) {
       _menuItems.add(
         DropdownMenuItem<String>(
           value: listValues[i].toString(),
@@ -233,5 +261,24 @@ class _DropdownWidgetState extends State<DropdownWidget> {
     }
 
     return _menuItems;
+  }
+}
+
+class MyWidget extends StatelessWidget {
+  const MyWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      width: 200,
+      child: DropdownSearch<String>(
+        filterFn: (item, filter) {
+          return item.toLowerCase().contains(filter.toLowerCase());
+        },
+        items: ["Brazil", "Italia (Disabled)", "Tunisia", 'Canada'],
+        onChanged: print,
+      ),
+    );
   }
 }

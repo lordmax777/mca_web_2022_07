@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../manager/model_exporter.dart';
+import '../../manager/redux/sets/state_value.dart';
 import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 
@@ -31,33 +32,15 @@ class UsersListPage extends StatelessWidget {
           PagesTitleWidget(
             title: 'User Management',
             onRightBtnClick: () async {
-              // for (int i = 60;
-              //     i < appStore.state.usersState.usersList.data!.length;
-              //     i++) {
-              //   appStore.dispatch(UpdateUsersStateAction(
-              //       selectedUser: UserRes(
-              //           id: appStore.state.usersState.usersList.data![i].id,
-              //           firstName: "",
-              //           fullname: "",
-              //           groupAdmin: false,
-              //           lastName: '',
-              //           lastStatus: '',
-              //           locationAdmin: false,
-              //           loginRequired: false,
-              //           title: '',
-              //           username: '')));
-
-              //   await Future.wait([
-              //     fetch(GetUserDetailsDetailAction()),
-              //     fetch(GetUserDetailsContractsAction()),
-              //     fetch(GetUserDetailsReviewsAction()),
-              //     fetch(GetUserDetailsVisasAction()),
-              //     fetch(GetUserDetailsQualifsAction()),
-              //     fetch(GetUserDetailsStatusAction()),
-              //     fetch(GetUserDetailsMobileAction()),
-              //     fetch(GetUserDetailsPreferredShiftsAction()),
-              //   ]);
-              // }
+              appStore.dispatch(UpdateUsersStateAction(
+                  isNewUser: true,
+                  saveableUserDetails: UserDetailSaveMd(
+                      firstName: TextEditingController(),
+                      lastName: TextEditingController(),
+                      addressLine1: TextEditingController(),
+                      addressCity: TextEditingController(),
+                      addressPostcode: TextEditingController())));
+              context.navigateTo(UserDetailsRoute());
             },
           ),
           ErrorWrapper(errors: [
@@ -321,8 +304,8 @@ class _BodyState extends State<_Body> {
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
       {int index = 0}) {
-    appStore.dispatch(
-        UpdateUsersStateAction(selectedUser: ctx.row.cells['user']?.value));
+    appStore.dispatch(UpdateUsersStateAction(
+        isNewUser: false, selectedUser: ctx.row.cells['user']?.value));
     context.navigateTo(UserDetailsRoute(tabIndex: index));
   }
 
@@ -491,6 +474,7 @@ class _BodyState extends State<_Body> {
                     //TODO: if _pageSize is less than the last item of tablePageSizes, show that item instead of last item!
                     value: _pageSize.toString(),
                   ),
+                  // MyWidget(),
                   KText(
                       text: "of ${_users.length} entries",
                       textColor: ThemeColors.black,

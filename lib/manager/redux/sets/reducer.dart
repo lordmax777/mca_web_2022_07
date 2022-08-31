@@ -37,8 +37,9 @@ final _usersReducer = combineReducers<UsersState>([
 UsersState _updateUsersStateAction(
     UsersState state, UpdateUsersStateAction action) {
   return state.copyWith(
+    isNewUser: action.isNewUser ?? state.isNewUser,
     usersList: action.usersList ?? state.usersList,
-    selectedUser: action.selectedUser ?? state.selectedUser,
+    selectedUser: action.selectedUser,
     userDetails: action.userDetails ?? state.userDetails,
     userDetailContracts:
         action.userDetailContracts ?? state.userDetailContracts,
@@ -50,6 +51,9 @@ UsersState _updateUsersStateAction(
         state.userDetailMobileIsRegistered,
     userDetailPreferredShift:
         action.userDetailPreferredShift ?? state.userDetailPreferredShift,
+    userDetailPhotos: action.userDetailPhotos ?? state.userDetailPhotos,
+    saveableUserDetails:
+        action.saveableUserDetails ?? state.saveableUserDetails,
   );
 }
 

@@ -3,6 +3,7 @@ import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
@@ -32,6 +33,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getUserDetailsMobileAction(store.state, action, next);
       case GetUserDetailsPreferredShiftsAction:
         return _getUserDetailsPreferredShiftsAction(store.state, action, next);
+      case GetUserDetailsPhotosAction:
+        return _getUserDetailsPhotosAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -96,12 +99,23 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
 
     if (res.success) {
       final r = res.data['details'];
+      var savedUserDetails = state.usersState.saveableUserDetails;
       final UserDetailsMd userDetailsMd = UserDetailsMd.fromJson(r);
+
+      savedUserDetails = UserDetailSaveMd(
+        addressCity: TextEditingController(text: userDetailsMd.address.city),
+        addressLine1: TextEditingController(text: userDetailsMd.address.line1),
+        addressPostcode:
+            TextEditingController(text: userDetailsMd.address.postcode),
+        firstName: TextEditingController(text: userDetailsMd.first_name),
+        lastName: TextEditingController(text: userDetailsMd.last_name),
+      );
 
       stateValue.error.isError = false;
       stateValue.data = userDetailsMd;
 
-      next(UpdateUsersStateAction(userDetails: stateValue));
+      next(UpdateUsersStateAction(
+          userDetails: stateValue, saveableUserDetails: savedUserDetails));
     } else {
       stateValue.error.retries = state.usersState.userDetails.error.retries + 1;
 
@@ -430,6 +444,53 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           state.usersState.userDetailPreferredShift.error.retries + 1;
 
       next(UpdateUsersStateAction(userDetailPreferredShift: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<PhotosMd>> _getUserDetailsPhotosAction(AppState state,
+      GetUserDetailsPhotosAction action, NextDispatcher next) async {
+    StateValue<PhotosMd> stateValue = StateValue(
+        data: null,
+        error: ErrorModel<GetUserDetailsPhotosAction>(
+            isLoading: true, action: action));
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return stateValue;
+    }
+
+    next(UpdateUsersStateAction(userDetailPhotos: stateValue));
+
+    final ApiResponse res = await restClient()
+        .getUserDetailsPhotos(id.toString())
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final r = res.data['photos'];
+      var list;
+      if (r.isNotEmpty) {
+        list = PhotosMd.fromJson(r.first);
+      }
+
+      stateValue.error.isError = false;
+
+      if (list != null) {
+        stateValue.data = list;
+      }
+
+      next(UpdateUsersStateAction(userDetailPhotos: stateValue));
+    } else {
+      stateValue.error.retries =
+          state.usersState.userDetailPhotos.error.retries + 1;
+
+      next(UpdateUsersStateAction(userDetailPhotos: stateValue));
     }
     return stateValue;
   }

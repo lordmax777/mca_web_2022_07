@@ -1,3 +1,4 @@
+import '../app.dart';
 import '../theme/theme.dart';
 
 class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
@@ -55,22 +56,25 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            _getLogo(),
-            const SizedBox(width: 15),
-            _getTitle(),
-          ],
-        ),
-        Row(
-          children: const [
-            //TODO: Add Notification icon, message icon and avatar
-          ],
-        )
-      ],
+    return GestureDetector(
+      onTap: () => appRouter.navigateBack(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              _getLogo(),
+              const SizedBox(width: 15),
+              _getTitle(),
+            ],
+          ),
+          Row(
+            children: const [
+              //TODO: Add Notification icon, message icon and avatar
+            ],
+          )
+        ],
+      ),
     );
   }
 

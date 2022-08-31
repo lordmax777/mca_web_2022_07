@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
+import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
 class GeneralWidget extends StatefulWidget {
@@ -89,114 +95,147 @@ class PersonalDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width * 0.2;
-    return SpacedRow(horizontalSpace: 64.0, children: [
-      SpacedColumn(verticalSpace: 16.0, children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(24.0),
-          child: Container(
-            width: 100,
-            height: 100,
-            color: ThemeColors.blue7,
-            child: const Center(
-              child: HeroIcon(HeroIcons.userCircle,
-                  size: 48.0, color: ThemeColors.white),
-            ),
-          ),
-        ),
-        SpacedRow(
-          horizontalSpace: 8.0,
-          children: [
-            ButtonSmallSecondary(
-              leftIcon: const HeroIcon(HeroIcons.upload,
-                  size: 20.0, color: ThemeColors.blue3),
-              text: "Upload Photo",
-              onPressed: () {},
-            ),
-            ButtonSmallSecondary(
-              leftIcon: const HeroIcon(HeroIcons.bin,
-                  size: 20.0, color: ThemeColors.red3),
-              text: "",
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ]),
-      SpacedColumn(
-          verticalSpace: 32.0,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DropdownWidget(
-              hintText: "Title",
-              value: "Mr",
-              dropdownBtnWidth: dpWidth,
-              dropdownOptionsWidth: dpWidth,
-              onChanged: (_) {},
-              items: Constants.userTitleTypes.values.toList(),
-            ),
-            TextInputWidget(
-              width: dpWidth,
-              labelText: "First Name",
-              isRequired: true,
-            ),
-            TextInputWidget(
-              width: dpWidth,
-              labelText: "Last Name",
-              isRequired: true,
-            ),
-            DropdownWidget(
-              hintText: "Nationality",
-              dropdownBtnWidth: dpWidth,
-              dropdownOptionsWidth: dpWidth,
-              onChanged: (_) {},
-              items: Constants.userTitleTypes.values.toList(),
-            ),
-            TextInputWidget(
-              width: dpWidth,
-              enabled: false,
-              labelText: "Date of Birth",
-              leftIcon: HeroIcons.calendar,
-              onTap: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: DateTime(2015),
-                  firstDate: DateTime(2015),
-                  lastDate: DateTime(2035),
-                );
-              },
-            ),
-          ]),
-      SpacedColumn(
-          verticalSpace: 32.0,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DropdownWidget(
-              hintText: "Martial Status",
-              dropdownBtnWidth: dpWidth,
-              dropdownOptionsWidth: dpWidth,
-              onChanged: (_) {},
-              items: Constants.userMartialStatusTypes.values.toList(),
-            ),
-            TextInputWidget(
-              width: dpWidth,
-              labelText: "Email Address",
-            ),
-            TextInputWidget(
-              width: dpWidth,
-              labelText: "Phone Number",
-            ),
-            TextInputWidget(
-              width: dpWidth,
-              labelText: "Phone Landline",
-            ),
-            DropdownWidget(
-              hintText: "Account Status",
-              dropdownBtnWidth: dpWidth,
-              dropdownOptionsWidth: dpWidth,
-              onChanged: (_) {},
-              items: Constants.userAccountStatusTypes.values.toList(),
-            ),
-          ]),
-    ]);
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          final photosMd = state.usersState.userDetailPhotos;
+          final String? userAvatar = photosMd.data?.photo;
+          final countries = state.generalState.paramList.data!.countries;
+          final savedUser = state.usersState.saveableUserDetails!;
+          return SpacedRow(horizontalSpace: 64.0, children: [
+            SpacedColumn(verticalSpace: 16.0, children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24.0),
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  color: ThemeColors.blue7,
+                  child: Center(
+                    child: userAvatar != null
+                        ? Image.memory(base64Decode(userAvatar))
+                        : const HeroIcon(HeroIcons.userCircle,
+                            size: 48.0, color: ThemeColors.white),
+                  ),
+                ),
+              ),
+              SpacedRow(
+                horizontalSpace: 8.0,
+                children: [
+                  ButtonSmallSecondary(
+                    leftIcon: const HeroIcon(HeroIcons.upload,
+                        size: 20.0, color: ThemeColors.blue3),
+                    text: "Upload Photo",
+                    onPressed: () {},
+                  ),
+                  if (userAvatar != null)
+                    ButtonSmallSecondary(
+                      leftIcon: const HeroIcon(HeroIcons.bin,
+                          size: 20.0, color: ThemeColors.red3),
+                      text: "",
+                      onPressed: () {},
+                    ),
+                ],
+              ),
+            ]),
+            SpacedColumn(
+                verticalSpace: 32.0,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownWidget(
+                    hintText: "Title",
+                    dropdownBtnWidth: dpWidth,
+                    dropdownOptionsWidth: dpWidth,
+                    value: savedUser.title,
+                    onChanged: (cName) {
+                      savedUser.title = cName;
+                      appStore.dispatch(UpdateUsersStateAction());
+                    },
+                    items: Constants.userTitleTypes.values.toList(),
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "First Name",
+                    isRequired: true,
+                    controller: savedUser.firstName,
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Last Name",
+                    isRequired: true,
+                    controller: savedUser.lastName,
+                  ),
+                  DropdownWidget(
+                    hintText: "Nationality",
+                    dropdownBtnWidth: dpWidth,
+                    dropdownMaxHeight: 500.0,
+                    dropdownOptionsWidth: dpWidth,
+                    value: savedUser.nationalityCountryCode?['name'],
+                    hasSearchBox: true,
+                    onChanged: (cName) {
+                      savedUser.nationalityCountryCode = {
+                        "name": cName,
+                        "code": countries
+                            .firstWhere((element) => element.name == cName)
+                            .code
+                      };
+                      appStore.dispatch(UpdateUsersStateAction());
+                    },
+                    items: countries.map((e) => e.name).toList(),
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    enabled: false,
+                    labelText: "Date of Birth",
+                    leftIcon: HeroIcons.calendar,
+                    controller: TextEditingController(
+                        text: savedUser.birthdate?.toString()),
+                    onTap: () async {
+                      final d = await showDatePicker(
+                        context: context,
+                        initialDate: savedUser.birthdate ?? DateTime.now(),
+                        firstDate: DateTime(2015),
+                        lastDate: DateTime(2035),
+                      );
+                      if (d != null) {
+                        savedUser.birthdate = d;
+                        appStore.dispatch(UpdateUsersStateAction());
+                      }
+                    },
+                  ),
+                ]),
+            SpacedColumn(
+                verticalSpace: 32.0,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownWidget(
+                    hintText: "Martial Status",
+                    dropdownBtnWidth: dpWidth,
+                    dropdownOptionsWidth: dpWidth,
+                    onChanged: (_) {},
+                    items: Constants.userMartialStatusTypes.values.toList(),
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Email Address",
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Phone Number",
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Phone Landline",
+                  ),
+                  DropdownWidget(
+                    hintText: "Account Status",
+                    dropdownBtnWidth: dpWidth,
+                    dropdownOptionsWidth: dpWidth,
+                    onChanged: (_) {},
+                    items: Constants.userAccountStatusTypes.values.toList(),
+                  ),
+                ]),
+          ]);
+        });
   }
 }
 

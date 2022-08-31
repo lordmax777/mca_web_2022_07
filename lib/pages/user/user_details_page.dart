@@ -30,18 +30,22 @@ class UserDetailsPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          await Future.wait([
-            fetch(GetUserDetailsDetailAction()),
-            fetch(GetUserDetailsContractsAction()),
-            fetch(GetUserDetailsReviewsAction()),
-            fetch(GetUserDetailsVisasAction()),
-            fetch(GetUserDetailsPreferredShiftsAction()),
-            fetch(GetUserDetailsQualifsAction()),
-            fetch(GetUserDetailsStatusAction()),
-            fetch(GetUserDetailsMobileAction()),
-          ]);
+          if (!store.state.usersState.isNewUser) {
+            await Future.wait([
+              fetch(GetUserDetailsDetailAction()),
+              fetch(GetUserDetailsPhotosAction()),
+              fetch(GetUserDetailsContractsAction()),
+              fetch(GetUserDetailsReviewsAction()),
+              fetch(GetUserDetailsVisasAction()),
+              fetch(GetUserDetailsPreferredShiftsAction()),
+              fetch(GetUserDetailsQualifsAction()),
+              fetch(GetUserDetailsStatusAction()),
+              fetch(GetUserDetailsMobileAction()),
+            ]);
+          }
         },
         builder: (context, state) {
+          final bool isNewUser = state.usersState.isNewUser;
           final e1 = state.usersState.userDetails.error;
           final e2 = state.usersState.userDetailContracts.error;
           final e3 = state.usersState.userDetailReviews.error;
@@ -50,7 +54,11 @@ class UserDetailsPage extends StatelessWidget {
           final e6 = state.usersState.userDetailStatus.error;
           final e7 = state.usersState.userDetailMobileIsRegistered.error;
           final e8 = state.usersState.userDetailPreferredShift.error;
-          final List<ErrorModel> errors = [e1, e2, e3, e4, e5, e6, e7, e8];
+          final e9 = state.usersState.userDetailPhotos.error;
+          final List<ErrorModel> errors = [e1, e2, e3, e4, e5, e6, e7, e8, e9];
+          if (isNewUser) {
+            errors.clear();
+          }
 
           final user = state.usersState.userDetails.data;
 
@@ -59,15 +67,15 @@ class UserDetailsPage extends StatelessWidget {
               email: '-',
               phone: '-',
               id: '-',
-              nameWithUsername: "-");
+              nameWithUsername: isNewUser ? "New User" : '-');
 
-          if (user != null) {
+          if (!isNewUser) {
             userDetails.nameWithUsername =
-                "${user.first_name} ${user.last_name} (${state.usersState.selectedUser?.username ?? "-"})";
-            userDetails.name = "${user.first_name} ${user.last_name}";
+                "${user?.first_name} ${user?.last_name} (${state.usersState.selectedUser?.username ?? "-"})";
+            userDetails.name = "${user?.first_name} ${user?.last_name}";
             userDetails.id = state.usersState.selectedUser!.id.toString();
-            userDetails.phone =
-                user.phones.mobile.isEmpty ? "-" : user.phones.mobile;
+            // userDetails.phone =
+            //     user.phones.mobile.isEmpty ? "-" : user.phones.mobile;
             userDetails.email = "-";
           }
           return ErrorWrapper(
@@ -77,7 +85,8 @@ class UserDetailsPage extends StatelessWidget {
               verticalSpace: 16.0,
               children: [
                 PageGobackWidget(text: userDetails.nameWithUsername),
-                _UserDetailsQuickViewWidget(userDetails: userDetails),
+                if (!isNewUser)
+                  _UserDetailsQuickViewWidget(userDetails: userDetails),
                 _Body(tabIndex: tabIndex),
               ],
             )),
@@ -192,7 +201,9 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
-    _tabController.animateTo(widget.tabIndex!);
+    if (widget.tabIndex != null) {
+      _tabController.animateTo(widget.tabIndex!);
+    }
     _tabController.addListener(() {
       setState(() {});
     });

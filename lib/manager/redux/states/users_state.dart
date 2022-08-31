@@ -4,8 +4,9 @@ import '../../model_exporter.dart';
 
 @immutable
 class UsersState {
-  final StateValue<List<UserRes>> usersList;
   final UserRes? selectedUser;
+  final bool isNewUser;
+  final StateValue<List<UserRes>> usersList;
   final StateValue<UserDetailsMd?> userDetails;
   final StateValue<List<ContractMd>> userDetailContracts;
   final StateValue<List<ReviewMd>> userDetailReviews;
@@ -14,9 +15,12 @@ class UsersState {
   final StateValue<StatussMd?> userDetailStatus;
   final StateValue<bool> userDetailMobileIsRegistered;
   final StateValue<List<PreferredShiftMd>> userDetailPreferredShift;
+  final StateValue<PhotosMd?> userDetailPhotos;
+  final UserDetailSaveMd? saveableUserDetails;
 
   UsersState({
     required this.usersList,
+    required this.isNewUser,
     required this.selectedUser,
     required this.userDetails,
     required this.userDetailContracts,
@@ -26,10 +30,13 @@ class UsersState {
     required this.userDetailStatus,
     required this.userDetailMobileIsRegistered,
     required this.userDetailPreferredShift,
+    required this.userDetailPhotos,
+    required this.saveableUserDetails,
   });
 
   factory UsersState.initial() {
     return UsersState(
+      isNewUser: false,
       usersList: StateValue(error: ErrorModel(), data: []),
       selectedUser: null,
       userDetails: StateValue(error: ErrorModel(), data: null),
@@ -41,10 +48,13 @@ class UsersState {
       userDetailMobileIsRegistered:
           StateValue(error: ErrorModel(), data: false),
       userDetailPreferredShift: StateValue(error: ErrorModel(), data: []),
+      userDetailPhotos: StateValue(error: ErrorModel(), data: null),
+      saveableUserDetails: null,
     );
   }
 
   UsersState copyWith({
+    bool? isNewUser,
     StateValue<List<UserRes>>? usersList,
     UserRes? selectedUser,
     StateValue<UserDetailsMd?>? userDetails,
@@ -55,6 +65,8 @@ class UsersState {
     StateValue<StatussMd?>? userDetailStatus,
     StateValue<bool>? userDetailMobileIsRegistered,
     StateValue<List<PreferredShiftMd>>? userDetailPreferredShift,
+    StateValue<PhotosMd?>? userDetailPhotos,
+    UserDetailSaveMd? saveableUserDetails,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
@@ -69,11 +81,15 @@ class UsersState {
           userDetailMobileIsRegistered ?? this.userDetailMobileIsRegistered,
       userDetailPreferredShift:
           userDetailPreferredShift ?? this.userDetailPreferredShift,
+      userDetailPhotos: userDetailPhotos ?? this.userDetailPhotos,
+      saveableUserDetails: saveableUserDetails,
+      isNewUser: isNewUser ?? this.isNewUser,
     );
   }
 }
 
 class UpdateUsersStateAction {
+  bool? isNewUser;
   UserRes? selectedUser;
   StateValue<List<UserRes>>? usersList;
   StateValue<UserDetailsMd>? userDetails;
@@ -84,7 +100,10 @@ class UpdateUsersStateAction {
   StateValue<StatussMd>? userDetailStatus;
   StateValue<bool>? userDetailMobileIsRegistered;
   StateValue<List<PreferredShiftMd>>? userDetailPreferredShift;
+  StateValue<PhotosMd>? userDetailPhotos;
+  UserDetailSaveMd? saveableUserDetails;
   UpdateUsersStateAction({
+    this.isNewUser,
     this.usersList,
     this.selectedUser,
     this.userDetails,
@@ -95,6 +114,8 @@ class UpdateUsersStateAction {
     this.userDetailStatus,
     this.userDetailMobileIsRegistered,
     this.userDetailPreferredShift,
+    this.userDetailPhotos,
+    this.saveableUserDetails,
   });
 }
 
@@ -115,3 +136,5 @@ class GetUserDetailsStatusAction {}
 class GetUserDetailsMobileAction {}
 
 class GetUserDetailsPreferredShiftsAction {}
+
+class GetUserDetailsPhotosAction {}

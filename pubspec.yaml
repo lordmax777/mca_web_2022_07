@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -53,6 +53,7 @@ dependencies:
     path: ./simpleicons
   mix: ^0.0.6
   flutter_easylogger: ^2.3.3
+  dropdown_search: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -73,17 +74,16 @@ dev_dependencies:
 #First configure flutter_intl
 flutter_intl:
   enabled: true
-  class_name: 'AppIntl' # Class name which is used in by the client, default "S"
-  arb_dir: 'lib/l10n'   # .arb files located dir, default 'lib/l10n'
-  main_locale: 'en'     # main locale, default "en"
-  output_dir: 'lib/intl_conf/intl' # Generated i10n files location
+  class_name: "AppIntl" # Class name which is used in by the client, default "S"
+  arb_dir: "lib/l10n" # .arb files located dir, default 'lib/l10n'
+  main_locale: "en" # main locale, default "en"
+  output_dir: "lib/intl_conf/intl" # Generated i10n files location
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
