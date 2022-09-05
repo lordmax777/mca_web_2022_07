@@ -1,6 +1,4 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:dropdown_search/dropdown_search.dart';
-
 import '../theme/theme.dart';
 
 class DropdownWidget extends StatefulWidget {
@@ -73,10 +71,15 @@ class _DropdownWidgetState extends State<DropdownWidget> {
       height: 56,
       child: DropdownButton2(
         searchInnerWidget: widget.hasSearchBox
-            ? TextInputWidget(
-                hintText: 'Search',
-                defaultBorderColor: ThemeColors.gray10,
-                controller: searchcontroller,
+            ? Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: TextInputWidget(
+                  width: MediaQuery.of(context).size.width,
+                  hintText: 'Search',
+                  labelText: 'Search',
+                  defaultBorderColor: ThemeColors.gray10,
+                  controller: searchcontroller,
+                ),
               )
             : null,
         searchController: searchcontroller,
@@ -261,24 +264,5 @@ class _DropdownWidgetState extends State<DropdownWidget> {
     }
 
     return _menuItems;
-  }
-}
-
-class MyWidget extends StatelessWidget {
-  const MyWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100,
-      width: 200,
-      child: DropdownSearch<String>(
-        filterFn: (item, filter) {
-          return item.toLowerCase().contains(filter.toLowerCase());
-        },
-        items: ["Brazil", "Italia (Disabled)", "Tunisia", 'Canada'],
-        onChanged: print,
-      ),
-    );
   }
 }

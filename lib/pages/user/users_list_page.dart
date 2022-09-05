@@ -34,12 +34,7 @@ class UsersListPage extends StatelessWidget {
             onRightBtnClick: () async {
               appStore.dispatch(UpdateUsersStateAction(
                   isNewUser: true,
-                  saveableUserDetails: UserDetailSaveMd(
-                      firstName: TextEditingController(),
-                      lastName: TextEditingController(),
-                      addressLine1: TextEditingController(),
-                      addressCity: TextEditingController(),
-                      addressPostcode: TextEditingController())));
+                  saveableUserDetails: UserDetailSaveMd.init()));
               context.navigateTo(UserDetailsRoute());
             },
           ),
@@ -282,9 +277,16 @@ class _BodyState extends State<_Body> {
             return searched;
           },
         );
+        _onPageChange(usersPageStateManger.page, usersPageStateManger);
+        _onPageSizeChange(
+            usersPageStateManger.pageSize.toString(), usersPageStateManger);
         return;
       }
+
       usersPageStateManger.setFilter((element) => true);
+      _onPageChange(usersPageStateManger.page, usersPageStateManger);
+      _onPageSizeChange(
+          usersPageStateManger.pageSize.toString(), usersPageStateManger);
     });
   }
 
@@ -305,7 +307,9 @@ class _BodyState extends State<_Body> {
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
       {int index = 0}) {
     appStore.dispatch(UpdateUsersStateAction(
-        isNewUser: false, selectedUser: ctx.row.cells['user']?.value));
+        // saveableUserDetails: UserDetailSaveMd.init(),
+        isNewUser: false,
+        selectedUser: ctx.row.cells['user']?.value));
     context.navigateTo(UserDetailsRoute(tabIndex: index));
   }
 

@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:mix/mix.dart';
+
+import '../../models/user_details_md.dart';
 
 @immutable
 class StateValue<T> {
@@ -46,19 +50,20 @@ class ErrorModel<T> {
 }
 
 class UserDetailSaveMd {
-  String? username;
-  String? upass;
-  String? title;
+  TextEditingController username;
+  TextEditingController upass;
+  TextEditingController upassRepeat;
+  CodeMap title;
   TextEditingController firstName;
   TextEditingController lastName;
   DateTime? birthdate;
-  Map<String, String>? nationalityCountryCode;
+  CodeMap? nationalityCountryCode;
   String? religionId;
   String? ethnicId;
-  String? maritalStatusCode;
-  String? nationalInsuranceNo;
-  String? phoneLandline;
-  String? phoneMobile;
+  CodeMap? maritalStatusCode;
+  TextEditingController nationalInsuranceNo;
+  TextEditingController phoneLandline;
+  TextEditingController phoneMobile;
   String? nextOfKinName;
   String? nextOfKinPhone;
   String? nextOfKinRelation;
@@ -67,25 +72,109 @@ class UserDetailSaveMd {
   TextEditingController addressCity;
   String? addressCountry;
   TextEditingController addressPostcode;
-  String? payrollCode;
-  String? notes;
-  bool? isActivate;
-  String? exEmail;
+  TextEditingController payrollCode;
+  TextEditingController notes;
+  CodeMap? isActivate;
+  TextEditingController exEmail;
   double? latitude;
   double? longitude;
-  String? languageCode;
-  String? roleCode;
-  String? groupId;
+  CodeMap? languageCode;
+  CodeMap? roleCode;
+  CodeMap? groupId;
   bool? isGrouoAdmin;
-  String? locationId;
+  CodeMap? locationId;
   String? locationAdmin;
-  bool? loginRequired;
-  List<int>? loginMethods;
+  bool loginRequired;
+  LoginMethds loginMethods;
+  String? photo;
+
+  static UserDetailSaveMd init() {
+    return UserDetailSaveMd(
+      nationalInsuranceNo: TextEditingController(),
+      payrollCode: TextEditingController(),
+      upass: TextEditingController(),
+      upassRepeat: TextEditingController(),
+      username: TextEditingController(),
+      firstName: TextEditingController(),
+      notes: TextEditingController(),
+      phoneLandline: TextEditingController(),
+      phoneMobile: TextEditingController(),
+      exEmail: TextEditingController(),
+      lastName: TextEditingController(),
+      addressLine1: TextEditingController(),
+      addressCity: TextEditingController(),
+      addressPostcode: TextEditingController(),
+      title: CodeMap(code: null, name: null),
+      loginMethods: LoginMethds(),
+      loginRequired: false,
+    );
+  }
+
+  static UserDetailSaveMd fromUserDetails(UserDetailsMd userDetailsMd) {
+    final general = appStore.state.generalState.paramList.data!;
+    final loginms = userDetailsMd.account.login_methods
+        .replaceAll(" ", "")
+        .split(',')
+        .map((e) => e.toLowerCase())
+        .toList();
+    logger(loginms);
+    return UserDetailSaveMd(
+        loginRequired: userDetailsMd.account.login_required,
+        loginMethods: LoginMethds(
+          api: loginms.contains('api'),
+          mobile: loginms.contains('mobile'),
+          web: loginms.contains('web'),
+          mobileAdmin: loginms.contains('mobileadmin'),
+          tablet: loginms.contains('tablet'),
+        ),
+        nationalInsuranceNo: TextEditingController(),
+        exEmail: TextEditingController(),
+        payrollCode: TextEditingController(),
+        upass: TextEditingController(),
+        upassRepeat: TextEditingController(),
+        username: TextEditingController(),
+        notes: TextEditingController(text: userDetailsMd.notes),
+        phoneLandline:
+            TextEditingController(text: userDetailsMd.phones.landline),
+        phoneMobile: TextEditingController(text: userDetailsMd.phones.mobile),
+        addressCity: TextEditingController(text: userDetailsMd.address.city),
+        addressLine1: TextEditingController(text: userDetailsMd.address.line1),
+        addressPostcode:
+            TextEditingController(text: userDetailsMd.address.postcode),
+        firstName: TextEditingController(text: userDetailsMd.first_name),
+        lastName: TextEditingController(text: userDetailsMd.last_name),
+        title: CodeMap(
+            name: userDetailsMd.title,
+            code: Constants.userTitleTypes.entries
+                .firstWhere((element) => element.value == userDetailsMd.title)
+                .key),
+        birthdate: userDetailsMd.date_of_birth != null
+            ? DateTime.tryParse(userDetailsMd.date_of_birth!.date)
+            : null,
+        nationalityCountryCode: CodeMap(
+            name: userDetailsMd.nationality,
+            code: general.countries
+                .firstWhere(
+                    (element) => element.name == userDetailsMd.nationality)
+                .code),
+        maritalStatusCode: CodeMap(
+            name: userDetailsMd.marital_status,
+            code: Constants.userMartialStatusTypes.entries
+                .firstWhere(
+                    (element) => element.value == userDetailsMd.marital_status)
+                .key),
+        isActivate: CodeMap(
+          name: Constants.userAccountStatusTypes[userDetailsMd.account.active],
+          code: userDetailsMd.account.active ? 1.toString() : 0.toString(),
+        ));
+  }
 
   UserDetailSaveMd({
-    this.username,
-    this.upass,
-    this.title,
+    required this.username,
+    required this.upass,
+    required this.upassRepeat,
+    this.photo,
+    required this.title,
     required this.firstName,
     required this.lastName,
     this.birthdate,
@@ -93,9 +182,9 @@ class UserDetailSaveMd {
     this.religionId,
     this.ethnicId,
     this.maritalStatusCode,
-    this.nationalInsuranceNo,
-    this.phoneLandline,
-    this.phoneMobile,
+    required this.nationalInsuranceNo,
+    required this.phoneLandline,
+    required this.phoneMobile,
     this.nextOfKinName,
     this.nextOfKinPhone,
     this.nextOfKinRelation,
@@ -104,10 +193,10 @@ class UserDetailSaveMd {
     required this.addressCity,
     this.addressCountry,
     required this.addressPostcode,
-    this.payrollCode,
-    this.notes,
+    required this.payrollCode,
+    required this.notes,
     this.isActivate,
-    this.exEmail,
+    required this.exEmail,
     this.latitude,
     this.longitude,
     this.languageCode,
@@ -116,7 +205,30 @@ class UserDetailSaveMd {
     this.isGrouoAdmin,
     this.locationId,
     this.locationAdmin,
-    this.loginRequired,
-    this.loginMethods,
+    required this.loginRequired,
+    required this.loginMethods,
+  });
+}
+
+class CodeMap {
+  String? name;
+  String? code;
+
+  CodeMap({required this.name, required this.code});
+}
+
+class LoginMethds {
+  bool web;
+  bool mobile;
+  bool tablet;
+  bool mobileAdmin;
+  bool api;
+
+  LoginMethds({
+    this.web = false,
+    this.mobile = false,
+    this.tablet = false,
+    this.mobileAdmin = false,
+    this.api = false,
   });
 }

@@ -102,14 +102,7 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
       var savedUserDetails = state.usersState.saveableUserDetails;
       final UserDetailsMd userDetailsMd = UserDetailsMd.fromJson(r);
 
-      savedUserDetails = UserDetailSaveMd(
-        addressCity: TextEditingController(text: userDetailsMd.address.city),
-        addressLine1: TextEditingController(text: userDetailsMd.address.line1),
-        addressPostcode:
-            TextEditingController(text: userDetailsMd.address.postcode),
-        firstName: TextEditingController(text: userDetailsMd.first_name),
-        lastName: TextEditingController(text: userDetailsMd.last_name),
-      );
+      savedUserDetails = UserDetailSaveMd.fromUserDetails(userDetailsMd);
 
       stateValue.error.isError = false;
       stateValue.data = userDetailsMd;
@@ -460,7 +453,6 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
       appRouter.navigateBack();
       return stateValue;
     }
-
     next(UpdateUsersStateAction(userDetailPhotos: stateValue));
 
     final ApiResponse res = await restClient()
@@ -472,11 +464,13 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     stateValue.error.isLoading = false;
     stateValue.error.rawError = res.rawError;
 
+    final savedUser = state.usersState.saveableUserDetails;
     if (res.success) {
       final r = res.data['photos'];
       var list;
       if (r.isNotEmpty) {
         list = PhotosMd.fromJson(r.first);
+        savedUser?.photo = list.photo;
       }
 
       stateValue.error.isError = false;
@@ -485,7 +479,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         stateValue.data = list;
       }
 
-      next(UpdateUsersStateAction(userDetailPhotos: stateValue));
+      next(UpdateUsersStateAction(
+          userDetailPhotos: stateValue, saveableUserDetails: savedUser));
     } else {
       stateValue.error.retries =
           state.usersState.userDetailPhotos.error.retries + 1;
