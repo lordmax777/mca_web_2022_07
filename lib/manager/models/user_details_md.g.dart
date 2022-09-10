@@ -120,6 +120,7 @@ UserDetailsAccountMd _$UserDetailsAccountMdFromJson(Map json) =>
       location_admin: json['location_admin'] as bool,
       login_methods: json['login_methods'] as String,
       login_required: json['login_required'] as bool,
+      role: (json['role'] as List<dynamic>).map((e) => e as String).toList(),
       locked: json['locked'],
     );
 
@@ -134,4 +135,5 @@ Map<String, dynamic> _$UserDetailsAccountMdToJson(
       'location_admin': instance.location_admin,
       'locked': instance.locked,
       'login_methods': instance.login_methods,
+      'role': instance.role,
     };

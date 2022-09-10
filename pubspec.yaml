@@ -53,6 +53,8 @@ dependencies:
     path: ./simpleicons
   mix: ^0.0.6
   flutter_easylogger: ^2.3.3
+  opinionated_pagination: ^1.1.0+0
+  number_paginator: ^0.0.3
 
 dev_dependencies:
   flutter_test:

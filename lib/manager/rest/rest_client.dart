@@ -63,6 +63,48 @@ abstract class RestClient {
 
   @GET("/api/fe/userdetails/{id}/status")
   Future<HttpResponse> getUserDetailsStatus(@Path() String id);
+
+  @POST("/api/fe/userdetails/{id}/details")
+  @FormUrlEncoded()
+  Future<HttpResponse> getSaveUserGeneralDetails(
+    @Path() int id,
+    @Field() String firstName,
+    @Field() String lastName,
+    @Field() String addressLine1,
+    @Field() String addressCity,
+    @Field() String addressPostcode, {
+    @Field() String? upass,
+    @Field() String? title, //code
+    @Field() String? birthday,
+    @Field() String? nationality, //code
+    @Field() int? religion, //code
+    @Field() int? ethnic, //code
+    @Field() String? marital_status,
+    @Field() String? ni,
+    @Field() String? phoneLandline,
+    @Field() String? phoneMobile,
+    @Field() String? nokName,
+    @Field() String? nokPhone,
+    @Field() String? nokRelation,
+    @Field() String? addressLine2,
+    @Field() String? addressCounty,
+    @Field() String? addressCountry, //code
+    @Field() String? payrolCode,
+    @Field() String? notes,
+    @Field() bool? isActive,
+    @Field() int? exEmail, //0 - true, 1 - false
+    @Field() double? latitude,
+    @Field() double? longitude,
+    @Field() String? role, //code
+    @Field() int? group, //code
+    @Field() bool? groupAdmin,
+    @Field() int? location, //code
+    @Field() bool? locationAdmin,
+    @Field() bool? loginRequired,
+    @Field() List<int>? loginMethods, //codes
+
+    ///
+  });
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

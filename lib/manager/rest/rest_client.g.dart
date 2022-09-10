@@ -269,6 +269,93 @@ class _RestClient implements RestClient {
     return httpResponse;
   }
 
+  @override
+  Future<HttpResponse<dynamic>> getSaveUserGeneralDetails(
+      id, firstName, lastName, addressLine1, addressCity, addressPostcode,
+      {upass,
+      title,
+      birthday,
+      nationality,
+      religion,
+      ethnic,
+      marital_status,
+      ni,
+      phoneLandline,
+      phoneMobile,
+      nokName,
+      nokPhone,
+      nokRelation,
+      addressLine2,
+      addressCounty,
+      addressCountry,
+      payrolCode,
+      notes,
+      isActive,
+      exEmail,
+      latitude,
+      longitude,
+      role,
+      group,
+      groupAdmin,
+      location,
+      locationAdmin,
+      loginRequired,
+      loginMethods}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'firstName': firstName,
+      'lastName': lastName,
+      'addressLine1': addressLine1,
+      'addressCity': addressCity,
+      'addressPostcode': addressPostcode,
+      'upass': upass,
+      'title': title,
+      'birthday': birthday,
+      'nationality': nationality,
+      'religion': religion,
+      'ethnic': ethnic,
+      'marital_status': marital_status,
+      'ni': ni,
+      'phoneLandline': phoneLandline,
+      'phoneMobile': phoneMobile,
+      'nokName': nokName,
+      'nokPhone': nokPhone,
+      'nokRelation': nokRelation,
+      'addressLine2': addressLine2,
+      'addressCounty': addressCounty,
+      'addressCountry': addressCountry,
+      'payrolCode': payrolCode,
+      'notes': notes,
+      'isActive': isActive,
+      'exEmail': exEmail,
+      'latitude': latitude,
+      'longitude': longitude,
+      'role': role,
+      'group': group,
+      'groupAdmin': groupAdmin,
+      'location': location,
+      'locationAdmin': locationAdmin,
+      'loginRequired': loginRequired,
+      'loginMethods': loginMethods
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(
+        Options(
+                method: 'POST',
+                headers: _headers,
+                extra: _extra,
+                contentType: 'application/x-www-form-urlencoded')
+            .compose(_dio.options, '/api/fe/userdetails/${id}/details',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

@@ -34,7 +34,7 @@ class DropdownWidget extends StatefulWidget {
       this.dropdownBtnWidth = 115,
       this.dropdownOptionsWidth = 224,
       this.hintText,
-      this.dropdownMaxHeight,
+      this.dropdownMaxHeight = 400.0,
       this.dropdownBtnColor,
       this.showDropdownIcon = true})
       : super(key: key) {
@@ -195,6 +195,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                     KText(
                       text: widget.hintText!,
                       isSelectable: false,
+                      style: ThemeText.bold14,
                       fontSize: 14.0,
                       textColor: widget.disableAll
                           ? ThemeColors.gray8
@@ -213,7 +214,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                   text: widget.value.toString(),
                   isSelectable: false,
                   fontSize: 14.0,
-                  fontWeight: FWeight.medium,
+                  fontWeight: FWeight.bold,
                   textColor: ThemeColors.gray2,
                 ),
               ],

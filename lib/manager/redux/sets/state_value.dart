@@ -49,166 +49,165 @@ class ErrorModel<T> {
   });
 }
 
-class UserDetailSaveMd {
-  TextEditingController username;
-  TextEditingController upass;
-  TextEditingController upassRepeat;
-  CodeMap title;
-  TextEditingController firstName;
-  TextEditingController lastName;
-  DateTime? birthdate;
-  CodeMap? nationalityCountryCode;
-  String? religionId;
-  String? ethnicId;
-  CodeMap? maritalStatusCode;
-  TextEditingController nationalInsuranceNo;
-  TextEditingController phoneLandline;
-  TextEditingController phoneMobile;
-  String? nextOfKinName;
-  String? nextOfKinPhone;
-  String? nextOfKinRelation;
-  TextEditingController addressLine1;
-  String? addressLine2;
-  TextEditingController addressCity;
-  String? addressCountry;
-  TextEditingController addressPostcode;
-  TextEditingController payrollCode;
-  TextEditingController notes;
-  CodeMap? isActivate;
-  TextEditingController exEmail;
-  double? latitude;
-  double? longitude;
-  CodeMap? languageCode;
-  CodeMap? roleCode;
-  CodeMap? groupId;
-  bool? isGrouoAdmin;
-  CodeMap? locationId;
-  String? locationAdmin;
-  bool loginRequired;
-  LoginMethds loginMethods;
-  String? photo;
+// class UserDetailSaveMd {
+//   TextEditingController username;
+//   TextEditingController upass;
+//   TextEditingController upassRepeat;
+//   CodeMap title;
+//   TextEditingController firstName;
+//   TextEditingController lastName;
+//   DateTime? birthdate;
+//   CodeMap? nationalityCountryCode;
+//   String? religionId;
+//   String? ethnicId;
+//   CodeMap? maritalStatusCode;
+//   TextEditingController nationalInsuranceNo;
+//   TextEditingController phoneLandline;
+//   TextEditingController phoneMobile;
+//   String? nextOfKinName;
+//   String? nextOfKinPhone;
+//   String? nextOfKinRelation;
+//   TextEditingController addressLine1;
+//   String? addressLine2;
+//   TextEditingController addressCity;
+//   String? addressCountry;
+//   TextEditingController addressPostcode;
+//   TextEditingController payrollCode;
+//   TextEditingController notes;
+//   CodeMap? isActivate;
+//   TextEditingController exEmail;
+//   double? latitude;
+//   double? longitude;
+//   CodeMap? languageCode;
+//   CodeMap? roleCode;
+//   CodeMap? groupId;
+//   bool? isGrouoAdmin;
+//   CodeMap? locationId;
+//   String? locationAdmin;
+//   bool loginRequired;
+//   LoginMethds loginMethods;
+//   String? photo;
 
-  static UserDetailSaveMd init() {
-    return UserDetailSaveMd(
-      nationalInsuranceNo: TextEditingController(),
-      payrollCode: TextEditingController(),
-      upass: TextEditingController(),
-      upassRepeat: TextEditingController(),
-      username: TextEditingController(),
-      firstName: TextEditingController(),
-      notes: TextEditingController(),
-      phoneLandline: TextEditingController(),
-      phoneMobile: TextEditingController(),
-      exEmail: TextEditingController(),
-      lastName: TextEditingController(),
-      addressLine1: TextEditingController(),
-      addressCity: TextEditingController(),
-      addressPostcode: TextEditingController(),
-      title: CodeMap(code: null, name: null),
-      loginMethods: LoginMethds(),
-      loginRequired: false,
-    );
-  }
+//   static UserDetailSaveMd init() {
+//     return UserDetailSaveMd(
+//       nationalInsuranceNo: TextEditingController(),
+//       payrollCode: TextEditingController(),
+//       upass: TextEditingController(),
+//       upassRepeat: TextEditingController(),
+//       username: TextEditingController(),
+//       firstName: TextEditingController(),
+//       notes: TextEditingController(),
+//       phoneLandline: TextEditingController(),
+//       phoneMobile: TextEditingController(),
+//       exEmail: TextEditingController(),
+//       lastName: TextEditingController(),
+//       addressLine1: TextEditingController(),
+//       addressCity: TextEditingController(),
+//       addressPostcode: TextEditingController(),
+//       title: CodeMap(code: null, name: null),
+//       loginMethods: LoginMethds(),
+//       loginRequired: false,
+//     );
+//   }
 
-  static UserDetailSaveMd fromUserDetails(UserDetailsMd userDetailsMd) {
-    final general = appStore.state.generalState.paramList.data!;
-    final loginms = userDetailsMd.account.login_methods
-        .replaceAll(" ", "")
-        .split(',')
-        .map((e) => e.toLowerCase())
-        .toList();
-    logger(loginms);
-    return UserDetailSaveMd(
-        loginRequired: userDetailsMd.account.login_required,
-        loginMethods: LoginMethds(
-          api: loginms.contains('api'),
-          mobile: loginms.contains('mobile'),
-          web: loginms.contains('web'),
-          mobileAdmin: loginms.contains('mobileadmin'),
-          tablet: loginms.contains('tablet'),
-        ),
-        nationalInsuranceNo: TextEditingController(),
-        exEmail: TextEditingController(),
-        payrollCode: TextEditingController(),
-        upass: TextEditingController(),
-        upassRepeat: TextEditingController(),
-        username: TextEditingController(),
-        notes: TextEditingController(text: userDetailsMd.notes),
-        phoneLandline:
-            TextEditingController(text: userDetailsMd.phones.landline),
-        phoneMobile: TextEditingController(text: userDetailsMd.phones.mobile),
-        addressCity: TextEditingController(text: userDetailsMd.address.city),
-        addressLine1: TextEditingController(text: userDetailsMd.address.line1),
-        addressPostcode:
-            TextEditingController(text: userDetailsMd.address.postcode),
-        firstName: TextEditingController(text: userDetailsMd.first_name),
-        lastName: TextEditingController(text: userDetailsMd.last_name),
-        title: CodeMap(
-            name: userDetailsMd.title,
-            code: Constants.userTitleTypes.entries
-                .firstWhere((element) => element.value == userDetailsMd.title)
-                .key),
-        birthdate: userDetailsMd.date_of_birth != null
-            ? DateTime.tryParse(userDetailsMd.date_of_birth!.date)
-            : null,
-        nationalityCountryCode: CodeMap(
-            name: userDetailsMd.nationality,
-            code: general.countries
-                .firstWhere(
-                    (element) => element.name == userDetailsMd.nationality)
-                .code),
-        maritalStatusCode: CodeMap(
-            name: userDetailsMd.marital_status,
-            code: Constants.userMartialStatusTypes.entries
-                .firstWhere(
-                    (element) => element.value == userDetailsMd.marital_status)
-                .key),
-        isActivate: CodeMap(
-          name: Constants.userAccountStatusTypes[userDetailsMd.account.active],
-          code: userDetailsMd.account.active ? 1.toString() : 0.toString(),
-        ));
-  }
+//   static UserDetailSaveMd fromUserDetails(UserDetailsMd userDetailsMd) {
+//     final general = appStore.state.generalState.paramList.data!;
+//     final loginms = userDetailsMd.account.login_methods
+//         .replaceAll(" ", "")
+//         .split(',')
+//         .map((e) => e.toLowerCase())
+//         .toList();
+//     return UserDetailSaveMd(
+//         loginRequired: userDetailsMd.account.login_required,
+//         loginMethods: LoginMethds(
+//           api: loginms.contains('api'),
+//           mobile: loginms.contains('mobile'),
+//           web: loginms.contains('web'),
+//           mobileAdmin: loginms.contains('mobileadmin'),
+//           tablet: loginms.contains('tablet'),
+//         ),
+//         nationalInsuranceNo: TextEditingController(),
+//         exEmail: TextEditingController(),
+//         payrollCode: TextEditingController(),
+//         upass: TextEditingController(),
+//         upassRepeat: TextEditingController(),
+//         username: userDetailsMd.usernam,
+//         notes: TextEditingController(text: userDetailsMd.notes),
+//         phoneLandline:
+//             TextEditingController(text: userDetailsMd.phones.landline),
+//         phoneMobile: TextEditingController(text: userDetailsMd.phones.mobile),
+//         addressCity: TextEditingController(text: userDetailsMd.address.city),
+//         addressLine1: TextEditingController(text: userDetailsMd.address.line1),
+//         addressPostcode:
+//             TextEditingController(text: userDetailsMd.address.postcode),
+//         firstName: TextEditingController(text: userDetailsMd.first_name),
+//         lastName: TextEditingController(text: userDetailsMd.last_name),
+//         title: CodeMap(
+//             name: userDetailsMd.title,
+//             code: Constants.userTitleTypes.entries
+//                 .firstWhere((element) => element.value == userDetailsMd.title)
+//                 .key),
+//         birthdate: userDetailsMd.date_of_birth != null
+//             ? DateTime.tryParse(userDetailsMd.date_of_birth!.date)
+//             : null,
+//         nationalityCountryCode: CodeMap(
+//             name: userDetailsMd.nationality,
+//             code: general.countries
+//                 .firstWhere(
+//                     (element) => element.name == userDetailsMd.nationality)
+//                 .code),
+//         maritalStatusCode: CodeMap(
+//             name: userDetailsMd.marital_status,
+//             code: Constants.userMartialStatusTypes.entries
+//                 .firstWhere(
+//                     (element) => element.value == userDetailsMd.marital_status)
+//                 .key),
+//         isActivate: CodeMap(
+//           name: Constants.userAccountStatusTypes[userDetailsMd.account.active],
+//           code: userDetailsMd.account.active ? 1.toString() : 0.toString(),
+//         ));
+//   }
 
-  UserDetailSaveMd({
-    required this.username,
-    required this.upass,
-    required this.upassRepeat,
-    this.photo,
-    required this.title,
-    required this.firstName,
-    required this.lastName,
-    this.birthdate,
-    this.nationalityCountryCode,
-    this.religionId,
-    this.ethnicId,
-    this.maritalStatusCode,
-    required this.nationalInsuranceNo,
-    required this.phoneLandline,
-    required this.phoneMobile,
-    this.nextOfKinName,
-    this.nextOfKinPhone,
-    this.nextOfKinRelation,
-    required this.addressLine1,
-    this.addressLine2,
-    required this.addressCity,
-    this.addressCountry,
-    required this.addressPostcode,
-    required this.payrollCode,
-    required this.notes,
-    this.isActivate,
-    required this.exEmail,
-    this.latitude,
-    this.longitude,
-    this.languageCode,
-    this.roleCode,
-    this.groupId,
-    this.isGrouoAdmin,
-    this.locationId,
-    this.locationAdmin,
-    required this.loginRequired,
-    required this.loginMethods,
-  });
-}
+//   UserDetailSaveMd({
+//     required this.username,
+//     required this.upass,
+//     required this.upassRepeat,
+//     this.photo,
+//     required this.title,
+//     required this.firstName,
+//     required this.lastName,
+//     this.birthdate,
+//     this.nationalityCountryCode,
+//     this.religionId,
+//     this.ethnicId,
+//     this.maritalStatusCode,
+//     required this.nationalInsuranceNo,
+//     required this.phoneLandline,
+//     required this.phoneMobile,
+//     this.nextOfKinName,
+//     this.nextOfKinPhone,
+//     this.nextOfKinRelation,
+//     required this.addressLine1,
+//     this.addressLine2,
+//     required this.addressCity,
+//     this.addressCountry,
+//     required this.addressPostcode,
+//     required this.payrollCode,
+//     required this.notes,
+//     this.isActivate,
+//     required this.exEmail,
+//     this.latitude,
+//     this.longitude,
+//     this.languageCode,
+//     this.roleCode,
+//     this.groupId,
+//     this.isGrouoAdmin,
+//     this.locationId,
+//     this.locationAdmin,
+//     required this.loginRequired,
+//     required this.loginMethods,
+//   });
+// }
 
 class CodeMap {
   String? name;

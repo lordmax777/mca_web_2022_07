@@ -40,4 +40,12 @@ class ThemeText {
     color: ThemeColors.black,
     fontSize: 16.0,
   );
+
+  static const bold14 = TextStyle(
+    fontWeight: FontWeight.w800,
+    fontStyle: FontStyle.normal,
+    fontFamily: _fontFamilyB,
+    color: ThemeColors.black,
+    fontSize: 14.0,
+  );
 }

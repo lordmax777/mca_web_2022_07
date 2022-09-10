@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
-import '../../model_exporter.dart';
+import '../../../model_exporter.dart';
 
 @immutable
 class UsersState {
-  final UserRes? selectedUser;
-  final bool isNewUser;
-  final StateValue<List<UserRes>> usersList;
-  final StateValue<UserDetailsMd?> userDetails;
-  final StateValue<List<ContractMd>> userDetailContracts;
-  final StateValue<List<ReviewMd>> userDetailReviews;
-  final StateValue<List<VisaMd>> userDetailVisas;
-  final StateValue<List<QualifsMd>> userDetailQualifs;
-  final StateValue<StatussMd?> userDetailStatus;
-  final StateValue<bool> userDetailMobileIsRegistered;
-  final StateValue<List<PreferredShiftMd>> userDetailPreferredShift;
-  final StateValue<PhotosMd?> userDetailPhotos;
-  final UserDetailSaveMd? saveableUserDetails;
+  UserRes? selectedUser;
+  bool isNewUser;
+  StateValue<List<UserRes>> usersList;
+  StateValue<UserDetailsMd?> userDetails;
+  StateValue<List<ContractMd>> userDetailContracts;
+  StateValue<List<ReviewMd>> userDetailReviews;
+  StateValue<List<VisaMd>> userDetailVisas;
+  StateValue<List<QualifsMd>> userDetailQualifs;
+  StateValue<StatussMd?> userDetailStatus;
+  StateValue<bool> userDetailMobileIsRegistered;
+  StateValue<List<PreferredShiftMd>> userDetailPreferredShift;
+  StateValue<PhotosMd?> userDetailPhotos;
+  // final UserDetailSaveMd? saveableUserDetails;
 
   UsersState({
     required this.usersList,
@@ -31,7 +32,7 @@ class UsersState {
     required this.userDetailMobileIsRegistered,
     required this.userDetailPreferredShift,
     required this.userDetailPhotos,
-    required this.saveableUserDetails,
+    // required this.saveableUserDetails,
   });
 
   factory UsersState.initial() {
@@ -49,7 +50,7 @@ class UsersState {
           StateValue(error: ErrorModel(), data: false),
       userDetailPreferredShift: StateValue(error: ErrorModel(), data: []),
       userDetailPhotos: StateValue(error: ErrorModel(), data: null),
-      saveableUserDetails: null,
+      // saveableUserDetails: null,
     );
   }
 
@@ -66,7 +67,7 @@ class UsersState {
     StateValue<bool>? userDetailMobileIsRegistered,
     StateValue<List<PreferredShiftMd>>? userDetailPreferredShift,
     StateValue<PhotosMd?>? userDetailPhotos,
-    UserDetailSaveMd? saveableUserDetails,
+    // UserDetailSaveMd? saveableUserDetails,
   }) {
     return UsersState(
       usersList: usersList ?? this.usersList,
@@ -82,7 +83,7 @@ class UsersState {
       userDetailPreferredShift:
           userDetailPreferredShift ?? this.userDetailPreferredShift,
       userDetailPhotos: userDetailPhotos ?? this.userDetailPhotos,
-      saveableUserDetails: saveableUserDetails,
+      // saveableUserDetails: saveableUserDetails,
       isNewUser: isNewUser ?? this.isNewUser,
     );
   }
@@ -101,8 +102,11 @@ class UpdateUsersStateAction {
   StateValue<bool>? userDetailMobileIsRegistered;
   StateValue<List<PreferredShiftMd>>? userDetailPreferredShift;
   StateValue<PhotosMd>? userDetailPhotos;
-  UserDetailSaveMd? saveableUserDetails;
+  // UserDetailSaveMd? saveableUserDetails;
+
+  bool isInit;
   UpdateUsersStateAction({
+    this.isInit = false,
     this.isNewUser,
     this.usersList,
     this.selectedUser,
@@ -115,7 +119,6 @@ class UpdateUsersStateAction {
     this.userDetailMobileIsRegistered,
     this.userDetailPreferredShift,
     this.userDetailPhotos,
-    this.saveableUserDetails,
   });
 }
 
@@ -138,3 +141,14 @@ class GetUserDetailsMobileAction {}
 class GetUserDetailsPreferredShiftsAction {}
 
 class GetUserDetailsPhotosAction {}
+
+class GetSaveGeneralDetailsAction extends DispatcherAction {
+  @override
+  void dispatch() {
+    appStore.dispatch(GetSaveGeneralDetailsAction());
+  }
+}
+
+abstract class DispatcherAction {
+  void dispatch();
+}

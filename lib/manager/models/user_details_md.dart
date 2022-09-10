@@ -131,6 +131,7 @@ class UserDetailsAccountMd {
   bool location_admin;
   dynamic locked;
   String login_methods;
+  List<String> role;
 
   @override
   UserDetailsAccountMd({
@@ -141,6 +142,7 @@ class UserDetailsAccountMd {
     required this.location_admin,
     required this.login_methods,
     required this.login_required,
+    required this.role,
     this.locked,
   });
 

@@ -1,3 +1,6 @@
+import 'package:number_paginator/number_paginator.dart';
+import 'package:opinionated_pagination/opinionated_pagination.dart';
+
 import '../../theme/theme.dart';
 
 class TablePaginationWidget extends StatelessWidget {
@@ -14,6 +17,38 @@ class TablePaginationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int t = totalPages;
+    List<Widget> pages = [];
+
+    // if (t > 8) {
+    //   pages.clear();
+    //   pages.add(1 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(1));
+    //   pages.add(2 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(2));
+    //   pages.add(3 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(3));
+    //   pages.add(const SizedBox(width: 8.0));
+    //   pages.add(const Text(". . ."));
+    //   pages.add(const SizedBox(width: 8.0));
+    //   pages.add(
+    //       t - 2 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(t - 2));
+    //   pages.add(
+    //       t - 1 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(t - 1));
+    //   pages.add(t == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(t));
+    // } else {
+    //   for (int i = 1; i <= t; i++) {
+    //     if (i == currentPage) {
+    //       pages.add(_isSelectedBtn());
+    //     } else {
+    //       pages.add(_isUnSelectedBtn(i));
+    //     }
+    //   }
+    // }
+
+    for (int i = 1; i <= t; i++) {
+      if (i == currentPage) {
+        pages.add(_isSelectedBtn());
+      } else {
+        pages.add(_isUnSelectedBtn(i));
+      }
+    }
 
     // If list of numbers are more than 8, then show 3 dots in the middle;
     // If list of numbers are less than 8, then show all numbers;
@@ -24,8 +59,7 @@ class TablePaginationWidget extends StatelessWidget {
       children: [
         _PreviousNextButton(onTap: _onPreviousPage),
         const SizedBox(width: 7.0),
-        for (int i = 1; i <= t; i++)
-          if (i == currentPage) _isSelectedBtn() else _isUnSelectedBtn(i),
+        ...pages,
         const SizedBox(width: 7.0),
         _PreviousNextButton(isNext: true, onTap: _onNextPage),
       ],

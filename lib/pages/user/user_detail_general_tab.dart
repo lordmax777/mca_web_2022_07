@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
-import 'package:mca_web_2022_07/manager/redux/states/users_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
+import '../../manager/models/list_all_md.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/users_state/saved_user_state.dart';
 import '../../theme/theme.dart';
 
 class GeneralWidget extends StatefulWidget {
@@ -19,47 +22,64 @@ class _GeneralWidgetState extends State<GeneralWidget> {
   @override
   void initState() {
     super.initState();
-    _addGeneralTabItems();
+    _addGeneralTabItems(isExpanded: appStore.state.usersState.isNewUser);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      separatorBuilder: (context, index) =>
-          const Divider(color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _generalItems.length + 1,
-      itemBuilder: (context, index) {
-        if (index == _generalItems.length) {
-          return const SaveAndCancelButtonsWidget();
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) {
+        final e1 = state.usersState.userDetails.error;
+        final errors = [e1];
+        if (state.usersState.isNewUser) {
+          errors.clear();
         }
-        return _generalItems[index];
+
+        return ErrorWrapper(
+          errors: errors,
+          child: ListView.separated(
+            separatorBuilder: (context, index) => const Divider(
+                color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _generalItems.length + 1,
+            itemBuilder: (context, index) {
+              if (index == _generalItems.length) {
+                return const SaveAndCancelButtonsWidget();
+              }
+              return _generalItems[index];
+            },
+          ),
+        );
       },
     );
   }
 
-  void _addGeneralTabItems() {
+  void _addGeneralTabItems({bool isExpanded = false}) {
     _generalItems.add(_buildExpanableItem(
-        const PersonalDetailsWidget(), PersonalDetailsWidget.title));
-    _generalItems.add(_buildExpanableItem(const UsernameAndPayrollInfoWidget(),
-        UsernameAndPayrollInfoWidget.title));
+        const _PersonalDetailsWidget(), _PersonalDetailsWidget.title,
+        isExpanded: isExpanded));
+    _generalItems.add(_buildExpanableItem(const _UsernameAndPayrollInfoWidget(),
+        _UsernameAndPayrollInfoWidget.title));
     _generalItems.add(_buildExpanableItem(
-        const RolesDepsAndLoginOptionsWidget(),
-        RolesDepsAndLoginOptionsWidget.title));
+        const _RolesDepsAndLoginOptionsWidget(),
+        _RolesDepsAndLoginOptionsWidget.title));
     _generalItems
-        .add(_buildExpanableItem(const AddressWidget(), AddressWidget.title));
+        .add(_buildExpanableItem(const _AddressWidget(), _AddressWidget.title));
     _generalItems.add(_buildExpanableItem(
-        const EthnicAndReligionWidget(), EthnicAndReligionWidget.title));
+        const _EthnicAndReligionWidget(), _EthnicAndReligionWidget.title));
     _generalItems.add(_buildExpanableItem(
-        const NextOfKinInfoWidget(), NextOfKinInfoWidget.title));
+        const _NextOfKinInfoWidget(), _NextOfKinInfoWidget.title));
   }
 
-  Widget _buildExpanableItem(Widget child, String title) {
+  Widget _buildExpanableItem(Widget child, String title,
+      {bool isExpanded = false}) {
     bool a = true;
     return StatefulBuilder(
       builder: (context, ss) {
         return ExpansionTile(
+          initiallyExpanded: isExpanded,
           childrenPadding:
               const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
           tilePadding:
@@ -87,10 +107,10 @@ class _GeneralWidgetState extends State<GeneralWidget> {
   }
 }
 
-class PersonalDetailsWidget extends StatelessWidget {
+class _PersonalDetailsWidget extends StatelessWidget {
   static const String title = "Personal Details";
 
-  const PersonalDetailsWidget({Key? key}) : super(key: key);
+  const _PersonalDetailsWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +119,7 @@ class PersonalDetailsWidget extends StatelessWidget {
         converter: (store) => store.state,
         builder: (context, state) {
           final countries = state.generalState.paramList.data!.countries;
-          final savedUser = state.usersState.saveableUserDetails!;
+          final savedUser = state.savedUserState;
           final String? userAvatar = savedUser.photo;
           return SpacedRow(horizontalSpace: 64.0, children: [
             SpacedColumn(verticalSpace: 16.0, children: [
@@ -131,7 +151,10 @@ class PersonalDetailsWidget extends StatelessWidget {
                       leftIcon: const HeroIcon(HeroIcons.bin,
                           size: 20.0, color: ThemeColors.red3),
                       text: "",
-                      onPressed: () {},
+                      onPressed: () {
+                        appStore
+                            .dispatch(UpdateSavedUserStateAction(photo: null));
+                      },
                     ),
                 ],
               ),
@@ -146,12 +169,12 @@ class PersonalDetailsWidget extends StatelessWidget {
                     dropdownOptionsWidth: dpWidth,
                     value: savedUser.title.name,
                     onChanged: (cName) {
-                      savedUser.title = CodeMap(
+                      final t = CodeMap(
                           name: cName,
                           code: Constants.userTitleTypes.entries
                               .firstWhere((element) => element.value == cName)
                               .key);
-                      appStore.dispatch(UpdateUsersStateAction());
+                      appStore.dispatch(UpdateSavedUserStateAction(title: t));
                     },
                     items: Constants.userTitleTypes.values.toList(),
                   ),
@@ -172,7 +195,7 @@ class PersonalDetailsWidget extends StatelessWidget {
                     dropdownBtnWidth: dpWidth,
                     dropdownMaxHeight: 500.0,
                     dropdownOptionsWidth: dpWidth,
-                    value: savedUser.nationalityCountryCode?.name,
+                    value: savedUser.nationalityCountryCode.name,
                     hasSearchBox: true,
                     onChanged: (cName) {
                       savedUser.nationalityCountryCode = CodeMap(
@@ -197,7 +220,7 @@ class PersonalDetailsWidget extends StatelessWidget {
                       final d = await showDatePicker(
                         context: context,
                         initialDate: savedUser.birthdate ?? DateTime.now(),
-                        firstDate: DateTime(2015),
+                        firstDate: DateTime(1930),
                         lastDate: DateTime(2035),
                       );
                       if (d != null) {
@@ -215,7 +238,7 @@ class PersonalDetailsWidget extends StatelessWidget {
                     hintText: "Martial Status",
                     dropdownBtnWidth: dpWidth,
                     dropdownOptionsWidth: dpWidth,
-                    value: savedUser.maritalStatusCode?.name,
+                    value: savedUser.maritalStatusCode.name,
                     onChanged: (cName) {
                       savedUser.maritalStatusCode =
                           CodeMap(name: cName, code: "TODO: get code from api");
@@ -242,7 +265,7 @@ class PersonalDetailsWidget extends StatelessWidget {
                     hintText: "Account Status",
                     dropdownBtnWidth: dpWidth,
                     dropdownOptionsWidth: dpWidth,
-                    value: savedUser.isActivate?.name,
+                    value: savedUser.isActivate.name,
                     onChanged: (cName) {
                       savedUser.isActivate = CodeMap(
                           name: cName,
@@ -263,10 +286,10 @@ class PersonalDetailsWidget extends StatelessWidget {
   }
 }
 
-class UsernameAndPayrollInfoWidget extends StatelessWidget {
+class _UsernameAndPayrollInfoWidget extends StatelessWidget {
   static const String title = "Username and Payroll Information";
 
-  const UsernameAndPayrollInfoWidget({Key? key}) : super(key: key);
+  const _UsernameAndPayrollInfoWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +297,7 @@ class UsernameAndPayrollInfoWidget extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
-        final savedUser = state.usersState.saveableUserDetails!;
+        final savedUser = state.savedUserState;
 
         return SpacedColumn(
             verticalSpace: 32.0,
@@ -311,10 +334,10 @@ class UsernameAndPayrollInfoWidget extends StatelessWidget {
   }
 }
 
-class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
+class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
   static const String title = "Roles, Department and Login Options";
 
-  const RolesDepsAndLoginOptionsWidget({Key? key}) : super(key: key);
+  const _RolesDepsAndLoginOptionsWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -331,7 +354,7 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
   }
 
   Widget _buildRightPart(double dpWidth, AppState state) {
-    final savedUser = state.usersState.saveableUserDetails!;
+    final savedUser = state.savedUserState;
     return SpacedColumn(
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,27 +364,35 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             controller: savedUser.nationalInsuranceNo,
             labelText: "National Insurance",
           ),
-          DropdownWidget(
-            hintText: "Department Manager",
-            dropdownBtnWidth: dpWidth,
-            dropdownOptionsWidth: dpWidth,
-            disableAll: true,
-            onChanged: (_) {},
-            items: [],
-          ),
-          DropdownWidget(
-            hintText: "Location Manager",
-            dropdownBtnWidth: dpWidth,
-            disableAll: true,
-            dropdownOptionsWidth: dpWidth,
-            onChanged: (_) {},
-            items: [],
-          ),
+          _chbx(savedUser.isGrouoAdmin, (val) {
+            savedUser.isGrouoAdmin = val;
+            appStore.dispatch(UpdateUsersStateAction());
+          }, 'Deparment Manager'),
+          _chbx(savedUser.locationAdmin, (val) {
+            savedUser.locationAdmin = val;
+            appStore.dispatch(UpdateUsersStateAction());
+          }, 'Location Manager'),
+          // DropdownWidget(
+          //   hintText: "Department Manager",
+          //   dropdownBtnWidth: dpWidth,
+          //   dropdownOptionsWidth: dpWidth,
+          //   disableAll: true,
+          //   onChanged: (_) {},
+          //   items: [],
+          // ),
+          // DropdownWidget(
+          //   hintText: "Location Manager",
+          //   dropdownBtnWidth: dpWidth,
+          //   disableAll: true,
+          //   dropdownOptionsWidth: dpWidth,
+          //   onChanged: (_) {},
+          //   items: [],
+          // ),
         ]);
   }
 
   Widget _buildLeftPart(double dpWidth, AppState state) {
-    final savedUser = state.usersState.saveableUserDetails!;
+    final savedUser = state.savedUserState;
     final roles = state.generalState.paramList.data!.roles;
     final deps = state.generalState.paramList.data!.groups;
     final locs = state.generalState.paramList.data!.locations;
@@ -376,7 +407,7 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             hasSearchBox: true,
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
-            value: savedUser.roleCode?.name,
+            value: savedUser.roleCode.name,
             onChanged: (cName) {
               savedUser.roleCode = CodeMap(
                   name: cName,
@@ -393,7 +424,7 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
             hasSearchBox: true,
-            value: savedUser.groupId?.name,
+            value: savedUser.groupId.name,
             onChanged: (cName) {
               savedUser.groupId = CodeMap(
                   name: cName,
@@ -412,7 +443,7 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             dropdownBtnWidth: dpWidth,
             dropdownMaxHeight: 500.0,
             dropdownOptionsWidth: dpWidth,
-            value: savedUser.locationId?.name,
+            value: savedUser.locationId.name,
             onChanged: (cName) {
               savedUser.locationId = CodeMap(
                   name: cName,
@@ -430,7 +461,7 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             hintText: "Display Language",
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
-            value: savedUser.languageCode?.name,
+            value: savedUser.languageCode.name,
             onChanged: (cName) {
               savedUser.languageCode = CodeMap(
                   name: cName,
@@ -454,7 +485,7 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
   }
 
   Widget _buildCheckboxes(AppState state) {
-    final savedUser = state.usersState.saveableUserDetails!;
+    final savedUser = state.savedUserState;
     return SpacedColumn(
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,113 +578,182 @@ class RolesDepsAndLoginOptionsWidget extends StatelessWidget {
   }
 }
 
-class AddressWidget extends StatelessWidget {
+class _AddressWidget extends StatelessWidget {
   static const String title = "Address";
 
-  const AddressWidget({Key? key}) : super(key: key);
+  const _AddressWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width * 0.2;
-    return SpacedRow(
-      horizontalSpace: 24.0,
-      children: [
-        SpacedColumn(
-            verticalSpace: 32.0,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextInputWidget(
-                width: (dpWidth * 1.7),
-                labelText: "Street Address",
-                isRequired: true,
-              ),
-              SpacedRow(
-                horizontalSpace: dpWidth / 3.8,
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          final savedUser = state.savedUserState;
+          final general = state.generalState.paramList.data!;
+
+          return SpacedRow(horizontalSpace: 24.0, children: [
+            SpacedColumn(
+                verticalSpace: 32.0,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextInputWidget(
-                    width: dpWidth / 1.4,
-                    labelText: "City/Town",
+                  SpacedRow(
+                    horizontalSpace: dpWidth / 3.8,
+                    children: [
+                      TextInputWidget(
+                        width: (dpWidth * 1.7),
+                        labelText: "Street Address",
+                        isRequired: true,
+                        controller: savedUser.addressLine1,
+                      ),
+                      TextInputWidget(
+                        width: dpWidth / 1.5,
+                        labelText: "Post Code",
+                        controller: savedUser.addressPostcode,
+                      ),
+                    ],
+                  ),
+                  SpacedRow(horizontalSpace: dpWidth / 3.8, children: [
+                    TextInputWidget(
+                      width: dpWidth / 1.4,
+                      labelText: "City/Town",
+                      isRequired: true,
+                      controller: savedUser.addressCity,
+                    ),
+                    TextInputWidget(
+                      width: dpWidth / 1.4,
+                      labelText: "County",
+                      controller: savedUser.county,
+                    ),
+                  ]),
+                  DropdownWidget(
+                    hintText: "Country",
+                    dropdownMaxHeight: 400.0,
+                    dropdownBtnWidth: (dpWidth * 1.7),
+                    dropdownOptionsWidth: (dpWidth * 2) + 24.0,
+                    value: savedUser.addressCountry.name,
+                    onChanged: (cName) {
+                      savedUser.addressCountry = CodeMap(
+                          name: cName,
+                          code: general.countries
+                              .firstWhere(
+                                (element) => element.name == cName,
+                                orElse: () => ListCountry(name: '', code: ''),
+                              )
+                              .code);
+
+                      appStore.dispatch(UpdateUsersStateAction());
+                    },
+                    hasSearchBox: true,
                     isRequired: true,
+                    items: general.countries.map((e) => e.name).toList(),
                   ),
-                  TextInputWidget(
-                    width: dpWidth / 1.4,
-                    labelText: "County",
-                  ),
-                ],
-              ),
-              DropdownWidget(
-                isRequired: true,
-                hintText: "Country",
-                dropdownBtnWidth: (dpWidth * 1.7),
-                dropdownOptionsWidth: (dpWidth * 2) + 24.0,
-                onChanged: (_) {},
-                items: [],
-              ),
-            ]),
-        TextInputWidget(
-          width: dpWidth / 1.5,
-          labelText: "Post Code",
-        ),
-      ],
-    );
+                ])
+          ]);
+        });
   }
 }
 
-class EthnicAndReligionWidget extends StatelessWidget {
+class _EthnicAndReligionWidget extends StatelessWidget {
   static const String title = "Ethnic and Religion";
 
-  const EthnicAndReligionWidget({Key? key}) : super(key: key);
+  const _EthnicAndReligionWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width * .3;
-    return SpacedColumn(
-        verticalSpace: 32.0,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DropdownWidget(
-            hintText: "Ethnic",
-            dropdownBtnWidth: dpWidth,
-            dropdownOptionsWidth: dpWidth,
-            onChanged: (_) {},
-            items: [],
-          ),
-          DropdownWidget(
-            hintText: "Religion",
-            dropdownBtnWidth: dpWidth,
-            dropdownOptionsWidth: dpWidth,
-            onChanged: (_) {},
-            items: [],
-          )
-        ]);
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          final savedUser = state.savedUserState;
+          final general = state.generalState.paramList.data!;
+
+          return SpacedColumn(
+              verticalSpace: 32.0,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DropdownWidget(
+                  hintText: "Ethnic",
+                  dropdownBtnWidth: dpWidth,
+                  hasSearchBox: true,
+                  value: savedUser.ethnicId.name,
+                  dropdownOptionsWidth: dpWidth,
+                  onChanged: (cName) {
+                    savedUser.ethnicId = CodeMap(
+                        name: cName,
+                        code: general.ethnics
+                            .firstWhere(
+                              (element) => element.name == cName,
+                              orElse: () => ListEthnic(name: '', id: -1),
+                            )
+                            .id
+                            .toString());
+
+                    appStore.dispatch(UpdateUsersStateAction());
+                  },
+                  items: general.ethnics.map<String>((e) => e.name).toList(),
+                ),
+                DropdownWidget(
+                  hintText: "Religion",
+                  dropdownBtnWidth: dpWidth,
+                  hasSearchBox: true,
+                  value: savedUser.religionId.name,
+                  dropdownOptionsWidth: dpWidth,
+                  onChanged: (cName) {
+                    savedUser.religionId = CodeMap(
+                        name: cName,
+                        code: general.religions
+                            .firstWhere(
+                              (element) => element.name == cName,
+                              orElse: () => ListReligion(name: '', id: -1),
+                            )
+                            .id
+                            .toString());
+
+                    appStore.dispatch(UpdateUsersStateAction());
+                  },
+                  items: general.religions.map<String>((e) => e.name).toList(),
+                )
+              ]);
+        });
   }
 }
 
-class NextOfKinInfoWidget extends StatelessWidget {
+class _NextOfKinInfoWidget extends StatelessWidget {
   static const String title = "Next of Kin Information";
 
-  const NextOfKinInfoWidget({Key? key}) : super(key: key);
+  const _NextOfKinInfoWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width * .3;
-    return SpacedColumn(
-        verticalSpace: 32.0,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextInputWidget(
-            width: dpWidth,
-            labelText: "Next of Kin",
-          ),
-          TextInputWidget(
-            width: dpWidth,
-            labelText: "Next of Kin Relation",
-          ),
-          TextInputWidget(
-            width: dpWidth,
-            labelText: "Next of Kin Phone Number",
-          ),
-        ]);
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          final savedUser = state.savedUserState;
+          final general = state.generalState.paramList.data!;
+
+          return SpacedColumn(
+              verticalSpace: 32.0,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextInputWidget(
+                  width: dpWidth,
+                  labelText: "Next of Kin",
+                  controller: savedUser.nextOfKinName,
+                ),
+                TextInputWidget(
+                  width: dpWidth,
+                  labelText: "Next of Kin Relation",
+                  controller: savedUser.nextOfKinRelation,
+                ),
+                TextInputWidget(
+                  width: dpWidth,
+                  labelText: "Next of Kin Phone Number",
+                  controller: savedUser.nextOfKinPhone,
+                ),
+              ]);
+        });
   }
 }
 
@@ -671,13 +771,18 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
           ButtonLargeSecondary(
             paddingWithoutIcon: true,
             text: "Cancel",
-            onPressed: () {},
+            onPressed: () {
+              context.navigateBack();
+            },
             bgColor: ThemeColors.white,
           ),
           ButtonLarge(
             icon: const HeroIcon(HeroIcons.check),
             text: "Save Changes",
-            onPressed: () {},
+            onPressed: () {
+              GetSaveGeneralDetailsAction().dispatch();
+              // appStore.dispatch(action)
+            },
           ),
         ],
       ),

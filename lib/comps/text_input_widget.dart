@@ -62,7 +62,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
         readOnly: widget.disableAll || !widget.enabled,
         style: widget.disableAll
             ? ThemeText.md.copyWith(color: ThemeColors.gray8)
-            : ThemeText.md.copyWith(color: ThemeColors.gray2),
+            : ThemeText.bold14.copyWith(color: ThemeColors.gray2),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
