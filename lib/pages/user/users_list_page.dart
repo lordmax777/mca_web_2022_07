@@ -309,6 +309,7 @@ class _BodyState extends State<_Body> {
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
       {int index = 0}) {
+    appStore.dispatch(UpdateSavedUserStateAction(isInit: true));
     appStore.dispatch(UpdateUsersStateAction(
         // saveableUserDetails: UserDetailSaveMd.init(),
         isNewUser: false,
@@ -419,7 +420,7 @@ class _BodyState extends State<_Body> {
         if (el.id == int.tryParse(dep)) {
           dep = el.name;
           if (e.groupAdmin) {
-            dep = '$dep & Admin';
+            dep = '$dep & (Admin)';
           }
         }
       }

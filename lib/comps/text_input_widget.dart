@@ -16,9 +16,11 @@ class TextInputWidget extends StatefulWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final int maxLines;
+  final String? Function(String?)? validator;
   TextInputWidget(
       {Key? key,
       this.defaultBorderColor,
+      this.validator,
       this.maxLines = 1,
       this.enabled = true,
       this.disableAll = false,
@@ -50,7 +52,8 @@ class _TextInputWidgetState extends State<TextInputWidget> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
-      child: TextField(
+      child: TextFormField(
+        validator: widget.validator,
         obscureText: widget.isPassword ? _obscureText : false,
         onTap: widget.onTap,
         keyboardType: widget.keyboardType,

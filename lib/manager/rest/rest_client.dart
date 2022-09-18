@@ -67,12 +67,16 @@ abstract class RestClient {
   @POST("/api/fe/userdetails/{id}/details")
   @FormUrlEncoded()
   Future<HttpResponse> getSaveUserGeneralDetails(
-    @Path() int id,
-    @Field() String firstName,
-    @Field() String lastName,
-    @Field() String addressLine1,
-    @Field() String addressCity,
-    @Field() String addressPostcode, {
+    @Path() int id, {
+    @Field() required String firstName,
+    @Field() required String lastName,
+    @Field() required String addressLine1,
+    @Field() required String addressCity,
+    @Field() required String addressPostcode,
+    @Field() required int group, //code
+    @Field() required int location, //code
+    @Field() required String role, //code
+    @Field() required String language,
     @Field() String? upass,
     @Field() String? title, //code
     @Field() String? birthday,
@@ -91,17 +95,15 @@ abstract class RestClient {
     @Field() String? addressCountry, //code
     @Field() String? payrolCode,
     @Field() String? notes,
-    @Field() bool? isActive,
+    @Field() String? isActive,
     @Field() int? exEmail, //0 - true, 1 - false
     @Field() double? latitude,
     @Field() double? longitude,
-    @Field() String? role, //code
-    @Field() int? group, //code
-    @Field() bool? groupAdmin,
-    @Field() int? location, //code
+    @Field() String? groupAdmin,
     @Field() bool? locationAdmin,
-    @Field() bool? loginRequired,
-    @Field() List<int>? loginMethods, //codes
+    @Field() String? login_required,
+    @Field() List? login_methods, //codes
+    @Field() String? email,
 
     ///
   });

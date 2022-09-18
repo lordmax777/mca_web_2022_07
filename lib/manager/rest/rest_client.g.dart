@@ -270,9 +270,17 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> getSaveUserGeneralDetails(
-      id, firstName, lastName, addressLine1, addressCity, addressPostcode,
-      {upass,
+  Future<HttpResponse<dynamic>> getSaveUserGeneralDetails(id,
+      {required firstName,
+      required lastName,
+      required addressLine1,
+      required addressCity,
+      required addressPostcode,
+      required group,
+      required location,
+      required role,
+      required language,
+      upass,
       title,
       birthday,
       nationality,
@@ -294,13 +302,11 @@ class _RestClient implements RestClient {
       exEmail,
       latitude,
       longitude,
-      role,
-      group,
       groupAdmin,
-      location,
       locationAdmin,
-      loginRequired,
-      loginMethods}) async {
+      login_required,
+      login_methods,
+      email}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -311,6 +317,10 @@ class _RestClient implements RestClient {
       'addressLine1': addressLine1,
       'addressCity': addressCity,
       'addressPostcode': addressPostcode,
+      'group': group,
+      'location': location,
+      'role': role,
+      'language': language,
       'upass': upass,
       'title': title,
       'birthday': birthday,
@@ -333,13 +343,11 @@ class _RestClient implements RestClient {
       'exEmail': exEmail,
       'latitude': latitude,
       'longitude': longitude,
-      'role': role,
-      'group': group,
       'groupAdmin': groupAdmin,
-      'location': location,
       'locationAdmin': locationAdmin,
-      'loginRequired': loginRequired,
-      'loginMethods': loginMethods
+      'login_required': login_required,
+      'login_methods': login_methods,
+      'email': email
     };
     _data.removeWhere((k, v) => v == null);
     final _result = await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(

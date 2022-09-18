@@ -18,6 +18,7 @@ class UserDetailsMd {
   UserDetailsPayrollMd payroll;
   UserDetailsAccountMd account;
   String notes;
+  String? email;
 
   @override
   UserDetailsMd({
@@ -25,6 +26,7 @@ class UserDetailsMd {
     required this.address,
     this.date_of_birth,
     required this.ethnic,
+    this.email,
     required this.first_name,
     required this.last_name,
     required this.marital_status,
@@ -132,11 +134,13 @@ class UserDetailsAccountMd {
   dynamic locked;
   String login_methods;
   List<String> role;
+  String locale;
 
   @override
   UserDetailsAccountMd({
     required this.active,
     required this.group,
+    required this.locale,
     required this.group_admin,
     required this.location,
     required this.location_admin,

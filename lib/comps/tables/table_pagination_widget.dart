@@ -1,6 +1,3 @@
-import 'package:number_paginator/number_paginator.dart';
-import 'package:opinionated_pagination/opinionated_pagination.dart';
-
 import '../../theme/theme.dart';
 
 class TablePaginationWidget extends StatelessWidget {

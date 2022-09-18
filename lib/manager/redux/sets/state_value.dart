@@ -213,7 +213,19 @@ class CodeMap {
   String? name;
   String? code;
 
-  CodeMap({required this.name, required this.code});
+  Map toJson() => {
+        'name': name,
+        'code': code,
+      };
+
+  CodeMap({required this.name, required this.code}) {
+    if (code != null && code!.isEmpty) {
+      code = null;
+    }
+    if (name != null && name!.isEmpty) {
+      name = null;
+    }
+  }
 }
 
 class LoginMethds {
@@ -222,6 +234,30 @@ class LoginMethds {
   bool tablet;
   bool mobileAdmin;
   bool api;
+
+  List<int> get methods {
+    List<int> list = [];
+
+    for (var element in Constants.userLoginMethods.entries) {
+      if (element.key == 'web' && web) {
+        list.add(element.value);
+      }
+      if (element.key == 'mobile' && mobile) {
+        list.add(element.value);
+      }
+      if (element.key == 'tablet' && tablet) {
+        list.add(element.value);
+      }
+      if (element.key == 'mobileadmin' && mobileAdmin) {
+        list.add(element.value);
+      }
+      if (element.key == 'api' && api) {
+        list.add(element.value);
+      }
+    }
+
+    return list;
+  }
 
   LoginMethds({
     this.web = false,

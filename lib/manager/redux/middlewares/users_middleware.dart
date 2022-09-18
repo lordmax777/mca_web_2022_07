@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:collection/collection.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -7,10 +10,12 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
+import '../../../comps/show_overlay_popup.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../states/users_state/saved_user_state.dart';
 import '../states/users_state/users_state.dart';
+import 'auth_middleware.dart';
 
 class UsersMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -126,10 +131,9 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         ),
         nationalInsuranceNo: TextEditingController(
             text: userDetailsMd.payroll.national_insurance),
-        exEmail: TextEditingController(),
-        payrollCode: TextEditingController(),
-        upass: TextEditingController(),
-        upassRepeat: TextEditingController(),
+        exEmail: TextEditingController(text: userDetailsMd.email),
+        payrollCode:
+            TextEditingController(text: userDetailsMd.payroll.payroll_code),
         username: TextEditingController(
             text: state.usersState.selectedUser?.username),
         notes: TextEditingController(text: userDetailsMd.notes),
@@ -140,31 +144,60 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         addressLine1: TextEditingController(text: userDetailsMd.address.line1),
         addressPostcode:
             TextEditingController(text: userDetailsMd.address.postcode),
+        groupId: CodeMap(
+          name: userDetailsMd.account.group,
+          code: general.groups
+              .firstWhereOrNull(
+                (element) =>
+                    element.name.toString() == userDetailsMd.account.group,
+              )
+              ?.id
+              .toString(),
+        ),
+        roleCode: CodeMap(
+          code: userDetailsMd.account.role.first.toString(),
+          name: general.roles
+              .firstWhereOrNull(
+                  (element) => element.code == userDetailsMd.account.role.first)
+              ?.name
+              .toString(),
+        ),
+        locationId: CodeMap(
+          name: userDetailsMd.account.location,
+          code: general.locations
+              .firstWhereOrNull(
+                  (element) => element.name == userDetailsMd.account.location)
+              ?.id
+              .toString(),
+        ),
         addressCountry: CodeMap(
             name: userDetailsMd.address.country,
             code: general.countries
-                .firstWhere(
+                .firstWhereOrNull(
                   (element) => element.name == userDetailsMd.address.country,
-                  orElse: () => ListCountry(name: '', code: ''),
                 )
-                .code),
+                ?.code
+                .toString()),
         firstName: TextEditingController(text: userDetailsMd.first_name),
         lastName: TextEditingController(text: userDetailsMd.last_name),
         county: TextEditingController(text: userDetailsMd.address.county),
-        title: CodeMap(
-            name: userDetailsMd.title,
-            code: Constants.userTitleTypes.entries
-                .firstWhere((element) => element.value == userDetailsMd.title)
-                .key),
+        title: userDetailsMd.title.isNotEmpty
+            ? CodeMap(
+                name: userDetailsMd.title,
+                code: Constants.userTitleTypes.entries
+                    .firstWhereOrNull(
+                        (element) => element.value == userDetailsMd.title)
+                    ?.key)
+            : CodeMap(name: null, code: null),
         birthdate: userDetailsMd.date_of_birth != null
             ? DateTime.tryParse(userDetailsMd.date_of_birth!.date)
             : null,
         nationalityCountryCode: CodeMap(
             name: userDetailsMd.nationality,
             code: general.countries
-                .firstWhere(
+                .firstWhereOrNull(
                     (element) => element.name == userDetailsMd.nationality)
-                .code),
+                ?.code),
         maritalStatusCode: CodeMap(
             name: userDetailsMd.marital_status,
             code: Constants.userMartialStatusTypes.entries
@@ -177,59 +210,35 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         ),
         isGrouoAdmin: userDetailsMd.account.group_admin,
         locationAdmin: userDetailsMd.account.location_admin,
-        groupId: CodeMap(
-          name: userDetailsMd.account.group,
-          code: general.groups
-              .firstWhere(
-                  (element) =>
-                      element.id.toString() == userDetailsMd.account.group,
-                  orElse: () => ListGroup(active: false, id: -1, name: ''))
-              .name,
-        ),
-        roleCode: CodeMap(
-          code: userDetailsMd.account.role.first.toString(),
-          name: general.roles
-              .firstWhere(
-                  (element) => element.code == userDetailsMd.account.role.first,
-                  orElse: () => ListRole(code: '', name: ''))
-              .name,
-        ),
-        locationId: CodeMap(
-          code: userDetailsMd.account.location,
-          name: general.locations
-              .firstWhere(
-                  (element) => element.name == userDetailsMd.account.location,
-                  orElse: () => ListLocation(id: -1, name: '', active: false))
-              .name,
-        ),
         ethnicId: CodeMap(
-          code: userDetailsMd.ethnic,
-          name: general.ethnics
-              .firstWhere((element) => element.name == userDetailsMd.ethnic,
-                  orElse: () => ListEthnic(id: -1, name: ""))
-              .name,
-        ),
+            name: userDetailsMd.ethnic,
+            code: general.ethnics
+                .firstWhereOrNull(
+                    (element) => element.name == userDetailsMd.ethnic)
+                ?.id
+                .toString()),
         religionId: CodeMap(
-          code: userDetailsMd.religion,
-          name: general.religions
-              .firstWhere((element) => element.name == userDetailsMd.religion,
-                  orElse: () => ListReligion(id: -1, name: ""))
-              .name,
-        ),
+            name: userDetailsMd.religion,
+            code: general.religions
+                .firstWhereOrNull(
+                    (element) => element.name == userDetailsMd.religion)
+                ?.id
+                .toString()),
         nextOfKinName:
             TextEditingController(text: userDetailsMd.next_of_kin.name),
         nextOfKinPhone:
             TextEditingController(text: userDetailsMd.next_of_kin.phone),
         nextOfKinRelation:
             TextEditingController(text: userDetailsMd.next_of_kin.relation),
-        // languageCode: CodeMap(
-        //   code: userDetailsMd.account.,
-        //   name: general.languages
-        //       .firstWhere(
-        //           (element) => element.code == userDetailsMd.account.language,
-        //           orElse: () => ListLanguage(code: '', name: ''))
-        //       .name,
-        // ),
+        languageCode: CodeMap(
+          code: userDetailsMd.account.locale,
+          name: Constants.userDisplayLangs.entries
+              .firstWhereOrNull(
+                  (element) => element.key == userDetailsMd.account.locale)
+              ?.value,
+        ),
+        upass: TextEditingController(),
+        upassRepeat: TextEditingController(),
       ));
 
       stateValue.error.isError = false;
@@ -629,14 +638,78 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
 
     //if new user => create user
     //if not new user => update user
+    final int id = state.usersState.selectedUser?.id ?? 0;
+    final savedUser = state.savedUserState;
 
     //Call post user details
 
-    // final ApiResponse res = await restClient()
-    //     .getSaveUserGeneralDetails(0, title: )
-    //     .nocodeErrorHandler();
+    final ApiResponse res = await restClient()
+        .getSaveUserGeneralDetails(
+          id,
 
-    //if success => stop loading + update user list
-    //if error => stop loading + show error
+          // marital_status: 'single', //TODO: Find marital status codes
+          // login_methods: savedUser.loginMethods.methods, //TODO: Is not working
+          // login_required: savedUser.loginRequired ? "1" : "0", //TODO: Is not working
+
+          firstName: savedUser.firstName.text,
+          lastName: savedUser.lastName.text,
+          isActive: savedUser.isActivate.code,
+          title: savedUser.title.name,
+          addressCity: savedUser.addressCity.text,
+          addressLine1: savedUser.addressLine1.text,
+          addressPostcode: savedUser.addressPostcode.text,
+          addressCountry: savedUser.addressCountry.code,
+          addressCounty: savedUser.county.text,
+          phoneMobile: savedUser.phoneMobile.text,
+          phoneLandline: savedUser.phoneLandline.text,
+          birthday: savedUser.birthdate?.formattedDate,
+          email: savedUser.exEmail.text,
+          payrolCode: savedUser.payrollCode.text,
+          group: toIntOrNull(savedUser.groupId.code)!,
+          location: toIntOrNull(savedUser.locationId.code)!,
+          role: savedUser.roleCode.code!,
+          language: savedUser.languageCode.code!,
+          notes: savedUser.notes.text,
+          ni: savedUser.nationalInsuranceNo.text,
+          groupAdmin: savedUser.isGrouoAdmin ? "1" : "0",
+          locationAdmin: savedUser.locationAdmin,
+          ethnic: toIntOrNull(savedUser.ethnicId.code),
+          religion: toIntOrNull(savedUser.religionId.code),
+          nokName: savedUser.nextOfKinName.text,
+          nokRelation: savedUser.nextOfKinRelation.text,
+          nokPhone: savedUser.nextOfKinPhone.text,
+          upass: savedUser.upass.text,
+          nationality: savedUser.nationalityCountryCode.code,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await Future.wait([
+        // fetch(GetUserDetailsDetailAction()),
+        // fetch(GetUsersListAction()),
+      ]);
+    } else {
+      // String errorMessage = "";
+      // jsonDecode(res.data)['errors'].entries.forEach((e) {
+      //   errorMessage += e.value.first.toString() + "\n";
+      // });
+      // showOverlayPopup(
+      //     body: TableWrapperWidget(
+      //         padding: const EdgeInsets.all(60),
+      //         child: SpacedColumn(verticalSpace: 40.0, children: [
+      //           KText(
+      //               text: errorMessage,
+      //               isSelectable: false,
+      //               fontSize: 20.0,
+      //               textColor: Colors.black,
+      //               fontWeight: FWeight.medium),
+      //           ButtonLarge(
+      //             text: "OK",
+      //             onPressed: () =>
+      //                 appRouter.navigatorKey.currentContext!.popRoute(),
+      //           )
+      //         ])),
+      //     context: appRouter.navigatorKey.currentContext!);
+    }
   }
 }

@@ -94,7 +94,9 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
                     _buildIconItem(
                       icon: HeroIcons.envelope,
                       title: "Email",
-                      subtitle: "-",
+                      subtitle: userDetail != null
+                          ? (userDetail.email != null ? userDetail.email! : "-")
+                          : "-",
                     ),
                   ]),
                   ButtonMediumSecondary(

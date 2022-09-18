@@ -47,4 +47,13 @@ class Constants {
     "hu": "Hungarian",
     "pt": "Portuguese",
   };
+
+  static const Map<String, int> userLoginMethods = {
+    "web": 1,
+    "mobile": 2,
+    "tablet": 3,
+    "mobileadmin": 9,
+    "api": 12,
+    "other": 99,
+  };
 }

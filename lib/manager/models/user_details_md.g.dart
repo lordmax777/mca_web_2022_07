@@ -16,6 +16,7 @@ UserDetailsMd _$UserDetailsMdFromJson(Map json) => UserDetailsMd(
           : LastTime.fromJson(
               Map<String, dynamic>.from(json['date_of_birth'] as Map)),
       ethnic: json['ethnic'] as String,
+      email: json['email'] as String?,
       first_name: json['first_name'] as String,
       last_name: json['last_name'] as String,
       marital_status: json['marital_status'] as String,
@@ -47,6 +48,7 @@ Map<String, dynamic> _$UserDetailsMdToJson(UserDetailsMd instance) =>
       'payroll': instance.payroll,
       'account': instance.account,
       'notes': instance.notes,
+      'email': instance.email,
     };
 
 UserDetailsAddressMd _$UserDetailsAddressMdFromJson(Map json) =>
@@ -115,6 +117,7 @@ UserDetailsAccountMd _$UserDetailsAccountMdFromJson(Map json) =>
     UserDetailsAccountMd(
       active: json['active'] as bool,
       group: json['group'] as String,
+      locale: json['locale'] as String,
       group_admin: json['group_admin'] as bool,
       location: json['location'] as String,
       location_admin: json['location_admin'] as bool,
@@ -136,4 +139,5 @@ Map<String, dynamic> _$UserDetailsAccountMdToJson(
       'locked': instance.locked,
       'login_methods': instance.login_methods,
       'role': instance.role,
+      'locale': instance.locale,
     };

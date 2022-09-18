@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import '../../manager/models/list_all_md.dart';
@@ -46,7 +47,12 @@ class _GeneralWidgetState extends State<GeneralWidget> {
             itemCount: _generalItems.length + 1,
             itemBuilder: (context, index) {
               if (index == _generalItems.length) {
-                return const SaveAndCancelButtonsWidget();
+                return SaveAndCancelButtonsWidget(
+                  formKeys: [
+                    _PersonalDetailsWidget.formKey,
+                    _UsernameAndPayrollInfoWidget.formKey,
+                  ],
+                );
               }
               return _generalItems[index];
             },
@@ -79,6 +85,7 @@ class _GeneralWidgetState extends State<GeneralWidget> {
     return StatefulBuilder(
       builder: (context, ss) {
         return ExpansionTile(
+          maintainState: true,
           initiallyExpanded: isExpanded,
           childrenPadding:
               const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
@@ -110,6 +117,8 @@ class _GeneralWidgetState extends State<GeneralWidget> {
 class _PersonalDetailsWidget extends StatelessWidget {
   static const String title = "Personal Details";
 
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   const _PersonalDetailsWidget({Key? key}) : super(key: key);
 
   @override
@@ -121,173 +130,212 @@ class _PersonalDetailsWidget extends StatelessWidget {
           final countries = state.generalState.paramList.data!.countries;
           final savedUser = state.savedUserState;
           final String? userAvatar = savedUser.photo;
-          return SpacedRow(horizontalSpace: 64.0, children: [
-            SpacedColumn(verticalSpace: 16.0, children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24.0),
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  color: ThemeColors.blue7,
-                  child: Center(
-                    child: userAvatar != null
-                        ? Image.memory(base64Decode(userAvatar))
-                        : const HeroIcon(HeroIcons.userCircle,
-                            size: 48.0, color: ThemeColors.white),
+          return Form(
+            key: formKey,
+            child: SpacedRow(horizontalSpace: 64.0, children: [
+              SpacedColumn(verticalSpace: 16.0, children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(24.0),
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    color: ThemeColors.blue7,
+                    child: Center(
+                      child: userAvatar != null
+                          ? Image.memory(base64Decode(userAvatar))
+                          : const HeroIcon(HeroIcons.userCircle,
+                              size: 48.0, color: ThemeColors.white),
+                    ),
                   ),
                 ),
-              ),
-              SpacedRow(
-                horizontalSpace: 8.0,
-                children: [
-                  ButtonSmallSecondary(
-                    leftIcon: const HeroIcon(HeroIcons.upload,
-                        size: 20.0, color: ThemeColors.blue3),
-                    text: "Upload Photo",
-                    onPressed: () {},
-                  ),
-                  if (userAvatar != null)
+                SpacedRow(
+                  horizontalSpace: 8.0,
+                  children: [
                     ButtonSmallSecondary(
-                      leftIcon: const HeroIcon(HeroIcons.bin,
-                          size: 20.0, color: ThemeColors.red3),
-                      text: "",
-                      onPressed: () {
-                        appStore
-                            .dispatch(UpdateSavedUserStateAction(photo: null));
+                      leftIcon: const HeroIcon(HeroIcons.upload,
+                          size: 20.0, color: ThemeColors.blue3),
+                      text: "Upload Photo",
+                      onPressed: () {},
+                    ),
+                    if (userAvatar != null)
+                      ButtonSmallSecondary(
+                        leftIcon: const HeroIcon(HeroIcons.bin,
+                            size: 20.0, color: ThemeColors.red3),
+                        text: "",
+                        onPressed: () {
+                          appStore.dispatch(
+                              UpdateSavedUserStateAction(photo: null));
+                        },
+                      ),
+                  ],
+                ),
+              ]),
+              SpacedColumn(
+                  verticalSpace: 32.0,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DropdownWidget(
+                      hintText: "Title",
+                      dropdownBtnWidth: dpWidth,
+                      dropdownOptionsWidth: dpWidth,
+                      value: savedUser.title.name,
+                      onChanged: (cName) {
+                        final t = CodeMap(
+                            name: cName,
+                            code: Constants.userTitleTypes.entries
+                                .firstWhere((element) => element.value == cName)
+                                .key);
+                        appStore.dispatch(UpdateSavedUserStateAction(title: t));
+                      },
+                      items: Constants.userTitleTypes.values.toList(),
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "First Name",
+                      isRequired: true,
+                      validator: (p0) {
+                        if (p0 == null || p0.isEmpty) {
+                          return "First Name is required";
+                        }
+                      },
+                      controller: savedUser.firstName,
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "Last Name",
+                      isRequired: true,
+                      controller: savedUser.lastName,
+                      validator: (p0) {
+                        if (p0 == null || p0.isEmpty) {
+                          return "Last Name is required";
+                        }
                       },
                     ),
-                ],
-              ),
-            ]),
-            SpacedColumn(
-                verticalSpace: 32.0,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DropdownWidget(
-                    hintText: "Title",
-                    dropdownBtnWidth: dpWidth,
-                    dropdownOptionsWidth: dpWidth,
-                    value: savedUser.title.name,
-                    onChanged: (cName) {
-                      final t = CodeMap(
-                          name: cName,
-                          code: Constants.userTitleTypes.entries
-                              .firstWhere((element) => element.value == cName)
-                              .key);
-                      appStore.dispatch(UpdateSavedUserStateAction(title: t));
-                    },
-                    items: Constants.userTitleTypes.values.toList(),
-                  ),
-                  TextInputWidget(
-                    width: dpWidth,
-                    labelText: "First Name",
-                    isRequired: true,
-                    controller: savedUser.firstName,
-                  ),
-                  TextInputWidget(
-                    width: dpWidth,
-                    labelText: "Last Name",
-                    isRequired: true,
-                    controller: savedUser.lastName,
-                  ),
-                  DropdownWidget(
-                    hintText: "Nationality",
-                    dropdownBtnWidth: dpWidth,
-                    dropdownMaxHeight: 500.0,
-                    dropdownOptionsWidth: dpWidth,
-                    value: savedUser.nationalityCountryCode.name,
-                    hasSearchBox: true,
-                    onChanged: (cName) {
-                      savedUser.nationalityCountryCode = CodeMap(
-                          name: cName,
-                          code: countries
-                              .firstWhere((element) => element.name == cName)
-                              .code);
-                      appStore.dispatch(UpdateUsersStateAction());
-                    },
-                    items: countries.map((e) => e.name).toList(),
-                  ),
-                  TextInputWidget(
-                    width: dpWidth,
-                    enabled: false,
-                    labelText: "Date of Birth",
-                    leftIcon: HeroIcons.calendar,
-                    controller: TextEditingController(
-                        text: savedUser.birthdate != null
-                            ? getDateFormat(savedUser.birthdate!)
-                            : ""),
-                    onTap: () async {
-                      final d = await showDatePicker(
-                        context: context,
-                        initialDate: savedUser.birthdate ?? DateTime.now(),
-                        firstDate: DateTime(1930),
-                        lastDate: DateTime(2035),
-                      );
-                      if (d != null) {
-                        savedUser.birthdate = d;
+                    DropdownWidget(
+                      hintText: "Nationality",
+                      dropdownBtnWidth: dpWidth,
+                      dropdownMaxHeight: 500.0,
+                      dropdownOptionsWidth: dpWidth,
+                      value: savedUser.nationalityCountryCode.name,
+                      hasSearchBox: true,
+                      onChanged: (cName) {
+                        savedUser.nationalityCountryCode = CodeMap(
+                            name: cName,
+                            code: countries
+                                .firstWhere((element) => element.name == cName)
+                                .code);
                         appStore.dispatch(UpdateUsersStateAction());
-                      }
-                    },
-                  ),
-                ]),
-            SpacedColumn(
-                verticalSpace: 32.0,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DropdownWidget(
-                    hintText: "Martial Status",
-                    dropdownBtnWidth: dpWidth,
-                    dropdownOptionsWidth: dpWidth,
-                    value: savedUser.maritalStatusCode.name,
-                    onChanged: (cName) {
-                      savedUser.maritalStatusCode =
-                          CodeMap(name: cName, code: "TODO: get code from api");
-                      appStore.dispatch(UpdateUsersStateAction());
-                    },
-                    items: Constants.userMartialStatusTypes.values.toList(),
-                  ),
-                  TextInputWidget(
-                    width: dpWidth,
-                    labelText: "Email Address",
-                    controller: savedUser.exEmail,
-                  ),
-                  TextInputWidget(
-                    width: dpWidth,
-                    labelText: "Phone Number",
-                    controller: savedUser.phoneMobile,
-                  ),
-                  TextInputWidget(
-                    width: dpWidth,
-                    labelText: "Phone Landline",
-                    controller: savedUser.phoneLandline,
-                  ),
-                  DropdownWidget(
-                    hintText: "Account Status",
-                    dropdownBtnWidth: dpWidth,
-                    dropdownOptionsWidth: dpWidth,
-                    value: savedUser.isActivate.name,
-                    onChanged: (cName) {
-                      savedUser.isActivate = CodeMap(
-                          name: cName,
-                          code: Constants.userAccountStatusTypes.entries
-                                  .firstWhere(
-                                      (element) => element.value == cName)
-                                  .key
-                              ? 1.toString()
-                              : 0.toString());
+                      },
+                      items: countries.map((e) => e.name).toList(),
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      enabled: false,
+                      labelText: "Date of Birth",
+                      leftIcon: HeroIcons.calendar,
+                      controller: TextEditingController(
+                          text: savedUser.birthdate != null
+                              ? savedUser.birthdate!.formattedDate
+                              : ""),
+                      onTap: () async {
+                        final d = await showDatePicker(
+                          context: context,
+                          initialDate: savedUser.birthdate ?? DateTime.now(),
+                          firstDate: DateTime(1930),
+                          lastDate: DateTime(2035),
+                        );
+                        if (d != null) {
+                          savedUser.birthdate = d;
+                          appStore.dispatch(UpdateUsersStateAction());
+                        }
+                      },
+                    ),
+                  ]),
+              SpacedColumn(
+                  verticalSpace: 32.0,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DropdownWidget(
+                      hintText: "Martial Status",
+                      dropdownBtnWidth: dpWidth,
+                      dropdownOptionsWidth: dpWidth,
+                      value: savedUser.maritalStatusCode.name,
+                      onChanged: (cName) {
+                        savedUser.maritalStatusCode =
+                            CodeMap(name: cName, code: cName);
+                        appStore.dispatch(UpdateUsersStateAction());
+                      },
+                      items: Constants.userMartialStatusTypes.values.toList(),
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "Email Address",
+                      controller: savedUser.exEmail,
+                      validator: (p0) {
+                        if (p0 != null &&
+                            p0.isNotEmpty &&
+                            !RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+                                .hasMatch(p0)) {
+                          return "Invalid email address";
+                        }
+                      },
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "Phone Number",
+                      controller: savedUser.phoneMobile,
+                      validator: (p0) {
+                        if (p0 != null &&
+                            p0.isNotEmpty &&
+                            !RegExp(r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$")
+                                .hasMatch(p0)) {
+                          return "Invalid phone number";
+                        }
+                      },
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "Phone Landline",
+                      controller: savedUser.phoneLandline,
+                      validator: (p0) {
+                        if (p0 != null &&
+                            p0.isNotEmpty &&
+                            !RegExp(r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$")
+                                .hasMatch(p0)) {
+                          return "Invalid phone number";
+                        }
+                      },
+                    ),
+                    DropdownWidget(
+                      hintText: "Account Status",
+                      dropdownBtnWidth: dpWidth,
+                      dropdownOptionsWidth: dpWidth,
+                      value: savedUser.isActivate.name,
+                      onChanged: (cName) {
+                        savedUser.isActivate = CodeMap(
+                            name: cName,
+                            code: Constants.userAccountStatusTypes.entries
+                                    .firstWhere(
+                                        (element) => element.value == cName)
+                                    .key
+                                ? 1.toString()
+                                : 0.toString());
 
-                      appStore.dispatch(UpdateUsersStateAction());
-                    },
-                    items: Constants.userAccountStatusTypes.values.toList(),
-                  ),
-                ]),
-          ]);
+                        appStore.dispatch(UpdateUsersStateAction());
+                      },
+                      items: Constants.userAccountStatusTypes.values.toList(),
+                    ),
+                  ]),
+            ]),
+          );
         });
   }
 }
 
 class _UsernameAndPayrollInfoWidget extends StatelessWidget {
   static const String title = "Username and Payroll Information";
+
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   const _UsernameAndPayrollInfoWidget({Key? key}) : super(key: key);
 
@@ -298,37 +346,76 @@ class _UsernameAndPayrollInfoWidget extends StatelessWidget {
       converter: (store) => store.state,
       builder: (context, state) {
         final savedUser = state.savedUserState;
-
-        return SpacedColumn(
-            verticalSpace: 32.0,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextInputWidget(
-                width: dpWidth,
-                labelText: "Username",
-                controller: savedUser.username,
-                disableAll: true,
-              ),
-              TextInputWidget(
-                width: dpWidth,
-                labelText: "Payroll Code",
-                controller: savedUser.payrollCode,
-              ),
-              TextInputWidget(
-                width: dpWidth,
-                controller: savedUser.upass,
-                labelText: "Password",
-                isPassword: true,
-                isRequired: true,
-              ),
-              TextInputWidget(
-                width: dpWidth,
-                controller: savedUser.upassRepeat,
-                labelText: "Repeat Password",
-                isPassword: true,
-                isRequired: true,
-              ),
-            ]);
+        return Form(
+          key: formKey,
+          child: SpacedColumn(
+              verticalSpace: 32.0,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextInputWidget(
+                  width: dpWidth,
+                  labelText: "Username",
+                  controller: savedUser.username,
+                  disableAll: true,
+                ),
+                TextInputWidget(
+                  width: dpWidth,
+                  labelText: "Payroll Code",
+                  controller: savedUser.payrollCode,
+                ),
+                // if (state.usersState.isNewUser)
+                //   TextInputWidget(
+                //     width: dpWidth,
+                //     controller: savedUser.upass,
+                //     labelText: "Password",
+                //     validator: (p0) {
+                //       if (p0 == null || p0.isEmpty) {
+                //         return "Password is required";
+                //       }
+                //     },
+                //     isPassword: true,
+                //     isRequired: true,
+                //   )
+                // else
+                TextInputWidget(
+                  width: dpWidth,
+                  controller: savedUser.upass,
+                  labelText: "Password",
+                  validator: state.usersState.isNewUser
+                      ? (p0) {
+                          if (p0 != null && p0.isEmpty) {
+                            //TODO: check if password is valid
+                            return "Password is invalid";
+                          }
+                        }
+                      : (p0) {
+                          if (p0 != null && p0.isNotEmpty) {
+                            //TODO: check if password is valid
+                            return "Password is invalid";
+                          }
+                        },
+                  isPassword: true,
+                  isRequired: true,
+                ),
+                TextInputWidget(
+                  width: dpWidth,
+                  controller: savedUser.upassRepeat,
+                  labelText: "Repeat Password",
+                  validator: (p0) {
+                    if (state.savedUserState.upass.text.isNotEmpty) {
+                      if (state.savedUserState.upassRepeat.text !=
+                          state.savedUserState.upass.text) {
+                        print(state.savedUserState.upass.text);
+                        print(p0);
+                        return "Passwords do not match";
+                      }
+                    }
+                  },
+                  isPassword: true,
+                  isRequired: true,
+                ),
+              ]),
+        );
       },
     );
   }
@@ -414,7 +501,7 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
                   code: roles
                       .firstWhere((element) => element.name == cName)
                       .code);
-              appStore.dispatch(UpdateUsersStateAction());
+              appStore.dispatch(UpdateSavedUserStateAction());
             },
             items: roles.map((e) => e.name).toList(),
           ),
@@ -432,7 +519,7 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
                       .firstWhere((element) => element.name == cName)
                       .id
                       .toString());
-              appStore.dispatch(UpdateUsersStateAction());
+              appStore.dispatch(UpdateSavedUserStateAction());
             },
             items: deps.map((e) => e.name).toList(),
           ),
@@ -451,7 +538,7 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
                       .firstWhere((element) => element.name == cName)
                       .id
                       .toString());
-              appStore.dispatch(UpdateUsersStateAction());
+              appStore.dispatch(UpdateSavedUserStateAction());
             },
             items: locs.map((e) => e.name).toList(),
           ),
@@ -468,7 +555,8 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
                   code: Constants.userDisplayLangs.entries
                       .firstWhere((element) => element.value == cName)
                       .key);
-              appStore.dispatch(UpdateUsersStateAction());
+
+              appStore.dispatch(UpdateSavedUserStateAction());
             },
             items: Constants.userDisplayLangs.values.toList(),
           ),
@@ -731,7 +819,6 @@ class _NextOfKinInfoWidget extends StatelessWidget {
         converter: (store) => store.state,
         builder: (context, state) {
           final savedUser = state.savedUserState;
-          final general = state.generalState.paramList.data!;
 
           return SpacedColumn(
               verticalSpace: 32.0,
@@ -739,7 +826,7 @@ class _NextOfKinInfoWidget extends StatelessWidget {
               children: [
                 TextInputWidget(
                   width: dpWidth,
-                  labelText: "Next of Kin",
+                  labelText: "Next of Kin Name",
                   controller: savedUser.nextOfKinName,
                 ),
                 TextInputWidget(
@@ -758,7 +845,9 @@ class _NextOfKinInfoWidget extends StatelessWidget {
 }
 
 class SaveAndCancelButtonsWidget extends StatelessWidget {
-  const SaveAndCancelButtonsWidget({Key? key}) : super(key: key);
+  final List<GlobalKey<FormState>> formKeys;
+  SaveAndCancelButtonsWidget({Key? key, required this.formKeys})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -780,8 +869,19 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
             icon: const HeroIcon(HeroIcons.check),
             text: "Save Changes",
             onPressed: () {
-              GetSaveGeneralDetailsAction().dispatch();
-              // appStore.dispatch(action)
+              bool allValid = true;
+              // for (var element in formKeys) {
+              //   if (!element.currentState!.validate()) {
+              //     allValid = false;
+              //   }
+              // }
+              if (formKeys
+                  .every((element) => element.currentState!.validate())) {
+                logger('Valid');
+              } else {
+                logger('Invalid');
+              }
+              // GetSaveGeneralDetailsAction().dispatch();
             },
           ),
         ],

@@ -36,7 +36,9 @@ class _PrefferedShiftsWidgetState extends State<PrefferedShiftsWidget> {
           itemCount: _generalItems.length + 1,
           itemBuilder: (context, index) {
             if (index == _generalItems.length) {
-              return const SaveAndCancelButtonsWidget();
+              return SaveAndCancelButtonsWidget(
+                formKeys: [],
+              );
             }
             return _generalItems[index];
           },

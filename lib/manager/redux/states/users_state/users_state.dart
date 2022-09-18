@@ -142,8 +142,7 @@ class GetUserDetailsPreferredShiftsAction {}
 
 class GetUserDetailsPhotosAction {}
 
-class GetSaveGeneralDetailsAction extends DispatcherAction {
-  @override
+class GetSaveGeneralDetailsAction {
   void dispatch() {
     appStore.dispatch(GetSaveGeneralDetailsAction());
   }
