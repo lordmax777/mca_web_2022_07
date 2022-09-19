@@ -53,6 +53,7 @@ class _GeneralWidgetState extends State<GeneralWidget> {
                     _UsernameAndPayrollInfoWidget.formKey,
                     _RolesDepsAndLoginOptionsWidget.formKey,
                     _AddressWidget.formKey,
+                    _NextOfKinInfoWidget.formKey,
                   ],
                 );
               }
@@ -839,6 +840,8 @@ class _EthnicAndReligionWidget extends StatelessWidget {
 class _NextOfKinInfoWidget extends StatelessWidget {
   static const String title = "Next of Kin Information";
 
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   const _NextOfKinInfoWidget({Key? key}) : super(key: key);
 
   @override
@@ -849,26 +852,37 @@ class _NextOfKinInfoWidget extends StatelessWidget {
         builder: (context, state) {
           final savedUser = state.savedUserState;
 
-          return SpacedColumn(
-              verticalSpace: 32.0,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextInputWidget(
-                  width: dpWidth,
-                  labelText: "Next of Kin Name",
-                  controller: savedUser.nextOfKinName,
-                ),
-                TextInputWidget(
-                  width: dpWidth,
-                  labelText: "Next of Kin Relation",
-                  controller: savedUser.nextOfKinRelation,
-                ),
-                TextInputWidget(
-                  width: dpWidth,
-                  labelText: "Next of Kin Phone Number",
-                  controller: savedUser.nextOfKinPhone,
-                ),
-              ]);
+          return Form(
+            key: formKey,
+            child: SpacedColumn(
+                verticalSpace: 32.0,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Next of Kin Name",
+                    controller: savedUser.nextOfKinName,
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Next of Kin Relation",
+                    controller: savedUser.nextOfKinRelation,
+                  ),
+                  TextInputWidget(
+                    width: dpWidth,
+                    labelText: "Next of Kin Phone Number",
+                    controller: savedUser.nextOfKinPhone,
+                    validator: (p0) {
+                      if (p0 != null &&
+                          p0.isNotEmpty &&
+                          !RegExp(r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$")
+                              .hasMatch(p0)) {
+                        return "Invalid phone number";
+                      }
+                    },
+                  ),
+                ]),
+          );
         });
   }
 }
