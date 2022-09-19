@@ -913,18 +913,13 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
             text: "Save Changes",
             onPressed: () {
               bool allValid = true;
-              // for (var element in formKeys) {
-              //   if (!element.currentState!.validate()) {
-              //     allValid = false;
-              //   }
-              // }
               if (formKeys
                   .every((element) => element.currentState!.validate())) {
                 logger('Valid');
+                GetSaveGeneralDetailsAction().dispatch();
               } else {
                 logger('Invalid');
               }
-              // GetSaveGeneralDetailsAction().dispatch();
             },
           ),
         ],

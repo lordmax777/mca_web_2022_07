@@ -685,31 +685,31 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
 
     if (res.success) {
       await Future.wait([
-        // fetch(GetUserDetailsDetailAction()),
-        // fetch(GetUsersListAction()),
+        fetch(GetUserDetailsDetailAction()),
+        fetch(GetUsersListAction()),
       ]);
     } else {
-      // String errorMessage = "";
-      // jsonDecode(res.data)['errors'].entries.forEach((e) {
-      //   errorMessage += e.value.first.toString() + "\n";
-      // });
-      // showOverlayPopup(
-      //     body: TableWrapperWidget(
-      //         padding: const EdgeInsets.all(60),
-      //         child: SpacedColumn(verticalSpace: 40.0, children: [
-      //           KText(
-      //               text: errorMessage,
-      //               isSelectable: false,
-      //               fontSize: 20.0,
-      //               textColor: Colors.black,
-      //               fontWeight: FWeight.medium),
-      //           ButtonLarge(
-      //             text: "OK",
-      //             onPressed: () =>
-      //                 appRouter.navigatorKey.currentContext!.popRoute(),
-      //           )
-      //         ])),
-      //     context: appRouter.navigatorKey.currentContext!);
+      String errorMessage = "";
+      jsonDecode(res.data)['errors'].entries.forEach((e) {
+        errorMessage += e.value.first.toString() + "\n";
+      });
+      showOverlayPopup(
+          body: TableWrapperWidget(
+              padding: const EdgeInsets.all(60),
+              child: SpacedColumn(verticalSpace: 40.0, children: [
+                KText(
+                    text: errorMessage,
+                    isSelectable: false,
+                    fontSize: 20.0,
+                    textColor: Colors.black,
+                    fontWeight: FWeight.medium),
+                ButtonLarge(
+                  text: "OK",
+                  onPressed: () =>
+                      appRouter.navigatorKey.currentContext!.popRoute(),
+                )
+              ])),
+          context: appRouter.navigatorKey.currentContext!);
     }
   }
 }

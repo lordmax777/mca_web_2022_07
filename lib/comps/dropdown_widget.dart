@@ -63,6 +63,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   @override
   void initState() {
     super.initState();
+
     setState(() {
       itemList.addAll(widget.items);
     });
@@ -124,7 +125,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
           ],
         ),
         buttonPadding: EdgeInsets.zero,
-        // value: widget.value,
+        value: widget.value != null ? (widget.value as String) : null,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
         customButton: Container(
