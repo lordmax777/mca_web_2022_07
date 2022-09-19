@@ -18,6 +18,7 @@ class DropdownWidget extends StatefulWidget {
   final bool isRequired;
   final bool disableAll;
   final bool hasSearchBox;
+  final String? Function(String?)? validator;
 
   /// Dropdown-button-width, Dropdown-Options-Width
   ///  are changeable.
@@ -26,6 +27,7 @@ class DropdownWidget extends StatefulWidget {
       {Key? key,
       required this.items,
       this.onChanged,
+      this.validator,
       this.isRequired = false,
       this.disableAll = false,
       this.hasSearchBox = false,
@@ -50,6 +52,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   List itemList = [];
   final TextEditingController searchcontroller = TextEditingController();
 
+  bool isError = false;
+
   @override
   void dispose() {
     searchcontroller.dispose();
@@ -68,8 +72,24 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.dropdownBtnWidth,
-      height: 56,
-      child: DropdownButton2(
+      // height: 56,
+      child: DropdownButtonFormField2(
+        validator: widget.validator == null
+            ? (value) {
+                if (widget.isRequired) {
+                  if (value == null) {
+                    setState(() {
+                      isError = true;
+                    });
+                    return "This field is required";
+                  }
+                }
+                setState(() {
+                  isError = false;
+                });
+                return null;
+              }
+            : widget.validator,
         searchInnerWidget: widget.hasSearchBox
             ? Padding(
                 padding: const EdgeInsets.only(top: 8.0),
@@ -85,7 +105,11 @@ class _DropdownWidgetState extends State<DropdownWidget> {
         searchController: searchcontroller,
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
-        underline: const SizedBox(),
+        // underline: const SizedBox(),
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.zero,
+          border: InputBorder.none,
+        ),
         onChanged: widget.disableAll ? null : widget.onChanged,
         isExpanded: true,
         focusColor: ThemeColors.transparent,
@@ -99,6 +123,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 blurRadius: 4)
           ],
         ),
+        buttonPadding: EdgeInsets.zero,
         // value: widget.value,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
@@ -107,14 +132,15 @@ class _DropdownWidgetState extends State<DropdownWidget> {
           padding: const EdgeInsets.only(left: 15.0),
           decoration: BoxDecoration(
             border: Border.all(
-              color: widget.dropdownBtnColor ?? ThemeColors.gray11,
+              color: isError
+                  ? ThemeColors.red3
+                  : (widget.dropdownBtnColor ?? ThemeColors.gray11),
               width: widget.dropdownBtnColor == null ? 1.0 : 0.0,
             ),
-            // boxShadow: ThemeShadows.shadowSm,
             borderRadius: BorderRadius.circular(18.0),
-            color: widget.disableAll
+            color: (widget.disableAll
                 ? ThemeColors.gray12
-                : (widget.dropdownBtnColor ?? ThemeColors.white),
+                : (widget.dropdownBtnColor ?? ThemeColors.white)),
           ),
           child: SpacedRow(
             crossAxisAlignment: CrossAxisAlignment.center,

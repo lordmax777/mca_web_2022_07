@@ -51,6 +51,8 @@ class _GeneralWidgetState extends State<GeneralWidget> {
                   formKeys: [
                     _PersonalDetailsWidget.formKey,
                     _UsernameAndPayrollInfoWidget.formKey,
+                    _RolesDepsAndLoginOptionsWidget.formKey,
+                    _AddressWidget.formKey,
                   ],
                 );
               }
@@ -385,7 +387,10 @@ class _UsernameAndPayrollInfoWidget extends StatelessWidget {
                       ? (p0) {
                           if (p0 != null && p0.isEmpty) {
                             //TODO: check if password is valid
-                            return "Password is invalid";
+                            return "Password cannot be empty";
+                          }
+                          if (p0 != null && p0.length < 4) {
+                            return "Password must be more than 4 characters";
                           }
                         }
                       : (p0) {
@@ -405,8 +410,6 @@ class _UsernameAndPayrollInfoWidget extends StatelessWidget {
                     if (state.savedUserState.upass.text.isNotEmpty) {
                       if (state.savedUserState.upassRepeat.text !=
                           state.savedUserState.upass.text) {
-                        print(state.savedUserState.upass.text);
-                        print(p0);
                         return "Passwords do not match";
                       }
                     }
@@ -424,6 +427,8 @@ class _UsernameAndPayrollInfoWidget extends StatelessWidget {
 class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
   static const String title = "Roles, Department and Login Options";
 
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   const _RolesDepsAndLoginOptionsWidget({Key? key}) : super(key: key);
 
   @override
@@ -432,11 +437,13 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) {
-          final roles = state.generalState.paramList.data!.roles;
-          return SpacedRow(horizontalSpace: 64.0, children: [
-            _buildLeftPart(dpWidth, state),
-            _buildRightPart(dpWidth, state),
-          ]);
+          return Form(
+            key: formKey,
+            child: SpacedRow(horizontalSpace: 64.0, children: [
+              _buildLeftPart(dpWidth, state),
+              _buildRightPart(dpWidth, state),
+            ]),
+          );
         });
   }
 
@@ -669,6 +676,8 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
 class _AddressWidget extends StatelessWidget {
   static const String title = "Address";
 
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   const _AddressWidget({Key? key}) : super(key: key);
 
   @override
@@ -680,64 +689,84 @@ class _AddressWidget extends StatelessWidget {
           final savedUser = state.savedUserState;
           final general = state.generalState.paramList.data!;
 
-          return SpacedRow(horizontalSpace: 24.0, children: [
-            SpacedColumn(
-                verticalSpace: 32.0,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SpacedRow(
-                    horizontalSpace: dpWidth / 3.8,
-                    children: [
+          return Form(
+            key: formKey,
+            child: SpacedRow(horizontalSpace: 24.0, children: [
+              SpacedColumn(
+                  verticalSpace: 32.0,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SpacedRow(
+                      horizontalSpace: dpWidth / 3.8,
+                      children: [
+                        TextInputWidget(
+                          width: (dpWidth * 1.7),
+                          labelText: "Street Address",
+                          validator: (p0) {
+                            if (p0!.isEmpty) {
+                              return "Street Address is required";
+                            }
+                            return null;
+                          },
+                          isRequired: true,
+                          controller: savedUser.addressLine1,
+                        ),
+                        TextInputWidget(
+                          width: dpWidth / 1.5,
+                          labelText: "Post Code",
+                          isRequired: true,
+                          validator: (p0) {
+                            if (p0!.isEmpty) {
+                              return "Post Code is required";
+                            }
+                          },
+                          controller: savedUser.addressPostcode,
+                        ),
+                      ],
+                    ),
+                    SpacedRow(horizontalSpace: dpWidth / 3.8, children: [
                       TextInputWidget(
-                        width: (dpWidth * 1.7),
-                        labelText: "Street Address",
+                        width: dpWidth / 1.4,
+                        labelText: "City/Town",
                         isRequired: true,
-                        controller: savedUser.addressLine1,
+                        validator: (p0) {
+                          if (p0!.isEmpty) {
+                            return "City/Town is required";
+                          }
+                        },
+                        controller: savedUser.addressCity,
                       ),
                       TextInputWidget(
-                        width: dpWidth / 1.5,
-                        labelText: "Post Code",
-                        controller: savedUser.addressPostcode,
+                        width: dpWidth / 1.4,
+                        labelText: "County",
+                        controller: savedUser.county,
                       ),
-                    ],
-                  ),
-                  SpacedRow(horizontalSpace: dpWidth / 3.8, children: [
-                    TextInputWidget(
-                      width: dpWidth / 1.4,
-                      labelText: "City/Town",
-                      isRequired: true,
-                      controller: savedUser.addressCity,
-                    ),
-                    TextInputWidget(
-                      width: dpWidth / 1.4,
-                      labelText: "County",
-                      controller: savedUser.county,
-                    ),
-                  ]),
-                  DropdownWidget(
-                    hintText: "Country",
-                    dropdownMaxHeight: 400.0,
-                    dropdownBtnWidth: (dpWidth * 1.7),
-                    dropdownOptionsWidth: (dpWidth * 2) + 24.0,
-                    value: savedUser.addressCountry.name,
-                    onChanged: (cName) {
-                      savedUser.addressCountry = CodeMap(
-                          name: cName,
-                          code: general.countries
-                              .firstWhere(
-                                (element) => element.name == cName,
-                                orElse: () => ListCountry(name: '', code: ''),
-                              )
-                              .code);
+                    ]),
+                    DropdownWidget(
+                      hintText: "Country",
+                      dropdownMaxHeight: 400.0,
+                      dropdownBtnWidth: (dpWidth * 1.7),
+                      dropdownOptionsWidth: (dpWidth * 2) + 24.0,
+                      value: savedUser.addressCountry.name,
+                      onChanged: (cName) {
+                        savedUser.addressCountry = CodeMap(
+                            name: cName,
+                            code: general.countries
+                                .firstWhere(
+                                  (element) => element.name == cName,
+                                  orElse: () => ListCountry(name: '', code: ''),
+                                )
+                                .code);
 
-                      appStore.dispatch(UpdateUsersStateAction());
-                    },
-                    hasSearchBox: true,
-                    isRequired: true,
-                    items: general.countries.map((e) => e.name).toList(),
-                  ),
-                ])
-          ]);
+                        appStore.dispatch(UpdateUsersStateAction());
+                      },
+                      hasSearchBox: true,
+                      isRequired: true,
+                      items: general.countries.map((e) => e.name).toList(),
+                    ),
+                  ])
+            ]),
+          );
         });
   }
 }
