@@ -83,7 +83,7 @@ abstract class RestClient {
     @Field() String? nationality, //code
     @Field() int? religion, //code
     @Field() int? ethnic, //code
-    @Field() String? marital_status,
+    @Field() String? maritalStatus,
     @Field() String? ni,
     @Field() String? phoneLandline,
     @Field() String? phoneMobile,
@@ -101,8 +101,8 @@ abstract class RestClient {
     @Field() double? longitude,
     @Field() String? groupAdmin,
     @Field() bool? locationAdmin,
-    @Field() String? login_required,
-    @Field() List? login_methods, //codes
+    @Field() String? loginRequired,
+    @Field() List? loginmethods, //codes
     @Field() String? email,
 
     ///

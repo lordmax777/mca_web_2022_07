@@ -131,6 +131,8 @@ class _PersonalDetailsWidget extends StatelessWidget {
         converter: (store) => store.state,
         builder: (context, state) {
           final countries = state.generalState.paramList.data!.countries;
+          final maritalStatuses =
+              state.generalState.paramList.data!.marital_statuses;
           final savedUser = state.savedUserState;
           final String? userAvatar = savedUser.photo;
           return Form(
@@ -264,11 +266,14 @@ class _PersonalDetailsWidget extends StatelessWidget {
                       dropdownOptionsWidth: dpWidth,
                       value: savedUser.maritalStatusCode.name,
                       onChanged: (cName) {
-                        savedUser.maritalStatusCode =
-                            CodeMap(name: cName, code: cName);
+                        savedUser.maritalStatusCode = CodeMap(
+                            name: cName,
+                            code: maritalStatuses
+                                .firstWhere((element) => element.name == cName)
+                                .code);
                         appStore.dispatch(UpdateUsersStateAction());
                       },
-                      items: Constants.userMartialStatusTypes.values.toList(),
+                      items: maritalStatuses.map((e) => e.name).toList(),
                     ),
                     TextInputWidget(
                       width: dpWidth,

@@ -24,7 +24,10 @@ QualifsMd _$QualifsMdFromJson(Map json) => QualifsMd(
               Map<String, dynamic>.from(json['achievementDate'] as Map)),
       thumbnail: json['thumbnail'] as String?,
       comments: json['comments'] as String?,
-      approvedOn: json['approvedOn'] as String?,
+      approvedOn: json['approvedOn'] == null
+          ? null
+          : LastTime.fromJson(
+              Map<String, dynamic>.from(json['approvedOn'] as Map)),
       certicate: json['certicate'] as String?,
     );
 

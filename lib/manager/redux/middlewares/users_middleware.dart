@@ -118,6 +118,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           .map((e) => e.toLowerCase())
           .toList();
 
+      logger(userDetailsMd.toJson(), hint: 'Error on');
+
       savedUserDetails.addressCity =
           TextEditingController(text: userDetailsMd.address.city);
       next(UpdateSavedUserStateAction(
@@ -200,10 +202,11 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
                 ?.code),
         maritalStatusCode: CodeMap(
             name: userDetailsMd.marital_status,
-            code: Constants.userMartialStatusTypes.entries
-                .firstWhere(
-                    (element) => element.value == userDetailsMd.marital_status)
-                .key),
+            code: general.marital_statuses
+                .firstWhereOrNull(
+                    (element) => element.name == userDetailsMd.marital_status)
+                ?.code
+                .toString()),
         isActivate: CodeMap(
           name: Constants.userAccountStatusTypes[userDetailsMd.account.active],
           code: userDetailsMd.account.active ? 1.toString() : 0.toString(),
@@ -647,10 +650,10 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         .getSaveUserGeneralDetails(
           id,
 
-          // marital_status: 'single', //TODO: Find marital status codes
-          // login_methods: savedUser.loginMethods.methods, //TODO: Is not working
-          // login_required: savedUser.loginRequired ? "1" : "0", //TODO: Is not working
-
+          // loginmethods: savedUser.loginMethods.methods, //TODO: Is not working
+          loginRequired:
+              savedUser.loginRequired ? "1" : "0", //TODO: Is not working
+          maritalStatus: savedUser.maritalStatusCode.code,
           firstName: savedUser.firstName.text,
           lastName: savedUser.lastName.text,
           isActive: savedUser.isActivate.code,
@@ -690,9 +693,11 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
       ]);
     } else {
       String errorMessage = "";
-      jsonDecode(res.data)['errors'].entries.forEach((e) {
-        errorMessage += e.value.first.toString() + "\n";
-      });
+      // jsonDecode(res.data)['errors'].entries.forEach((e) {
+      //   errorMessage += "${e.value.first}\n";
+      // });
+
+      errorMessage = res.data['error'].toString();
       showOverlayPopup(
           body: TableWrapperWidget(
               padding: const EdgeInsets.all(60),

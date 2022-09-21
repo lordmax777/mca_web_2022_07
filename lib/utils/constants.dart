@@ -28,15 +28,6 @@ class Constants {
     "prof": "Prof.",
   };
 
-  static const Map<String, String> userMartialStatusTypes = {
-    "notDisclosed": "Not disclosed",
-    "single": "Single",
-    "married": "Married/Civil Partner",
-    "divorced": "Divorced",
-    "widowed": "Widowed/Surviving Civil Partner",
-    "separated": "Separated",
-  };
-
   static const Map<bool, String> userAccountStatusTypes = {
     true: "Active",
     false: "Inactive",
@@ -46,14 +37,5 @@ class Constants {
     "en": "English",
     "hu": "Hungarian",
     "pt": "Portuguese",
-  };
-
-  static const Map<String, int> userLoginMethods = {
-    "web": 1,
-    "mobile": 2,
-    "tablet": 3,
-    "mobileadmin": 9,
-    "api": 12,
-    "other": 99,
   };
 }

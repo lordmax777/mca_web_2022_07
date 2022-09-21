@@ -238,21 +238,23 @@ class LoginMethds {
   List<int> get methods {
     List<int> list = [];
 
-    for (var element in Constants.userLoginMethods.entries) {
-      if (element.key == 'web' && web) {
-        list.add(element.value);
+    for (var element
+        in appStore.state.generalState.paramList.data!.login_methods) {
+      if (element.name.toLowerCase() == 'web' && web) {
+        list.add(element.id);
       }
-      if (element.key == 'mobile' && mobile) {
-        list.add(element.value);
+      if (element.name.toLowerCase() == 'mobile' && mobile) {
+        list.add(element.id);
       }
-      if (element.key == 'tablet' && tablet) {
-        list.add(element.value);
+      if (element.name.toLowerCase() == 'tablet' && tablet) {
+        list.add(element.id);
       }
-      if (element.key == 'mobileadmin' && mobileAdmin) {
-        list.add(element.value);
+      if (element.name.toLowerCase().replaceAll(" ", "") == 'mobileadmin' &&
+          mobileAdmin) {
+        list.add(element.id);
       }
-      if (element.key == 'api' && api) {
-        list.add(element.value);
+      if (element.name.toLowerCase() == 'api' && api) {
+        list.add(element.id);
       }
     }
 

@@ -286,7 +286,7 @@ class _RestClient implements RestClient {
       nationality,
       religion,
       ethnic,
-      marital_status,
+      maritalStatus,
       ni,
       phoneLandline,
       phoneMobile,
@@ -304,8 +304,8 @@ class _RestClient implements RestClient {
       longitude,
       groupAdmin,
       locationAdmin,
-      login_required,
-      login_methods,
+      loginRequired,
+      loginmethods,
       email}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -327,7 +327,7 @@ class _RestClient implements RestClient {
       'nationality': nationality,
       'religion': religion,
       'ethnic': ethnic,
-      'marital_status': marital_status,
+      'maritalStatus': maritalStatus,
       'ni': ni,
       'phoneLandline': phoneLandline,
       'phoneMobile': phoneMobile,
@@ -345,8 +345,8 @@ class _RestClient implements RestClient {
       'longitude': longitude,
       'groupAdmin': groupAdmin,
       'locationAdmin': locationAdmin,
-      'login_required': login_required,
-      'login_methods': login_methods,
+      'loginRequired': loginRequired,
+      'loginmethods': loginmethods,
       'email': email
     };
     _data.removeWhere((k, v) => v == null);

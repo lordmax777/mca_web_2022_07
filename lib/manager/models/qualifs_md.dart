@@ -18,7 +18,7 @@ class QualifsMd {
   String? certicate;
   String? thumbnail;
   String? imageType;
-  String? approvedOn;
+  LastTime? approvedOn;
 
   @override
   QualifsMd({

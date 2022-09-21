@@ -40,7 +40,9 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
             statuses: [],
             storage_items: [],
             storages: [],
-            visas: []),
+            visas: [],
+            login_methods: [],
+            marital_statuses: []),
         error:
             ErrorModel<GetAllParamListAction>(isLoading: true, action: action));
 
@@ -106,6 +108,12 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       }
       for (var e in r['roles']) {
         l.roles.add(ListRole.fromJson(e));
+      }
+      for (var e in r['login_methods']) {
+        l.login_methods.add(LoginMethods.fromJson(e));
+      }
+      for (var e in r['marital_statuses']) {
+        l.marital_statuses.add(MaritalStatuses.fromJson(e));
       }
       stateValue.error.isError = false;
       stateValue.data = l;

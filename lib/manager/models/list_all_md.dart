@@ -21,6 +21,8 @@ class ListAllMd {
   List<ListStorageItem> storage_items;
   List<ListVisa> visas;
   List<ListRole> roles;
+  List<LoginMethods> login_methods;
+  List<MaritalStatuses> marital_statuses;
 
   @override
   ListAllMd({
@@ -42,6 +44,8 @@ class ListAllMd {
     required this.storage_items,
     required this.storages,
     required this.visas,
+    required this.login_methods,
+    required this.marital_statuses,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -472,4 +476,41 @@ class ListRole {
       _$ListRoleFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListRoleToJson(this);
+}
+
+@JsonSerializable()
+class LoginMethods {
+  // "code": "ROLE_SYSADMIN",
+  //   "name": "Sysadmin"
+
+  int id;
+  String name;
+
+  @override
+  LoginMethods({
+    required this.id,
+    required this.name,
+  });
+
+  factory LoginMethods.fromJson(Map<String, dynamic> json) =>
+      _$LoginMethodsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LoginMethodsToJson(this);
+}
+
+@JsonSerializable()
+class MaritalStatuses {
+  String code;
+  String name;
+
+  @override
+  MaritalStatuses({
+    required this.code,
+    required this.name,
+  });
+
+  factory MaritalStatuses.fromJson(Map<String, dynamic> json) =>
+      _$MaritalStatusesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MaritalStatusesToJson(this);
 }

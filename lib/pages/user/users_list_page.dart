@@ -36,8 +36,8 @@ class UsersListPage extends StatelessWidget {
               appStore.dispatch(UpdateSavedUserStateAction(isInit: true));
               appStore.dispatch(UpdateUsersStateAction(
                 isNewUser: true,
-                // saveableUserDetails: UserDetailSaveMd.init()
               ));
+
               context.navigateTo(UserDetailsRoute());
             },
           ),
@@ -308,13 +308,36 @@ class _BodyState extends State<_Body> {
   }
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
-      {int index = 0}) {
+      {int index = 0}) async {
     appStore.dispatch(UpdateSavedUserStateAction(isInit: true));
     appStore.dispatch(UpdateUsersStateAction(
         // saveableUserDetails: UserDetailSaveMd.init(),
         isNewUser: false,
         selectedUser: ctx.row.cells['user']?.value));
     context.navigateTo(UserDetailsRoute(tabIndex: index));
+  }
+
+  void _onUserDetailsNavigationClickTest(PlutoColumnRendererContext ctx,
+      {int index = 0}) async {
+    for (var i = 0; i < appStore.state.usersState.usersList.data!.length; i++) {
+      //
+      appStore.dispatch(UpdateSavedUserStateAction(isInit: true));
+      appStore.dispatch(UpdateUsersStateAction(
+          // saveableUserDetails: UserDetailSaveMd.init(),
+          isNewUser: false,
+          selectedUser: appStore.state.usersState.usersList.data![i]));
+      await Future.wait([
+        fetch(GetUserDetailsDetailAction()),
+        fetch(GetUserDetailsPhotosAction()),
+        fetch(GetUserDetailsContractsAction()),
+        fetch(GetUserDetailsReviewsAction()),
+        fetch(GetUserDetailsVisasAction()),
+        fetch(GetUserDetailsPreferredShiftsAction()),
+        fetch(GetUserDetailsQualifsAction()),
+        fetch(GetUserDetailsStatusAction()),
+        fetch(GetUserDetailsMobileAction()),
+      ]);
+    }
   }
 
   @override
