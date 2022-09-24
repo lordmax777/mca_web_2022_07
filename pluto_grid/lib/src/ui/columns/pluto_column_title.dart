@@ -389,6 +389,7 @@ class _BuildColumnWidget extends StatelessWidget {
                     column: column,
                     stateManager: stateManager,
                   ),
+                const SizedBox(width: 24),
                 Expanded(
                   child: _ColumnTextWidget(
                     column: column,

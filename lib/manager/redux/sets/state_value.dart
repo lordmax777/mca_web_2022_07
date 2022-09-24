@@ -235,26 +235,38 @@ class LoginMethds {
   bool mobileAdmin;
   bool api;
 
-  List<int> get methods {
-    List<int> list = [];
+  String get methods {
+    String list = "";
 
     for (var element
         in appStore.state.generalState.paramList.data!.login_methods) {
       if (element.name.toLowerCase() == 'web' && web) {
-        list.add(element.id);
+        list = list + element.id.toString();
       }
       if (element.name.toLowerCase() == 'mobile' && mobile) {
-        list.add(element.id);
+        if (web) {
+          list = '$list,';
+        }
+        list = "$list${element.id}";
       }
       if (element.name.toLowerCase() == 'tablet' && tablet) {
-        list.add(element.id);
+        if (web || mobile) {
+          list = '$list,';
+        }
+        list = "$list${element.id}";
       }
       if (element.name.toLowerCase().replaceAll(" ", "") == 'mobileadmin' &&
           mobileAdmin) {
-        list.add(element.id);
+        if (web || mobile || tablet) {
+          list = '$list,';
+        }
+        list = "$list${element.id}";
       }
       if (element.name.toLowerCase() == 'api' && api) {
-        list.add(element.id);
+        if (web || mobile || tablet || mobileAdmin) {
+          list = '$list,';
+        }
+        list = "$list${element.id}";
       }
     }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import '../../../model_exporter.dart';
+import '../../middlewares/auth_middleware.dart';
 
 @immutable
 class UsersState {
@@ -142,11 +143,7 @@ class GetUserDetailsPreferredShiftsAction {}
 
 class GetUserDetailsPhotosAction {}
 
-class GetSaveGeneralDetailsAction {
-  void dispatch() {
-    appStore.dispatch(GetSaveGeneralDetailsAction());
-  }
-}
+class GetSaveGeneralDetailsAction {}
 
 abstract class DispatcherAction {
   void dispatch();

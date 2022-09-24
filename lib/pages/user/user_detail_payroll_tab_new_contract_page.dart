@@ -14,6 +14,38 @@ class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
 
 class _UserDetailsPayrollTabNewContractPageState
     extends State<UserDetailsPayrollTabNewContractPage> {
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  String? jobTitle;
+  String? contractType;
+  String? holidayEntitlementStart;
+  String? holidayCalculationType;
+  DateTime? contractStartDate;
+  DateTime? contractEndDate;
+  TextEditingController aveWeeklyHours = TextEditingController();
+  TextEditingController agreedDaysPerWeek = TextEditingController();
+  TextEditingController annualHolidayEntitlement = TextEditingController();
+  TextEditingController holidaysCarriedOver = TextEditingController(text: "0");
+  TextEditingController paidLunchtime = TextEditingController();
+  TextEditingController unpaidLunchtime = TextEditingController();
+  TextEditingController salaryPerHour = TextEditingController();
+  TextEditingController salaryPerHourOvertime = TextEditingController();
+  TextEditingController salaryPerAnnum = TextEditingController();
+
+  @override
+  void dispose() {
+    paidLunchtime.dispose();
+    unpaidLunchtime.dispose();
+    aveWeeklyHours.dispose();
+    agreedDaysPerWeek.dispose();
+    annualHolidayEntitlement.dispose();
+    holidaysCarriedOver.dispose();
+    salaryPerHour.dispose();
+    salaryPerHourOvertime.dispose();
+    salaryPerAnnum.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
@@ -22,10 +54,10 @@ class _UserDetailsPayrollTabNewContractPageState
         converter: (store) => store.state,
         builder: (context, state) {
           final user = state.usersState.userDetails.data;
-          String nameWithUsername = "-";
+          String nameWithUsername = "New Contract";
           if (user != null) {
             nameWithUsername =
-                "Next Contract (${user.first_name} ${user.last_name})";
+                "New Contract (${user.first_name} ${user.last_name})";
           }
           return PageWrapper(
               child: SpacedColumn(verticalSpace: 16.0, children: [
@@ -33,19 +65,22 @@ class _UserDetailsPayrollTabNewContractPageState
             TableWrapperWidget(
               padding: const EdgeInsets.only(
                   left: 48.0, right: 48.0, top: 48.0, bottom: 16.0),
-              child: SpacedColumn(
-                verticalSpace: 16.0,
-                children: [
-                  SpacedRow(
-                    horizontalSpace: dpWidth * .05,
-                    children: [
-                      _buildLeft(dpWidth),
-                      _buildRight(dpWidth),
-                    ],
-                  ),
-                  const Divider(color: ThemeColors.gray11, thickness: 1.0),
-                  const _SaveAndCancelButtonsWidget(),
-                ],
+              child: Form(
+                key: formKey,
+                child: SpacedColumn(
+                  verticalSpace: 16.0,
+                  children: [
+                    SpacedRow(
+                      horizontalSpace: dpWidth * .05,
+                      children: [
+                        _buildLeft(dpWidth),
+                        _buildRight(dpWidth),
+                      ],
+                    ),
+                    const Divider(color: ThemeColors.gray11, thickness: 1.0),
+                    const _SaveAndCancelButtonsWidget(),
+                  ],
+                ),
               ),
             ),
           ]));
@@ -57,15 +92,18 @@ class _UserDetailsPayrollTabNewContractPageState
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(),
           DropdownWidget(
             hintText: "Job Title",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
+            value: jobTitle,
             onChanged: (_) {},
             items: [],
           ),
           DropdownWidget(
             hintText: "Contract Type",
+            value: contractType,
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
@@ -76,33 +114,63 @@ class _UserDetailsPayrollTabNewContractPageState
             horizontalSpace: 24.0,
             children: [
               TextInputWidget(
+                controller:
+                    TextEditingController(text: contractStartDate?.toString()),
                 isRequired: true,
                 width: dpWidth / 6,
                 enabled: false,
                 labelText: "Contract Start Date",
                 leftIcon: HeroIcons.calendar,
-                onTap: () {
-                  showDatePicker(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a value";
+                  }
+                },
+                onTap: () async {
+                  DateTime? val = await showDatePicker(
                     context: context,
                     initialDate: DateTime(2015),
                     firstDate: DateTime(1930),
                     lastDate: DateTime(2035),
                   );
+                  if (val != null) {
+                    setState(() {
+                      contractStartDate = val;
+                    });
+                  }
                 },
               ),
               TextInputWidget(
                 isRequired: true,
                 width: dpWidth / 6,
+                controller: TextEditingController(
+                    text: contractEndDate?.toIso8601String()),
                 enabled: false,
                 labelText: "Contract End Date",
                 leftIcon: HeroIcons.calendar,
-                onTap: () {
-                  showDatePicker(
+                validator: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return "Please enter a value";
+                  }
+                  if (contractStartDate != null &&
+                      contractEndDate != null &&
+                      contractStartDate!.isAfter(contractEndDate!)) {
+                    return "Contract end date must be after contract start date";
+                  }
+                  return null;
+                },
+                onTap: () async {
+                  DateTime? val = await showDatePicker(
                     context: context,
-                    initialDate: DateTime(1930),
+                    initialDate: DateTime(2015),
                     firstDate: DateTime(1930),
                     lastDate: DateTime(2035),
                   );
+                  if (val != null) {
+                    setState(() {
+                      contractEndDate = val;
+                    });
+                  }
                 },
               ),
             ],
@@ -115,12 +183,22 @@ class _UserDetailsPayrollTabNewContractPageState
                 width: dpWidth / 6,
                 enabled: false,
                 labelText: "Agreed Weekly Hours",
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a value";
+                  }
+                },
                 onTap: () {},
               ),
               TextInputWidget(
                 isRequired: true,
                 width: dpWidth / 6,
                 enabled: false,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a value";
+                  }
+                },
                 labelText: "Agreed Days per Week",
                 onTap: () {},
               ),
@@ -136,6 +214,7 @@ class _UserDetailsPayrollTabNewContractPageState
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(),
           DropdownWidget(
             hintText: "Annual Holiday Entitlement Start",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
@@ -213,6 +292,13 @@ class _UserDetailsPayrollTabNewContractPageState
         TextInputWidget(
           width: dpWidth / 8,
           hintText: "0.00",
+          validator: isRequired
+              ? (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a value";
+                  }
+                }
+              : null,
           rightIcon: HeroIcons.pound,
           onTap: () {},
         ),
@@ -241,7 +327,10 @@ class _SaveAndCancelButtonsWidget extends StatelessWidget {
         ButtonLarge(
           icon: const HeroIcon(HeroIcons.check),
           text: "Add Contract",
-          onPressed: () {},
+          onPressed: () {
+            _UserDetailsPayrollTabNewContractPageState.formKey.currentState
+                ?.validate();
+          },
         ),
       ],
     );

@@ -162,7 +162,7 @@ class _Body extends StatefulWidget {
 class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  final List<Tab> tabs = const [
+  final List<Tab> tabs = [
     Tab(text: 'General'),
     Tab(text: 'Payroll'),
     Tab(text: 'Reviews'),
@@ -175,6 +175,9 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    if (appStore.state.usersState.isNewUser) {
+      tabs.removeRange(1, tabs.length);
+    }
     _tabController = TabController(length: tabs.length, vsync: this);
     if (widget.tabIndex != null) {
       _tabController.animateTo(widget.tabIndex!);

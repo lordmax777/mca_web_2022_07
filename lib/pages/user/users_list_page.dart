@@ -87,7 +87,7 @@ class _BodyState extends State<_Body> {
       PlutoColumn(
           title: "Name",
           field: "name",
-          width: 170.0,
+          // width: 170.0,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             return KText(
@@ -101,7 +101,7 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 110.0,
+          // width: 110.0,
           title: "Username",
           field: "username",
           type: PlutoColumnType.text(),
@@ -116,17 +116,17 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 130.0,
+          // width: 130.0,
           title: "Department",
           field: "department",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 266.0,
+          // width: 266.0,
           title: "Main Location",
           field: "main_location",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 85.0,
+          // width: 85.0,
           title: "Payroll",
           field: "payroll",
           enableSorting: false,
@@ -147,7 +147,7 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 85.0,
+          // width: 85.0,
           title: "Reviews",
           field: "reviews",
           enableSorting: false,
@@ -168,7 +168,7 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 85.0,
+          // width: 85.0,
           title: "Visa",
           field: "visa",
           enableSorting: false,
@@ -189,12 +189,12 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 266.0,
+          // width: 266.0,
           title: "Absences",
           field: "absences",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 133.0,
+          // width: 133.0,
           title: "Preferred Shifts",
           field: "preferred_shifts",
           enableSorting: false,
@@ -215,7 +215,7 @@ class _BodyState extends State<_Body> {
             );
           }),
       PlutoColumn(
-          width: 133.0,
+          // width: 133.0,
           title: "Qualifications",
           field: "qualifications",
           enableSorting: false,

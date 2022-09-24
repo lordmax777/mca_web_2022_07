@@ -102,7 +102,7 @@ abstract class RestClient {
     @Field() String? groupAdmin,
     @Field() bool? locationAdmin,
     @Field() String? loginRequired,
-    @Field() List? loginmethods, //codes
+    @Field() String? login_methods, //codes
     @Field() String? email,
 
     ///

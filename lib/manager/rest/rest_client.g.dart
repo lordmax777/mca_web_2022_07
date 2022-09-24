@@ -305,7 +305,7 @@ class _RestClient implements RestClient {
       groupAdmin,
       locationAdmin,
       loginRequired,
-      loginmethods,
+      login_methods,
       email}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -346,7 +346,7 @@ class _RestClient implements RestClient {
       'groupAdmin': groupAdmin,
       'locationAdmin': locationAdmin,
       'loginRequired': loginRequired,
-      'loginmethods': loginmethods,
+      'loginmethods': login_methods,
       'email': email
     };
     _data.removeWhere((k, v) => v == null);

@@ -3,6 +3,7 @@ import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
+import '../../../app.dart';
 import '../../../theme/theme.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
@@ -54,6 +55,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
   }
 }
 
+///Must pass the action in StateValue<T> as T type
 Future<void> fetch(action) async {
   final res = await appStore.dispatch(action);
 
@@ -69,6 +71,34 @@ Future<void> fetch(action) async {
               .contains("The access token provided has expired.");
           if (eee) {
             Logger.e('Token Expired');
+            await showDialog(
+              context: appRouter.navigatorKey.currentContext!,
+              barrierDismissible: false,
+              builder: (context) {
+                return PopupLayout(
+                  borderRadius: 16.0,
+                  backgroundColor: Colors.white,
+                  children: [
+                    SizedBox(
+                        width: 300,
+                        height: 200,
+                        child: SpacedColumn(
+                          verticalSpace: 32,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CircularProgressIndicator(),
+                            Text(
+                              "Please wait! Loading!",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        )),
+                  ],
+                );
+              },
+            );
             //Get Token Again and Fetch the failed action
             await appStore.dispatch(GetAccessTokenAction(
                 domain: Constants.domain,
@@ -76,6 +106,7 @@ Future<void> fetch(action) async {
                 password: Constants.password));
 
             await appStore.dispatch(action);
+            await appRouter.pop();
           }
         }
       }

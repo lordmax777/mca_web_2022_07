@@ -103,6 +103,7 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
             rowIdx: widget.rowIdx,
             stateManager: stateManager,
           ),
+        const SizedBox(width: 24),
         Expanded(
           child: cellWidget,
         ),

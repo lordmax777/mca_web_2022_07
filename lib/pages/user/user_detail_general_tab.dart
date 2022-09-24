@@ -916,12 +916,12 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
           ButtonLarge(
             icon: const HeroIcon(HeroIcons.check),
             text: "Save Changes",
-            onPressed: () {
+            onPressed: () async {
               bool allValid = true;
               if (formKeys
                   .every((element) => element.currentState!.validate())) {
                 logger('Valid');
-                GetSaveGeneralDetailsAction().dispatch();
+                await fetch(GetSaveGeneralDetailsAction());
               } else {
                 logger('Invalid');
               }

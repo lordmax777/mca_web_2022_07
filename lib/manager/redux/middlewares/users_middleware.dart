@@ -118,7 +118,7 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           .map((e) => e.toLowerCase())
           .toList();
 
-      logger(userDetailsMd.toJson(), hint: 'Error on');
+      // logger(userDetailsMd.toJson(), hint: 'Error on');
 
       savedUserDetails.addressCity =
           TextEditingController(text: userDetailsMd.address.city);
@@ -633,11 +633,13 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     return stateValue;
   }
 
-  Future<void> _getSaveGeneralDetailsAction(AppState state,
+  Future<StateValue<void>> _getSaveGeneralDetailsAction(AppState state,
       GetSaveGeneralDetailsAction action, NextDispatcher next) async {
     //Loading
-
-    //Check if is new user
+    StateValue<void> stateValue = StateValue(
+        data: null,
+        error: ErrorModel<GetSaveGeneralDetailsAction>(
+            isLoading: true, action: action));
 
     //if new user => create user
     //if not new user => update user
@@ -645,14 +647,11 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     final savedUser = state.savedUserState;
 
     //Call post user details
-
     final ApiResponse res = await restClient()
         .getSaveUserGeneralDetails(
           id,
-
-          // loginmethods: savedUser.loginMethods.methods, //TODO: Is not working
-          loginRequired:
-              savedUser.loginRequired ? "1" : "0", //TODO: Is not working
+          // login_methods: savedUser.loginMethods.methods, //TODO: Is not working
+          loginRequired: savedUser.loginRequired ? "1" : "0",
           maritalStatus: savedUser.maritalStatusCode.code,
           firstName: savedUser.firstName.text,
           lastName: savedUser.lastName.text,
@@ -686,7 +685,14 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         )
         .nocodeErrorHandler();
 
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
     if (res.success) {
+      stateValue.error.isError = false;
+
       await Future.wait([
         fetch(GetUserDetailsDetailAction()),
         fetch(GetUsersListAction()),
@@ -716,5 +722,6 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
               ])),
           context: appRouter.navigatorKey.currentContext!);
     }
+    return stateValue;
   }
 }
