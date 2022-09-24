@@ -222,11 +222,11 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       case 0:
         return const GeneralWidget();
       case 1:
-        return PayrollWidget(state: appStore.state);
+        return PayrollWidget();
       case 2:
-        return ReviewsWidget(state: appStore.state);
+        return ReviewsWidget();
       case 3:
-        return VisaWidget(state: appStore.state);
+        return VisaWidget();
       case 4:
         return const PrefferedShiftsWidget();
       case 5:

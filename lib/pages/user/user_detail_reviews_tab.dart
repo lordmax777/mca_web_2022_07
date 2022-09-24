@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -8,8 +9,7 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
 class ReviewsWidget extends StatefulWidget {
-  AppState state;
-  ReviewsWidget({Key? key, required this.state}) : super(key: key);
+  ReviewsWidget({Key? key}) : super(key: key);
 
   @override
   State<ReviewsWidget> createState() => _ReviewsWidgetState();
@@ -20,62 +20,36 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
   bool _isSmLoaded = false;
   late PlutoGridStateManager userDetailsPayrollSm;
   final List<ColumnHiderValues> columnHideValues = [];
-  final List<ReviewMd> _contracts = [];
 
   List<PlutoColumn> get _cols {
     return [
       PlutoColumn(
-          width: 80.0,
+          // width: 80.0,
           title: "Conducted By",
           field: "conducted_by",
           enableRowChecked: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 50.0,
+          // width: 50.0,
           title: "Conducted On",
           field: "date",
-          type: PlutoColumnType.text()),
+          type: PlutoColumnType.date(
+            format: 'dd/MM/yyyy',
+          )),
       PlutoColumn(
-          width: 100.0,
+          // width: 100.0,
           title: "Title",
           field: "title",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 80.0,
+          // width: 80.0,
           title: "Comment",
           field: "comment",
           enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
-            return Tooltip(
-              decoration: const BoxDecoration(color: ThemeColors.transparent),
-              richMessage: TextSpan(children: [
-                WidgetSpan(
-                    child: TableWrapperWidget(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: ThemeColors.gray12,
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(color: ThemeColors.gray11),
-                      ),
-                      child: Text(ctx.cell.value.toString())),
-                )),
-              ]),
-              child: KText(
-                onTap: () {},
-                text: "Read Comment",
-                textColor: ThemeColors.blue3,
-                fontWeight: FWeight.regular,
-                fontSize: 14,
-                isSelectable: false,
-                icon: const HeroIcon(
-                  HeroIcons.eye,
-                  color: ThemeColors.blue3,
-                ),
-              ),
-            );
+            return TableTooltipWidget(
+                title: "Read Comment", message: ctx.cell.value.toString());
           }),
       PlutoColumn(
           title: "Action",
@@ -90,7 +64,11 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
               fontSize: 14,
               isSelectable: false,
               onTap: () {
-                print(ctx.cell.value);
+                logger(ctx.cell.value);
+                // showOverlayPopup(
+                //     body: UserDetailReviewNewReviewPopupWidget(
+                //         id: ctx.cell.value.id),
+                //     context: context);
               },
               icon: const HeroIcon(
                 HeroIcons.pen,
@@ -111,22 +89,30 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
         .map<ColumnHiderValues>(
             (e) => ColumnHiderValues(value: e.field, label: e.title))
         .toList());
-    _contracts.clear();
-    _contracts.addAll(widget.state.usersState.userDetailReviews.data!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: SpacedColumn(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _header(context),
-          _body(),
-        ],
-      ),
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) {
+        final e1 = state.usersState.userDetailReviews.error;
+        final errors = [e1];
+        return ErrorWrapper(
+          errors: errors,
+          child: SizedBox(
+            width: double.infinity,
+            child: SpacedColumn(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _header(context),
+                _body(state),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -168,10 +154,10 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
     );
   }
 
-  Widget _body() {
+  Widget _body(AppState state) {
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
-      rows: widget.state.usersState.userDetailReviews.data!
+      rows: state.usersState.userDetailReviews.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
               "conducted_by": PlutoCell(value: e.conducted_by),

@@ -28,8 +28,8 @@ class McaWebApp extends StatelessWidget {
         ],
         locale: const Locale('en'),
         builder: (context, child) => ResponsiveWrapper.builder(child,
-            maxWidth: 1920,
-            minWidth: 480,
+            // maxWidth: 1920,
+            // minWidth: 480,
             defaultScale: true,
             breakpoints: const [
               ResponsiveBreakpoint.resize(480, name: MOBILE),

@@ -12,6 +12,16 @@ class UsersListTable extends StatelessWidget {
       required this.cols})
       : super(key: key);
 
+  static Widget defaultTextWidget(String text) {
+    return KText(
+      text: text.contains("null") ? "-" : text,
+      textColor: ThemeColors.gray2,
+      fontWeight: FWeight.regular,
+      fontSize: 14,
+      isSelectable: false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<PlutoColumn> _cols = [];

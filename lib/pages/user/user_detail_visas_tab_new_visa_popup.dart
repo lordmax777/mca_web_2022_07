@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 
+import '../../manager/models/visa_md.dart';
 import '../../theme/theme.dart';
 
 class UserDetailVisaNewVisaPopupWidget extends StatefulWidget {
-  const UserDetailVisaNewVisaPopupWidget({Key? key}) : super(key: key);
+  final VisaMd? visa;
+  const UserDetailVisaNewVisaPopupWidget({Key? key, this.visa})
+      : super(key: key);
 
   @override
   State<UserDetailVisaNewVisaPopupWidget> createState() =>
@@ -12,6 +15,33 @@ class UserDetailVisaNewVisaPopupWidget extends StatefulWidget {
 
 class _UserDetailVisaNewVisaPopupWidgetState
     extends State<UserDetailVisaNewVisaPopupWidget> {
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController _documentNoController = TextEditingController();
+  String? _visaType;
+  bool _hasExire = true;
+  DateTime? _startDate;
+  DateTime? _endDate;
+  final TextEditingController _commentController = TextEditingController();
+
+  bool isNew = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.visa != null) {
+      isNew = false;
+      _documentNoController.text = widget.visa!.document_no;
+      _visaType = widget.visa!.title;
+      _hasExire = !widget.visa!.notExpire;
+      _startDate = DateTime.tryParse(widget.visa!.startDate.date);
+      _endDate = widget.visa!.endDate != null
+          ? DateTime.tryParse(widget.visa!.endDate!.date)
+          : null;
+      _commentController.text = widget.visa!.notes;
+    }
+    logger(widget.visa?.toJson());
+  }
+
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
@@ -35,7 +65,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           KText(
-            text: 'New Visa/Permit',
+            text: isNew ? 'New Visa/Permit' : "Edit Visa/Permit",
             fontSize: 18.0,
             fontWeight: FWeight.bold,
             isSelectable: false,
@@ -53,89 +83,133 @@ class _UserDetailVisaNewVisaPopupWidgetState
   }
 
   Widget _body(double dpWidth) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28.0),
-      child: SpacedColumn(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        verticalSpace: 32.0,
-        children: [
-          const SizedBox(),
-          TextInputWidget(
-            isRequired: true,
-            width: dpWidth / 3 + 12,
-            enabled: false,
-            labelText: "Document #",
-            onTap: () {},
-          ),
-          DropdownWidget(
-            hintText: "Visa Type",
-            dropdownBtnWidth: dpWidth / 3 + 12,
-            isRequired: true,
-            dropdownOptionsWidth: dpWidth / 3 + 12,
-            onChanged: (_) {},
-            items: [],
-          ),
-          SpacedRow(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            horizontalSpace: 8.0,
-            children: [
-              CheckboxWidget(
-                value: true,
-                onChanged: (value) {},
-              ),
-              KText(
-                text: "Has Expiry Date",
-                fontSize: 14.0,
-                textColor: ThemeColors.gray2,
-                isSelectable: false,
-                fontWeight: FWeight.bold,
-              )
-            ],
-          ),
-          SpacedRow(
-            horizontalSpace: 12.0,
-            children: [
-              TextInputWidget(
-                isRequired: true,
-                width: dpWidth / 6,
-                enabled: false,
-                labelText: "Start Date",
-                leftIcon: HeroIcons.calendar,
-                onTap: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: DateTime(1930),
-                    firstDate: DateTime(1930),
-                    lastDate: DateTime(2035),
-                  );
-                },
-              ),
-              TextInputWidget(
-                isRequired: true,
-                width: dpWidth / 6,
-                enabled: false,
-                labelText: "Expire Date",
-                leftIcon: HeroIcons.calendar,
-                onTap: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: DateTime(1930),
-                    firstDate: DateTime(1930),
-                    lastDate: DateTime(2035),
-                  );
-                },
-              ),
-            ],
-          ),
-          TextInputWidget(
-            width: dpWidth / 3 + 12,
-            enabled: false,
-            labelText: "Comment",
-            onTap: () {},
-            maxLines: 4,
-          ),
-          const SizedBox(),
-        ],
+    return Form(
+      key: formKey,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28.0),
+        child: SpacedColumn(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          verticalSpace: 32.0,
+          children: [
+            const SizedBox(),
+            TextInputWidget(
+              isRequired: true,
+              width: dpWidth / 3 + 12,
+              enabled: false,
+              labelText: "Document #",
+              controller: _documentNoController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter a value";
+                }
+              },
+            ),
+            DropdownWidget(
+              hintText: "Visa Type",
+              value: _visaType,
+              dropdownBtnWidth: dpWidth / 3 + 12,
+              isRequired: true,
+              dropdownOptionsWidth: dpWidth / 3 + 12,
+              onChanged: (_) {},
+              items: [],
+            ),
+            SpacedRow(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              horizontalSpace: 8.0,
+              children: [
+                CheckboxWidget(
+                  value: _hasExire,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _hasExire = value;
+                      });
+                    }
+                  },
+                ),
+                KText(
+                  text: "Has Expiry Date",
+                  fontSize: 14.0,
+                  textColor: ThemeColors.gray2,
+                  isSelectable: false,
+                  fontWeight: FWeight.bold,
+                )
+              ],
+            ),
+            SpacedRow(
+              horizontalSpace: 12.0,
+              children: [
+                TextInputWidget(
+                  isRequired: true,
+                  width: dpWidth / 6,
+                  enabled: false,
+                  controller:
+                      TextEditingController(text: _startDate?.toString()),
+                  labelText: "Start Date",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a value";
+                    }
+                  },
+                  leftIcon: HeroIcons.calendar,
+                  onTap: () async {
+                    DateTime? val = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime(2015),
+                      firstDate: DateTime(1930),
+                      lastDate: DateTime(2035),
+                    );
+                    if (val != null) {
+                      setState(() {
+                        _startDate = val;
+                      });
+                    }
+                  },
+                ),
+                TextInputWidget(
+                  isRequired: true,
+                  width: dpWidth / 6,
+                  enabled: false,
+                  labelText: "Expire Date",
+                  controller: TextEditingController(text: _endDate?.toString()),
+                  leftIcon: HeroIcons.calendar,
+                  validator: (p0) {
+                    if (p0 == null || p0.isEmpty) {
+                      return "Please enter a value";
+                    }
+                    if (_startDate != null &&
+                        _endDate != null &&
+                        _startDate!.isAfter(_endDate!)) {
+                      return "Expire date must be after start date";
+                    }
+                    return null;
+                  },
+                  onTap: () async {
+                    DateTime? val = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime(2015),
+                      firstDate: DateTime(1930),
+                      lastDate: DateTime(2035),
+                    );
+                    if (val != null) {
+                      setState(() {
+                        _endDate = val;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            TextInputWidget(
+              width: dpWidth / 3 + 12,
+              enabled: false,
+              labelText: "Comment",
+              controller: _commentController,
+              maxLines: 4,
+            ),
+            const SizedBox(),
+          ],
+        ),
       ),
     );
   }
@@ -157,9 +231,10 @@ class _UserDetailVisaNewVisaPopupWidgetState
           ),
           ButtonLarge(
             paddingWithoutIcon: true,
-            text: 'Add Visa/Permit',
+            text: isNew ? 'Add Visa/Permit' : 'Save',
             onPressed: () {
-              context.popRoute();
+              formKey.currentState!.validate();
+              // context.popRoute();
             },
           ),
         ],

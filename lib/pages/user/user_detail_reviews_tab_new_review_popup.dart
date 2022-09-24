@@ -3,7 +3,9 @@ import 'package:auto_route/auto_route.dart';
 import '../../theme/theme.dart';
 
 class UserDetailReviewNewReviewPopupWidget extends StatefulWidget {
-  const UserDetailReviewNewReviewPopupWidget({Key? key}) : super(key: key);
+  final int? id;
+  const UserDetailReviewNewReviewPopupWidget({Key? key, this.id})
+      : super(key: key);
 
   @override
   State<UserDetailReviewNewReviewPopupWidget> createState() =>
@@ -12,19 +14,46 @@ class UserDetailReviewNewReviewPopupWidget extends StatefulWidget {
 
 class _UserDetailReviewNewReviewPopupWidgetState
     extends State<UserDetailReviewNewReviewPopupWidget> {
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isNew = true;
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _commentController = TextEditingController();
+  DateTime? _conductedOn;
+  String? _conductedBy;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.id != null) {
+      isNew = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _commentController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
 
     return TableWrapperWidget(
-        child: SpacedColumn(children: [
-      _header(context),
-      const Divider(color: ThemeColors.gray11, height: 1.0),
-      const SizedBox(),
-      _body(dpWidth),
-      const Divider(color: ThemeColors.gray11, height: 1.0),
-      _footer(),
-    ]));
+        child: Form(
+      key: formKey,
+      child: SpacedColumn(children: [
+        _header(context),
+        const Divider(color: ThemeColors.gray11, height: 1.0),
+        const SizedBox(),
+        _body(dpWidth),
+        const Divider(color: ThemeColors.gray11, height: 1.0),
+        _footer(),
+      ]),
+    ));
   }
 
   Widget _header(BuildContext context) {
@@ -63,12 +92,18 @@ class _UserDetailReviewNewReviewPopupWidgetState
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 4,
-            enabled: false,
             labelText: "Title",
+            controller: _titleController,
+            validator: (p0) {
+              if (p0 == null || p0.isEmpty) {
+                return "Title is required";
+              }
+            },
             onTap: () {},
           ),
           DropdownWidget(
             hintText: "Conducted By",
+            value: _conductedBy,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
@@ -80,14 +115,26 @@ class _UserDetailReviewNewReviewPopupWidgetState
             width: dpWidth / 6,
             enabled: false,
             labelText: "Conducted On",
+            controller:
+                TextEditingController(text: _conductedOn?.toIso8601String()),
             leftIcon: HeroIcons.calendar,
-            onTap: () {
-              showDatePicker(
+            validator: (p0) {
+              if (p0 == null || p0.isEmpty) {
+                return "Date is required";
+              }
+            },
+            onTap: () async {
+              DateTime? val = await showDatePicker(
                 context: context,
-                initialDate: DateTime(1930),
+                initialDate: DateTime(2015),
                 firstDate: DateTime(1930),
                 lastDate: DateTime(2035),
               );
+              if (val != null) {
+                setState(() {
+                  _conductedOn = val;
+                });
+              }
             },
           ),
           TextInputWidget(
@@ -95,6 +142,7 @@ class _UserDetailReviewNewReviewPopupWidgetState
             enabled: false,
             labelText: "Comment",
             onTap: () {},
+            controller: _commentController,
             maxLines: 4,
           ),
           const SizedBox(),
@@ -120,9 +168,10 @@ class _UserDetailReviewNewReviewPopupWidgetState
           ),
           ButtonLarge(
             paddingWithoutIcon: true,
-            text: 'Add Review',
+            text: isNew ? 'Add Review' : "Save Review",
             onPressed: () {
-              context.popRoute();
+              formKey.currentState!.validate();
+              // context.popRoute();
             },
           ),
         ],

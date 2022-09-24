@@ -5,7 +5,9 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
 class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
-  const UserDetailsPayrollTabNewContractPage({Key? key}) : super(key: key);
+  final int? id;
+  const UserDetailsPayrollTabNewContractPage({Key? key, this.id})
+      : super(key: key);
 
   @override
   State<UserDetailsPayrollTabNewContractPage> createState() =>
@@ -15,6 +17,7 @@ class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
 class _UserDetailsPayrollTabNewContractPageState
     extends State<UserDetailsPayrollTabNewContractPage> {
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isNewContract = true;
 
   String? jobTitle;
   String? contractType;
@@ -31,6 +34,14 @@ class _UserDetailsPayrollTabNewContractPageState
   TextEditingController salaryPerHour = TextEditingController();
   TextEditingController salaryPerHourOvertime = TextEditingController();
   TextEditingController salaryPerAnnum = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.id != null) {
+      isNewContract = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -54,10 +65,12 @@ class _UserDetailsPayrollTabNewContractPageState
         converter: (store) => store.state,
         builder: (context, state) {
           final user = state.usersState.userDetails.data;
-          String nameWithUsername = "New Contract";
+          final String newOrEdit = isNewContract ? "New" : "Edit";
+          String nameWithUsername = "$newOrEdit Contract";
+
           if (user != null) {
             nameWithUsername =
-                "New Contract (${user.first_name} ${user.last_name})";
+                "$newOrEdit Contract (${user.first_name} ${user.last_name})";
           }
           return PageWrapper(
               child: SpacedColumn(verticalSpace: 16.0, children: [
@@ -78,7 +91,7 @@ class _UserDetailsPayrollTabNewContractPageState
                       ],
                     ),
                     const Divider(color: ThemeColors.gray11, thickness: 1.0),
-                    const _SaveAndCancelButtonsWidget(),
+                    _SaveAndCancelButtonsWidget(isNewContract: isNewContract),
                   ],
                 ),
               ),
@@ -308,7 +321,9 @@ class _UserDetailsPayrollTabNewContractPageState
 }
 
 class _SaveAndCancelButtonsWidget extends StatelessWidget {
-  const _SaveAndCancelButtonsWidget({Key? key}) : super(key: key);
+  final bool isNewContract;
+  const _SaveAndCancelButtonsWidget({Key? key, this.isNewContract = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +341,7 @@ class _SaveAndCancelButtonsWidget extends StatelessWidget {
         ),
         ButtonLarge(
           icon: const HeroIcon(HeroIcons.check),
-          text: "Add Contract",
+          text: isNewContract ? "Add Contract" : "Save Contract",
           onPressed: () {
             _UserDetailsPayrollTabNewContractPageState.formKey.currentState
                 ?.validate();

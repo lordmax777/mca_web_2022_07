@@ -386,12 +386,13 @@ String getDateWithWeekday(DateTime dateTime, {int? subDay}) {
   return date;
 }
 
-String getDateFormat(DateTime dateTime,
+String getDateFormat(DateTime? dateTime,
     {bool timeOnly = false,
     bool timeAndDate = false,
     String dateSeparatorSymbol = '-',
     String timeSeparatorSymbol = ':',
     bool includeSeconds = true}) {
+  if (dateTime == null) return '';
   String time = '';
   String date = '';
   String day = formatDate(dateTime, ['dd']).toString();
@@ -403,7 +404,7 @@ String getDateFormat(DateTime dateTime,
   String sec = formatDate(dateTime, ['ss']).toString();
   time =
       "$hour$timeSeparatorSymbol$min${includeSeconds ? "$timeSeparatorSymbol$sec" : ''}";
-  date = "$year$dateSeparatorSymbol$month$dateSeparatorSymbol$day";
+  date = "$day$dateSeparatorSymbol$month$dateSeparatorSymbol$year";
   if (timeOnly) {
     return time;
   }
