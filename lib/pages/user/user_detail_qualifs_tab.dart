@@ -23,18 +23,18 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
   List<PlutoColumn> get _cols {
     return [
       PlutoColumn(
-          width: 140.0,
+          // width: 140.0,
           title: "Qualification",
           field: "qualification",
           enableRowChecked: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 60.0,
+          // width: 60.0,
           title: "Level",
           field: "level",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 60.0,
+          // width: 60.0,
           title: "Certificate",
           field: "certificate",
           type: PlutoColumnType.text(),
@@ -54,62 +54,30 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
             );
           }),
       PlutoColumn(
-          width: 100.0,
+          // width: 100.0,
           title: "Certificate #",
           field: "certificate_no",
           enableSorting: false,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 120.0,
+          // width: 120.0,
           title: "Acheivement Date",
           field: "achievement_date",
-          type: PlutoColumnType.text()),
+          type: PlutoColumnType.date(format: "dd/MM/yyyy")),
       PlutoColumn(
-          width: 120.0,
+          // width: 120.0,
           title: "Expiry Date",
           field: "expiry_date",
-          type: PlutoColumnType.text()),
+          type: PlutoColumnType.date(format: "dd/MM/yyyy")),
       PlutoColumn(
-          width: 140.0,
+          // width: 140.0,
           title: "Comment",
           field: "comment",
           type: PlutoColumnType.text(),
           renderer: (ctx) {
             final String? msg = ctx.cell.value;
-            return Tooltip(
-              decoration: const BoxDecoration(color: ThemeColors.transparent),
-              richMessage: TextSpan(children: [
-                WidgetSpan(
-                    child: TableWrapperWidget(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: ThemeColors.gray12,
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(color: ThemeColors.gray11),
-                      ),
-                      child: Text(msg ?? "NO-COMMENT",
-                          style: TextStyle(
-                            color: msg == null
-                                ? Colors.redAccent
-                                : ThemeColors.gray2,
-                          ))),
-                )),
-              ]),
-              child: KText(
-                onTap: () {},
-                text: "Read Comment",
-                textColor: ThemeColors.blue3,
-                fontWeight: FWeight.regular,
-                fontSize: 14,
-                isSelectable: false,
-                icon: const HeroIcon(
-                  HeroIcons.eye,
-                  color: ThemeColors.blue3,
-                ),
-              ),
-            );
+            return TableTooltipWidget(
+                title: "Read Comment", message: msg ?? "NO-COMMENT");
           }),
       PlutoColumn(
           title: "Action",
@@ -124,7 +92,10 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
               fontSize: 14,
               isSelectable: false,
               onTap: () {
-                print(ctx.cell.value);
+                showOverlayPopup(
+                    body: UserDetailQualifNewQualifPopupWidget(
+                        qualif: ctx.cell.value),
+                    context: context);
               },
               icon: const HeroIcon(
                 HeroIcons.pen,

@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
 import '../../theme/theme.dart';
 
 class UserDetailQualifNewQualifPopupWidget extends StatefulWidget {
-  const UserDetailQualifNewQualifPopupWidget({Key? key}) : super(key: key);
+  final QualifsMd? qualif;
+  const UserDetailQualifNewQualifPopupWidget({Key? key, this.qualif})
+      : super(key: key);
 
   @override
   State<UserDetailQualifNewQualifPopupWidget> createState() =>
@@ -12,19 +15,58 @@ class UserDetailQualifNewQualifPopupWidget extends StatefulWidget {
 
 class _UserDetailQualifNewQualifPopupWidgetState
     extends State<UserDetailQualifNewQualifPopupWidget> {
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  String? _qualif;
+  final TextEditingController _certController = TextEditingController();
+  String? _level;
+  bool hasExpire = true;
+  DateTime? _expireDate;
+  DateTime? _startDate;
+  final TextEditingController _notesController = TextEditingController();
+
+  bool isNew = true;
+
+  @override
+  void dispose() {
+    _certController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.qualif != null) {
+      isNew = false;
+      _qualif = widget.qualif!.title;
+      _certController.text = widget.qualif!.certificateNumber;
+      _level = widget.qualif!.level;
+      hasExpire = widget.qualif!.expire;
+      _expireDate = DateTime.tryParse(widget.qualif!.expiryDate.date);
+      _startDate = widget.qualif!.achievementDate != null
+          ? DateTime.tryParse(widget.qualif!.achievementDate!.date)
+          : null;
+      _notesController.text = widget.qualif!.comments ?? "";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
 
     return TableWrapperWidget(
-        child: SpacedColumn(children: [
-      _header(context),
-      const Divider(color: ThemeColors.gray11, height: 1.0),
-      const SizedBox(),
-      _body(dpWidth),
-      const Divider(color: ThemeColors.gray11, height: 1.0),
-      _footer(),
-    ]));
+        child: Form(
+      key: formKey,
+      child: SpacedColumn(children: [
+        _header(context),
+        const Divider(color: ThemeColors.gray11, height: 1.0),
+        const SizedBox(),
+        _body(dpWidth),
+        const Divider(color: ThemeColors.gray11, height: 1.0),
+        _footer(),
+      ]),
+    ));
   }
 
   Widget _header(BuildContext context) {
@@ -35,7 +77,7 @@ class _UserDetailQualifNewQualifPopupWidgetState
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           KText(
-            text: 'Add Qualification',
+            text: isNew ? 'Add Qualification' : 'Edit Qualification',
             fontSize: 18.0,
             fontWeight: FWeight.bold,
             isSelectable: false,
@@ -61,25 +103,42 @@ class _UserDetailQualifNewQualifPopupWidgetState
         children: [
           const SizedBox(),
           DropdownWidget(
+            value: _qualif,
             hintText: "Qualification",
             dropdownBtnWidth: dpWidth / 3 + 12,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 3 + 12,
-            onChanged: (_) {},
+            onChanged: (val) {
+              setState(() {
+                _qualif = val;
+              });
+            },
             items: [],
           ),
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 3 + 12,
             enabled: false,
+            validator: (val) {
+              if (val == null || val.isEmpty) {
+                return 'Please enter a valid certificate number';
+              }
+              return null;
+            },
             labelText: "Certificate #",
+            controller: _certController,
             onTap: () {},
           ),
           DropdownWidget(
             hintText: "Level",
             dropdownBtnWidth: dpWidth / 6 + 12,
             dropdownOptionsWidth: dpWidth / 3 + 12,
-            onChanged: (_) {},
+            value: _level,
+            onChanged: (val) {
+              setState(() {
+                _level = val;
+              });
+            },
             items: [],
           ),
           SpacedRow(
@@ -87,8 +146,12 @@ class _UserDetailQualifNewQualifPopupWidgetState
             horizontalSpace: 8.0,
             children: [
               CheckboxWidget(
-                value: true,
-                onChanged: (value) {},
+                value: hasExpire,
+                onChanged: (value) {
+                  setState(() {
+                    hasExpire = value!;
+                  });
+                },
               ),
               KText(
                 text: "Has Expiry Date",
@@ -107,37 +170,67 @@ class _UserDetailQualifNewQualifPopupWidgetState
                 width: dpWidth / 6,
                 enabled: false,
                 labelText: "Start Date",
+                validator: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return 'Please enter a valid start date';
+                  }
+                  return null;
+                },
+                controller:
+                    TextEditingController(text: _startDate?.toIso8601String()),
                 leftIcon: HeroIcons.calendar,
                 onTap: () {
                   showDatePicker(
                     context: context,
-                    initialDate: DateTime(1930),
-                    firstDate: DateTime(1930),
-                    lastDate: DateTime(2035),
-                  );
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  ).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        _startDate = value;
+                      });
+                    }
+                  });
                 },
               ),
-              TextInputWidget(
-                isRequired: true,
-                width: dpWidth / 6,
-                enabled: false,
-                labelText: "Expiry Date",
-                leftIcon: HeroIcons.calendar,
-                onTap: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: DateTime(1930),
-                    firstDate: DateTime(1930),
-                    lastDate: DateTime(2035),
-                  );
-                },
-              ),
+              if (hasExpire)
+                TextInputWidget(
+                  isRequired: true,
+                  width: dpWidth / 6,
+                  enabled: false,
+                  labelText: "Expiry Date",
+                  validator: (p0) {
+                    if (p0 == null || p0.isEmpty) {
+                      return 'Please enter a valid expiry date';
+                    }
+                    return null;
+                  },
+                  leftIcon: HeroIcons.calendar,
+                  controller: TextEditingController(
+                      text: _expireDate?.toIso8601String()),
+                  onTap: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          _expireDate = value;
+                        });
+                      }
+                    });
+                  },
+                ),
             ],
           ),
           TextInputWidget(
             width: dpWidth / 3 + 12,
             enabled: false,
             labelText: "Comment",
+            controller: _notesController,
             onTap: () {},
             maxLines: 4,
           ),
@@ -164,9 +257,11 @@ class _UserDetailQualifNewQualifPopupWidgetState
           ),
           ButtonLarge(
             paddingWithoutIcon: true,
-            text: 'Add Qualification',
+            text: isNew ? 'Add Qualification' : 'Update Qualification',
             onPressed: () {
-              context.popRoute();
+              if (formKey.currentState!.validate()) {
+                // context.popRoute();
+              }
             },
           ),
         ],

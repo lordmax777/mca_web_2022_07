@@ -13,19 +13,29 @@ class UserDetailPreferredShiftsNewShiftPopupWidget extends StatefulWidget {
 
 class _UserDetailPreferredShiftsNewShiftPopupWidgetState
     extends State<UserDetailPreferredShiftsNewShiftPopupWidget> {
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  String? _day;
+  String? _week;
+  String? _location;
+  String? _shift;
+
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
 
     return TableWrapperWidget(
-        child: SpacedColumn(children: [
-      _header(context),
-      const Divider(color: ThemeColors.gray11, height: 1.0),
-      const SizedBox(),
-      _body(dpWidth),
-      const Divider(color: ThemeColors.gray11, height: 1.0),
-      _footer(),
-    ]));
+        child: Form(
+      key: formKey,
+      child: SpacedColumn(children: [
+        _header(context),
+        const Divider(color: ThemeColors.gray11, height: 1.0),
+        const SizedBox(),
+        _body(dpWidth),
+        const Divider(color: ThemeColors.gray11, height: 1.0),
+        _footer(),
+      ]),
+    ));
   }
 
   Widget _header(BuildContext context) {
@@ -63,34 +73,57 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
           const SizedBox(),
           DropdownWidget(
             hintText: "Week",
+            value: _week,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (_) {},
+            onChanged: (val) {
+              setState(() {
+                _week = val;
+              });
+            },
             items: [],
           ),
           DropdownWidget(
             hintText: "Location",
+            value: _location,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (_) {},
+            onChanged: (val) {
+              setState(() {
+                _location = val;
+              });
+            },
             items: [],
           ),
           DropdownWidget(
             hintText: "Day",
+            value: _day,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (_) {},
-            items: [],
+            hasSearchBox: true,
+            onChanged: (val) {
+              setState(() {
+                _day = val;
+              });
+            },
+            items: Constants.daysOfTheWeek.entries
+                .map((e) => e.value.toString())
+                .toList(),
           ),
           DropdownWidget(
             hintText: "Shift",
+            value: _shift,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (_) {},
+            onChanged: (val) {
+              setState(() {
+                _shift = val;
+              });
+            },
             items: [],
           ),
           const SizedBox(),
@@ -118,7 +151,7 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
             paddingWithoutIcon: true,
             text: 'Add Shift',
             onPressed: () {
-              context.popRoute();
+              if (formKey.currentState!.validate()) {}
             },
           ),
         ],

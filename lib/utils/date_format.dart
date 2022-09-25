@@ -415,22 +415,19 @@ String getDateFormat(DateTime? dateTime,
 }
 
 String formatDateTime(String date,
-    {bool withTime = true, bool withDate = true}) {
-  final day = date.substring(6, 8);
-  final month = date.substring(4, 6);
+    {bool withTime = true, bool withDate = true, bool withSeconds = true}) {
+  final day = date.substring(8, 11);
+  final month = date.substring(5, 7);
   final year = date.substring(0, 4);
+  final second = date.substring(17, 19);
+  final minute = date.substring(14, 16);
+  final hour = date.substring(11, 13);
 
   if (withTime && withDate) {
-    final second = date.substring(12, 14);
-    final minute = date.substring(10, 12);
-    final hour = date.substring(8, 10);
-    return "$day.$month.$year, $hour:$minute:$second";
+    return "$day-$month-$year, $hour:$minute${withSeconds ? ":$second" : ""}";
   }
   if (withTime) {
-    final second = date.substring(12, 14);
-    final minute = date.substring(10, 12);
-    final hour = date.substring(8, 10);
-    return "$hour:$minute:$second";
+    return "$hour:$minute${withSeconds ? ":$second" : ""}";
   }
-  return "$day.$month.$year";
+  return "$day-$month-$year";
 }

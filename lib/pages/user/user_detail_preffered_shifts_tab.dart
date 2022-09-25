@@ -2,6 +2,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../comps/show_overlay_popup.dart';
+import '../../manager/models/preffered_shift_md_md.dart';
 import '../../manager/models/visa_md.dart';
 import '../../theme/theme.dart';
 
@@ -134,11 +135,14 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
           hide: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          width: 140.0,
-          title: "Location",
-          field: "location",
-          enableRowChecked: true,
-          type: PlutoColumnType.text()),
+        width: 140.0,
+        title: "Location",
+        field: "location",
+        enableRowChecked: true,
+        type: PlutoColumnType.text(),
+        // renderer: (ctx) => UsersListTable.defaultTextWidget(
+        //     "${ctx.cell.value} ${(ctx.row.cells['item']?.value.title) ?? ""}"),
+      ),
       PlutoColumn(
           width: 80.0,
           title: "Day",
@@ -150,9 +154,15 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
           field: "shift",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          title: "Timings", field: "timings", type: PlutoColumnType.text()),
+        title: "Timings",
+        field: "timings",
+        type: PlutoColumnType.text(),
+        // renderer: (ctx) => UsersListTable.defaultTextWidget(
+        //     "${getDateFormat(DateTime.parse((ctx.cell.value as PreferredShiftMd).start.date), timeOnly: true)}"),
+      ),
     ];
   }
+  //
 
   @override
   void initState() {
@@ -189,8 +199,14 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
               "location": PlutoCell(value: e.location),
               "day": PlutoCell(value: e.day),
               "shift": PlutoCell(value: e.title),
-              //TODO: Fix timings
-              "timings": PlutoCell(value: e.start.date),
+              "timings": PlutoCell(
+                  value: formatDateTime(e.start.date,
+                              withDate: false, withSeconds: false)
+                          .toString() +
+                      " - " +
+                      formatDateTime(e.finish.date,
+                              withDate: false, withSeconds: false)
+                          .toString())
             }),
           )
           .toList(),

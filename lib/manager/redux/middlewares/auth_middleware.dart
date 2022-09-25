@@ -71,9 +71,9 @@ Future<void> fetch(action) async {
               .contains("The access token provided has expired.");
           if (eee) {
             Logger.e('Token Expired');
-            await showDialog(
+            showDialog(
               context: appRouter.navigatorKey.currentContext!,
-              barrierDismissible: false,
+              // barrierDismissible: false,
               builder: (context) {
                 return PopupLayout(
                   borderRadius: 16.0,
