@@ -78,6 +78,7 @@ GeneralState _updateGeneralStateAction(
     GeneralState state, UpdateGeneralStateAction action) {
   return state.copyWith(
     paramList: action.paramList ?? state.paramList,
+    drawerStates: action.drawerStates ?? state.drawerStates,
   );
 }
 

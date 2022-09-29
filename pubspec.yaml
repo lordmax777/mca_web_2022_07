@@ -45,6 +45,7 @@ dependencies:
   mix: ^0.0.6
   flutter_easylogger: ^2.3.3
   collection: ^1.16.0
+  image_picker: ^0.8.5+3
 
 dev_dependencies:
   flutter_test:

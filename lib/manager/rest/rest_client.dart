@@ -40,6 +40,19 @@ abstract class RestClient {
   @GET("/api/fe/userdetails/{id}/photos")
   Future<HttpResponse> getUserDetailsPhotos(@Path() String id);
 
+  @POST("/api/fe/userdetails/{id}/photos")
+  @FormUrlEncoded()
+  Future<HttpResponse> addUserDetailsPhotos(
+    @Path() String id, {
+    @Field() required String photo,
+    @Field() String? comment,
+  });
+
+  @DELETE("/api/fe/userdetails/{id}/photos")
+  @FormUrlEncoded()
+  Future<HttpResponse> deleteUserDetailsPhotos(
+      @Path() String id, @Field() int photoId);
+
   @GET("/api/fe/userdetails/{id}/contracts")
   Future<HttpResponse> getUserDetailsContracts(@Path() String id);
 

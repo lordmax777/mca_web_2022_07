@@ -18,6 +18,20 @@ class ThemeText {
     fontSize: 14.0,
   );
 
+  static const md2 = TextStyle(
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.normal,
+    fontFamily: _fontFamilyR,
+    fontSize: 14.0,
+  );
+
+  static const md1 = TextStyle(
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.normal,
+    fontFamily: _fontFamilyR,
+    fontSize: 16.0,
+  );
+
   static const lg = TextStyle(
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,

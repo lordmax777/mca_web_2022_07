@@ -103,6 +103,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 ),
               )
             : null,
+
         searchController: searchcontroller,
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
@@ -128,30 +129,37 @@ class _DropdownWidgetState extends State<DropdownWidget> {
         value: widget.value != null ? (widget.value as String) : null,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
-        customButton: Container(
-          height: 56,
-          padding: const EdgeInsets.only(left: 15.0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: isError
-                  ? ThemeColors.red3
-                  : (widget.dropdownBtnColor ?? ThemeColors.gray11),
-              width: widget.dropdownBtnColor == null ? 1.0 : 0.0,
+        customButton: MouseRegion(
+          cursor: widget.disableAll
+              ? SystemMouseCursors.forbidden
+              : (widget.items.isNotEmpty
+                  ? SystemMouseCursors.click
+                  : SystemMouseCursors.basic),
+          child: Container(
+            height: 56,
+            padding: const EdgeInsets.only(left: 15.0),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: isError
+                    ? ThemeColors.red3
+                    : (widget.dropdownBtnColor ?? ThemeColors.gray11),
+                width: widget.dropdownBtnColor == null ? 1.0 : 0.0,
+              ),
+              borderRadius: BorderRadius.circular(18.0),
+              color: (widget.disableAll
+                  ? ThemeColors.gray12
+                  : (widget.dropdownBtnColor ?? ThemeColors.white)),
             ),
-            borderRadius: BorderRadius.circular(18.0),
-            color: (widget.disableAll
-                ? ThemeColors.gray12
-                : (widget.dropdownBtnColor ?? ThemeColors.white)),
-          ),
-          child: SpacedRow(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            horizontalSpace: 15,
-            children: [
-              if (widget.isValueNull)
-                ..._buildHint()
-              else
-                ..._buildSelectedItem(context)
-            ],
+            child: SpacedRow(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              horizontalSpace: 15,
+              children: [
+                if (widget.isValueNull)
+                  ..._buildHint()
+                else
+                  ..._buildSelectedItem(context)
+              ],
+            ),
           ),
         ),
         // itemHeight: 56.h,

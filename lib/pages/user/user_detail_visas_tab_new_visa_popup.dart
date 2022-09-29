@@ -1,4 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
 import '../../manager/models/visa_md.dart';
 import '../../theme/theme.dart';
@@ -17,7 +19,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
     extends State<UserDetailVisaNewVisaPopupWidget> {
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController _documentNoController = TextEditingController();
-  String? _visaType;
+  ListVisa? _visaType;
   bool _hasExire = true;
   DateTime? _startDate;
   DateTime? _endDate;
@@ -31,7 +33,8 @@ class _UserDetailVisaNewVisaPopupWidgetState
     if (widget.visa != null) {
       isNew = false;
       _documentNoController.text = widget.visa!.document_no;
-      _visaType = widget.visa!.title;
+      _visaType = appStore.state.generalState.paramList.data!.visas
+          .firstWhere((element) => element.name == widget.visa!.title);
       _hasExire = !widget.visa!.notExpire;
       _startDate = DateTime.tryParse(widget.visa!.startDate.date);
       _endDate = widget.visa!.endDate != null
@@ -106,12 +109,21 @@ class _UserDetailVisaNewVisaPopupWidgetState
             ),
             DropdownWidget(
               hintText: "Visa Type",
-              value: _visaType,
+              value: _visaType?.name,
               dropdownBtnWidth: dpWidth / 3 + 12,
               isRequired: true,
               dropdownOptionsWidth: dpWidth / 3 + 12,
-              onChanged: (_) {},
-              items: [],
+              dropdownMaxHeight: 400.0,
+              hasSearchBox: true,
+              onChanged: (val) {
+                setState(() {
+                  _visaType = appStore.state.generalState.paramList.data!.visas
+                      .firstWhere((element) => element.name == val);
+                });
+              },
+              items: appStore.state.generalState.paramList.data!.visas
+                  .map((e) => e.name)
+                  .toList(),
             ),
             SpacedRow(
               crossAxisAlignment: CrossAxisAlignment.center,

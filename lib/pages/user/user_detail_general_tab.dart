@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -9,6 +10,7 @@ import '../../manager/models/list_all_md.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../manager/redux/states/users_state/saved_user_state.dart';
 import '../../theme/theme.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GeneralWidget extends StatefulWidget {
   const GeneralWidget({Key? key}) : super(key: key);
@@ -117,12 +119,19 @@ class _GeneralWidgetState extends State<GeneralWidget> {
   }
 }
 
-class _PersonalDetailsWidget extends StatelessWidget {
+class _PersonalDetailsWidget extends StatefulWidget {
   static const String title = "Personal Details";
 
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   const _PersonalDetailsWidget({Key? key}) : super(key: key);
+
+  @override
+  State<_PersonalDetailsWidget> createState() => _PersonalDetailsWidgetState();
+}
+
+class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
+  XFile? pickedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +145,7 @@ class _PersonalDetailsWidget extends StatelessWidget {
           final savedUser = state.savedUserState;
           final String? userAvatar = savedUser.photo;
           return Form(
-            key: formKey,
+            key: _PersonalDetailsWidget.formKey,
             child: SpacedRow(horizontalSpace: 64.0, children: [
               SpacedColumn(verticalSpace: 16.0, children: [
                 ClipRRect(
@@ -148,8 +157,10 @@ class _PersonalDetailsWidget extends StatelessWidget {
                     child: Center(
                       child: userAvatar != null
                           ? Image.memory(base64Decode(userAvatar))
-                          : const HeroIcon(HeroIcons.userCircle,
-                              size: 48.0, color: ThemeColors.white),
+                          : pickedImage != null
+                              ? (Image.network(pickedImage!.path))
+                              : (const HeroIcon(HeroIcons.userCircle,
+                                  size: 48.0, color: ThemeColors.white)),
                     ),
                   ),
                 ),
@@ -160,16 +171,36 @@ class _PersonalDetailsWidget extends StatelessWidget {
                       leftIcon: const HeroIcon(HeroIcons.upload,
                           size: 20.0, color: ThemeColors.blue3),
                       text: "Upload Photo",
-                      onPressed: () {},
+                      onPressed: () {
+                        final ImagePicker _picker = ImagePicker();
+                        _picker.pickImage(source: ImageSource.gallery).then(
+                          (value) async {
+                            setState(() {
+                              pickedImage = value;
+                            });
+                            final bytes = await value?.readAsBytes();
+                            if (bytes != null) {
+                              appStore.dispatch(UpdateSavedUserStateAction(
+                                  photo: base64Encode(bytes)));
+                            }
+                          },
+                        );
+                      },
                     ),
-                    if (userAvatar != null)
+                    if (userAvatar != null || pickedImage != null)
                       ButtonSmallSecondary(
                         leftIcon: const HeroIcon(HeroIcons.bin,
                             size: 20.0, color: ThemeColors.red3),
                         text: "",
-                        onPressed: () {
+                        onPressed: () async {
+                          if (pickedImage != null) {
+                            setState(() {
+                              pickedImage = null;
+                            });
+                          }
                           appStore.dispatch(
                               UpdateSavedUserStateAction(photo: null));
+                          await appStore.dispatch(GetDeleteUserPhotoAction());
                         },
                       ),
                   ],

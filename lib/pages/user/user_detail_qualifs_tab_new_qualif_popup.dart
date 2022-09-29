@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
 import '../../theme/theme.dart';
 
@@ -17,9 +18,9 @@ class _UserDetailQualifNewQualifPopupWidgetState
     extends State<UserDetailQualifNewQualifPopupWidget> {
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String? _qualif;
+  ListQualification? _qualif;
   final TextEditingController _certController = TextEditingController();
-  String? _level;
+  ListQualificationLevel? _level;
   bool hasExpire = true;
   DateTime? _expireDate;
   DateTime? _startDate;
@@ -39,9 +40,11 @@ class _UserDetailQualifNewQualifPopupWidgetState
     super.initState();
     if (widget.qualif != null) {
       isNew = false;
-      _qualif = widget.qualif!.title;
+      _qualif = appStore.state.generalState.paramList.data!.qualifications
+          .firstWhere((element) => widget.qualif!.title == element.title);
       _certController.text = widget.qualif!.certificateNumber;
-      _level = widget.qualif!.level;
+      _level = appStore.state.generalState.paramList.data!.qualification_levels
+          .firstWhere((element) => widget.qualif!.level == element.level);
       hasExpire = widget.qualif!.expire;
       _expireDate = DateTime.tryParse(widget.qualif!.expiryDate.date);
       _startDate = widget.qualif!.achievementDate != null
@@ -103,17 +106,22 @@ class _UserDetailQualifNewQualifPopupWidgetState
         children: [
           const SizedBox(),
           DropdownWidget(
-            value: _qualif,
+            value: _qualif?.title,
+            hasSearchBox: true,
             hintText: "Qualification",
             dropdownBtnWidth: dpWidth / 3 + 12,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 3 + 12,
             onChanged: (val) {
               setState(() {
-                _qualif = val;
+                _qualif = appStore
+                    .state.generalState.paramList.data!.qualifications
+                    .firstWhere((element) => element.title == val);
               });
             },
-            items: [],
+            items: appStore.state.generalState.paramList.data!.qualifications
+                .map((e) => e.title)
+                .toList(),
           ),
           TextInputWidget(
             isRequired: true,
@@ -133,13 +141,18 @@ class _UserDetailQualifNewQualifPopupWidgetState
             hintText: "Level",
             dropdownBtnWidth: dpWidth / 6 + 12,
             dropdownOptionsWidth: dpWidth / 3 + 12,
-            value: _level,
+            value: _level?.level,
             onChanged: (val) {
               setState(() {
-                _level = val;
+                _level = appStore
+                    .state.generalState.paramList.data!.qualification_levels
+                    .firstWhere((element) => element.level == val);
               });
             },
-            items: [],
+            items: appStore
+                .state.generalState.paramList.data!.qualification_levels
+                .map((e) => e.level)
+                .toList(),
           ),
           SpacedRow(
             crossAxisAlignment: CrossAxisAlignment.center,

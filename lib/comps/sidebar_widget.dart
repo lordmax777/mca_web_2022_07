@@ -11,18 +11,19 @@ class YSLogoBanner extends StatelessWidget {
       : super(key: key);
 
   Mix get boxMix => Mix(
-        paddingHorizontal(16),
+        paddingVertical(16),
         const BoxAttributes(
-            width: 256,
-            height: 64,
+            width: 280,
+            // height: 64,
             alignment: Alignment.center,
-            color: ThemeColors.blue1),
+            color: ThemeColors.white),
       );
 
-  Mix get logoTextMix => Mix(
-      letterSpacing(0.75));
+  Mix get logoTextMix => Mix(letterSpacing(0.75));
 
-  Mix flexboxMix = Mix();
+  Mix flexboxMix = Mix(
+    align(Alignment.center),
+  );
 
   Mix iconMix = Mix(iconSize(24), iconColor(Colors.white), marginRight(50));
 
@@ -30,19 +31,17 @@ class YSLogoBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Box(
       mix: boxMix,
-      child: FlexBox(
-        direction: Axis.horizontal,
-        mix: flexboxMix,
+      child: SpacedColumn(
+        verticalSpace: 24,
         children: [
-          MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Pressable(
-                  mix: iconMix,
-                  onPressed: onMenuPressed,
-                  child: const IconMix(Icons.menu))),
           Pressable(
               onPressed: onTitlePressed,
               child: TextMix(title, mix: logoTextMix)),
+          const Divider(
+            thickness: 1.0,
+            height: 1.0,
+            color: ThemeColors.gray11,
+          ),
         ],
       ),
     );
@@ -127,15 +126,17 @@ class YSSidebar extends StatefulWidget {
   final VoidCallback? onMenuPressed;
   final VoidCallback? onTitlePressed;
   final int currentIndex;
-  void Function(int)? onTabChange;
+  void Function(Map<String, dynamic>)? onTabChange;
   final Widget? bottomWidget;
+  final int initialIndex;
   YSSidebar(
       {Key? key,
       this.infoBarUpperText,
       this.infoBarLowerText,
-      this.title = 'YoShop',
+      this.title = 'MCA',
       required this.children,
       this.onTitlePressed,
+      this.initialIndex = 0,
       this.onMenuPressed,
       this.currentIndex = 0,
       this.onTabChange,
@@ -150,18 +151,23 @@ class _YSSidebarState extends State<YSSidebar> {
   int? _expandedIndex;
 
   Mix parentFlexboxMix = Mix(
-    mainAxis(MainAxisAlignment.start),
-    crossAxis(CrossAxisAlignment.start),
+    mainAxis(MainAxisAlignment.center),
+    crossAxis(CrossAxisAlignment.center),
   );
 
   Mix boxMix = Mix(const BoxAttributes(color: ThemeColors.white));
 
   @override
+  void initState() {
+    super.initState();
+    _expandedIndex = widget.initialIndex;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Box(
       mix: boxMix,
-      child:
-          FlexBox(mix: parentFlexboxMix, direction: Axis.vertical, children: [
+      child: Column(children: [
         YSLogoBanner(
             title: widget.title,
             onMenuPressed: widget.onMenuPressed,
@@ -170,21 +176,9 @@ class _YSSidebarState extends State<YSSidebar> {
           YSInfoBanner(
               infoBarLowerText: widget.infoBarLowerText!,
               infoBarUpperText: widget.infoBarUpperText!),
-        Flexible(
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                child: SpacedColumn(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    verticalSpace: 8,
-                    children: _buildSidebarChildren()),
-              ),
-              if (widget.bottomWidget != null)
-                Positioned(width: 234, bottom: 0, child: widget.bottomWidget!)
-            ],
-          ),
+        SingleChildScrollView(
+          child:
+              SpacedColumn(verticalSpace: 8, children: _buildSidebarChildren()),
         ),
       ]),
     );
@@ -202,13 +196,9 @@ class _YSSidebarState extends State<YSSidebar> {
           isActive: i == widget.currentIndex,
           icon: _item.icon,
           onPressed: () {
-            if (_item.children == null || _item.children!.isEmpty) {
-              widget.onTabChange?.call(i);
-            } else {
-              setState(() {
-                _expandedIndex = _expandedIndex == i ? null : i;
-              });
-            }
+            setState(() {
+              _expandedIndex = _expandedIndex == i ? null : i;
+            });
             if (_item.onPressed != null) {
               _item.onPressed!();
             }
@@ -217,14 +207,16 @@ class _YSSidebarState extends State<YSSidebar> {
               ? _item.children!
                   .map<YSSidebarChildItem>(
                     (e) => YSSidebarChildItem(
+                        name: e.name,
                         title: e.title,
                         icon: e.icon,
-                        isSelected: widget.currentIndex ==
-                            (_item.children!.length +
-                                _item.children!.indexOf(e)),
+                        isSelected: e.isSelected,
                         onPressed: () {
-                          widget.onTabChange!.call((_item.children!.length +
-                              _item.children!.indexOf(e)));
+                          widget.onTabChange!
+                              .call(({"name": e.name, "index": i}));
+                          if (e.onPressed != null) {
+                            e.onPressed!();
+                          }
                         }),
                   )
                   .toList()
@@ -237,7 +229,7 @@ class _YSSidebarState extends State<YSSidebar> {
 }
 
 class YSSidebarParentItem extends StatelessWidget {
-  final IconData? icon;
+  final HeroIcons? icon;
   final String title;
 
   /// Widget as YSSidebarChildItem
@@ -262,27 +254,21 @@ class YSSidebarParentItem extends StatelessWidget {
     }
   }
 
-  Mix get iconMix => Mix(iconSize(24),
-      iconColor(isExpanded ? ThemeColors.white : ThemeColors.blue9));
-
   Mix get boxMix => Mix(
-        width(234),
+        width(254),
         height(40),
         rounded(6),
         paddingHorizontal(12),
-        bgColor(isExpanded ? ThemeColors.blue9 : Colors.transparent),
+        bgColor(isExpanded ? ThemeColors.blue12 : Colors.transparent),
       );
 
-  Mix get titleMix => Mix(
-      // textStyle(ThemeTextRegular.sm
-      // .apply(color: isExpanded ? ThemeColors.white : ThemeColors.coolgray800))
-      );
+  Mix get titleMix => Mix(textStyle(ThemeText.md1
+      .apply(color: !isExpanded ? ThemeColors.gray5 : ThemeColors.blue3)));
 
   @override
   Widget build(BuildContext context) {
     return SpacedColumn(
       verticalSpace: isExpanded ? 12 : 0,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Pressable(
           onPressed: onPressed,
@@ -295,24 +281,34 @@ class YSSidebarParentItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   horizontalSpace: 8,
                   children: [
-                    if (icon != null) IconMix(icon!, mix: iconMix),
+                    if (icon != null)
+                      HeroIcon(icon!,
+                          size: 24,
+                          color: !isExpanded
+                              ? ThemeColors.gray5
+                              : ThemeColors.blue3),
                     TextMix(title, mix: titleMix),
                   ],
                 ),
                 if (children != null && children!.isNotEmpty)
                   AnimatedRotation(
-                      duration: const Duration(milliseconds: 100),
-                      turns: !isExpanded ? 0 : 1 / 4,
-                      child:
-                          IconMix(Icons.chevron_right_rounded, mix: iconMix)),
+                      duration: const Duration(milliseconds: 200),
+                      turns: !isExpanded ? 1 : 1 / 2,
+                      child: const IconMix(
+                        Icons.keyboard_arrow_down,
+                      )),
               ],
             ),
           ),
         ),
         if (children != null && children!.isNotEmpty)
           AnimatedContainer(
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: ThemeColors.gray11, width: 1),
+              ),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-              height: isExpanded ? children!.length * 40 : 0,
+              height: isExpanded ? children!.length * 35 : 0,
               duration: const Duration(milliseconds: 100),
               child: SpacedColumn(
                 children: children!.map<Widget>((e) => e).toList(),
@@ -327,48 +323,33 @@ class YSSidebarChildItem extends StatelessWidget {
   final IconData? icon;
   final bool isSelected;
   final VoidCallback? onPressed;
+  final String name;
   const YSSidebarChildItem(
       {Key? key,
       this.onPressed,
       this.icon,
+      required this.name,
       this.isSelected = false,
       required this.title})
       : super(key: key);
-  Mix get iconMix => Mix(iconSize(24), iconColor(ThemeColors.blue9));
 
-  Mix get boxMix => Mix(
-        width(234),
-        height(40),
-        rounded(6),
-        paddingHorizontal(12),
-        bgColor(isSelected ? ThemeColors.blue9 : Colors.transparent),
-      );
-
-  // Mix get titleMix =>
-  // Mix(textStyle(ThemeTextRegular.sm.apply(color: ThemeColors.blue9))
-  // );
   @override
   Widget build(BuildContext context) {
-    return Pressable(
-      onPressed: onPressed,
-      child: Box(
-        mix: boxMix,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SpacedRow(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              horizontalSpace: 8,
-              children: [
-                if (icon != null) IconMix(icon!, mix: iconMix),
-                TextMix(
-                  title,
-
-                  // mix: titleMix
-                ),
-              ],
-            ),
-          ],
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Pressable(
+        onPressed: onPressed,
+        child: Container(
+          width: 280,
+          height: 35,
+          color: ThemeColors.gray12,
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
+          child: Text(
+            title,
+            style: ThemeText.md2.apply(
+                color: !isSelected ? ThemeColors.gray5 : ThemeColors.blue3),
+            // mix: titleMix
+          ),
         ),
       ),
     );

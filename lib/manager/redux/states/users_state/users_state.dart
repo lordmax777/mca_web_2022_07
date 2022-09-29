@@ -145,6 +145,10 @@ class GetUserDetailsPhotosAction {}
 
 class GetSaveGeneralDetailsAction {}
 
+class GetSaveUserPhotoAction {}
+
+class GetDeleteUserPhotoAction {}
+
 abstract class DispatcherAction {
   void dispatch();
 }

@@ -43,6 +43,10 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getUserDetailsPhotosAction(store.state, action, next);
       case GetSaveGeneralDetailsAction:
         return _getSaveGeneralDetailsAction(store.state, action, next);
+      case GetSaveUserPhotoAction:
+        return _getSaveUserPhotoAction(store.state, action, next);
+      case GetDeleteUserPhotoAction:
+        return _getDeleteUserPhotoAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -693,6 +697,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     if (res.success) {
       stateValue.error.isError = false;
 
+      await appStore.dispatch(GetSaveUserPhotoAction());
+
       await Future.wait([
         fetch(GetUserDetailsDetailAction()),
         fetch(GetUsersListAction()),
@@ -723,5 +729,42 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
           context: appRouter.navigatorKey.currentContext!);
     }
     return stateValue;
+  }
+
+  Future<void> _getSaveUserPhotoAction(AppState state,
+      GetSaveUserPhotoAction action, NextDispatcher next) async {
+    if (state.savedUserState.photo == null) return;
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return;
+    }
+
+    final ApiResponse res = await restClient()
+        .addUserDetailsPhotos(id.toString(), photo: state.savedUserState.photo!)
+        .nocodeErrorHandler();
+
+    if (res.success) {
+    } else {}
+  }
+
+  Future<void> _getDeleteUserPhotoAction(AppState state,
+      GetDeleteUserPhotoAction action, NextDispatcher next) async {
+    if (state.usersState.userDetailPhotos.data == null) return;
+
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return;
+    }
+
+    final ApiResponse res = await restClient()
+        .deleteUserDetailsPhotos(
+            id.toString(), state.usersState.userDetailPhotos.data!.id)
+        .nocodeErrorHandler();
+
+    if (res.success) {
+    } else {}
   }
 }
