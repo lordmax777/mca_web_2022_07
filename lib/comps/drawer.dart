@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 
+import '../manager/router/router.gr.dart';
 import '../theme/theme.dart';
 
 class DefaultDrawer extends StatelessWidget {
@@ -9,29 +11,53 @@ class DefaultDrawer extends StatelessWidget {
 
   List<Map<String, dynamic>> items = [
     {
-      "icon": HeroIcons.users,
-      "title": "Adminstrations",
-      "name": "adminstrations",
-      "children": [
-        {
-          "title": "Users Management",
-          "name": "users_management",
-        },
-        {
-          "title": "Departments/ Groups",
-          "name": "departments_groups",
-        }
-      ]
-    },
-    {
       "icon": HeroIcons.clipboard,
       "title": "Operational Tasks",
       "name": "operational_tasks",
       "children": [
         {
           "title": "Scheduling",
-          "name": "scheduling",
+          "name": const UsersListRoute(),
         }
+      ]
+    },
+    {
+      "icon": HeroIcons.users,
+      "title": "Adminstrations",
+      "name": "adminstrations",
+      "children": [
+        {
+          "title": "Users Management",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Departments/ Groups",
+          "name": const DepartmentsListRoute(),
+        },
+        {
+          "title": "Qualifications and Skills",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Locations",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Properties",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Warehouses",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Stock Items",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Checklist Templates",
+          "name": const UsersListRoute(),
+        },
       ]
     },
   ];
@@ -41,10 +67,12 @@ class DefaultDrawer extends StatelessWidget {
     final DrawerStates drawerState = state.generalState.drawerStates;
     return YSSidebar(
       initialIndex: drawerState.initialIndex,
-      onTabChange: (p0) {
+      onTabChange: (p0) async {
         appStore.dispatch(UpdateGeneralStateAction(
-            drawerStates: DrawerStates(
-                initialIndex: p0['index'], currentPage: p0['name'])));
+            drawerStates:
+                DrawerStates(initialIndex: p0['index'], name: p0['name'])));
+        context.navigateTo(p0['name']);
+        await context.popRoute();
       },
       children: _buildItems(drawerState),
     );
@@ -59,7 +87,7 @@ class DefaultDrawer extends StatelessWidget {
           return YSSidebarChildItem(
             name: childE['name'],
             title: childE['title'],
-            isSelected: childE['name'] == drawerState.currentPage,
+            isSelected: childE['name'].routeName == drawerState.name.routeName,
           );
         }).toList(),
       );
@@ -69,10 +97,10 @@ class DefaultDrawer extends StatelessWidget {
 
 class DrawerStates {
   final int initialIndex;
-  final String currentPage;
+  final dynamic name;
 
   DrawerStates({
     required this.initialIndex,
-    required this.currentPage,
+    required this.name,
   });
 }

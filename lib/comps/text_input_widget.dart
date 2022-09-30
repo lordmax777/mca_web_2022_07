@@ -16,6 +16,7 @@ class TextInputWidget extends StatefulWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final int maxLines;
+  final ValueChanged<String>? onChanged;
   final String? Function(String?)? validator;
   TextInputWidget(
       {Key? key,
@@ -24,6 +25,7 @@ class TextInputWidget extends StatefulWidget {
       this.maxLines = 1,
       this.enabled = true,
       this.disableAll = false,
+      this.onChanged,
       this.controller,
       this.rightIcon,
       this.isRequired = false,
@@ -53,6 +55,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
     return SizedBox(
       width: widget.width,
       child: TextFormField(
+        onChanged: widget.onChanged,
         validator: widget.validator,
         obscureText: widget.isPassword ? _obscureText : false,
         onTap: widget.onTap,

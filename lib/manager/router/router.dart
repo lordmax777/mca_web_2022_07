@@ -6,16 +6,15 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import '../../pages/user/user_details_page.dart';
 
 @MaterialAutoRouter(
+  replaceInRouteName: 'Page,Route',
   // transitionsBuilder: TransitionsBuilders.fadeIn,
   routes: <AutoRoute>[
     AutoRoute(page: HomePage, initial: true, children: [
-      AutoRoute(page: UsersListPage, path: "", name: "UsersListRoute"),
+      AutoRoute(page: UsersListPage, path: ""),
+      AutoRoute(page: UserDetailsPage, path: "user-detail"),
       AutoRoute(
-          page: UserDetailsPage, path: "user-detail", name: "UserDetailsRoute"),
-      AutoRoute(
-          page: UserDetailsPayrollTabNewContractPage,
-          path: "new-contract",
-          name: "UserDetailsPayrollTabNewContractRoute"),
+          page: UserDetailsPayrollTabNewContractPage, path: "new-contract"),
+      AutoRoute(page: DepartmentsListPage, path: "departments"),
     ]),
   ],
 )

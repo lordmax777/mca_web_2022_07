@@ -35,18 +35,29 @@ class PlutoScaledCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.scale(
       scale: _scale,
-      child: Checkbox(
-        value: value,
-        splashRadius: 15,
-        side: BorderSide(
-          color: value == true ? _activeBgColor : const Color(0xFFE8E8EA),
-          width: 2,
+      child: Container(
+        width: 18,
+        height: 18,
+        decoration: BoxDecoration(
+          color: value != null
+              ? (!value! ? Colors.white : Colors.transparent)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(6.5),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.5)),
-        tristate: tristate,
-        onChanged: handleOnChanged,
-        activeColor: value == null ? _inactiveBgColor : _activeBgColor,
-        checkColor: _checkColor,
+        child: Checkbox(
+          value: value,
+          splashRadius: 15,
+          side: BorderSide(
+            color: value == true ? _activeBgColor : const Color(0xFFE8E8EA),
+            width: 2,
+          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.5)),
+          tristate: tristate,
+          onChanged: handleOnChanged,
+          activeColor: value == null ? _inactiveBgColor : _activeBgColor,
+          checkColor: _checkColor,
+        ),
       ),
     );
   }

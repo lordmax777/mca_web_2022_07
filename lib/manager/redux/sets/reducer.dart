@@ -79,6 +79,7 @@ GeneralState _updateGeneralStateAction(
   return state.copyWith(
     paramList: action.paramList ?? state.paramList,
     drawerStates: action.drawerStates ?? state.drawerStates,
+    endDrawer: action.endDrawer,
   );
 }
 

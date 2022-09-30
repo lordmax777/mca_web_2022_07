@@ -25,7 +25,7 @@ class AppRouter extends _i5.RootStackRouter {
 
   @override
   final Map<String, _i5.PageFactory> pagesMap = {
-    HomePageRoute.name: (routeData) {
+    HomeRoute.name: (routeData) {
       return _i5.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i1.HomePage(),
@@ -59,28 +59,39 @@ class AppRouter extends _i5.RootStackRouter {
         ),
       );
     },
+    DepartmentsListRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.DepartmentsListPage(),
+      );
+    },
   };
 
   @override
   List<_i5.RouteConfig> get routes => [
         _i5.RouteConfig(
-          HomePageRoute.name,
+          HomeRoute.name,
           path: '/',
           children: [
             _i5.RouteConfig(
               UsersListRoute.name,
               path: '',
-              parent: HomePageRoute.name,
+              parent: HomeRoute.name,
             ),
             _i5.RouteConfig(
               UserDetailsRoute.name,
               path: 'user-detail',
-              parent: HomePageRoute.name,
+              parent: HomeRoute.name,
             ),
             _i5.RouteConfig(
               UserDetailsPayrollTabNewContractRoute.name,
               path: 'new-contract',
-              parent: HomePageRoute.name,
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              DepartmentsListRoute.name,
+              path: 'departments',
+              parent: HomeRoute.name,
             ),
           ],
         )
@@ -89,15 +100,15 @@ class AppRouter extends _i5.RootStackRouter {
 
 /// generated route for
 /// [_i1.HomePage]
-class HomePageRoute extends _i5.PageRouteInfo<void> {
-  const HomePageRoute({List<_i5.PageRouteInfo>? children})
+class HomeRoute extends _i5.PageRouteInfo<void> {
+  const HomeRoute({List<_i5.PageRouteInfo>? children})
       : super(
-          HomePageRoute.name,
+          HomeRoute.name,
           path: '/',
           initialChildren: children,
         );
 
-  static const String name = 'HomePageRoute';
+  static const String name = 'HomeRoute';
 }
 
 /// generated route for
@@ -179,4 +190,16 @@ class UserDetailsPayrollTabNewContractRouteArgs {
   String toString() {
     return 'UserDetailsPayrollTabNewContractRouteArgs{key: $key, id: $id}';
   }
+}
+
+/// generated route for
+/// [_i4.DepartmentsListPage]
+class DepartmentsListRoute extends _i5.PageRouteInfo<void> {
+  const DepartmentsListRoute()
+      : super(
+          DepartmentsListRoute.name,
+          path: 'departments',
+        );
+
+  static const String name = 'DepartmentsListRoute';
 }

@@ -475,7 +475,6 @@ class _CheckboxAllSelectionWidgetState
       value: _checked,
       handleOnChanged: _handleOnChanged,
       tristate: true,
-      scale: 0.86,
       unselectedColor: stateManager.configuration!.style.iconColor,
       activeColor: stateManager.configuration!.style.activatedBorderColor,
       checkColor: stateManager.configuration!.style.activatedColor,

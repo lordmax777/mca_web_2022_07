@@ -9,7 +9,7 @@ class PageWrapper extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        padding: const EdgeInsets.all(32.0),
         child: child,
       ),
     );

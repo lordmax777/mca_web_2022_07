@@ -54,6 +54,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
 
   bool isError = false;
 
+  bool isOpen = false;
+
   @override
   void dispose() {
     searchcontroller.dispose();
@@ -73,24 +75,27 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.dropdownBtnWidth,
-      // height: 56,
       child: DropdownButtonFormField2(
-        validator: widget.validator == null
-            ? (value) {
-                if (widget.isRequired) {
-                  if (value == null) {
-                    setState(() {
-                      isError = true;
-                    });
-                    return "This field is required";
-                  }
+        validator: widget.validator ??
+            (value) {
+              if (widget.isRequired) {
+                if (value == null) {
+                  setState(() {
+                    isError = true;
+                  });
+                  return "This field is required";
                 }
-                setState(() {
-                  isError = false;
-                });
-                return null;
               }
-            : widget.validator,
+              setState(() {
+                isError = false;
+              });
+              return null;
+            },
+        onMenuStateChange: (open) {
+          setState(() {
+            isOpen = open;
+          });
+        },
         searchInnerWidget: widget.hasSearchBox
             ? Padding(
                 padding: const EdgeInsets.only(top: 8.0),
@@ -103,11 +108,9 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 ),
               )
             : null,
-
         searchController: searchcontroller,
         itemPadding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
-        // underline: const SizedBox(),
         decoration: const InputDecoration(
           contentPadding: EdgeInsets.zero,
           border: InputBorder.none,
@@ -125,10 +128,12 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 blurRadius: 4)
           ],
         ),
+        barrierColor: ThemeColors.black.withOpacity(0.1),
         buttonPadding: EdgeInsets.zero,
         value: widget.value != null ? (widget.value as String) : null,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
+
         customButton: MouseRegion(
           cursor: widget.disableAll
               ? SystemMouseCursors.forbidden
@@ -142,8 +147,12 @@ class _DropdownWidgetState extends State<DropdownWidget> {
               border: Border.all(
                 color: isError
                     ? ThemeColors.red3
-                    : (widget.dropdownBtnColor ?? ThemeColors.gray11),
-                width: widget.dropdownBtnColor == null ? 1.0 : 0.0,
+                    : isOpen
+                        ? ThemeColors.blue3
+                        : (widget.dropdownBtnColor ?? ThemeColors.gray11),
+                width: isOpen
+                    ? 2.0
+                    : (widget.dropdownBtnColor == null ? 1.0 : 0.0),
               ),
               borderRadius: BorderRadius.circular(18.0),
               color: (widget.disableAll
@@ -255,13 +264,17 @@ class _DropdownWidgetState extends State<DropdownWidget> {
               ],
             )),
       if (widget.showDropdownIcon!)
-        const Align(
-            alignment: Alignment.centerRight,
-            child: HeroIcon(
-              HeroIcons.down,
-              color: ThemeColors.gray2,
-              size: 15,
-            )),
+        AnimatedRotation(
+          duration: const Duration(milliseconds: 200),
+          turns: !isOpen ? 0 : 0.5,
+          child: Align(
+              alignment: Alignment.centerRight,
+              child: HeroIcon(
+                HeroIcons.up,
+                color: isOpen ? ThemeColors.blue3 : ThemeColors.gray2,
+                size: 15,
+              )),
+        ),
     ];
   }
 
@@ -275,22 +288,21 @@ class _DropdownWidgetState extends State<DropdownWidget> {
           value: listValues[i].toString(),
           child: Container(
             decoration: BoxDecoration(
-                color: widget.value == listValues[i]
-                    ? ThemeColors.blue11
-                    : ThemeColors.white,
-                border: Border(
-                    bottom: BorderSide(
-                        width: 1,
-                        color: listValues.length - 1 == i
-                            ? ThemeColors.transparent
-                            : ThemeColors.gray11))),
+              // borderRadius: BorderRadius.circular(14),
+              color: widget.value == listValues[i]
+                  ? ThemeColors.blue4
+                  : ThemeColors.transparent,
+            ),
             alignment: Alignment.centerLeft,
+            // margin: const EdgeInsets.symmetric(horizontal: 16.0),
             padding: const EdgeInsets.symmetric(horizontal: 15),
             width: double.infinity,
             height: double.infinity,
             child: KText(
               text: listValues[i].toString(),
-              textColor: ThemeColors.black,
+              textColor: widget.value == listValues[i]
+                  ? ThemeColors.white
+                  : ThemeColors.black,
               isSelectable: false,
               fontSize: 16.0,
             ),

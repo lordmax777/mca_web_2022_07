@@ -323,7 +323,7 @@ class YSSidebarChildItem extends StatelessWidget {
   final IconData? icon;
   final bool isSelected;
   final VoidCallback? onPressed;
-  final String name;
+  final dynamic name;
   const YSSidebarChildItem(
       {Key? key,
       this.onPressed,

@@ -24,6 +24,13 @@ export '../pages/user/user_detail_preffered_shifts_tab.dart';
 export '../pages/user/user_detail_preffered_shifts_tab.dart';
 export '../pages/user/user_detail_preffered_sifts_tab_new_shift_popup.dart';
 
+export '../pages/departments_groups/departments_list_page.dart';
+export '../pages/departments_groups/departments_tab.dart';
+export '../pages/departments_groups/groups_tab.dart';
+export '../pages/departments_groups/departments_tab_new_department_popup.dart';
+export '../pages/departments_groups/dep_group_drawer.dart';
+export '../pages/departments_groups/groups_tab_new_department_popup.dart';
+
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
 export '../comps/spaced_column.dart';

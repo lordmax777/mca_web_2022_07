@@ -1,15 +1,10 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/drawer.dart';
-import 'package:mca_web_2022_07/comps/sidebar_widget.dart';
-import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
-import 'package:mix/mix.dart';
 
-import '../comps/nav_bar_widget.dart';
-import '../manager/redux/states/general_state.dart';
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -21,8 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   void initState() {
     super.initState();
@@ -33,16 +26,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _w = MediaQuery.of(context).size.width;
-
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (_, state) => Scaffold(
         drawer: DefaultDrawer(state: state),
+        endDrawer: state.generalState.endDrawer,
         backgroundColor: ThemeColors.gray12,
         drawerEnableOpenDragGesture: false,
-        key: _scaffoldKey,
-        appBar: NavbarWidget(scaffoldKey: _scaffoldKey),
+        key: scaffoldKey,
+        appBar: NavbarWidget(scaffoldKey: scaffoldKey),
         body: const AutoRouter(),
       ),
     );
