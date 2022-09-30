@@ -65,6 +65,12 @@ class AppRouter extends _i5.RootStackRouter {
         child: const _i4.DepartmentsListPage(),
       );
     },
+    QualificationsRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.QualificationsPage(),
+      );
+    },
   };
 
   @override
@@ -91,6 +97,11 @@ class AppRouter extends _i5.RootStackRouter {
             _i5.RouteConfig(
               DepartmentsListRoute.name,
               path: 'departments',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              QualificationsRoute.name,
+              path: 'qualifications',
               parent: HomeRoute.name,
             ),
           ],
@@ -202,4 +213,16 @@ class DepartmentsListRoute extends _i5.PageRouteInfo<void> {
         );
 
   static const String name = 'DepartmentsListRoute';
+}
+
+/// generated route for
+/// [_i4.QualificationsPage]
+class QualificationsRoute extends _i5.PageRouteInfo<void> {
+  const QualificationsRoute()
+      : super(
+          QualificationsRoute.name,
+          path: 'qualifications',
+        );
+
+  static const String name = 'QualificationsRoute';
 }

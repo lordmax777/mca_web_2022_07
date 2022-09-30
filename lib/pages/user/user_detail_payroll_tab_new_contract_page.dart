@@ -105,7 +105,7 @@ class _UserDetailsPayrollTabNewContractPageState
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(),
+          const SizedBox(height: 1),
           DropdownWidget(
             hintText: "Job Title",
             dropdownBtnWidth: dpWidth / 3 + 24.0,

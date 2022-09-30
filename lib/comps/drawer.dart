@@ -23,8 +23,8 @@ class DefaultDrawer extends StatelessWidget {
     },
     {
       "icon": HeroIcons.users,
-      "title": "Adminstrations",
-      "name": "adminstrations",
+      "title": "Administrations",
+      "name": "administrations",
       "children": [
         {
           "title": "Users Management",
@@ -36,7 +36,7 @@ class DefaultDrawer extends StatelessWidget {
         },
         {
           "title": "Qualifications and Skills",
-          "name": const UsersListRoute(),
+          "name": const QualificationsRoute(),
         },
         {
           "title": "Locations",

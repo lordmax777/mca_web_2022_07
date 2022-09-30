@@ -70,7 +70,7 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
         crossAxisAlignment: CrossAxisAlignment.start,
         verticalSpace: 32.0,
         children: [
-          const SizedBox(),
+          const SizedBox(height: 1),
           DropdownWidget(
             hintText: "Week",
             value: _week,

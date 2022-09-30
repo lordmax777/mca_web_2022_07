@@ -94,7 +94,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
           crossAxisAlignment: CrossAxisAlignment.start,
           verticalSpace: 32.0,
           children: [
-            const SizedBox(),
+            const SizedBox(height: 1),
             TextInputWidget(
               isRequired: true,
               width: dpWidth / 3 + 12,

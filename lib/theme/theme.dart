@@ -31,6 +31,9 @@ export '../pages/departments_groups/departments_tab_new_department_popup.dart';
 export '../pages/departments_groups/dep_group_drawer.dart';
 export '../pages/departments_groups/groups_tab_new_department_popup.dart';
 
+export '../pages/qualifications/qualifications_page.dart';
+export '../pages/qualifications/qualifs_page_new_qualif_popup.dart';
+
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
 export '../comps/spaced_column.dart';

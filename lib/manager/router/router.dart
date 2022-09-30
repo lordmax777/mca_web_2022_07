@@ -15,6 +15,7 @@ import '../../pages/user/user_details_page.dart';
       AutoRoute(
           page: UserDetailsPayrollTabNewContractPage, path: "new-contract"),
       AutoRoute(page: DepartmentsListPage, path: "departments"),
+      AutoRoute(page: QualificationsPage, path: "qualifications"),
     ]),
   ],
 )
