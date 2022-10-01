@@ -2,8 +2,10 @@ import '../theme/theme.dart';
 
 class PagesTitleWidget extends StatelessWidget {
   final String title;
+  final String? btnText;
   final VoidCallback? onRightBtnClick;
-  const PagesTitleWidget({Key? key, required this.title, this.onRightBtnClick})
+  const PagesTitleWidget(
+      {Key? key, required this.title, this.btnText, this.onRightBtnClick})
       : super(key: key);
 
   @override
@@ -21,7 +23,7 @@ class PagesTitleWidget extends StatelessWidget {
         ),
         if (onRightBtnClick != null)
           ButtonMedium(
-            text: "New User",
+            text: btnText ?? "New User",
             icon: const HeroIcon(
               HeroIcons.plusCircle,
               size: 20,

@@ -40,7 +40,7 @@ class DefaultDrawer extends StatelessWidget {
         },
         {
           "title": "Locations",
-          "name": const UsersListRoute(),
+          "name": const LocationsListRoute(),
         },
         {
           "title": "Properties",

@@ -4,49 +4,17 @@ class TablePaginationWidget extends StatelessWidget {
   final int totalPages;
   final ValueChanged<int> onPageChanged;
   final int currentPage;
+  final int limit;
   const TablePaginationWidget(
       {Key? key,
       required this.totalPages,
+      this.limit = 7,
       required this.onPageChanged,
       required this.currentPage})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    int t = totalPages;
-    List<Widget> pages = [];
-
-    // if (t > 8) {
-    //   pages.clear();
-    //   pages.add(1 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(1));
-    //   pages.add(2 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(2));
-    //   pages.add(3 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(3));
-    //   pages.add(const SizedBox(width: 8.0));
-    //   pages.add(const Text(". . ."));
-    //   pages.add(const SizedBox(width: 8.0));
-    //   pages.add(
-    //       t - 2 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(t - 2));
-    //   pages.add(
-    //       t - 1 == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(t - 1));
-    //   pages.add(t == currentPage ? _isSelectedBtn() : _isUnSelectedBtn(t));
-    // } else {
-    //   for (int i = 1; i <= t; i++) {
-    //     if (i == currentPage) {
-    //       pages.add(_isSelectedBtn());
-    //     } else {
-    //       pages.add(_isUnSelectedBtn(i));
-    //     }
-    //   }
-    // }
-
-    for (int i = 1; i <= t; i++) {
-      if (i == currentPage) {
-        pages.add(_isSelectedBtn());
-      } else {
-        pages.add(_isUnSelectedBtn(i));
-      }
-    }
-
     // If list of numbers are more than 8, then show 3 dots in the middle;
     // If list of numbers are less than 8, then show all numbers;
 
@@ -56,9 +24,144 @@ class TablePaginationWidget extends StatelessWidget {
       children: [
         _PreviousNextButton(onTap: _onPreviousPage),
         const SizedBox(width: 7.0),
-        ...pages,
+        ..._builder(),
         const SizedBox(width: 7.0),
         _PreviousNextButton(isNext: true, onTap: _onNextPage),
+      ],
+    );
+  }
+
+  List<Widget> _builder() {
+    final tp = totalPages;
+    final cp = currentPage;
+    final int lim = limit;
+    int t = totalPages;
+    List<Widget> pages = [];
+
+    if (tp > lim) {
+      if (cp == 1 || cp == 2) {
+        // 1 2 ... 8
+        if (1 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(1));
+        }
+        if (2 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(2));
+        }
+        if (3 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(3));
+        }
+        if (4 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(4));
+        }
+        if (5 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(5));
+        }
+        pages.add(_dots());
+        if (tp == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp));
+        }
+      }
+      if (cp > 2 && cp < tp - 1) {
+        // 1 ... 3 ... 8
+        if (1 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(1));
+        }
+        pages.add(_dots());
+        if (cp - 1 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(cp - 1));
+        }
+        if (cp == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(cp));
+        }
+        if (cp + 1 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(cp + 1));
+        }
+        pages.add(_dots());
+        if (tp == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp));
+        }
+      }
+      if (cp == tp - 1 || cp == tp) {
+        // 1 ... 7 8
+        if (1 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(1));
+        }
+        pages.add(_dots());
+        if (tp - 4 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp - 4));
+        }
+        if (tp - 3 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp - 3));
+        }
+        if (tp - 2 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp - 2));
+        }
+        if (tp - 1 == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp - 1));
+        }
+        if (tp == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(tp));
+        }
+      }
+    } else {
+      for (int i = 1; i <= tp; i++) {
+        if (i == currentPage) {
+          pages.add(_isSelectedBtn());
+        } else {
+          pages.add(_isUnSelectedBtn(i));
+        }
+      }
+    }
+
+    return pages;
+  }
+
+  Widget _dots() {
+    return Row(
+      children: [
+        const SizedBox(width: 14.0),
+        KText(
+          text: "...",
+          isSelectable: false,
+          fontSize: 16.0,
+          textColor: Colors.black,
+          fontWeight: FWeight.bold,
+        ),
+        const SizedBox(width: 14.0),
       ],
     );
   }

@@ -87,7 +87,6 @@ class _QualifsNewQualifPopupWidgetState
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 5,
-            enabled: false,
             validator: (val) {
               if (val == null || val.isEmpty) {
                 return 'Please enter a name';
