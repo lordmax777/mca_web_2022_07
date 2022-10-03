@@ -1,3 +1,6 @@
+import '../manager/router/router.gr.dart';
+import '../theme/theme.dart';
+
 class Constants {
   static const String appName = "MCA Web";
   static const String appVersion = "1.0.0";
@@ -16,6 +19,60 @@ class Constants {
   static const String grant_type = "password";
   static const String username = "91403765";
   static const String password = "F00tba11";
+
+  //Drawer
+  static List<Map<String, dynamic>> drawerItems = [
+    {
+      "icon": HeroIcons.clipboard,
+      "title": "Operational Tasks",
+      "name": "operational_tasks",
+      "children": [
+        {
+          "title": "Scheduling",
+          "name": const UsersListRoute(),
+        }
+      ]
+    },
+    {
+      "icon": HeroIcons.users,
+      "title": "Administrations",
+      "name": "administrations",
+      "children": [
+        {
+          "title": "Users Management",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Departments/ Groups",
+          "name": const DepartmentsListRoute(),
+        },
+        {
+          "title": "Qualifications and Skills",
+          "name": const QualificationsRoute(),
+        },
+        {
+          "title": "Locations",
+          "name": const LocationsListRoute(),
+        },
+        {
+          "title": "Properties",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Warehouses",
+          "name": const WarehousesListRoute(),
+        },
+        {
+          "title": "Stock Items",
+          "name": const UsersListRoute(),
+        },
+        {
+          "title": "Checklist Templates",
+          "name": const UsersListRoute(),
+        },
+      ]
+    },
+  ];
 
   // Etc
   static const List<int> tablePageSizes = [10, 50, 100];

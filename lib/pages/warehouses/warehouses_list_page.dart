@@ -2,12 +2,18 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/pages/warehouses/warehouse_drawer.dart';
+import 'package:mca_web_2022_07/pages/warehouses/wares_page_new_ware_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import '../../comps/show_overlay_popup.dart';
+import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 import 'package:faker/faker.dart';
 
-class LocationsListPage extends StatelessWidget {
-  const LocationsListPage({Key? key}) : super(key: key);
+import '../home_page.dart';
+
+class WarehousesListPage extends StatelessWidget {
+  const WarehousesListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +21,8 @@ class LocationsListPage extends StatelessWidget {
       converter: (store) => store.state,
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
-          PagesTitleWidget(
-            btnText: "New Location",
-            title: 'Locations',
-            onRightBtnClick: () async {
-              context.navigateTo(const NewLocationRoute());
-            },
+          const PagesTitleWidget(
+            title: 'Warehouses',
           ),
           ErrorWrapper(errors: [], child: _Body(state: state))
         ]),
@@ -55,77 +57,42 @@ class _BodyState extends State<_Body> {
   List<PlutoColumn> get _cols {
     return [
       PlutoColumn(
-        title: "location",
-        field: "location",
+        title: "warehouse",
+        field: "warehouse",
         type: PlutoColumnType.text(),
         hide: true,
       ),
       PlutoColumn(
         width: 300.0,
         title: "Location Name",
-        field: "location_name",
+        field: "warehouse_name",
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
-          width: 360.0,
-          title: "Address",
-          field: "address",
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () => _onUserDetailsNavigationClick(ctx),
-            );
-          }),
+        width: 360.0,
+        title: "Contact Name",
+        field: "contact_name",
+        type: PlutoColumnType.text(),
+      ),
       PlutoColumn(
           width: 300.0,
-          title: "Contact",
-          field: "contact",
+          title: "Contact Email",
+          field: "contact_email",
           type: PlutoColumnType.text()),
       PlutoColumn(
         width: 250.0,
-        title: "Required Staff",
-        field: "required_staff",
+        title: "Linked Properties",
+        field: "linked_properties",
         type: PlutoColumnType.text(),
         renderer: (rendererContext) {
-          return UsersListTable.defaultTextWidget(
-              "Cleaners: ${rendererContext.cell.value}");
-        },
-      ),
-      PlutoColumn(
-        width: 250.0,
-        title: "IP Address",
-        field: "ip_address",
-        type: PlutoColumnType.text(),
-      ),
-      PlutoColumn(
-        // width: 85.0,
-        title: "Status",
-        field: "status",
-        type: PlutoColumnType.text(),
-        renderer: (rendererContext) {
-          final Color color = rendererContext.cell.value == "active"
-              ? ThemeColors.green2
-              : ThemeColors.gray8;
-          return SpacedRow(
-              horizontalSpace: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration:
-                      BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-                UsersListTable.defaultTextWidget(rendererContext.cell.value
-                    .toString()
-                    .replaceFirst(rendererContext.cell.value.toString()[0],
-                        rendererContext.cell.value.toString()[0].toUpperCase()))
-              ]);
+          return KText(
+            text: rendererContext.cell.value.toString(),
+            textColor: ThemeColors.blue3,
+            fontWeight: FWeight.regular,
+            fontSize: 14,
+            onTap: () {},
+            isSelectable: false,
+          );
         },
       ),
       PlutoColumn(
@@ -171,31 +138,21 @@ class _BodyState extends State<_Body> {
         usersPageStateManger.setFilter(
           (element) {
             final String search = _searchController.text.toLowerCase();
-            bool searched = element.cells['location_name']?.value
+            bool searched = element.cells['warehouse_name']?.value
                 .toLowerCase()
                 .contains(search);
             if (!searched) {
-              searched = element.cells['address']?.value
+              searched = element.cells['contact_name']?.value
                   .toLowerCase()
                   .contains(search);
               if (!searched) {
-                searched = element.cells['contact']?.value
+                searched = element.cells['contact_email']?.value
                     .toLowerCase()
                     .contains(search);
                 if (!searched) {
-                  searched = element.cells['ip_address']?.value
+                  searched = element.cells['linked_properties']?.value
                       .toLowerCase()
                       .contains(search);
-                  if (!searched) {
-                    searched = element.cells['status']?.value
-                        .toLowerCase()
-                        .contains(search);
-                    if (!searched) {
-                      searched = element.cells['required_staff']?.value
-                          .toLowerCase()
-                          .contains(search);
-                    }
-                  }
                 }
               }
             }
@@ -218,15 +175,13 @@ class _BodyState extends State<_Body> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 400; i++) {
+    for (int i = 0; i < 30; i++) {
       final Map map = {
-        "location": faker.address,
-        "location_name": faker.address.streetName(),
-        "address": faker.address.streetAddress(),
-        "contact": faker.internet.email(),
-        "required_staff": faker.randomGenerator.integer(30),
-        "ip_address": faker.internet.ipv4Address(),
-        "status": faker.randomGenerator.boolean() ? "active" : "inactive",
+        "warehouse": faker.guid.guid(),
+        "warehouse_name": faker.address.streetAddress(),
+        "contact_name": faker.person.name(),
+        "contact_email": faker.internet.email(),
+        "linked_properties": faker.randomGenerator.integer(50),
       };
       items.add(map);
     }
@@ -241,12 +196,14 @@ class _BodyState extends State<_Body> {
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
       {int index = 0}) async {
-    // appStore.dispatch(UpdateSavedUserStateAction(isInit: true));
-    // appStore.dispatch(UpdateUsersStateAction(
-    //     // saveableUserDetails: UserDetailSaveMd.init(),
-    //     isNewUser: false,
-    //     selectedUser: ctx.row.cells['user']?.value));
-    // context.navigateTo(UserDetailsRoute(tabIndex: index));
+    appStore
+        .dispatch(UpdateGeneralStateAction(endDrawer: const WarehouseDrawer()));
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (scaffoldKey.currentState != null) {
+      if (!scaffoldKey.currentState!.isDrawerOpen) {
+        scaffoldKey.currentState!.openEndDrawer();
+      }
+    }
   }
 
   void _onUserDetailsNavigationClickTest(PlutoColumnRendererContext ctx,
@@ -301,7 +258,7 @@ class _BodyState extends State<_Body> {
         children: [
           TextInputWidget(
               controller: _searchController,
-              hintText: 'Search locations...',
+              hintText: 'Search warehouses...',
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
@@ -315,21 +272,14 @@ class _BodyState extends State<_Body> {
               ),
               onPressed: () {},
             ),
-            ButtonMediumSecondary(
-              text: "View All Locations",
-              leftIcon: const HeroIcon(HeroIcons.pin,
-                  size: 20, color: ThemeColors.blue3),
-              onPressed: () {},
+            ButtonMedium(
+              text: "New Warehouse",
+              icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
+              onPressed: () {
+                showOverlayPopup(
+                    body: const WaresNewWarePopupWidget(), context: context);
+              },
             ),
-            TableColumnHiderWidget(
-                gKey: _columnsMenuKey,
-                columns: columnHideValues,
-                onChanged: (value) {
-                  PlutoGridStateManager state = usersPageStateManger;
-                  PlutoColumn _c = state.refColumns.originalList
-                      .firstWhere((e) => e.field == value.value);
-                  state.hideColumn(_c, !value.isChecked);
-                }),
           ]),
         ],
       ),
@@ -350,13 +300,11 @@ class _BodyState extends State<_Body> {
 
   PlutoRow _buildItem(Map e) {
     return PlutoRow(cells: {
-      "location": PlutoCell(value: e),
-      "location_name": PlutoCell(value: e['location_name']),
-      "address": PlutoCell(value: e['address']),
-      "contact": PlutoCell(value: e['contact']),
-      "required_staff": PlutoCell(value: e['required_staff'].toString()),
-      "ip_address": PlutoCell(value: e['ip_address']),
-      "status": PlutoCell(value: e['status']),
+      "warehouse": PlutoCell(value: e),
+      "warehouse_name": PlutoCell(value: e['warehouse_name']),
+      "contact_name": PlutoCell(value: e['contact_name']),
+      "contact_email": PlutoCell(value: e['contact_email']),
+      "linked_properties": PlutoCell(value: e['linked_properties'].toString()),
       "action": PlutoCell(value: ""),
     });
   }

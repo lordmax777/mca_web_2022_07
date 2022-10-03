@@ -73,7 +73,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      margin: const EdgeInsets.only(top: 14),
       width: widget.dropdownBtnWidth,
       child: DropdownButtonFormField2(
         validator: widget.validator ??
@@ -110,7 +111,6 @@ class _DropdownWidgetState extends State<DropdownWidget> {
             : null,
         searchController: searchcontroller,
         itemPadding: EdgeInsets.zero,
-        alignment: Alignment.centerLeft,
         decoration: const InputDecoration(
           contentPadding: EdgeInsets.zero,
           border: InputBorder.none,

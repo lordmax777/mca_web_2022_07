@@ -77,6 +77,18 @@ class AppRouter extends _i5.RootStackRouter {
         child: const _i4.LocationsListPage(),
       );
     },
+    NewLocationRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.NewLocationPage(),
+      );
+    },
+    WarehousesListRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.WarehousesListPage(),
+      );
+    },
   };
 
   @override
@@ -113,6 +125,16 @@ class AppRouter extends _i5.RootStackRouter {
             _i5.RouteConfig(
               LocationsListRoute.name,
               path: 'locations',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              NewLocationRoute.name,
+              path: 'new-location',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              WarehousesListRoute.name,
+              path: 'warehouses',
               parent: HomeRoute.name,
             ),
           ],
@@ -248,4 +270,28 @@ class LocationsListRoute extends _i5.PageRouteInfo<void> {
         );
 
   static const String name = 'LocationsListRoute';
+}
+
+/// generated route for
+/// [_i4.NewLocationPage]
+class NewLocationRoute extends _i5.PageRouteInfo<void> {
+  const NewLocationRoute()
+      : super(
+          NewLocationRoute.name,
+          path: 'new-location',
+        );
+
+  static const String name = 'NewLocationRoute';
+}
+
+/// generated route for
+/// [_i4.WarehousesListPage]
+class WarehousesListRoute extends _i5.PageRouteInfo<void> {
+  const WarehousesListRoute()
+      : super(
+          WarehousesListRoute.name,
+          path: 'warehouses',
+        );
+
+  static const String name = 'WarehousesListRoute';
 }

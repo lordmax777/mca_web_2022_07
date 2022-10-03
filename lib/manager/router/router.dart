@@ -17,6 +17,8 @@ import '../../pages/user/user_details_page.dart';
       AutoRoute(page: DepartmentsListPage, path: "departments"),
       AutoRoute(page: QualificationsPage, path: "qualifications"),
       AutoRoute(page: LocationsListPage, path: "locations"),
+      AutoRoute(page: NewLocationPage, path: "new-location"),
+      AutoRoute(page: WarehousesListPage, path: "warehouses"),
     ]),
   ],
 )

@@ -9,59 +9,6 @@ class DefaultDrawer extends StatelessWidget {
   final AppState state;
   DefaultDrawer({Key? key, required this.state}) : super(key: key);
 
-  List<Map<String, dynamic>> items = [
-    {
-      "icon": HeroIcons.clipboard,
-      "title": "Operational Tasks",
-      "name": "operational_tasks",
-      "children": [
-        {
-          "title": "Scheduling",
-          "name": const UsersListRoute(),
-        }
-      ]
-    },
-    {
-      "icon": HeroIcons.users,
-      "title": "Administrations",
-      "name": "administrations",
-      "children": [
-        {
-          "title": "Users Management",
-          "name": const UsersListRoute(),
-        },
-        {
-          "title": "Departments/ Groups",
-          "name": const DepartmentsListRoute(),
-        },
-        {
-          "title": "Qualifications and Skills",
-          "name": const QualificationsRoute(),
-        },
-        {
-          "title": "Locations",
-          "name": const LocationsListRoute(),
-        },
-        {
-          "title": "Properties",
-          "name": const UsersListRoute(),
-        },
-        {
-          "title": "Warehouses",
-          "name": const UsersListRoute(),
-        },
-        {
-          "title": "Stock Items",
-          "name": const UsersListRoute(),
-        },
-        {
-          "title": "Checklist Templates",
-          "name": const UsersListRoute(),
-        },
-      ]
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     final DrawerStates drawerState = state.generalState.drawerStates;
@@ -79,7 +26,7 @@ class DefaultDrawer extends StatelessWidget {
   }
 
   _buildItems(DrawerStates drawerState) {
-    return items.map<YSSidebarParentItem>((parentE) {
+    return Constants.drawerItems.map<YSSidebarParentItem>((parentE) {
       return YSSidebarParentItem(
         title: parentE['title'],
         icon: parentE['icon'],

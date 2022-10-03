@@ -35,6 +35,9 @@ export '../pages/qualifications/qualifications_page.dart';
 export '../pages/qualifications/qualifs_page_new_qualif_popup.dart';
 
 export '../pages/locations/locations_list_page.dart';
+export '../pages/locations/new_location_page.dart';
+
+export '../pages/warehouses/warehouses_list_page.dart';
 
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
