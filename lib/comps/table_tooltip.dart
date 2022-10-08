@@ -12,20 +12,37 @@ class TableTooltipWidget extends StatelessWidget {
     return Tooltip(
       decoration: const BoxDecoration(color: ThemeColors.transparent),
       richMessage: TextSpan(children: [
-        WidgetSpan(
-            child: TableWrapperWidget(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
+        if (message.isNotEmpty)
+          WidgetSpan(
+              child: TableWrapperWidget(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+                // height: 200.0,
+                width: 300.0,
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: ThemeColors.gray12,
+                  borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(color: ThemeColors.gray11),
+                ),
+                child: Text(message)),
+          ))
+        else
+          WidgetSpan(
+              child: TableWrapperWidget(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
               // height: 200.0,
               width: 300.0,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: ThemeColors.gray12,
+                color: ThemeColors.gray11,
                 borderRadius: BorderRadius.circular(16.0),
                 border: Border.all(color: ThemeColors.gray11),
               ),
-              child: Text(message)),
-        )),
+              child: const Text("NO COMMENT"),
+            ),
+          ))
       ]),
       child: KText(
         onTap: () {},

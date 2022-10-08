@@ -8,8 +8,8 @@ import 'package:faker/faker.dart';
 
 import '../home_page.dart';
 
-class WarehousesListPage extends StatelessWidget {
-  const WarehousesListPage({Key? key}) : super(key: key);
+class StockItemsListPage extends StatelessWidget {
+  const StockItemsListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class WarehousesListPage extends StatelessWidget {
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           const PagesTitleWidget(
-            title: 'Warehouses',
+            title: 'Stock Items',
           ),
           ErrorWrapper(errors: [], child: _Body(state: state))
         ]),
@@ -39,7 +39,6 @@ class _BodyState extends State<_Body> {
   final GlobalKey _columnsMenuKey = GlobalKey();
 
   final List<Map> items = [];
-  final List<ColumnHiderValues> columnHideValues = [];
 
   late PlutoGridStateManager usersPageStateManger;
 
@@ -53,64 +52,57 @@ class _BodyState extends State<_Body> {
   List<PlutoColumn> get _cols {
     return [
       PlutoColumn(
-        title: "warehouse",
-        field: "warehouse",
+        title: "item",
+        field: "item",
         type: PlutoColumnType.text(),
         hide: true,
       ),
       PlutoColumn(
-        width: 300.0,
-        title: "Location Name",
-        field: "warehouse_name",
+        title: "Item Name",
+        field: "item_name",
+        enableEditingMode: true,
+        enableAutoEditing: true,
+        width: 1000,
+        enableRowChecked: true,
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
-        width: 360.0,
-        title: "Contact Name",
-        field: "contact_name",
-        type: PlutoColumnType.text(),
-      ),
-      PlutoColumn(
-          width: 300.0,
-          title: "Contact Email",
-          field: "contact_email",
-          type: PlutoColumnType.text()),
-      PlutoColumn(
-        width: 250.0,
-        title: "Linked Properties",
-        field: "linked_properties",
-        type: PlutoColumnType.text(),
+        title: "Our Price",
+        field: "our_price",
+        enableEditingMode: true,
+        enableAutoEditing: true,
+        titleTextAlign: PlutoColumnTextAlign.right,
+        type: PlutoColumnType.number(),
         renderer: (rendererContext) {
-          return KText(
-            text: rendererContext.cell.value.toString(),
-            textColor: ThemeColors.blue3,
-            fontWeight: FWeight.regular,
-            fontSize: 14,
-            onTap: () {},
-            isSelectable: false,
-          );
+          return UsersListTable.defaultTextWidget(
+              "\$${rendererContext.cell.value}",
+              textAlign: TextAlign.right);
         },
       ),
       PlutoColumn(
-          title: "Action",
-          field: "action",
-          enableSorting: false,
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "Edit",
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () => _onUserDetailsNavigationClick(ctx),
-              icon: const HeroIcon(
-                HeroIcons.edit,
-                color: ThemeColors.blue3,
-                size: 12,
-              ),
-            );
-          }),
+        title: "Customer Price",
+        field: "customer_price",
+        enableEditingMode: true,
+        enableAutoEditing: true,
+        titleTextAlign: PlutoColumnTextAlign.right,
+        type: PlutoColumnType.number(),
+        renderer: (rendererContext) {
+          return UsersListTable.defaultTextWidget(
+              "\$${rendererContext.cell.value}",
+              textAlign: TextAlign.right);
+        },
+      ),
+      PlutoColumn(
+        title: "Tax",
+        field: "tax",
+        titleTextAlign: PlutoColumnTextAlign.right,
+        type: PlutoColumnType.number(),
+        renderer: (rendererContext) {
+          return UsersListTable.defaultTextWidget(
+              "${rendererContext.cell.value}%",
+              textAlign: TextAlign.right);
+        },
+      ),
     ];
   }
 
@@ -122,7 +114,12 @@ class _BodyState extends State<_Body> {
       usersPageStateManger.setPage(_page);
       _setFilter();
       _isSmLoaded = true;
+      usersPageStateManger.setOnChanged(_onEdit);
     });
+  }
+
+  void _onEdit(PlutoGridOnChangedEvent event) {
+    logger(event.value, hint: 'ON CELL CHANGE');
   }
 
   void _setFilter() {
@@ -134,19 +131,22 @@ class _BodyState extends State<_Body> {
         usersPageStateManger.setFilter(
           (element) {
             final String search = _searchController.text.toLowerCase();
-            bool searched = element.cells['warehouse_name']?.value
+            bool searched = element.cells['item_name']?.value
                 .toLowerCase()
                 .contains(search);
             if (!searched) {
-              searched = element.cells['contact_name']?.value
+              searched = element.cells['our_price']!.value
+                  .toString()
                   .toLowerCase()
                   .contains(search);
               if (!searched) {
-                searched = element.cells['contact_email']?.value
+                searched = element.cells['customer_price']!.value
+                    .toString()
                     .toLowerCase()
                     .contains(search);
                 if (!searched) {
-                  searched = element.cells['linked_properties']?.value
+                  searched = element.cells['tax']!.value
+                      .toString()
                       .toLowerCase()
                       .contains(search);
                 }
@@ -173,21 +173,14 @@ class _BodyState extends State<_Body> {
     super.initState();
     for (int i = 0; i < 30; i++) {
       final Map map = {
-        "warehouse": faker.guid.guid(),
-        "warehouse_name": faker.address.streetAddress(),
-        "contact_name": faker.person.name(),
-        "contact_email": faker.internet.email(),
-        "linked_properties": faker.randomGenerator.integer(50),
+        "item": faker.guid.guid(),
+        "item_name": faker.company.name(),
+        "our_price": faker.randomGenerator.integer(100000),
+        "customer_price": faker.randomGenerator.integer(100000),
+        "tax": faker.randomGenerator.integer(100),
       };
       items.add(map);
     }
-    columnHideValues.clear();
-    columnHideValues.addAll(_cols
-        .skipWhile((value) => value.hide)
-        .toList()
-        .map<ColumnHiderValues>(
-            (e) => ColumnHiderValues(value: e.field, label: e.title))
-        .toList());
   }
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
@@ -236,10 +229,6 @@ class _BodyState extends State<_Body> {
         children: [
           _header(context),
           _body(),
-          const Divider(
-            color: ThemeColors.gray11,
-            thickness: 1.0,
-          ),
           if (_isSmLoaded) _footer(usersPageStateManger),
         ],
       ),
@@ -254,7 +243,7 @@ class _BodyState extends State<_Body> {
         children: [
           TextInputWidget(
               controller: _searchController,
-              hintText: 'Search warehouses...',
+              hintText: 'Search stock items...',
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
@@ -269,11 +258,11 @@ class _BodyState extends State<_Body> {
               onPressed: () {},
             ),
             ButtonMedium(
-              text: "New Warehouse",
+              text: "New Item",
               icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
               onPressed: () {
                 showOverlayPopup(
-                    body: const WaresNewWarePopupWidget(), context: context);
+                    body: const StocksNewItemPopupWidget(), context: context);
               },
             ),
           ]),
@@ -283,7 +272,7 @@ class _BodyState extends State<_Body> {
   }
 
   Widget _body() {
-    return UsersListTable(
+    return StockItemsListTable(
       onSmReady: _setSm,
       rows: items
           .map<PlutoRow>(
@@ -296,12 +285,11 @@ class _BodyState extends State<_Body> {
 
   PlutoRow _buildItem(Map e) {
     return PlutoRow(cells: {
-      "warehouse": PlutoCell(value: e),
-      "warehouse_name": PlutoCell(value: e['warehouse_name']),
-      "contact_name": PlutoCell(value: e['contact_name']),
-      "contact_email": PlutoCell(value: e['contact_email']),
-      "linked_properties": PlutoCell(value: e['linked_properties'].toString()),
-      "action": PlutoCell(value: ""),
+      "item": PlutoCell(value: e),
+      "item_name": PlutoCell(value: e['item_name']),
+      "our_price": PlutoCell(value: e['our_price']),
+      "customer_price": PlutoCell(value: e['customer_price']),
+      "tax": PlutoCell(value: e['tax']),
     });
   }
 

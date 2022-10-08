@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -47,6 +48,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getSaveUserPhotoAction(store.state, action, next);
       case GetDeleteUserPhotoAction:
         return _getDeleteUserPhotoAction(store.state, action, next);
+      case GetPostUserDetailsReviewAction:
+        return _getPostUserDetailsReviewAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -767,4 +770,51 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     if (res.success) {
     } else {}
   }
+
+  Future<ApiResponse?> _getPostUserDetailsReviewAction(AppState state,
+      GetPostUserDetailsReviewAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsReviews(
+          id.toString(),
+          title: action.title,
+          conductedBy: int.parse(action.conductedBy.code!),
+          date: action.date.formattedDate,
+          notes: action.notes,
+          reviewid: action.reviewid,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsReviewsAction());
+      closeLoading();
+    } else {
+      closeLoading();
+      // logger(res.rawError?.data);
+      return res;
+    }
+    return null;
+  }
+}
+
+void showLoading({bool? barrierDismissible = false}) {
+  showDialog(
+    barrierDismissible: barrierDismissible!,
+    context: appRouter.navigatorKey.currentContext!,
+    builder: (context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },
+  );
+}
+
+Future<void> closeLoading() async {
+  await appRouter.pop();
 }

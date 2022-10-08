@@ -1,7 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
@@ -19,7 +22,7 @@ class _UserDetailsPayrollTabNewContractPageState
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isNewContract = true;
 
-  String? jobTitle;
+  CodeMap jobTitle = CodeMap(name: null, code: null);
   String? contractType;
   String? holidayEntitlementStart;
   String? holidayCalculationType;
@@ -86,12 +89,12 @@ class _UserDetailsPayrollTabNewContractPageState
                     SpacedRow(
                       horizontalSpace: dpWidth * .05,
                       children: [
-                        _buildLeft(dpWidth),
+                        _buildLeft(dpWidth, state.generalState),
                         _buildRight(dpWidth),
                       ],
                     ),
                     const Divider(color: ThemeColors.gray11, thickness: 1.0),
-                    _SaveAndCancelButtonsWidget(isNewContract: isNewContract),
+                    _SaveAndCancelButtonsWidget(isNewContract),
                   ],
                 ),
               ),
@@ -100,7 +103,10 @@ class _UserDetailsPayrollTabNewContractPageState
         });
   }
 
-  Widget _buildLeft(double dpWidth) {
+  Widget _buildLeft(double dpWidth, GeneralState state) {
+    final jobTitles = state.paramList.data!.jobtitles;
+    // final contractTypes = state.paramList.data!.handover_types;
+    // logger(contractTypes.map((e) => e.toJson()));
     return SpacedColumn(
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,9 +116,17 @@ class _UserDetailsPayrollTabNewContractPageState
             hintText: "Job Title",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
-            value: jobTitle,
-            onChanged: (_) {},
-            items: [],
+            value: jobTitle.name,
+            onChanged: (val) {
+              setState(() {
+                jobTitle.name = val;
+                jobTitle.code = jobTitles
+                    .firstWhere((element) => element.name == val)
+                    .id
+                    .toString();
+              });
+            },
+            items: jobTitles.map<String>((e) => e.name).toList(),
           ),
           DropdownWidget(
             hintText: "Contract Type",
@@ -318,15 +332,8 @@ class _UserDetailsPayrollTabNewContractPageState
       ],
     );
   }
-}
 
-class _SaveAndCancelButtonsWidget extends StatelessWidget {
-  final bool isNewContract;
-  const _SaveAndCancelButtonsWidget({Key? key, this.isNewContract = true})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _SaveAndCancelButtonsWidget(bool isNewContract) {
     return SpacedRow(
       mainAxisAlignment: MainAxisAlignment.end,
       horizontalSpace: 14.0,
@@ -343,8 +350,12 @@ class _SaveAndCancelButtonsWidget extends StatelessWidget {
           icon: const HeroIcon(HeroIcons.check),
           text: isNewContract ? "Add Contract" : "Save Contract",
           onPressed: () {
-            _UserDetailsPayrollTabNewContractPageState.formKey.currentState
-                ?.validate();
+            if (formKey.currentState!.validate()) {
+              // appStore.dispatch(GetPostUserDetailsContractsAction(
+// awh: int.parse(aveWeeklyHours.text),
+//                 contractType:
+//               ));
+            }
           },
         ),
       ],

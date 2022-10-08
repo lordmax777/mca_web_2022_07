@@ -38,6 +38,14 @@ export '../pages/locations/locations_list_page.dart';
 export '../pages/locations/new_location_page.dart';
 
 export '../pages/warehouses/warehouses_list_page.dart';
+export '../pages/warehouses/warehouse_drawer.dart';
+export '../pages/warehouses/wares_page_new_ware_popup.dart';
+
+export '../pages/stocks/stock_items_list_page.dart';
+export '../pages/stocks/stock_item_new_item_popup.dart';
+
+export '../pages/checklist_templates/checklist_templates_page.dart';
+export '../pages/checklist_templates/new_template_page.dart';
 
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';

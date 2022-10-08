@@ -58,7 +58,6 @@ class HeroIcons {
 
   /// Align Text Left icon
   static const alignTextLeft = HeroIcons._('align-text-left');
-  static const check = HeroIcons._('check');
 
   /// Align Text Right icon
   static const alignTextRight = HeroIcons._('align-text-right');
@@ -350,6 +349,9 @@ class HeroIcons {
 
   /// Chat icon
   static const chat = HeroIcons._('chat');
+
+  /// Check icon
+  static const check = HeroIcons._('check');
 
   /// Church icon
   static const church = HeroIcons._('church');
@@ -1038,6 +1040,9 @@ class HeroIcons {
 
   /// Pen icon
   static const pen = HeroIcons._('pen');
+
+  /// Percent icon
+  static const percent = HeroIcons._('percent');
 
   /// Phone icon
   static const phone = HeroIcons._('phone');

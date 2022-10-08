@@ -129,7 +129,63 @@ class GetUserDetailsDetailAction {}
 
 class GetUserDetailsContractsAction {}
 
+class GetDeleteUserDetailsContractsAction {
+  final int id;
+  GetDeleteUserDetailsContractsAction({required this.id});
+}
+
+class GetPostUserDetailsContractsAction {
+  String csd;
+  int contractType;
+  int hct;
+  int awh;
+  int jobTitle;
+  String wdpw;
+  int salaryPH;
+  int? contractid;
+  String? ced;
+  String? jobDescription;
+  int? salaryPA;
+  int? salaryOT;
+
+  GetPostUserDetailsContractsAction({
+    required this.csd,
+    required this.contractType,
+    required this.hct,
+    required this.awh,
+    required this.jobTitle,
+    required this.wdpw,
+    required this.salaryPH,
+    this.contractid,
+    this.ced,
+    this.jobDescription,
+    this.salaryPA,
+    this.salaryOT,
+  });
+}
+
 class GetUserDetailsReviewsAction {}
+
+class GetDeleteUserDetailsReviewsAction {
+  final int id;
+  GetDeleteUserDetailsReviewsAction({required this.id});
+}
+
+class GetPostUserDetailsReviewAction {
+  String title;
+  DateTime date;
+  CodeMap conductedBy;
+  int? reviewid; // needed for update
+  String? notes;
+
+  GetPostUserDetailsReviewAction({
+    required this.title,
+    required this.date,
+    required this.conductedBy,
+    this.reviewid,
+    this.notes,
+  });
+}
 
 class GetUserDetailsVisasAction {}
 

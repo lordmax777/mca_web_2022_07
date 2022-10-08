@@ -56,11 +56,48 @@ abstract class RestClient {
   @GET("/api/fe/userdetails/{id}/contracts")
   Future<HttpResponse> getUserDetailsContracts(@Path() String id);
 
+  @DELETE("/api/fe/userdetails/{id}/contracts")
+  Future<HttpResponse> deleteUserDetailsContracts(
+      @Path() String id, @Query("contractid") int contractId);
+
+  @POST("/api/fe/userdetails/{id}/contracts")
+  @FormUrlEncoded()
+  Future<HttpResponse> postUserDetailsContracts(
+    @Path() String id, {
+    @Field() required String csd,
+    @Field() required int contractType,
+    @Field() required int hct,
+    @Field() required int awh,
+    @Field() required int jobTitle,
+    @Field() required String wdpw,
+    @Field() required int salaryPH,
+    @Field() int? contractid,
+    @Field() String? ced,
+    @Field() String? jobDescription,
+    @Field() int? salaryPA,
+    @Field() int? salaryOT,
+  });
+
   @GET("/api/fe/userdetails/{id}/details")
   Future<HttpResponse> getUserDetails(@Path() String id);
 
   @GET("/api/fe/userdetails/{id}/reviews")
   Future<HttpResponse> getUserDetailsReviews(@Path() String id);
+
+  @DELETE("/api/fe/userdetails/{id}/reviews")
+  Future<HttpResponse> deleteUserDetailsReviews(
+      @Path() String id, @Query("reviewid ") int reviewid);
+
+  @POST("/api/fe/userdetails/{id}/reviews")
+  @FormUrlEncoded()
+  Future<HttpResponse> postUserDetailsReviews(
+    @Path() String id, {
+    @Field() required String title,
+    @Field() required String date,
+    @Field() required int conductedBy,
+    @Field() int? reviewid,
+    @Field() String? notes,
+  });
 
   @GET("/api/fe/userdetails/{id}/visas")
   Future<HttpResponse> getUserDetailsVisas(@Path() String id);

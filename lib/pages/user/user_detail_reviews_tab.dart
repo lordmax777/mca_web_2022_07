@@ -64,11 +64,10 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
               fontSize: 14,
               isSelectable: false,
               onTap: () {
-                logger(ctx.cell.value);
-                // showOverlayPopup(
-                //     body: UserDetailReviewNewReviewPopupWidget(
-                //         id: ctx.cell.value.id),
-                //     context: context);
+                showOverlayPopup(
+                    body: UserDetailReviewNewReviewPopupWidget(
+                        review: ctx.cell.value),
+                    context: context);
               },
               icon: const HeroIcon(
                 HeroIcons.pen,

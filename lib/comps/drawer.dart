@@ -7,7 +7,7 @@ import '../theme/theme.dart';
 
 class DefaultDrawer extends StatelessWidget {
   final AppState state;
-  DefaultDrawer({Key? key, required this.state}) : super(key: key);
+  const DefaultDrawer({Key? key, required this.state}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class DefaultDrawer extends StatelessWidget {
         appStore.dispatch(UpdateGeneralStateAction(
             drawerStates:
                 DrawerStates(initialIndex: p0['index'], name: p0['name'])));
-        context.navigateTo(p0['name']);
+        context.replaceRoute(p0['name']);
         await context.popRoute();
       },
       children: _buildItems(drawerState),

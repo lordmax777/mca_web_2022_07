@@ -7,7 +7,6 @@ import '../../pages/user/user_details_page.dart';
 
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
-  // transitionsBuilder: TransitionsBuilders.fadeIn,
   routes: <AutoRoute>[
     AutoRoute(page: HomePage, initial: true, children: [
       AutoRoute(page: UsersListPage, path: ""),
@@ -19,6 +18,9 @@ import '../../pages/user/user_details_page.dart';
       AutoRoute(page: LocationsListPage, path: "locations"),
       AutoRoute(page: NewLocationPage, path: "new-location"),
       AutoRoute(page: WarehousesListPage, path: "warehouses"),
+      AutoRoute(page: StockItemsListPage, path: "stock-items"),
+      AutoRoute(page: ChecklistTemplatesPage, path: "checklist-templates"),
+      AutoRoute(page: NewChecklistTemplatePage, path: "new-checklist-template"),
     ]),
   ],
 )

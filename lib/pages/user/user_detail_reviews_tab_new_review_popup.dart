@@ -1,10 +1,20 @@
-import 'package:auto_route/auto_route.dart';
+import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
+
+import '../../manager/models/users_list.dart';
+import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class UserDetailReviewNewReviewPopupWidget extends StatefulWidget {
-  final int? id;
-  const UserDetailReviewNewReviewPopupWidget({Key? key, this.id})
+  final ReviewMd? review;
+  const UserDetailReviewNewReviewPopupWidget({Key? key, this.review})
       : super(key: key);
 
   @override
@@ -20,13 +30,21 @@ class _UserDetailReviewNewReviewPopupWidgetState
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
   DateTime? _conductedOn;
-  String? _conductedBy;
+  CodeMap _conductedBy = CodeMap(code: null, name: null);
+
+  List errors = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.id != null) {
+    if (widget.review != null) {
       isNew = false;
+    }
+
+    if (!isNew) {
+      _titleController.text = widget.review!.title;
+      _commentController.text = widget.review!.notes;
+      _conductedOn = DateTime.parse(widget.review!.date);
     }
   }
 
@@ -42,18 +60,21 @@ class _UserDetailReviewNewReviewPopupWidgetState
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
 
-    return TableWrapperWidget(
-        child: Form(
-      key: formKey,
-      child: SpacedColumn(children: [
-        _header(context),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        const SizedBox(),
-        _body(dpWidth),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        _footer(),
-      ]),
-    ));
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) => TableWrapperWidget(
+          child: Form(
+        key: formKey,
+        child: SpacedColumn(children: [
+          _header(context),
+          const Divider(color: ThemeColors.gray11, height: 1.0),
+          const SizedBox(),
+          _body(dpWidth, state),
+          const Divider(color: ThemeColors.gray11, height: 1.0),
+          _footer(),
+        ]),
+      )),
+    );
   }
 
   Widget _header(BuildContext context) {
@@ -81,7 +102,11 @@ class _UserDetailReviewNewReviewPopupWidgetState
     );
   }
 
-  Widget _body(double dpWidth) {
+  Widget _body(double dpWidth, AppState state) {
+    final adminUsers = [...state.usersState.usersList.data!];
+    final groups = state.generalState.paramList.data!.groups;
+    adminUsers.removeWhere((element) => !(element.groupAdmin));
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -101,14 +126,21 @@ class _UserDetailReviewNewReviewPopupWidgetState
             },
             onTap: () {},
           ),
-          DropdownWidget(
+          DropdownWidget1<UserRes>(
             hintText: "Conducted By",
-            value: _conductedBy,
+            value: _conductedBy.name,
+            hasSearchBox: true,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (_) {},
-            items: [],
+            objItems: adminUsers,
+            onChangedWithObj: (value) {
+              setState(() {
+                _conductedBy =
+                    CodeMap(code: value.item.id.toString(), name: value.name);
+              });
+            },
+            items: adminUsers.map((e) => e.fullname).toList(),
           ),
           TextInputWidget(
             isRequired: true,
@@ -116,18 +148,19 @@ class _UserDetailReviewNewReviewPopupWidgetState
             enabled: false,
             labelText: "Conducted On",
             controller:
-                TextEditingController(text: _conductedOn?.toIso8601String()),
+                TextEditingController(text: _conductedOn?.formattedDate),
             leftIcon: HeroIcons.calendar,
             validator: (p0) {
               if (p0 == null || p0.isEmpty) {
                 return "Date is required";
               }
+              return null;
             },
             onTap: () async {
               DateTime? val = await showDatePicker(
                 context: context,
-                initialDate: DateTime(2015),
-                firstDate: DateTime(1930),
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2015),
                 lastDate: DateTime(2035),
               );
               if (val != null) {
@@ -137,11 +170,18 @@ class _UserDetailReviewNewReviewPopupWidgetState
               }
             },
           ),
+          if (errors.isNotEmpty)
+            Center(
+              child: KText(
+                text: errors.join(".\n"),
+                textColor: ThemeColors.red3,
+                fontSize: 18,
+              ),
+            ),
           TextInputWidget(
             width: dpWidth / 4,
             enabled: false,
             labelText: "Comment",
-            onTap: () {},
             controller: _commentController,
             maxLines: 4,
           ),
@@ -169,8 +209,34 @@ class _UserDetailReviewNewReviewPopupWidgetState
           ButtonLarge(
             paddingWithoutIcon: true,
             text: isNew ? 'Add Review' : "Save Review",
-            onPressed: () {
-              formKey.currentState!.validate();
+            onPressed: () async {
+              setState(() {
+                errors.clear();
+              });
+
+              if (formKey.currentState!.validate()) {
+                final ApiResponse? res =
+                    await appStore.dispatch(GetPostUserDetailsReviewAction(
+                  title: _titleController.text,
+                  date: _conductedOn!,
+                  conductedBy: _conductedBy,
+                  notes: _commentController.text,
+                ));
+                if (res != null) {
+                  if (res.success) {
+                    //Do nothing
+                  } else {
+                    if (res.rawError != null) {
+                      final e = jsonDecode(res.rawError!.data)['errors'].values;
+                      for (var element in e) {
+                        setState(() {
+                          errors.add(element.first);
+                        });
+                      }
+                    }
+                  }
+                }
+              }
               // context.popRoute();
             },
           ),

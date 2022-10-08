@@ -8,7 +8,7 @@ import 'package:recase/recase.dart';
 
 Future<void> main() async {
   final names = _getFileNames();
-  final file = File(p.join('lib', 'src', 'icons.dart'));
+  final file = File(p.join('..', 'lib', 'src', 'icons.dart'));
 
   final iconClass = Class(
     (b) => b
@@ -55,7 +55,7 @@ Future<void> main() async {
 
 List<String> _getFileNames() {
   print('Generating icon class');
-  final files = Directory(p.join('assets', 'icons')).listSync();
+  final files = Directory(p.join('..', 'assets', 'icons')).listSync();
   return files
       .map((e) => e.name)
       .where((element) => element.contains('.svg'))

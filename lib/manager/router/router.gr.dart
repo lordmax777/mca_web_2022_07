@@ -89,6 +89,29 @@ class AppRouter extends _i5.RootStackRouter {
         child: const _i4.WarehousesListPage(),
       );
     },
+    StockItemsListRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.StockItemsListPage(),
+      );
+    },
+    ChecklistTemplatesRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.ChecklistTemplatesPage(),
+      );
+    },
+    NewChecklistTemplateRoute.name: (routeData) {
+      final args = routeData.argsAs<NewChecklistTemplateRouteArgs>(
+          orElse: () => const NewChecklistTemplateRouteArgs());
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: _i4.NewChecklistTemplatePage(
+          key: args.key,
+          id: args.id,
+        ),
+      );
+    },
   };
 
   @override
@@ -135,6 +158,21 @@ class AppRouter extends _i5.RootStackRouter {
             _i5.RouteConfig(
               WarehousesListRoute.name,
               path: 'warehouses',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              StockItemsListRoute.name,
+              path: 'stock-items',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              ChecklistTemplatesRoute.name,
+              path: 'checklist-templates',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              NewChecklistTemplateRoute.name,
+              path: 'new-checklist-template',
               parent: HomeRoute.name,
             ),
           ],
@@ -294,4 +332,63 @@ class WarehousesListRoute extends _i5.PageRouteInfo<void> {
         );
 
   static const String name = 'WarehousesListRoute';
+}
+
+/// generated route for
+/// [_i4.StockItemsListPage]
+class StockItemsListRoute extends _i5.PageRouteInfo<void> {
+  const StockItemsListRoute()
+      : super(
+          StockItemsListRoute.name,
+          path: 'stock-items',
+        );
+
+  static const String name = 'StockItemsListRoute';
+}
+
+/// generated route for
+/// [_i4.ChecklistTemplatesPage]
+class ChecklistTemplatesRoute extends _i5.PageRouteInfo<void> {
+  const ChecklistTemplatesRoute()
+      : super(
+          ChecklistTemplatesRoute.name,
+          path: 'checklist-templates',
+        );
+
+  static const String name = 'ChecklistTemplatesRoute';
+}
+
+/// generated route for
+/// [_i4.NewChecklistTemplatePage]
+class NewChecklistTemplateRoute
+    extends _i5.PageRouteInfo<NewChecklistTemplateRouteArgs> {
+  NewChecklistTemplateRoute({
+    _i4.Key? key,
+    int? id,
+  }) : super(
+          NewChecklistTemplateRoute.name,
+          path: 'new-checklist-template',
+          args: NewChecklistTemplateRouteArgs(
+            key: key,
+            id: id,
+          ),
+        );
+
+  static const String name = 'NewChecklistTemplateRoute';
+}
+
+class NewChecklistTemplateRouteArgs {
+  const NewChecklistTemplateRouteArgs({
+    this.key,
+    this.id,
+  });
+
+  final _i4.Key? key;
+
+  final int? id;
+
+  @override
+  String toString() {
+    return 'NewChecklistTemplateRouteArgs{key: $key, id: $id}';
+  }
 }

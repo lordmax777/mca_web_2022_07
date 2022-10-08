@@ -64,11 +64,11 @@ class Constants {
         },
         {
           "title": "Stock Items",
-          "name": const UsersListRoute(),
+          "name": const StockItemsListRoute(),
         },
         {
           "title": "Checklist Templates",
-          "name": const UsersListRoute(),
+          "name": const ChecklistTemplatesRoute(),
         },
       ]
     },
