@@ -322,6 +322,7 @@ class _RestClient implements RestClient {
     required csd,
     required contractType,
     required hct,
+    required AHEonYS,
     required awh,
     required jobTitle,
     required wdpw,
@@ -340,6 +341,7 @@ class _RestClient implements RestClient {
       'csd': csd,
       'contractType': contractType,
       'hct': hct,
+      'AHEonYS': AHEonYS,
       'awh': awh,
       'jobTitle': jobTitle,
       'wdpw': wdpw,
@@ -510,6 +512,75 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<HttpResponse<dynamic>> postUserDetailsVisa(
+    id, {
+    required startDate,
+    required endDate,
+    required notExpire,
+    required visaTypeId,
+    visaid,
+    notes,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'startDate': startDate,
+      'endDate': endDate,
+      'notExpire': notExpire,
+      'visaTypeId': visaTypeId,
+      'visaid': visaid,
+      'notes': notes,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/visas',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteUserDetailsVisa(
+    id,
+    visaid,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'visaid ': visaid};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/visas',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
   Future<HttpResponse<dynamic>> getUserDetailsPreferredShifts(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -542,6 +613,79 @@ class _RestClient implements RestClient {
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
       method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/qualifications',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> postUserDetailsQualifs(
+    id, {
+    userqualificationid,
+    required qualificationId,
+    required levelId,
+    required achievementDate,
+    expiryDate,
+    required certificateNumber,
+    comments,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'userqualificationid': userqualificationid,
+      'qualificationId': qualificationId,
+      'levelId': levelId,
+      'achievementDate': achievementDate,
+      'expiryDate': expiryDate,
+      'certificateNumber': certificateNumber,
+      'comments': comments,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/qualifications',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteUserDetailsQualifs(
+    id,
+    userqualificationid,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'userqualificationid ': userqualificationid
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
       headers: _headers,
       extra: _extra,
     )

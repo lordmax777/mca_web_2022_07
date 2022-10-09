@@ -21,6 +21,7 @@ import '../../pages/user/user_details_page.dart';
       AutoRoute(page: StockItemsListPage, path: "stock-items"),
       AutoRoute(page: ChecklistTemplatesPage, path: "checklist-templates"),
       AutoRoute(page: NewChecklistTemplatePage, path: "new-checklist-template"),
+      AutoRoute(page: HandoverTypesPage, path: "handover-types"),
     ]),
   ],
 )

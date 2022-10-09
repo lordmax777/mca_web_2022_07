@@ -112,6 +112,12 @@ class AppRouter extends _i5.RootStackRouter {
         ),
       );
     },
+    HandoverTypesRoute.name: (routeData) {
+      return _i5.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.HandoverTypesPage(),
+      );
+    },
   };
 
   @override
@@ -173,6 +179,11 @@ class AppRouter extends _i5.RootStackRouter {
             _i5.RouteConfig(
               NewChecklistTemplateRoute.name,
               path: 'new-checklist-template',
+              parent: HomeRoute.name,
+            ),
+            _i5.RouteConfig(
+              HandoverTypesRoute.name,
+              path: 'handover-types',
               parent: HomeRoute.name,
             ),
           ],
@@ -391,4 +402,16 @@ class NewChecklistTemplateRouteArgs {
   String toString() {
     return 'NewChecklistTemplateRouteArgs{key: $key, id: $id}';
   }
+}
+
+/// generated route for
+/// [_i4.HandoverTypesPage]
+class HandoverTypesRoute extends _i5.PageRouteInfo<void> {
+  const HandoverTypesRoute()
+      : super(
+          HandoverTypesRoute.name,
+          path: 'handover-types',
+        );
+
+  static const String name = 'HandoverTypesRoute';
 }

@@ -67,6 +67,7 @@ abstract class RestClient {
     @Field() required String csd,
     @Field() required int contractType,
     @Field() required int hct,
+    @Field() required int AHEonYS,
     @Field() required int awh,
     @Field() required int jobTitle,
     @Field() required String wdpw,
@@ -102,11 +103,44 @@ abstract class RestClient {
   @GET("/api/fe/userdetails/{id}/visas")
   Future<HttpResponse> getUserDetailsVisas(@Path() String id);
 
+  @POST("/api/fe/userdetails/{id}/visas")
+  @FormUrlEncoded()
+  Future<HttpResponse> postUserDetailsVisa(
+    @Path() String id, {
+    @Field() required String startDate,
+    @Field() required String endDate,
+    @Field() required int notExpire,
+    @Field() required int visaTypeId,
+    @Field() int? visaid,
+    @Field() String? notes,
+  });
+
+  @DELETE("/api/fe/userdetails/{id}/visas")
+  Future<HttpResponse> deleteUserDetailsVisa(
+      @Path() String id, @Query("visaid ") int visaid);
+
   @GET("/api/fe/userdetails/{id}/preferredshifts")
   Future<HttpResponse> getUserDetailsPreferredShifts(@Path() String id);
 
   @GET("/api/fe/userdetails/{id}/qualifications")
   Future<HttpResponse> getUserDetailsQalifications(@Path() String id);
+
+  @POST("/api/fe/userdetails/{id}/qualifications")
+  @FormUrlEncoded()
+  Future<HttpResponse> postUserDetailsQualifs(
+    @Path() String id, {
+    @Field() int? userqualificationid,
+    @Field() required int qualificationId,
+    @Field() required int levelId,
+    @Field() required String achievementDate,
+    @Field() String? expiryDate,
+    @Field() required String certificateNumber,
+    @Field() String? comments,
+  });
+
+  @DELETE("/api/fe/userdetails/{id}/qualifications")
+  Future<HttpResponse> deleteUserDetailsQualifs(@Path() String id,
+      @Query("userqualificationid ") int userqualificationid);
 
   @GET("/api/fe/userdetails/{id}/mobile")
   Future<HttpResponse> getUserDetailsMobile(@Path() String id);

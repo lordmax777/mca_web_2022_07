@@ -29,7 +29,9 @@ class _UserDetailReviewNewReviewPopupWidgetState
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+
   DateTime? _conductedOn;
+
   CodeMap _conductedBy = CodeMap(code: null, name: null);
 
   List errors = [];
@@ -52,7 +54,6 @@ class _UserDetailReviewNewReviewPopupWidgetState
   void dispose() {
     _titleController.dispose();
     _commentController.dispose();
-
     super.dispose();
   }
 
@@ -134,13 +135,13 @@ class _UserDetailReviewNewReviewPopupWidgetState
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
             objItems: adminUsers,
+            items: adminUsers.map((e) => e.fullname).toList(),
             onChangedWithObj: (value) {
               setState(() {
                 _conductedBy =
                     CodeMap(code: value.item.id.toString(), name: value.name);
               });
             },
-            items: adminUsers.map((e) => e.fullname).toList(),
           ),
           TextInputWidget(
             isRequired: true,

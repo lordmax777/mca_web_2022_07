@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../comps/show_overlay_popup.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class VisaWidget extends StatefulWidget {
@@ -22,6 +23,12 @@ class _VisaWidgetState extends State<VisaWidget> {
 
   List<PlutoColumn> get _cols {
     return [
+      PlutoColumn(
+          // width: 80.0,
+          title: "",
+          field: "item",
+          hide: true,
+          type: PlutoColumnType.text()),
       PlutoColumn(
           // width: 80.0,
           title: "Document #",
@@ -96,7 +103,7 @@ class _VisaWidgetState extends State<VisaWidget> {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
-        final e1 = state.usersState.userDetailReviews.error;
+        final e1 = state.usersState.userDetailVisas.error;
         final errors = [e1];
         return ErrorWrapper(
           errors: errors,
@@ -127,7 +134,17 @@ class _VisaWidgetState extends State<VisaWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () {},
+            onPressed: () async {
+              final selectedItemIds = userDetailsPayrollSm.checkedRows
+                  .map((e) => e.cells['item']?.value.id)
+                  .toList();
+              logger(selectedItemIds);
+
+              for (int i = 0; i < selectedItemIds.length; i++) {
+                final id = selectedItemIds[i];
+                await appStore.dispatch(GetDeleteUserDetailsVisaAction(id: id));
+              }
+            },
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(
@@ -160,6 +177,7 @@ class _VisaWidgetState extends State<VisaWidget> {
       rows: state.usersState.userDetailVisas.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
+              'item': PlutoCell(value: e),
               "document_no": PlutoCell(
                   value: e.document_no.isNotEmpty ? e.document_no : "-"),
               "title": PlutoCell(value: e.title),

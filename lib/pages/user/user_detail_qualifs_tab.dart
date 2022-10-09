@@ -1,4 +1,6 @@
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../comps/show_overlay_popup.dart';
@@ -22,6 +24,12 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
 
   List<PlutoColumn> get _cols {
     return [
+      PlutoColumn(
+          // width: 80.0,
+          title: "",
+          field: "item",
+          hide: true,
+          type: PlutoColumnType.text()),
       PlutoColumn(
           // width: 140.0,
           title: "Qualification",
@@ -122,17 +130,25 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: SpacedColumn(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _header(context),
-          _body(),
-        ],
-      ),
-    );
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          final e1 = state.usersState.userDetailQualifs.error;
+          final es = [e1];
+          return ErrorWrapper(
+              errors: es,
+              child: SizedBox(
+                width: double.infinity,
+                child: SpacedColumn(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _header(context),
+                    _body(),
+                  ],
+                ),
+              ));
+        });
   }
 
   Widget _header(BuildContext context) {
@@ -146,7 +162,18 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () {},
+            onPressed: () async {
+              final List<QualifsMd> selectedItems = userDetailsPayrollSm
+                  .checkedRows
+                  .map((e) => e.cells['item']?.value as QualifsMd)
+                  .toList();
+
+              for (int i = 0; i < selectedItems.length; i++) {
+                final id = selectedItems[i];
+                await appStore
+                    .dispatch(GetDeleteUserDetailsQualifsAction(id: id.uqId));
+              }
+            },
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(
@@ -179,6 +206,7 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
       rows: widget.state.usersState.userDetailQualifs.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
+              "item": PlutoCell(value: e),
               "qualification": PlutoCell(value: e.title),
               "level": PlutoCell(value: e.level),
               "certificate": PlutoCell(value: e),

@@ -68,6 +68,12 @@ ListAllMd _$ListAllMdFromJson(Map<String, dynamic> json) => ListAllMd(
       marital_statuses: (json['marital_statuses'] as List<dynamic>)
           .map((e) => MaritalStatuses.fromJson(e as Map<String, dynamic>))
           .toList(),
+      contract_types: (json['contract_types'] as List<dynamic>)
+          .map((e) => ContractTypes.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      contract_starts: (json['contract_starts'] as List<dynamic>)
+          .map((e) => ContractStarts.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
@@ -91,6 +97,8 @@ Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
       'roles': instance.roles,
       'login_methods': instance.login_methods,
       'marital_statuses': instance.marital_statuses,
+      'contract_starts': instance.contract_starts,
+      'contract_types': instance.contract_types,
     };
 
 ListCurrency _$ListCurrencyFromJson(Map<String, dynamic> json) => ListCurrency(
@@ -385,5 +393,29 @@ MaritalStatuses _$MaritalStatusesFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$MaritalStatusesToJson(MaritalStatuses instance) =>
     <String, dynamic>{
       'code': instance.code,
+      'name': instance.name,
+    };
+
+ContractStarts _$ContractStartsFromJson(Map<String, dynamic> json) =>
+    ContractStarts(
+      id: json['id'] as int,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$ContractStartsToJson(ContractStarts instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+    };
+
+ContractTypes _$ContractTypesFromJson(Map<String, dynamic> json) =>
+    ContractTypes(
+      id: json['id'] as int,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$ContractTypesToJson(ContractTypes instance) =>
+    <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
     };

@@ -50,6 +50,16 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return _getDeleteUserPhotoAction(store.state, action, next);
       case GetPostUserDetailsReviewAction:
         return _getPostUserDetailsReviewAction(store.state, action, next);
+      case GetDeleteUserDetailsReviewsAction:
+        return _getDeleteUserDetailsReviewsAction(store.state, action, next);
+      case GetPostUserDetailsVisaAction:
+        return _getPostUserDetailsVisaAction(store.state, action, next);
+      case GetDeleteUserDetailsVisaAction:
+        return _getDeleteUserDetailsVisaAction(store.state, action, next);
+      case GetPostUserDetailsQualifsAction:
+        return _getPostUserDetailsQualifsAction(store.state, action, next);
+      case GetDeleteUserDetailsQualifsAction:
+        return _getDeleteUserDetailsQualifsAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -771,6 +781,94 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     } else {}
   }
 
+  // Future<ApiResponse?> _getPostUserDetailsContractsAction(AppState state,
+  //     GetPostUserDetailsContractsAction action, NextDispatcher next) async {
+  //   final int? id = state.usersState.selectedUser?.id;
+  //   if (id == null) {
+  //     appRouter.navigateBack();
+  //     return null;
+  //   }
+  //   showLoading();
+  //
+  //   final ApiResponse res = await restClient()
+  //       .postUserDetailsContracts(
+  //     id.toString(),
+  //     contractType:
+  //   )
+  //       .nocodeErrorHandler();
+  //
+  //   if (res.success) {
+  //     await appStore.dispatch(GetUserDetailsReviewsAction());
+  //     closeLoading();
+  //   } else {
+  //     closeLoading();
+  //     // logger(res.rawError?.data);
+  //     return res;
+  //   }
+  //   return null;
+  // }
+
+  Future<ApiResponse?> _getPostUserDetailsContractAction(AppState state,
+      GetPostUserDetailsContractAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsContracts(
+          id.toString(),
+          AHEonYS: action.AHEonYS,
+          contractType: int.parse(action.contractType.code!),
+          awh: action.awh,
+          csd: action.csd,
+          hct: action.hct,
+          jobTitle: int.parse(action.jobTitle.code!),
+          salaryPH: action.salaryPH,
+          wdpw: action.wdpw,
+          ced: action.ced,
+          contractid: action.contractid,
+          jobDescription: action.jobDescription,
+          salaryOT: action.salaryOT,
+          salaryPA: action.salaryPA,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsContractsAction());
+      closeLoading();
+    } else {
+      closeLoading();
+      return res;
+    }
+    return null;
+  }
+
+  Future<ApiResponse?> _getDeleteUserDetailsContractAction(AppState state,
+      GetDeleteUserDetailsContractAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+    final ApiResponse res = await restClient()
+        .deleteUserDetailsContracts(id.toString(), action.id)
+        .nocodeErrorHandler();
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsContractsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(res.rawError?.data.toString() ?? "");
+
+      return res;
+    }
+    return null;
+  }
+
   Future<ApiResponse?> _getPostUserDetailsReviewAction(AppState state,
       GetPostUserDetailsReviewAction action, NextDispatcher next) async {
     final int? id = state.usersState.selectedUser?.id;
@@ -801,15 +899,167 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
     }
     return null;
   }
+
+  Future<ApiResponse?> _getDeleteUserDetailsReviewsAction(AppState state,
+      GetDeleteUserDetailsReviewsAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+    final ApiResponse res = await restClient()
+        .deleteUserDetailsReviews(id.toString(), 12)
+        .nocodeErrorHandler();
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsReviewsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(res.rawError?.data.toString() ?? "");
+
+      return res;
+    }
+    return null;
+  }
+
+  Future<ApiResponse?> _getPostUserDetailsVisaAction(AppState state,
+      GetPostUserDetailsVisaAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsVisa(
+          id.toString(),
+          startDate: action.startDate.formattedDate,
+          endDate: action.endDate.formattedDate,
+          visaid: action.visaid,
+          notExpire: action.notExpire ? 0 : 1,
+          visaTypeId: int.parse(action.visaTypeId.code!),
+          notes: action.notes,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsVisasAction());
+      closeLoading();
+    } else {
+      closeLoading();
+      return res;
+    }
+    return null;
+  }
+
+  Future<ApiResponse?> _getDeleteUserDetailsVisaAction(AppState state,
+      GetDeleteUserDetailsVisaAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .deleteUserDetailsVisa(id.toString(), action.id)
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsVisasAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(res.rawError?.data.toString() ?? "");
+      return res;
+    }
+    return null;
+  }
+
+  Future<ApiResponse?> _getPostUserDetailsQualifsAction(AppState state,
+      GetPostUserDetailsQualifsAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsQualifs(
+          id.toString(),
+          achievementDate: action.achievementDate.formattedDate,
+          expiryDate: action.expiryDate?.formattedDate,
+          certificateNumber: action.certificateNumber,
+          levelId: int.parse(action.levelId.code!),
+          qualificationId: int.parse(action.qualificationId.code!),
+          comments: action.comments,
+          userqualificationid: action.userqualificationid,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsQualifsAction());
+      closeLoading();
+    } else {
+      closeLoading();
+      return res;
+    }
+    return null;
+  }
+
+  Future<ApiResponse?> _getDeleteUserDetailsQualifsAction(AppState state,
+      GetDeleteUserDetailsQualifsAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .deleteUserDetailsQualifs(id.toString(), action.id)
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsQualifsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(res.rawError?.data.toString() ?? "");
+      return res;
+    }
+    return null;
+  }
 }
 
-void showLoading({bool? barrierDismissible = false}) {
+Future<void> showLoading({bool? barrierDismissible = false}) async {
   showDialog(
     barrierDismissible: barrierDismissible!,
     context: appRouter.navigatorKey.currentContext!,
     builder: (context) {
       return const Center(
         child: CircularProgressIndicator(),
+      );
+    },
+  );
+}
+
+Future<void> showError(String msg, {bool? barrierDismissible = false}) async {
+  showDialog(
+    context: appRouter.navigatorKey.currentContext!,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Error"),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () => context.popRoute(),
+          )
+        ],
       );
     },
   );

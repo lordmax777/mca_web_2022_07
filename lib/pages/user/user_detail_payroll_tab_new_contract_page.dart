@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 
@@ -23,11 +24,16 @@ class _UserDetailsPayrollTabNewContractPageState
   bool isNewContract = true;
 
   CodeMap jobTitle = CodeMap(name: null, code: null);
-  String? contractType;
-  String? holidayEntitlementStart;
-  String? holidayCalculationType;
+
+  CodeMap contractType = CodeMap(name: null, code: null);
+
+  CodeMap holidayEntitlementStart = CodeMap(name: null, code: null);
+
+  CodeMap holidayCalculationType = CodeMap(name: null, code: null);
+
   DateTime? contractStartDate;
   DateTime? contractEndDate;
+
   TextEditingController aveWeeklyHours = TextEditingController();
   TextEditingController agreedDaysPerWeek = TextEditingController();
   TextEditingController annualHolidayEntitlement = TextEditingController();
@@ -105,44 +111,48 @@ class _UserDetailsPayrollTabNewContractPageState
 
   Widget _buildLeft(double dpWidth, GeneralState state) {
     final jobTitles = state.paramList.data!.jobtitles;
-    // final contractTypes = state.paramList.data!.handover_types;
+    final contractTypes = state.paramList.data!.contract_types;
     // logger(contractTypes.map((e) => e.toJson()));
     return SpacedColumn(
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 1),
-          DropdownWidget(
+          DropdownWidget1(
             hintText: "Job Title",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
             value: jobTitle.name,
-            onChanged: (val) {
+            objItems: jobTitles,
+            items: jobTitles.map<String>((e) => e.name).toList(),
+            onChangedWithObj: (value) {
               setState(() {
-                jobTitle.name = val;
-                jobTitle.code = jobTitles
-                    .firstWhere((element) => element.name == val)
-                    .id
-                    .toString();
+                jobTitle =
+                    CodeMap(code: value.item.id.toString(), name: value.name);
               });
             },
-            items: jobTitles.map<String>((e) => e.name).toList(),
           ),
-          DropdownWidget(
+          DropdownWidget1(
             hintText: "Contract Type",
-            value: contractType,
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
-            onChanged: (_) {},
-            items: [],
+            value: contractType.name,
+            objItems: contractTypes,
+            items: contractTypes.map<String>((e) => e.name).toList(),
+            onChangedWithObj: (value) {
+              setState(() {
+                contractType =
+                    CodeMap(code: value.item.id.toString(), name: value.name);
+              });
+            },
           ),
           SpacedRow(
             horizontalSpace: 24.0,
             children: [
               TextInputWidget(
-                controller:
-                    TextEditingController(text: contractStartDate?.toString()),
+                controller: TextEditingController(
+                    text: contractStartDate?.formattedDate),
                 isRequired: true,
                 width: dpWidth / 6,
                 enabled: false,
@@ -156,8 +166,8 @@ class _UserDetailsPayrollTabNewContractPageState
                 onTap: () async {
                   DateTime? val = await showDatePicker(
                     context: context,
-                    initialDate: DateTime(2015),
-                    firstDate: DateTime(1930),
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2015),
                     lastDate: DateTime(2035),
                   );
                   if (val != null) {
@@ -170,8 +180,8 @@ class _UserDetailsPayrollTabNewContractPageState
               TextInputWidget(
                 isRequired: true,
                 width: dpWidth / 6,
-                controller: TextEditingController(
-                    text: contractEndDate?.toIso8601String()),
+                controller:
+                    TextEditingController(text: contractEndDate?.formattedDate),
                 enabled: false,
                 labelText: "Contract End Date",
                 leftIcon: HeroIcons.calendar,
@@ -189,8 +199,8 @@ class _UserDetailsPayrollTabNewContractPageState
                 onTap: () async {
                   DateTime? val = await showDatePicker(
                     context: context,
-                    initialDate: DateTime(2015),
-                    firstDate: DateTime(1930),
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2015),
                     lastDate: DateTime(2035),
                   );
                   if (val != null) {
@@ -208,7 +218,6 @@ class _UserDetailsPayrollTabNewContractPageState
               TextInputWidget(
                 isRequired: true,
                 width: dpWidth / 6,
-                enabled: false,
                 labelText: "Agreed Weekly Hours",
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -220,7 +229,6 @@ class _UserDetailsPayrollTabNewContractPageState
               TextInputWidget(
                 isRequired: true,
                 width: dpWidth / 6,
-                enabled: false,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter a value";

@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-
-import '../../manager/models/visa_md.dart';
+import '../../comps/dropdown_widget1.dart';
+import '../../manager/redux/sets/state_value.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
+import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
 
 class UserDetailVisaNewVisaPopupWidget extends StatefulWidget {
@@ -19,7 +23,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
     extends State<UserDetailVisaNewVisaPopupWidget> {
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController _documentNoController = TextEditingController();
-  ListVisa? _visaType;
+  CodeMap _visaType = CodeMap(code: null, name: null);
   bool _hasExire = true;
   DateTime? _startDate;
   DateTime? _endDate;
@@ -27,14 +31,24 @@ class _UserDetailVisaNewVisaPopupWidgetState
 
   bool isNew = true;
 
+  List errors = [];
+
   @override
   void initState() {
     super.initState();
     if (widget.visa != null) {
+      final visas = appStore.state.generalState.paramList.data!.visas;
+
       isNew = false;
       _documentNoController.text = widget.visa!.document_no;
-      _visaType = appStore.state.generalState.paramList.data!.visas
-          .firstWhere((element) => element.name == widget.visa!.title);
+      _visaType = CodeMap(
+          name: visas
+              .firstWhere((element) => element.name == widget.visa!.title)
+              .name,
+          code: visas
+              .firstWhere((element) => element.name == widget.visa!.title)
+              .id
+              .toString());
       _hasExire = !widget.visa!.notExpire;
       _startDate = DateTime.tryParse(widget.visa!.startDate.date);
       _endDate = widget.visa!.endDate != null
@@ -48,7 +62,6 @@ class _UserDetailVisaNewVisaPopupWidgetState
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
-
     return TableWrapperWidget(
         child: SpacedColumn(children: [
       _header(context),
@@ -86,6 +99,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
   }
 
   Widget _body(double dpWidth) {
+    final visas = appStore.state.generalState.paramList.data!.visas;
     return Form(
       key: formKey,
       child: Padding(
@@ -98,7 +112,6 @@ class _UserDetailVisaNewVisaPopupWidgetState
             TextInputWidget(
               isRequired: true,
               width: dpWidth / 3 + 12,
-              enabled: false,
               labelText: "Document #",
               controller: _documentNoController,
               validator: (value) {
@@ -107,23 +120,22 @@ class _UserDetailVisaNewVisaPopupWidgetState
                 }
               },
             ),
-            DropdownWidget(
+            DropdownWidget1<ListVisa>(
               hintText: "Visa Type",
-              value: _visaType?.name,
+              value: _visaType.name,
               dropdownBtnWidth: dpWidth / 3 + 12,
               isRequired: true,
               dropdownOptionsWidth: dpWidth / 3 + 12,
               dropdownMaxHeight: 400.0,
               hasSearchBox: true,
-              onChanged: (val) {
+              objItems: visas,
+              onChangedWithObj: (value) {
                 setState(() {
-                  _visaType = appStore.state.generalState.paramList.data!.visas
-                      .firstWhere((element) => element.name == val);
+                  _visaType =
+                      CodeMap(code: value.item.id.toString(), name: value.name);
                 });
               },
-              items: appStore.state.generalState.paramList.data!.visas
-                  .map((e) => e.name)
-                  .toList(),
+              items: visas.map((e) => e.name).toList(),
             ),
             SpacedRow(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -156,7 +168,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
                   width: dpWidth / 6,
                   enabled: false,
                   controller:
-                      TextEditingController(text: _startDate?.toString()),
+                      TextEditingController(text: _startDate?.formattedDate),
                   labelText: "Start Date",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -167,8 +179,8 @@ class _UserDetailVisaNewVisaPopupWidgetState
                   onTap: () async {
                     DateTime? val = await showDatePicker(
                       context: context,
-                      initialDate: DateTime(2015),
-                      firstDate: DateTime(1930),
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2015),
                       lastDate: DateTime(2035),
                     );
                     if (val != null) {
@@ -183,7 +195,8 @@ class _UserDetailVisaNewVisaPopupWidgetState
                   width: dpWidth / 6,
                   enabled: false,
                   labelText: "Expire Date",
-                  controller: TextEditingController(text: _endDate?.toString()),
+                  controller:
+                      TextEditingController(text: _endDate?.formattedDate),
                   leftIcon: HeroIcons.calendar,
                   validator: (p0) {
                     if (p0 == null || p0.isEmpty) {
@@ -199,8 +212,8 @@ class _UserDetailVisaNewVisaPopupWidgetState
                   onTap: () async {
                     DateTime? val = await showDatePicker(
                       context: context,
-                      initialDate: DateTime(2015),
-                      firstDate: DateTime(1930),
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2015),
                       lastDate: DateTime(2035),
                     );
                     if (val != null) {
@@ -212,14 +225,21 @@ class _UserDetailVisaNewVisaPopupWidgetState
                 ),
               ],
             ),
+            if (errors.isNotEmpty)
+              Center(
+                child: KText(
+                  text: errors.join(".\n"),
+                  textColor: ThemeColors.red3,
+                  fontSize: 18,
+                ),
+              ),
             TextInputWidget(
               width: dpWidth / 3 + 12,
-              enabled: false,
               labelText: "Comment",
               controller: _commentController,
               maxLines: 4,
             ),
-            const SizedBox(),
+            const SizedBox(height: 1),
           ],
         ),
       ),
@@ -244,9 +264,36 @@ class _UserDetailVisaNewVisaPopupWidgetState
           ButtonLarge(
             paddingWithoutIcon: true,
             text: isNew ? 'Add Visa/Permit' : 'Save',
-            onPressed: () {
-              formKey.currentState!.validate();
-              // context.popRoute();
+            onPressed: () async {
+              setState(() {
+                errors.clear();
+              });
+
+              if (formKey.currentState!.validate()) {
+                final ApiResponse? res =
+                    await appStore.dispatch(GetPostUserDetailsVisaAction(
+                  startDate: _startDate!,
+                  endDate: _endDate!,
+                  notExpire: _hasExire,
+                  visaTypeId: _visaType,
+                  notes: _commentController.text,
+                  visaid: widget.visa?.id,
+                ));
+                if (res != null) {
+                  if (res.success) {
+                    //Do nothing
+                  } else {
+                    if (res.rawError != null) {
+                      final e = jsonDecode(res.rawError!.data)['errors'].values;
+                      for (var element in e) {
+                        setState(() {
+                          errors.add(element.first);
+                        });
+                      }
+                    }
+                  }
+                }
+              }
             },
           ),
         ],

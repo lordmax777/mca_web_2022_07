@@ -47,6 +47,9 @@ export '../pages/stocks/stock_item_new_item_popup.dart';
 export '../pages/checklist_templates/checklist_templates_page.dart';
 export '../pages/checklist_templates/new_template_page.dart';
 
+export '../pages/handover_types/handover_types_page.dart';
+export '../pages/handover_types/hands_page_new_handover_popup.dart';
+
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
 export '../comps/spaced_column.dart';

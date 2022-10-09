@@ -23,6 +23,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       AppState state, GetAllParamListAction action, NextDispatcher next) async {
     StateValue<ListAllMd> stateValue = StateValue(
         data: ListAllMd(
+            contract_starts: [],
+            contract_types: [],
             countries: [],
             currencies: [],
             locations: [],
@@ -115,6 +117,13 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       for (var e in r['marital_statuses']) {
         l.marital_statuses.add(MaritalStatuses.fromJson(e));
       }
+      for (var e in r['contract_starts']) {
+        l.contract_starts.add(ContractStarts.fromJson(e));
+      }
+      for (var e in r['contract_types']) {
+        l.contract_types.add(ContractTypes.fromJson(e));
+      }
+
       stateValue.error.isError = false;
       stateValue.data = l;
 

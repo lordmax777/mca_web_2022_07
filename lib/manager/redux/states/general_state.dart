@@ -24,6 +24,8 @@ class GeneralState {
       paramList: StateValue(
         error: ErrorModel(),
         data: ListAllMd(
+          contract_types: [],
+          contract_starts: [],
           login_methods: [],
           marital_statuses: [],
           countries: [],

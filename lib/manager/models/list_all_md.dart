@@ -23,6 +23,8 @@ class ListAllMd {
   List<ListRole> roles;
   List<LoginMethods> login_methods;
   List<MaritalStatuses> marital_statuses;
+  List<ContractStarts> contract_starts;
+  List<ContractTypes> contract_types;
 
   @override
   ListAllMd({
@@ -46,6 +48,8 @@ class ListAllMd {
     required this.visas,
     required this.login_methods,
     required this.marital_statuses,
+    required this.contract_types,
+    required this.contract_starts,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -513,4 +517,38 @@ class MaritalStatuses {
       _$MaritalStatusesFromJson(json);
 
   Map<String, dynamic> toJson() => _$MaritalStatusesToJson(this);
+}
+
+@JsonSerializable()
+class ContractStarts {
+  int id;
+  String name;
+
+  @override
+  ContractStarts({
+    required this.id,
+    required this.name,
+  });
+
+  factory ContractStarts.fromJson(Map<String, dynamic> json) =>
+      _$ContractStartsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ContractStartsToJson(this);
+}
+
+@JsonSerializable()
+class ContractTypes {
+  int id;
+  String name;
+
+  @override
+  ContractTypes({
+    required this.id,
+    required this.name,
+  });
+
+  factory ContractTypes.fromJson(Map<String, dynamic> json) =>
+      _$ContractTypesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ContractTypesToJson(this);
 }

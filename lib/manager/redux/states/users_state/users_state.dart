@@ -129,17 +129,17 @@ class GetUserDetailsDetailAction {}
 
 class GetUserDetailsContractsAction {}
 
-class GetDeleteUserDetailsContractsAction {
+class GetDeleteUserDetailsContractAction {
   final int id;
-  GetDeleteUserDetailsContractsAction({required this.id});
+  GetDeleteUserDetailsContractAction({required this.id});
 }
 
-class GetPostUserDetailsContractsAction {
+class GetPostUserDetailsContractAction {
   String csd;
-  int contractType;
+  CodeMap contractType;
   int hct;
   int awh;
-  int jobTitle;
+  CodeMap jobTitle;
   String wdpw;
   int salaryPH;
   int? contractid;
@@ -147,20 +147,40 @@ class GetPostUserDetailsContractsAction {
   String? jobDescription;
   int? salaryPA;
   int? salaryOT;
+  int AHEonYS;
 
-  GetPostUserDetailsContractsAction({
-    required this.csd,
-    required this.contractType,
-    required this.hct,
-    required this.awh,
+  GetPostUserDetailsContractAction({
     required this.jobTitle,
-    required this.wdpw,
-    required this.salaryPH,
-    this.contractid,
+
+    ///Agreed Holiday Entitlement start on Year Start
+    required this.AHEonYS,
+    required this.contractType,
+
+    ///Holiday Calculation Type
+    required this.hct,
+
+    ///Contract Start Date
+    required this.csd,
+
+    ///Contract End Date
     this.ced,
-    this.jobDescription,
+
+    ///Agreed Weekly Hours
+    required this.awh,
+
+    ///Working Days Per Week
+    required this.wdpw,
+
+    ///Salary Per Hour
+    required this.salaryPH,
+
+    ///Salary Per Annum
     this.salaryPA,
+
+    ///Salary Overtime
     this.salaryOT,
+    this.jobDescription,
+    this.contractid,
   });
 }
 
@@ -189,7 +209,55 @@ class GetPostUserDetailsReviewAction {
 
 class GetUserDetailsVisasAction {}
 
+class GetDeleteUserDetailsVisaAction {
+  final int id;
+  GetDeleteUserDetailsVisaAction({required this.id});
+}
+
+class GetPostUserDetailsVisaAction {
+  DateTime startDate;
+  DateTime endDate;
+  bool notExpire;
+  CodeMap visaTypeId;
+  int? visaid;
+  String? notes;
+
+  GetPostUserDetailsVisaAction({
+    required this.startDate,
+    required this.notExpire,
+    required this.endDate,
+    required this.visaTypeId,
+    this.visaid,
+    this.notes,
+  });
+}
+
 class GetUserDetailsQualifsAction {}
+
+class GetDeleteUserDetailsQualifsAction {
+  final int id;
+  GetDeleteUserDetailsQualifsAction({required this.id});
+}
+
+class GetPostUserDetailsQualifsAction {
+  int? userqualificationid;
+  CodeMap qualificationId;
+  CodeMap levelId;
+  DateTime achievementDate;
+  DateTime? expiryDate;
+  String certificateNumber;
+  String? comments;
+
+  GetPostUserDetailsQualifsAction({
+    this.userqualificationid,
+    required this.qualificationId,
+    required this.levelId,
+    required this.achievementDate,
+    this.expiryDate,
+    required this.certificateNumber,
+    this.comments,
+  });
+}
 
 class GetUserDetailsStatusAction {}
 

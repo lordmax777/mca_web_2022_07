@@ -70,6 +70,10 @@ class Constants {
           "title": "Checklist Templates",
           "name": const ChecklistTemplatesRoute(),
         },
+        {
+          "title": "Handover Types",
+          "name": const HandoverTypesRoute(),
+        },
       ]
     },
   ];
