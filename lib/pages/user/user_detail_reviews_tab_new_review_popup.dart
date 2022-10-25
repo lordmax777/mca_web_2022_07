@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -47,6 +48,13 @@ class _UserDetailReviewNewReviewPopupWidgetState
       _titleController.text = widget.review!.title;
       _commentController.text = widget.review!.notes;
       _conductedOn = DateTime.parse(widget.review!.date);
+      _conductedBy = CodeMap(
+          code: appStore.state.usersState.usersList.data!
+              .firstWhereOrNull(
+                  (element) => element.fullname == widget.review?.conducted_by)
+              ?.id
+              .toString(),
+          name: widget.review!.conducted_by);
     }
   }
 
@@ -213,7 +221,6 @@ class _UserDetailReviewNewReviewPopupWidgetState
               setState(() {
                 errors.clear();
               });
-
               if (formKey.currentState!.validate()) {
                 final ApiResponse? res =
                     await appStore.dispatch(GetPostUserDetailsReviewAction(
@@ -221,6 +228,7 @@ class _UserDetailReviewNewReviewPopupWidgetState
                   date: _conductedOn!,
                   conductedBy: _conductedBy,
                   notes: _commentController.text,
+                  reviewid: widget.review?.id,
                 ));
                 if (res != null) {
                   if (res.success) {
@@ -237,7 +245,6 @@ class _UserDetailReviewNewReviewPopupWidgetState
                   }
                 }
               }
-              // context.popRoute();
             },
           ),
         ],

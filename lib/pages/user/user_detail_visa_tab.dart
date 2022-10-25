@@ -138,8 +138,10 @@ class _VisaWidgetState extends State<VisaWidget> {
               final selectedItemIds = userDetailsPayrollSm.checkedRows
                   .map<int>((e) => e.cells['item']?.value.id)
                   .toList();
-              await appStore.dispatch(
-                  GetDeleteUserDetailsVisaAction(ids: selectedItemIds));
+              if (selectedItemIds.isNotEmpty) {
+                await appStore.dispatch(
+                    GetDeleteUserDetailsVisaAction(ids: selectedItemIds));
+              }
             },
           ),
           SpacedRow(horizontalSpace: 16.0, children: [

@@ -163,15 +163,12 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
             onPressed: () async {
-              final List<QualifsMd> selectedItems = userDetailsPayrollSm
-                  .checkedRows
-                  .map((e) => e.cells['item']?.value as QualifsMd)
+              final selectedItemIds = userDetailsPayrollSm.checkedRows
+                  .map<int>((e) => e.cells['item']?.value.uqId)
                   .toList();
-
-              for (int i = 0; i < selectedItems.length; i++) {
-                final id = selectedItems[i];
-                await appStore
-                    .dispatch(GetDeleteUserDetailsQualifsAction(id: id.uqId));
+              if (selectedItemIds.isNotEmpty) {
+                await appStore.dispatch(
+                    GetDeleteUserDetailsQualifsAction(ids: selectedItemIds));
               }
             },
           ),

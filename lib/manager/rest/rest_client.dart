@@ -87,7 +87,7 @@ abstract class RestClient {
 
   @DELETE("/api/fe/userdetails/{id}/reviews")
   Future<HttpResponse> deleteUserDetailsReviews(
-      @Path() String id, @Query("reviewid ") int reviewid);
+      @Path() String id, @Query("reviewid") int reviewid);
 
   @POST("/api/fe/userdetails/{id}/reviews")
   @FormUrlEncoded()
@@ -107,6 +107,7 @@ abstract class RestClient {
   @FormUrlEncoded()
   Future<HttpResponse> postUserDetailsVisa(
     @Path() String id, {
+    @Field() required String documentNo,
     @Field() required String startDate,
     @Field() required String endDate,
     @Field() required int notExpire,
@@ -139,8 +140,8 @@ abstract class RestClient {
   });
 
   @DELETE("/api/fe/userdetails/{id}/qualifications")
-  Future<HttpResponse> deleteUserDetailsQualifs(@Path() String id,
-      @Query("userqualificationid ") int userqualificationid);
+  Future<HttpResponse> deleteUserDetailsQualifs(
+      @Path() String id, @Query("userqualificationid") int userqualificationid);
 
   @GET("/api/fe/userdetails/{id}/mobile")
   Future<HttpResponse> getUserDetailsMobile(@Path() String id);

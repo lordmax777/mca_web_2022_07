@@ -1,7 +1,9 @@
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class ReviewsWidget extends StatefulWidget {
@@ -122,7 +124,15 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () {},
+            onPressed: () async {
+              final selectedItemIds = userDetailsPayrollSm.checkedRows
+                  .map<int>((e) => (e.cells['action']?.value as ReviewMd).id)
+                  .toList();
+              if (selectedItemIds.isNotEmpty) {
+                await appStore.dispatch(
+                    GetDeleteUserDetailsReviewsAction(ids: selectedItemIds));
+              }
+            },
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(

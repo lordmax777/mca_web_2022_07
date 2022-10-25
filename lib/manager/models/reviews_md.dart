@@ -3,6 +3,7 @@ part 'reviews_md.g.dart';
 
 @JsonSerializable(anyMap: true)
 class ReviewMd {
+  int id;
   String date;
   String conducted_by;
   String title;
@@ -12,6 +13,7 @@ class ReviewMd {
   ReviewMd({
     required this.date,
     required this.title,
+    required this.id,
     required this.notes,
     required this.conducted_by,
   });

@@ -64,8 +64,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
         return GetPostUserDetailsReviewAction.getPostUserDetailsReviewAction(
             store.state, action, next);
       case GetDeleteUserDetailsReviewsAction:
-        return GetPostUserDetailsReviewAction.getDeleteUserDetailsReviewsAction(
-            store.state, action, next);
+        return GetDeleteUserDetailsReviewsAction
+            .getDeleteUserDetailsReviewsAction(store.state, action, next);
       case GetPostUserDetailsVisaAction:
         return GetPostUserDetailsVisaAction.getPostUserDetailsVisaAction(
             store.state, action, next);

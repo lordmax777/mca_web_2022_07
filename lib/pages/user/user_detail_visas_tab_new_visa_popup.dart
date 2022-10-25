@@ -272,6 +272,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
                 final ApiResponse? res =
                     await appStore.dispatch(GetPostUserDetailsVisaAction(
                   startDate: _startDate!,
+                  documentNo: _documentNoController.text,
                   endDate: _endDate!,
                   notExpire: _hasExire,
                   visaTypeId: _visaType,

@@ -426,7 +426,7 @@ class _RestClient implements RestClient {
     reviewid,
   ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'reviewid ': reviewid};
+    final queryParameters = <String, dynamic>{r'reviewid': reviewid};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =
@@ -514,6 +514,7 @@ class _RestClient implements RestClient {
   @override
   Future<HttpResponse<dynamic>> postUserDetailsVisa(
     id, {
+    required documentNo,
     required startDate,
     required endDate,
     required notExpire,
@@ -526,6 +527,7 @@ class _RestClient implements RestClient {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = {
+      'documentNo': documentNo,
       'startDate': startDate,
       'endDate': endDate,
       'notExpire': notExpire,
@@ -679,7 +681,7 @@ class _RestClient implements RestClient {
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'userqualificationid ': userqualificationid
+      r'userqualificationid': userqualificationid
     };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};

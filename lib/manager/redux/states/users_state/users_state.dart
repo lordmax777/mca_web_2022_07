@@ -504,8 +504,40 @@ class GetUserDetailsReviewsAction {
 }
 
 class GetDeleteUserDetailsReviewsAction {
-  final int id;
-  GetDeleteUserDetailsReviewsAction({required this.id});
+  final List<int> ids;
+  GetDeleteUserDetailsReviewsAction({required this.ids});
+
+  static Future<ApiResponse?> getDeleteUserDetailsReviewsAction(AppState state,
+      GetDeleteUserDetailsReviewsAction action, NextDispatcher next) async {
+    final int? userId = state.usersState.selectedUser?.id;
+    if (userId == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+    bool allSuccess = true;
+    ApiResponse? resp;
+    for (int i = 0; i < action.ids.length; i++) {
+      final id = action.ids[i];
+      final ApiResponse res = await restClient()
+          .deleteUserDetailsReviews(userId.toString(), id)
+          .nocodeErrorHandler();
+      if (!res.success) {
+        allSuccess = false;
+        resp = res;
+        break;
+      }
+    }
+
+    if (allSuccess) {
+      await appStore.dispatch(GetUserDetailsReviewsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(resp?.rawError?.data.toString() ?? "");
+    }
+    return null;
+  }
 }
 
 class GetPostUserDetailsReviewAction {
@@ -550,29 +582,6 @@ class GetPostUserDetailsReviewAction {
     } else {
       closeLoading();
       // logger(res.rawError?.data);
-      return res;
-    }
-    return null;
-  }
-
-  static Future<ApiResponse?> getDeleteUserDetailsReviewsAction(AppState state,
-      GetDeleteUserDetailsReviewsAction action, NextDispatcher next) async {
-    final int? id = state.usersState.selectedUser?.id;
-    if (id == null) {
-      appRouter.navigateBack();
-      return null;
-    }
-    showLoading();
-    final ApiResponse res = await restClient()
-        .deleteUserDetailsReviews(id.toString(), 12)
-        .nocodeErrorHandler();
-    if (res.success) {
-      await appStore.dispatch(GetUserDetailsReviewsAction());
-      closeLoading();
-    } else {
-      await closeLoading();
-      showError(res.rawError?.data.toString() ?? "");
-
       return res;
     }
     return null;
@@ -668,6 +677,7 @@ class GetDeleteUserDetailsVisaAction {
 class GetPostUserDetailsVisaAction {
   DateTime startDate;
   DateTime endDate;
+  String documentNo;
   bool notExpire;
   CodeMap visaTypeId;
   int? visaid;
@@ -677,6 +687,7 @@ class GetPostUserDetailsVisaAction {
     required this.startDate,
     required this.notExpire,
     required this.endDate,
+    required this.documentNo,
     required this.visaTypeId,
     this.visaid,
     this.notes,
@@ -700,6 +711,7 @@ class GetPostUserDetailsVisaAction {
           notExpire: action.notExpire ? 0 : 1,
           visaTypeId: int.parse(action.visaTypeId.code!),
           notes: action.notes,
+          documentNo: action.documentNo,
         )
         .nocodeErrorHandler();
 
@@ -764,29 +776,37 @@ class GetUserDetailsQualifsAction {
 }
 
 class GetDeleteUserDetailsQualifsAction {
-  final int id;
-  GetDeleteUserDetailsQualifsAction({required this.id});
+  final List<int> ids;
+  GetDeleteUserDetailsQualifsAction({required this.ids});
 
   static Future<ApiResponse?> getDeleteUserDetailsQualifsAction(AppState state,
       GetDeleteUserDetailsQualifsAction action, NextDispatcher next) async {
-    final int? id = state.usersState.selectedUser?.id;
-    if (id == null) {
+    final int? userId = state.usersState.selectedUser?.id;
+    if (userId == null) {
       appRouter.navigateBack();
       return null;
     }
     showLoading();
+    bool allSuccess = true;
+    ApiResponse? resp;
+    for (int i = 0; i < action.ids.length; i++) {
+      final id = action.ids[i];
+      final ApiResponse res = await restClient()
+          .deleteUserDetailsQualifs(userId.toString(), id)
+          .nocodeErrorHandler();
+      if (!res.success) {
+        allSuccess = false;
+        resp = res;
+        break;
+      }
+    }
 
-    final ApiResponse res = await restClient()
-        .deleteUserDetailsQualifs(id.toString(), action.id)
-        .nocodeErrorHandler();
-
-    if (res.success) {
+    if (allSuccess) {
       await appStore.dispatch(GetUserDetailsQualifsAction());
       closeLoading();
     } else {
       await closeLoading();
-      showError(res.rawError?.data.toString() ?? "");
-      return res;
+      showError(resp?.rawError?.data.toString() ?? "");
     }
     return null;
   }
