@@ -31,7 +31,6 @@ dependencies:
 
   intl: ^0.17.0
   dropdown_button2: ^1.7.0
-#  pluto_grid: ^5.0.4
   pluto_grid:
     path:
       ./pluto_grid
@@ -73,6 +72,8 @@ flutter_intl:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+dependency_overrides:
+  retrofit: 3.0.2
 
 # The following section is specific to Flutter packages.
 flutter:

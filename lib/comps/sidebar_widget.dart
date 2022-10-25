@@ -337,8 +337,8 @@ class YSSidebarChildItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      child: Pressable(
-        onPressed: onPressed,
+      child: GestureDetector(
+        onTap: onPressed,
         child: Container(
           width: 280,
           height: 35,

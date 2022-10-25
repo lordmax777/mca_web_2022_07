@@ -80,6 +80,7 @@ GeneralState _updateGeneralStateAction(
     paramList: action.paramList ?? state.paramList,
     drawerStates: action.drawerStates ?? state.drawerStates,
     endDrawer: action.endDrawer,
+    locationList: action.locationList ?? state.locationList,
   );
 }
 

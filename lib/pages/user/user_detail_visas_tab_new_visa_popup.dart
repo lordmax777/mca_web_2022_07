@@ -109,6 +109,22 @@ class _UserDetailVisaNewVisaPopupWidgetState
           verticalSpace: 32.0,
           children: [
             const SizedBox(height: 1),
+            DropdownWidget1<ListVisa>(
+              hintText: "Visa Type",
+              value: _visaType.name,
+              hasSearchBox: true,
+              dropdownBtnWidth: dpWidth / 3 + 12,
+              isRequired: true,
+              dropdownOptionsWidth: dpWidth / 3 + 12,
+              objItems: visas,
+              items: visas.map((e) => e.name).toList(),
+              onChangedWithObj: (value) {
+                setState(() {
+                  _visaType =
+                      CodeMap(code: value.item.id.toString(), name: value.name);
+                });
+              },
+            ),
             TextInputWidget(
               isRequired: true,
               width: dpWidth / 3 + 12,
@@ -119,23 +135,6 @@ class _UserDetailVisaNewVisaPopupWidgetState
                   return "Please enter a value";
                 }
               },
-            ),
-            DropdownWidget1<ListVisa>(
-              hintText: "Visa Type",
-              value: _visaType.name,
-              dropdownBtnWidth: dpWidth / 3 + 12,
-              isRequired: true,
-              dropdownOptionsWidth: dpWidth / 3 + 12,
-              dropdownMaxHeight: 400.0,
-              hasSearchBox: true,
-              objItems: visas,
-              onChangedWithObj: (value) {
-                setState(() {
-                  _visaType =
-                      CodeMap(code: value.item.id.toString(), name: value.name);
-                });
-              },
-              items: visas.map((e) => e.name).toList(),
             ),
             SpacedRow(
               crossAxisAlignment: CrossAxisAlignment.center,

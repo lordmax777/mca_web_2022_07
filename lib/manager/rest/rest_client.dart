@@ -117,7 +117,7 @@ abstract class RestClient {
 
   @DELETE("/api/fe/userdetails/{id}/visas")
   Future<HttpResponse> deleteUserDetailsVisa(
-      @Path() String id, @Query("visaid ") int visaid);
+      @Path() String id, @Query("visaid") String visaid);
 
   @GET("/api/fe/userdetails/{id}/preferredshifts")
   Future<HttpResponse> getUserDetailsPreferredShifts(@Path() String id);
@@ -191,6 +191,8 @@ abstract class RestClient {
 
     ///
   });
+  @GET("/api/fe/locations")
+  Future<HttpResponse> getAllLocations();
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

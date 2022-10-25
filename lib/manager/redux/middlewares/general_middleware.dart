@@ -14,6 +14,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
     switch (action.runtimeType) {
       case GetAllParamListAction:
         return _getAllParamList(store.state, action, next);
+      case GetAllLocationsAction:
+        return GetAllLocationsAction.fetch(store.state);
       default:
         return next(action);
     }

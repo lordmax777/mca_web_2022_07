@@ -181,7 +181,6 @@ class _UserDetailReviewNewReviewPopupWidgetState
             ),
           TextInputWidget(
             width: dpWidth / 4,
-            enabled: false,
             labelText: "Comment",
             controller: _commentController,
             maxLines: 4,

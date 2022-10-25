@@ -45,7 +45,7 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -223,7 +223,7 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -251,7 +251,7 @@ class _RestClient implements RestClient {
       method: 'DELETE',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -358,7 +358,7 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -473,7 +473,7 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -539,7 +539,7 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -559,7 +559,7 @@ class _RestClient implements RestClient {
     visaid,
   ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'visaid ': visaid};
+    final queryParameters = <String, dynamic>{r'visaid': visaid};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =
@@ -658,7 +658,7 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
@@ -837,11 +837,35 @@ class _RestClient implements RestClient {
       method: 'POST',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: null,
     )
             .compose(
               _dio.options,
               '/api/fe/userdetails/${id}/details',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getAllLocations() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/locations',
               queryParameters: queryParameters,
               data: _data,
             )

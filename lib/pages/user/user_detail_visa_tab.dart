@@ -136,14 +136,10 @@ class _VisaWidgetState extends State<VisaWidget> {
             text: "Delete Selected",
             onPressed: () async {
               final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map((e) => e.cells['item']?.value.id)
+                  .map<int>((e) => e.cells['item']?.value.id)
                   .toList();
-              logger(selectedItemIds);
-
-              for (int i = 0; i < selectedItemIds.length; i++) {
-                final id = selectedItemIds[i];
-                await appStore.dispatch(GetDeleteUserDetailsVisaAction(id: id));
-              }
+              await appStore.dispatch(
+                  GetDeleteUserDetailsVisaAction(ids: selectedItemIds));
             },
           ),
           SpacedRow(horizontalSpace: 16.0, children: [

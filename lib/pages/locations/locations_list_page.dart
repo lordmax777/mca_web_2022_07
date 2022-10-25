@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 import 'package:faker/faker.dart';
 
@@ -13,6 +14,9 @@ class LocationsListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
+      onInit: (store) {
+        store.dispatch(GetAllLocationsAction());
+      },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           PagesTitleWidget(

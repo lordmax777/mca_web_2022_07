@@ -362,7 +362,7 @@ class _UserDetailsPayrollTabNewContractPageState
               // appStore.dispatch(GetPostUserDetailsContractsAction(
 // awh: int.parse(aveWeeklyHours.text),
 //                 contractType:
-//               ));
+              // ));
             }
           },
         ),
