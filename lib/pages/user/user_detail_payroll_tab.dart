@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
+import '../../manager/models/list_all_md.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
@@ -80,7 +81,7 @@ class _PayrollWidgetState extends State<PayrollWidget> {
               isSelectable: false,
               onTap: () {
                 context.pushRoute(UserDetailsPayrollTabNewContractRoute(
-                    id: ctx.cell.value.id));
+                    contract: ctx.cell.value));
               },
               icon: const HeroIcon(
                 HeroIcons.pen,
@@ -167,19 +168,25 @@ class _PayrollWidgetState extends State<PayrollWidget> {
   }
 
   Widget _body(AppState state) {
+    final List<ContractTypes> ctypes =
+        state.generalState.paramList.data?.contract_types ?? [];
+    final List<HolidayCalculationTypes> hCalcTypes =
+        state.generalState.paramList.data?.holiday_calculation_types ?? [];
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
       rows: state.usersState.userDetailContracts.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
               "contract_type": PlutoCell(
-                  value: e.contractType
-                      .toString()), //TODO: Convert contract type to string
+                  value: ctypes
+                      .firstWhere((element) => element.id == e.contractType)
+                      .name),
               "start_date": PlutoCell(value: e.csd?.date ?? "-"),
               "end_date": PlutoCell(value: e.ced?.date ?? "-"),
               "holiday_calculation": PlutoCell(
-                  value: e.hct
-                      .toString()), //TODO: Convert Holiday Calculation type to string
+                  value: hCalcTypes
+                      .firstWhere((element) => element.id == e.hct)
+                      .name),
               "weekly_hours": PlutoCell(value: e.awh.toString()),
               "working_days": PlutoCell(value: e.wdpw.toString()),
               "annual_holiday_entitlement": PlutoCell(value: e.ahe),

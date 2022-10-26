@@ -118,9 +118,7 @@ class _BodyState extends State<_Body> {
     });
   }
 
-  void _onEdit(PlutoGridOnChangedEvent event) {
-    logger(event.value, hint: 'ON CELL CHANGE');
-  }
+  void _onEdit(PlutoGridOnChangedEvent event) {}
 
   void _setFilter() {
     _searchController.addListener(() {

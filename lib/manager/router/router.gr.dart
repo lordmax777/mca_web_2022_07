@@ -18,6 +18,7 @@ import '../../pages/home_page.dart' as _i1;
 import '../../pages/user/user_details_page.dart' as _i3;
 import '../../pages/user/users_list_page.dart' as _i2;
 import '../../theme/theme.dart' as _i4;
+import '../model_exporter.dart' as _i7;
 
 class AppRouter extends _i5.RootStackRouter {
   AppRouter([_i6.GlobalKey<_i6.NavigatorState>? navigatorKey])
@@ -55,7 +56,7 @@ class AppRouter extends _i5.RootStackRouter {
         routeData: routeData,
         child: _i4.UserDetailsPayrollTabNewContractPage(
           key: args.key,
-          id: args.id,
+          contract: args.contract,
         ),
       );
     },
@@ -256,13 +257,13 @@ class UserDetailsPayrollTabNewContractRoute
     extends _i5.PageRouteInfo<UserDetailsPayrollTabNewContractRouteArgs> {
   UserDetailsPayrollTabNewContractRoute({
     _i4.Key? key,
-    int? id,
+    _i7.ContractMd? contract,
   }) : super(
           UserDetailsPayrollTabNewContractRoute.name,
           path: 'new-contract',
           args: UserDetailsPayrollTabNewContractRouteArgs(
             key: key,
-            id: id,
+            contract: contract,
           ),
         );
 
@@ -272,16 +273,16 @@ class UserDetailsPayrollTabNewContractRoute
 class UserDetailsPayrollTabNewContractRouteArgs {
   const UserDetailsPayrollTabNewContractRouteArgs({
     this.key,
-    this.id,
+    this.contract,
   });
 
   final _i4.Key? key;
 
-  final int? id;
+  final _i7.ContractMd? contract;
 
   @override
   String toString() {
-    return 'UserDetailsPayrollTabNewContractRouteArgs{key: $key, id: $id}';
+    return 'UserDetailsPayrollTabNewContractRouteArgs{key: $key, contract: $contract}';
   }
 }
 

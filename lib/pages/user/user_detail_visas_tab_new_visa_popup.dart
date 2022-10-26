@@ -56,7 +56,6 @@ class _UserDetailVisaNewVisaPopupWidgetState
           : null;
       _commentController.text = widget.visa!.notes;
     }
-    logger(widget.visa?.toJson());
   }
 
   @override

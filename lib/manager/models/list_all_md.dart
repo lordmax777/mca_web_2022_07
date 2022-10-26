@@ -25,10 +25,12 @@ class ListAllMd {
   List<MaritalStatuses> marital_statuses;
   List<ContractStarts> contract_starts;
   List<ContractTypes> contract_types;
+  List<HolidayCalculationTypes> holiday_calculation_types;
 
   @override
   ListAllMd({
     required this.countries,
+    required this.holiday_calculation_types,
     required this.currencies,
     required this.ethnics,
     required this.groups,
@@ -551,4 +553,21 @@ class ContractTypes {
       _$ContractTypesFromJson(json);
 
   Map<String, dynamic> toJson() => _$ContractTypesToJson(this);
+}
+
+@JsonSerializable()
+class HolidayCalculationTypes {
+  int id;
+  String name;
+
+  @override
+  HolidayCalculationTypes({
+    required this.id,
+    required this.name,
+  });
+
+  factory HolidayCalculationTypes.fromJson(Map<String, dynamic> json) =>
+      _$HolidayCalculationTypesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HolidayCalculationTypesToJson(this);
 }

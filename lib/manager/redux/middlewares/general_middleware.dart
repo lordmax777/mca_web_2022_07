@@ -25,6 +25,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       AppState state, GetAllParamListAction action, NextDispatcher next) async {
     StateValue<ListAllMd> stateValue = StateValue(
         data: ListAllMd(
+            holiday_calculation_types: [],
             contract_starts: [],
             contract_types: [],
             countries: [],
@@ -124,6 +125,9 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       }
       for (var e in r['contract_types']) {
         l.contract_types.add(ContractTypes.fromJson(e));
+      }
+      for (var e in r['holiday_calculation_types']) {
+        l.holiday_calculation_types.add(HolidayCalculationTypes.fromJson(e));
       }
 
       stateValue.error.isError = false;

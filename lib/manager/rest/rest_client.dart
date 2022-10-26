@@ -71,12 +71,16 @@ abstract class RestClient {
     @Field() required int awh,
     @Field() required int jobTitle,
     @Field() required String wdpw,
-    @Field() required int salaryPH,
+    @Field() required double salaryPH,
     @Field() int? contractid,
     @Field() String? ced,
+    @Field() String? initHolidays,
     @Field() String? jobDescription,
-    @Field() int? salaryPA,
-    @Field() int? salaryOT,
+    @Field() double? salaryPA,
+    @Field() double? salaryOT,
+    @Field() String? AHE,
+    @Field() String? lunchtime,
+    @Field() String? lunchtimeUnpaid,
   });
 
   @GET("/api/fe/userdetails/{id}/details")

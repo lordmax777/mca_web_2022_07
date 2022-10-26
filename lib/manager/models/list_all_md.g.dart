@@ -10,6 +10,11 @@ ListAllMd _$ListAllMdFromJson(Map<String, dynamic> json) => ListAllMd(
       countries: (json['countries'] as List<dynamic>)
           .map((e) => ListCountry.fromJson(e as Map<String, dynamic>))
           .toList(),
+      holiday_calculation_types:
+          (json['holiday_calculation_types'] as List<dynamic>)
+              .map((e) =>
+                  HolidayCalculationTypes.fromJson(e as Map<String, dynamic>))
+              .toList(),
       currencies: (json['currencies'] as List<dynamic>)
           .map((e) => ListCurrency.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -99,6 +104,7 @@ Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
       'marital_statuses': instance.marital_statuses,
       'contract_starts': instance.contract_starts,
       'contract_types': instance.contract_types,
+      'holiday_calculation_types': instance.holiday_calculation_types,
     };
 
 ListCurrency _$ListCurrencyFromJson(Map<String, dynamic> json) => ListCurrency(
@@ -415,6 +421,20 @@ ContractTypes _$ContractTypesFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$ContractTypesToJson(ContractTypes instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+    };
+
+HolidayCalculationTypes _$HolidayCalculationTypesFromJson(
+        Map<String, dynamic> json) =>
+    HolidayCalculationTypes(
+      id: json['id'] as int,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$HolidayCalculationTypesToJson(
+        HolidayCalculationTypes instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

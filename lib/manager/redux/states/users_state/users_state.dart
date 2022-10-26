@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/saved_user_state.dart';
+import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import '../../../../app.dart';
@@ -208,8 +209,6 @@ class GetUserDetailsDetailAction {
           .map((e) => e.toLowerCase())
           .toList();
 
-      // logger(userDetailsMd.toJson(), hint: 'Error on');
-
       savedUserDetails.addressCity =
           TextEditingController(text: userDetailsMd.address.city);
       next(UpdateSavedUserStateAction(
@@ -405,22 +404,31 @@ class GetDeleteUserDetailsContractAction {
 }
 
 class GetPostUserDetailsContractAction {
-  String csd;
+  DateTime csd;
+  DateTime? ced;
+  CodeMap AHEonYS;
+  CodeMap hct;
   CodeMap contractType;
-  int hct;
+  double salaryPH;
+  double? salaryOT;
+  double? salaryPA;
   int awh;
-  CodeMap jobTitle;
   String wdpw;
-  int salaryPH;
+  CodeMap jobTitle;
   int? contractid;
-  String? ced;
   String? jobDescription;
-  int? salaryPA;
-  int? salaryOT;
-  int AHEonYS;
+  String? ahe;
+  String? lunchtime;
+  String? lunchtimeUnpaid;
+  String? initHolidays;
 
   GetPostUserDetailsContractAction({
+    ///Annual Holiday Entitlement on Year Start
+    required this.ahe,
     required this.jobTitle,
+    required this.initHolidays,
+    required this.lunchtimeUnpaid,
+    required this.lunchtime,
 
     ///Agreed Holiday Entitlement start on Year Start
     required this.AHEonYS,
@@ -452,6 +460,49 @@ class GetPostUserDetailsContractAction {
     this.jobDescription,
     this.contractid,
   });
+
+  static Future<ApiResponse?> getPostUserDetailsContractAction(AppState state,
+      GetPostUserDetailsContractAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsContracts(
+          id.toString(),
+          initHolidays: action.initHolidays,
+          AHEonYS: toIntOrNull(action.AHEonYS.code)!,
+          contractType: toIntOrNull(action.contractType.code)!,
+          hct: toIntOrNull(action.hct.code)!,
+          salaryPH: action.salaryPH,
+          salaryOT: action.salaryOT,
+          salaryPA: action.salaryPA,
+          wdpw: action.wdpw,
+          jobTitle: toIntOrNull(action.jobTitle.code)!,
+          csd: action.csd.formattedDate,
+          ced: action.ced?.formattedDate,
+          awh: action.awh,
+          jobDescription: action.jobDescription,
+          contractid: action.contractid,
+          AHE: action.ahe,
+          lunchtime: action.lunchtime,
+          lunchtimeUnpaid: action.lunchtimeUnpaid,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsContractsAction());
+      await closeLoading();
+      appRouter.navigate(UserDetailsRoute());
+    } else {
+      closeLoading();
+      return res;
+    }
+    return null;
+  }
 }
 
 class GetUserDetailsReviewsAction {
@@ -581,7 +632,6 @@ class GetPostUserDetailsReviewAction {
       appRouter.pop();
     } else {
       closeLoading();
-      // logger(res.rawError?.data);
       return res;
     }
     return null;

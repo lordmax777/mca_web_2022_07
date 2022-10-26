@@ -15,9 +15,10 @@ ContractMd _$ContractMdFromJson(Map json) => ContractMd(
       initHolidays: json['initHolidays'] as int?,
       wdpw: json['wdpw'] as num?,
       jobTitleId: json['jobTitleId'] as String?,
+      salaryPA: (json['salaryPA'] as num?)?.toDouble(),
       salaryPH: (json['salaryPH'] as num?)?.toDouble(),
       salaryOT: (json['salaryOT'] as num?)?.toDouble(),
-      ahe: json['ahe'] as num?,
+      ahe: json['ahe'] as String?,
       ahew: json['ahew'] as num?,
       csd: json['csd'] == null
           ? null
@@ -28,8 +29,8 @@ ContractMd _$ContractMdFromJson(Map json) => ContractMd(
           : ContractDate.fromJson(
               Map<String, dynamic>.from(json['ced'] as Map)),
       jobDescription: json['jobDescription'] as String?,
-      lunchtime: json['lunchtime'] as String?,
-      lunchtimeUnpaid: json['lunchtimeUnpaid'] as String?,
+      lunchtime: json['lunchtime'] as num?,
+      lunchtimeUnpaid: json['lunchtimeUnpaid'] as num?,
     );
 
 Map<String, dynamic> _$ContractMdToJson(ContractMd instance) =>
@@ -50,6 +51,7 @@ Map<String, dynamic> _$ContractMdToJson(ContractMd instance) =>
       'jobDescription': instance.jobDescription,
       'salaryPH': instance.salaryPH,
       'salaryOT': instance.salaryOT,
+      'salaryPA': instance.salaryPA,
       'jobTitleId': instance.jobTitleId,
     };
 

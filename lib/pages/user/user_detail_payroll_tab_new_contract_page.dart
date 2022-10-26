@@ -1,16 +1,20 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 
 import '../../manager/redux/sets/app_state.dart';
 import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
-  final int? id;
-  const UserDetailsPayrollTabNewContractPage({Key? key, this.id})
+  final ContractMd? contract;
+  const UserDetailsPayrollTabNewContractPage({Key? key, this.contract})
       : super(key: key);
 
   @override
@@ -22,6 +26,8 @@ class _UserDetailsPayrollTabNewContractPageState
     extends State<UserDetailsPayrollTabNewContractPage> {
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isNewContract = true;
+
+  List errors = [];
 
   CodeMap jobTitle = CodeMap(name: null, code: null);
 
@@ -47,8 +53,23 @@ class _UserDetailsPayrollTabNewContractPageState
   @override
   void initState() {
     super.initState();
-    if (widget.id != null) {
+    if (widget.contract != null) {
       isNewContract = false;
+      final c = widget.contract!;
+      aveWeeklyHours.text = c.awh?.toString() ?? "";
+      agreedDaysPerWeek.text = c.wdpw?.toString() ?? "";
+      annualHolidayEntitlement.text = c.ahe ?? "";
+      holidaysCarriedOver.text = c.initHolidays?.toString() ?? "0";
+      paidLunchtime.text = c.lunchtime?.toString() ?? "";
+      unpaidLunchtime.text = c.lunchtimeUnpaid?.toString() ?? "";
+      salaryPerHour.text = c.salaryPH?.toString() ?? "";
+      salaryPerHourOvertime.text = c.salaryOT?.toString() ?? "";
+      salaryPerAnnum.text = c.salaryPA.toString();
+      contractStartDate = DateTime.tryParse((c.csd?.date) ?? "");
+      contractEndDate = DateTime.tryParse((c.ced?.date) ?? "");
+
+      //Add dropdown values
+
     }
   }
 
@@ -96,7 +117,7 @@ class _UserDetailsPayrollTabNewContractPageState
                       horizontalSpace: dpWidth * .05,
                       children: [
                         _buildLeft(dpWidth, state.generalState),
-                        _buildRight(dpWidth),
+                        _buildRight(dpWidth, state),
                       ],
                     ),
                     const Divider(color: ThemeColors.gray11, thickness: 1.0),
@@ -112,7 +133,6 @@ class _UserDetailsPayrollTabNewContractPageState
   Widget _buildLeft(double dpWidth, GeneralState state) {
     final jobTitles = state.paramList.data!.jobtitles;
     final contractTypes = state.paramList.data!.contract_types;
-    // logger(contractTypes.map((e) => e.toJson()));
     return SpacedColumn(
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,6 +237,7 @@ class _UserDetailsPayrollTabNewContractPageState
             children: [
               TextInputWidget(
                 isRequired: true,
+                controller: aveWeeklyHours,
                 width: dpWidth / 6,
                 labelText: "Agreed Weekly Hours",
                 validator: (value) {
@@ -227,6 +248,7 @@ class _UserDetailsPayrollTabNewContractPageState
                 onTap: () {},
               ),
               TextInputWidget(
+                controller: agreedDaysPerWeek,
                 isRequired: true,
                 width: dpWidth / 6,
                 validator: (value) {
@@ -244,45 +266,68 @@ class _UserDetailsPayrollTabNewContractPageState
         ]);
   }
 
-  Widget _buildRight(double dpWidth) {
+  Widget _buildRight(double dpWidth, AppState state) {
+    final contrSt = state.generalState.paramList.data?.contract_starts ?? [];
+    final hCalcTypes =
+        state.generalState.paramList.data?.holiday_calculation_types ?? [];
     return SpacedColumn(
         verticalSpace: 32.0,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(),
-          DropdownWidget(
+          const SizedBox(height: 1),
+          DropdownWidget1<ContractStarts>(
             hintText: "Annual Holiday Entitlement Start",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             isRequired: true,
+            objItems: contrSt,
+            value: holidayEntitlementStart.name,
+            onChangedWithObj: (DpItem val) {
+              setState(() {
+                holidayEntitlementStart = CodeMap(
+                    code: (val.item as ContractStarts).id.toString(),
+                    name: val.name);
+              });
+            },
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
-            onChanged: (_) {},
-            items: [],
+            items: contrSt.map<String>((e) => e.name).toList(),
           ),
-          DropdownWidget(
+          DropdownWidget1<HolidayCalculationTypes>(
             hintText: "Holiday Calculation Type",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             isRequired: true,
+            objItems: hCalcTypes,
+            value: holidayCalculationType.name,
+            onChangedWithObj: (DpItem val) {
+              setState(() {
+                holidayCalculationType = CodeMap(
+                    code: (val.item as HolidayCalculationTypes).id.toString(),
+                    name: val.name);
+              });
+            },
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
-            onChanged: (_) {},
-            items: [],
+            items: hCalcTypes.map<String>((e) => e.name).toList(),
           ),
           TextInputWidget(
             width: dpWidth / 3 + 24.0,
             labelText: "Annual Holiday Entitlement",
+            controller: annualHolidayEntitlement,
           ),
           TextInputWidget(
             width: dpWidth / 3 + 24.0,
             labelText: "Holidays Carried Over",
+            controller: holidaysCarriedOver,
           ),
           SpacedRow(
             horizontalSpace: 24.0,
             children: [
               TextInputWidget(
                 width: dpWidth / 6,
+                controller: paidLunchtime,
                 labelText: "Paid Lunchtime (min)",
               ),
               TextInputWidget(
                 width: dpWidth / 6,
+                controller: unpaidLunchtime,
                 labelText: "Unpaid Lunchtime (min)",
               ),
             ],
@@ -292,13 +337,23 @@ class _UserDetailsPayrollTabNewContractPageState
 
   Widget _buildLeftBottom(double dpWidth) {
     return SpacedColumn(verticalSpace: 24.0, children: [
-      _buildSalary(dpWidth, 'Salary Per Hour', true),
-      _buildSalary(dpWidth, 'Salary Per Hour (Overtime)', false),
-      _buildSalary(dpWidth, 'Salary Per Annum', true),
+      _buildSalary(dpWidth, 'Salary Per Hour', true, salaryPerHour),
+      _buildSalary(
+          dpWidth, 'Salary Per Hour (Overtime)', false, salaryPerHourOvertime),
+      _buildSalary(dpWidth, 'Salary Per Annum', true, salaryPerAnnum),
+      if (errors.isNotEmpty)
+        Center(
+          child: KText(
+            text: errors.join(".\n"),
+            textColor: ThemeColors.red3,
+            fontSize: 18,
+          ),
+        ),
     ]);
   }
 
-  Widget _buildSalary(double dpWidth, String label, bool isRequired) {
+  Widget _buildSalary(double dpWidth, String label, bool isRequired,
+      TextEditingController controller) {
     return SpacedRow(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -327,6 +382,7 @@ class _UserDetailsPayrollTabNewContractPageState
         TextInputWidget(
           width: dpWidth / 8,
           hintText: "0.00",
+          controller: controller,
           validator: isRequired
               ? (value) {
                   if (value == null || value.isEmpty) {
@@ -357,16 +413,68 @@ class _UserDetailsPayrollTabNewContractPageState
         ButtonLarge(
           icon: const HeroIcon(HeroIcons.check),
           text: isNewContract ? "Add Contract" : "Save Contract",
-          onPressed: () {
-            if (formKey.currentState!.validate()) {
-              // appStore.dispatch(GetPostUserDetailsContractsAction(
-// awh: int.parse(aveWeeklyHours.text),
-//                 contractType:
-              // ));
-            }
-          },
+          onPressed: _onSaveContract,
         ),
       ],
     );
+  }
+
+  Future<void> _onSaveContract() async {
+    if (formKey.currentState!.validate()) {
+      //Print all variables
+      print("Contract Type: ${contractType.toJson()}");
+      print("Contract Start Date: $contractStartDate");
+      print("Contract End Date: $contractEndDate");
+      print("Holiday Entitlement Start: ${holidayEntitlementStart.toJson()}");
+      print("Holiday Calculation Type: ${holidayCalculationType.toJson()}");
+      print("Salary Per Hour: ${salaryPerHour.text}");
+      print("Salary Per Hour (Overtime): ${salaryPerHourOvertime.text}");
+      print("Salary Per Annum: ${salaryPerAnnum.text}");
+      print("Agreed Weekly Hours: ${aveWeeklyHours.text}");
+      print("Agreed Days per Week: ${agreedDaysPerWeek.text}");
+      print("Paid Lunchtime (min): ${paidLunchtime.text}");
+      print("Unpaid Lunchtime (min): ${unpaidLunchtime.text}");
+      print("Holidays Carried Over: ${holidaysCarriedOver.text}");
+      print("Annual Holiday Entitlement: ${annualHolidayEntitlement.text}");
+      print("Job Title: ${jobTitle.toJson()}");
+      print("Holidays Carried Over: ${holidaysCarriedOver.text}");
+      setState(() {
+        errors.clear();
+      });
+      ApiResponse? res =
+          await appStore.dispatch(GetPostUserDetailsContractAction(
+        wdpw: agreedDaysPerWeek.text,
+        salaryPH: double.parse(salaryPerHour.text.toString()),
+        salaryPA: double.parse(salaryPerAnnum.text.toString()),
+        salaryOT: double.parse(salaryPerHourOvertime.text),
+        initHolidays: holidaysCarriedOver.text,
+        jobTitle: jobTitle,
+        hct: holidayCalculationType,
+        csd: contractStartDate!,
+        ced: contractEndDate,
+        awh: int.parse(aveWeeklyHours.text),
+        contractType: contractType,
+        AHEonYS: holidayEntitlementStart,
+        contractid: widget.contract?.id,
+        ahe: annualHolidayEntitlement.text,
+        lunchtime: paidLunchtime.text,
+        lunchtimeUnpaid: unpaidLunchtime.text,
+      ));
+
+      if (res != null) {
+        if (res.success) {
+          //Do nothing
+        } else {
+          if (res.rawError != null) {
+            final e = jsonDecode(res.rawError!.data)['errors'].values;
+            for (var element in e) {
+              setState(() {
+                errors.add(element.first);
+              });
+            }
+          }
+        }
+      }
+    }
   }
 }

@@ -14,18 +14,19 @@ class ContractMd {
   ContractDate? csd;
   ContractDate? ced;
   num? awh;
-  num? ahe;
+  String? ahe;
   num? ahew;
   num? wdpw;
   num? hct;
-  String? lunchtime;
-  String? lunchtimeUnpaid;
+  num? lunchtime;
+  num? lunchtimeUnpaid;
   int contractType;
   bool? AHEonYS;
   int? initHolidays;
   String? jobDescription;
   double? salaryPH;
   double? salaryOT;
+  double? salaryPA;
   String? jobTitleId;
 
   @override
@@ -38,6 +39,7 @@ class ContractMd {
     this.initHolidays,
     this.wdpw,
     this.jobTitleId,
+    this.salaryPA,
     this.salaryPH,
     this.salaryOT,
     this.ahe,

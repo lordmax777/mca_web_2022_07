@@ -33,6 +33,7 @@ class GeneralState {
       paramList: StateValue(
         error: ErrorModel(),
         data: ListAllMd(
+          holiday_calculation_types: [],
           contract_types: [],
           contract_starts: [],
           login_methods: [],

@@ -329,9 +329,13 @@ class _RestClient implements RestClient {
     required salaryPH,
     contractid,
     ced,
+    initHolidays,
     jobDescription,
     salaryPA,
     salaryOT,
+    AHE,
+    lunchtime,
+    lunchtimeUnpaid,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -348,9 +352,13 @@ class _RestClient implements RestClient {
       'salaryPH': salaryPH,
       'contractid': contractid,
       'ced': ced,
+      'initHolidays': initHolidays,
       'jobDescription': jobDescription,
       'salaryPA': salaryPA,
       'salaryOT': salaryOT,
+      'AHE': AHE,
+      'lunchtime': lunchtime,
+      'lunchtimeUnpaid': lunchtimeUnpaid,
     };
     _data.removeWhere((k, v) => v == null);
     final _result =
