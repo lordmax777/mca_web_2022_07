@@ -25,7 +25,7 @@ class UsersState {
   StateValue<List<VisaMd>> userDetailVisas;
   StateValue<List<QualifsMd>> userDetailQualifs;
   StateValue<StatussMd?> userDetailStatus;
-  StateValue<bool> userDetailMobileIsRegistered;
+  StateValue<MobileMd> userDetailMobileIsRegistered;
   StateValue<List<PreferredShiftMd>> userDetailPreferredShift;
   StateValue<PhotosMd?> userDetailPhotos;
   // final UserDetailSaveMd? saveableUserDetails;
@@ -58,7 +58,7 @@ class UsersState {
       userDetailQualifs: StateValue(error: ErrorModel(), data: []),
       userDetailStatus: StateValue(error: ErrorModel(), data: null),
       userDetailMobileIsRegistered:
-          StateValue(error: ErrorModel(), data: false),
+          StateValue(error: ErrorModel(), data: MobileMd(registered: "false")),
       userDetailPreferredShift: StateValue(error: ErrorModel(), data: []),
       userDetailPhotos: StateValue(error: ErrorModel(), data: null),
       // saveableUserDetails: null,
@@ -75,7 +75,7 @@ class UsersState {
     StateValue<List<VisaMd>>? userDetailVisas,
     StateValue<List<QualifsMd>>? userDetailQualifs,
     StateValue<StatussMd?>? userDetailStatus,
-    StateValue<bool>? userDetailMobileIsRegistered,
+    StateValue<MobileMd>? userDetailMobileIsRegistered,
     StateValue<List<PreferredShiftMd>>? userDetailPreferredShift,
     StateValue<PhotosMd?>? userDetailPhotos,
     // UserDetailSaveMd? saveableUserDetails,
@@ -110,7 +110,7 @@ class UpdateUsersStateAction {
   StateValue<List<VisaMd>>? userDetailVisas;
   StateValue<List<QualifsMd>>? userDetailQualifs;
   StateValue<StatussMd>? userDetailStatus;
-  StateValue<bool>? userDetailMobileIsRegistered;
+  StateValue<MobileMd>? userDetailMobileIsRegistered;
   StateValue<List<PreferredShiftMd>>? userDetailPreferredShift;
   StateValue<PhotosMd>? userDetailPhotos;
   // UserDetailSaveMd? saveableUserDetails;
@@ -909,11 +909,54 @@ class GetUserDetailsStatusAction {
   }
 }
 
+class GetPostUserDetailsStatusAction {
+  final int statusId;
+  final int locationId;
+  final int shiftId;
+  final String? comment;
+
+  GetPostUserDetailsStatusAction({
+    required this.statusId,
+    required this.locationId,
+    required this.shiftId,
+    this.comment,
+  });
+
+  static Future<ApiResponse?> getPostUserDetailsStatusAction(AppState state,
+      GetPostUserDetailsStatusAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsStatus(
+          id.toString(),
+          status: action.statusId.toString(),
+          location: action.locationId.toString(),
+          shift: action.shiftId.toString(),
+          comment: action.comment,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsStatusAction());
+      closeLoading();
+    } else {
+      closeLoading();
+      return res;
+    }
+    return null;
+  }
+}
+
 class GetUserDetailsMobileAction {
-  static Future<StateValue<bool>> getUserDetailsMobileAction(AppState state,
+  static Future<StateValue<MobileMd>> getUserDetailsMobileAction(AppState state,
       GetUserDetailsMobileAction action, NextDispatcher next) async {
-    StateValue<bool> stateValue = StateValue(
-        data: null,
+    StateValue<MobileMd> stateValue = StateValue(
+        data: MobileMd(registered: "false"),
         error: ErrorModel<GetUserDetailsMobileAction>(
             isLoading: true, action: action));
 
@@ -936,10 +979,8 @@ class GetUserDetailsMobileAction {
 
     if (res.success) {
       final r = res.data['mobile'];
-      final String list = r['registered'];
-
       stateValue.error.isError = false;
-      stateValue.data = list == "true";
+      stateValue.data = MobileMd.fromJson(r);
 
       next(UpdateUsersStateAction(userDetailMobileIsRegistered: stateValue));
     } else {
@@ -949,6 +990,33 @@ class GetUserDetailsMobileAction {
       next(UpdateUsersStateAction(userDetailMobileIsRegistered: stateValue));
     }
     return stateValue;
+  }
+}
+
+class GetDeleteUserDetailsMobileAction {
+  static Future<ApiResponse?> getDeleteUserDetailsMobileAction(AppState state,
+      GetDeleteUserDetailsMobileAction action, NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .deleteUserDetailsMobile(
+          id.toString(),
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsMobileAction());
+      closeLoading();
+    } else {
+      closeLoading();
+      return res;
+    }
+    return null;
   }
 }
 

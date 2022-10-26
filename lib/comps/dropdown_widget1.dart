@@ -5,6 +5,8 @@ class DpItem<T> {
   String name;
   T item;
 
+  Map toJson() => {'name': name, 'item': item};
+
   DpItem(this.name, this.item);
 }
 

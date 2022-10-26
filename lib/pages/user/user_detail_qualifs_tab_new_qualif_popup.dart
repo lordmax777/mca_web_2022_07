@@ -171,7 +171,7 @@ class _UserDetailQualifNewQualifPopupWidgetState
             controller: _certController,
             onTap: () {},
           ),
-          DropdownWidget1(
+          DropdownWidget1<ListQualificationLevel>(
             hintText: "Level",
             dropdownBtnWidth: dpWidth / 6 + 12,
             dropdownOptionsWidth: dpWidth / 3 + 12,
@@ -179,7 +179,7 @@ class _UserDetailQualifNewQualifPopupWidgetState
             objItems: levels,
             isRequired: true,
             items: levels.map((e) => e.level).toList(),
-            onChangedWithObj: (value) {
+            onChangedWithObj: (DpItem value) {
               setState(() {
                 _level =
                     CodeMap(code: value.item.id.toString(), name: value.name);

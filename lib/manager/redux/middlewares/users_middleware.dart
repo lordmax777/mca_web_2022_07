@@ -78,32 +78,15 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
       case GetDeleteUserDetailsQualifsAction:
         return GetDeleteUserDetailsQualifsAction
             .getDeleteUserDetailsQualifsAction(store.state, action, next);
+      case GetPostUserDetailsStatusAction:
+        return GetPostUserDetailsStatusAction.getPostUserDetailsStatusAction(
+            store.state, action, next);
+      case GetDeleteUserDetailsMobileAction:
+        return GetDeleteUserDetailsMobileAction
+            .getDeleteUserDetailsMobileAction(store.state, action, next);
       default:
         return next(action);
     }
-  }
-
-  Future<ApiResponse?> _getDeleteUserDetailsContractAction(AppState state,
-      GetDeleteUserDetailsContractAction action, NextDispatcher next) async {
-    final int? id = state.usersState.selectedUser?.id;
-    if (id == null) {
-      appRouter.navigateBack();
-      return null;
-    }
-    showLoading();
-    final ApiResponse res = await restClient()
-        .deleteUserDetailsContracts(id.toString(), action.id)
-        .nocodeErrorHandler();
-    if (res.success) {
-      await appStore.dispatch(GetUserDetailsContractsAction());
-      closeLoading();
-    } else {
-      await closeLoading();
-      showError(res.rawError?.data.toString() ?? "");
-
-      return res;
-    }
-    return null;
   }
 }
 

@@ -146,8 +146,22 @@ abstract class RestClient {
   @GET("/api/fe/userdetails/{id}/mobile")
   Future<HttpResponse> getUserDetailsMobile(@Path() String id);
 
+  @DELETE("/api/fe/userdetails/{id}/mobile")
+  @FormUrlEncoded()
+  Future<HttpResponse> deleteUserDetailsMobile(@Path() String id);
+
   @GET("/api/fe/userdetails/{id}/status")
   Future<HttpResponse> getUserDetailsStatus(@Path() String id);
+
+  @POST("/api/fe/userdetails/{id}/status")
+  @FormUrlEncoded()
+  Future<HttpResponse> postUserDetailsStatus(
+    @Path() String id, {
+    @Field() required String status,
+    @Field() required String shift,
+    @Field() required String location,
+    @Field() String? comment,
+  });
 
   @POST("/api/fe/userdetails/{id}/details")
   @FormUrlEncoded()
