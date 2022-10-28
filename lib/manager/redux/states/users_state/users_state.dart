@@ -399,8 +399,40 @@ class GetUserDetailsContractsAction {
 }
 
 class GetDeleteUserDetailsContractAction {
-  final int id;
-  GetDeleteUserDetailsContractAction({required this.id});
+  final List<int> ids;
+  GetDeleteUserDetailsContractAction({required this.ids});
+
+  static Future<ApiResponse?> getDeleteUserDetailsContractAction(AppState state,
+      GetDeleteUserDetailsContractAction action, NextDispatcher next) async {
+    final int? userId = state.usersState.selectedUser?.id;
+    if (userId == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+    bool allSuccess = true;
+    ApiResponse? resp;
+    for (int i = 0; i < action.ids.length; i++) {
+      final id = action.ids[i];
+      final ApiResponse res = await restClient()
+          .deleteUserDetailsContract(userId.toString(), id)
+          .nocodeErrorHandler();
+      if (!res.success) {
+        allSuccess = false;
+        resp = res;
+        break;
+      }
+    }
+
+    if (allSuccess) {
+      await appStore.dispatch(GetUserDetailsContractsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(resp?.rawError?.data.toString() ?? "Error");
+    }
+    return null;
+  }
 }
 
 class GetPostUserDetailsContractAction {
@@ -487,7 +519,7 @@ class GetPostUserDetailsContractAction {
           awh: action.awh,
           jobDescription: action.jobDescription,
           contractid: action.contractid,
-          AHE: action.ahe,
+          ahe: int.parse(action.ahe!),
           lunchtime: action.lunchtime,
           lunchtimeUnpaid: action.lunchtimeUnpaid,
         )
@@ -585,7 +617,7 @@ class GetDeleteUserDetailsReviewsAction {
       closeLoading();
     } else {
       await closeLoading();
-      showError(resp?.rawError?.data.toString() ?? "");
+      showError(resp?.rawError?.data.toString() ?? "Error");
     }
     return null;
   }
@@ -718,7 +750,7 @@ class GetDeleteUserDetailsVisaAction {
       closeLoading();
     } else {
       await closeLoading();
-      showError(resp?.rawError?.data.toString() ?? "");
+      showError(resp?.rawError?.data.toString() ?? "Error");
     }
     return null;
   }
@@ -856,7 +888,7 @@ class GetDeleteUserDetailsQualifsAction {
       closeLoading();
     } else {
       await closeLoading();
-      showError(resp?.rawError?.data.toString() ?? "");
+      showError(resp?.rawError?.data.toString() ?? "Error");
     }
     return null;
   }

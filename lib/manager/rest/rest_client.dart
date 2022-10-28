@@ -56,10 +56,6 @@ abstract class RestClient {
   @GET("/api/fe/userdetails/{id}/contracts")
   Future<HttpResponse> getUserDetailsContracts(@Path() String id);
 
-  @DELETE("/api/fe/userdetails/{id}/contracts")
-  Future<HttpResponse> deleteUserDetailsContracts(
-      @Path() String id, @Query("contractid") int contractId);
-
   @POST("/api/fe/userdetails/{id}/contracts")
   @FormUrlEncoded()
   Future<HttpResponse> postUserDetailsContracts(
@@ -78,10 +74,14 @@ abstract class RestClient {
     @Field() String? jobDescription,
     @Field() double? salaryPA,
     @Field() double? salaryOT,
-    @Field() String? AHE,
+    @Field() int? ahe,
     @Field() String? lunchtime,
     @Field() String? lunchtimeUnpaid,
   });
+
+  @DELETE("/api/fe/userdetails/{id}/contracts")
+  Future<HttpResponse> deleteUserDetailsContract(
+      @Path() String id, @Query("contractid") int contractid);
 
   @GET("/api/fe/userdetails/{id}/details")
   Future<HttpResponse> getUserDetails(@Path() String id);

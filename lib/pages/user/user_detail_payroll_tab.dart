@@ -5,6 +5,7 @@ import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../manager/models/list_all_md.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class PayrollWidget extends StatefulWidget {
@@ -142,7 +143,15 @@ class _PayrollWidgetState extends State<PayrollWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () {},
+            onPressed: () async {
+              final selectedItemIds = userDetailsPayrollSm.checkedRows
+                  .map<int>((e) => e.cells['action']?.value.id)
+                  .toList();
+              if (selectedItemIds.isNotEmpty) {
+                await appStore.dispatch(
+                    GetDeleteUserDetailsContractAction(ids: selectedItemIds));
+              }
+            },
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(

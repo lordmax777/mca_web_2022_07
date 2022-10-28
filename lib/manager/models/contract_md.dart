@@ -14,7 +14,7 @@ class ContractMd {
   ContractDate? csd;
   ContractDate? ced;
   num? awh;
-  String? ahe;
+  int? ahe;
   num? ahew;
   num? wdpw;
   num? hct;

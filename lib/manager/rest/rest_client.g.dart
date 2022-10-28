@@ -290,33 +290,6 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> deleteUserDetailsContracts(
-    id,
-    contractId,
-  ) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'contractid': contractId};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result =
-        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
-      method: 'DELETE',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/api/fe/userdetails/${id}/contracts',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data;
-    final httpResponse = HttpResponse(value, _result);
-    return httpResponse;
-  }
-
-  @override
   Future<HttpResponse<dynamic>> postUserDetailsContracts(
     id, {
     required csd,
@@ -333,7 +306,7 @@ class _RestClient implements RestClient {
     jobDescription,
     salaryPA,
     salaryOT,
-    AHE,
+    ahe,
     lunchtime,
     lunchtimeUnpaid,
   }) async {
@@ -356,7 +329,7 @@ class _RestClient implements RestClient {
       'jobDescription': jobDescription,
       'salaryPA': salaryPA,
       'salaryOT': salaryOT,
-      'AHE': AHE,
+      'ahe': ahe,
       'lunchtime': lunchtime,
       'lunchtimeUnpaid': lunchtimeUnpaid,
     };
@@ -367,6 +340,33 @@ class _RestClient implements RestClient {
       headers: _headers,
       extra: _extra,
       contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/contracts',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteUserDetailsContract(
+    id,
+    contractid,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'contractid': contractid};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
     )
             .compose(
               _dio.options,

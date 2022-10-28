@@ -18,7 +18,7 @@ ContractMd _$ContractMdFromJson(Map json) => ContractMd(
       salaryPA: (json['salaryPA'] as num?)?.toDouble(),
       salaryPH: (json['salaryPH'] as num?)?.toDouble(),
       salaryOT: (json['salaryOT'] as num?)?.toDouble(),
-      ahe: json['ahe'] as String?,
+      ahe: json['ahe'] as int?,
       ahew: json['ahew'] as num?,
       csd: json['csd'] == null
           ? null

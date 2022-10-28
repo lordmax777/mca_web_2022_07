@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -54,11 +55,20 @@ class _UserDetailsPayrollTabNewContractPageState
   void initState() {
     super.initState();
     if (widget.contract != null) {
+      final jobTitles = appStore.state.generalState.paramList.data!.jobtitles;
+      final contractStarts =
+          appStore.state.generalState.paramList.data!.contract_starts;
+      final contractTypes =
+          appStore.state.generalState.paramList.data!.contract_types;
+      final holidayCalcTypes =
+          appStore.state.generalState.paramList.data!.holiday_calculation_types;
+
       isNewContract = false;
       final c = widget.contract!;
+
       aveWeeklyHours.text = c.awh?.toString() ?? "";
       agreedDaysPerWeek.text = c.wdpw?.toString() ?? "";
-      annualHolidayEntitlement.text = c.ahe ?? "";
+      annualHolidayEntitlement.text = c.ahe?.toString() ?? "";
       holidaysCarriedOver.text = c.initHolidays?.toString() ?? "0";
       paidLunchtime.text = c.lunchtime?.toString() ?? "";
       unpaidLunchtime.text = c.lunchtimeUnpaid?.toString() ?? "";
@@ -69,7 +79,29 @@ class _UserDetailsPayrollTabNewContractPageState
       contractEndDate = DateTime.tryParse((c.ced?.date) ?? "");
 
       //Add dropdown values
-
+      jobTitle = CodeMap(
+          name: jobTitles
+              .firstWhereOrNull(
+                  (element) => element.id.toString() == c.jobTitleId)
+              ?.name,
+          code: c.jobTitleId);
+      contractType = CodeMap(
+          name: contractTypes
+              .firstWhereOrNull((element) => element.id == c.contractType)
+              ?.name,
+          code: c.contractType.toString());
+      holidayCalculationType = CodeMap(
+          name: holidayCalcTypes
+              .firstWhereOrNull((element) => element.id == c.hct)
+              ?.name,
+          code: c.hct.toString());
+      holidayEntitlementStart = CodeMap(
+          name: !c.AHEonYS!
+              ? contractStarts.first.name.toString()
+              : contractStarts[1].name.toString(),
+          code: !c.AHEonYS!
+              ? contractStarts.first.id.toString()
+              : contractStarts[1].id.toString());
     }
   }
 
