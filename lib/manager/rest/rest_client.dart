@@ -51,7 +51,7 @@ abstract class RestClient {
   @DELETE("/api/fe/userdetails/{id}/photos")
   @FormUrlEncoded()
   Future<HttpResponse> deleteUserDetailsPhotos(
-      @Path() String id, @Field() int photoId);
+      @Path() String id, @Query("photoid") int photoId);
 
   @GET("/api/fe/userdetails/{id}/contracts")
   Future<HttpResponse> getUserDetailsContracts(@Path() String id);
@@ -205,7 +205,8 @@ abstract class RestClient {
     @Field() String? groupAdmin,
     @Field() bool? locationAdmin,
     @Field() String? loginRequired,
-    @Field() String? login_methods, //codes
+    // @Field() List<String>? loginMethods, //codes
+    // @Field() String? loginMethods, //codes
     @Field() String? email,
 
     ///

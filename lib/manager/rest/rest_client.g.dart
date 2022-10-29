@@ -243,9 +243,9 @@ class _RestClient implements RestClient {
     photoId,
   ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'photoid': photoId};
     final _headers = <String, dynamic>{};
-    final _data = {'photoId': photoId};
+    final _data = <String, dynamic>{};
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
       method: 'DELETE',
@@ -859,7 +859,7 @@ class _RestClient implements RestClient {
     groupAdmin,
     locationAdmin,
     loginRequired,
-    login_methods,
+    loginMethods,
     email,
   }) async {
     const _extra = <String, dynamic>{};
@@ -901,7 +901,7 @@ class _RestClient implements RestClient {
       'groupAdmin': groupAdmin,
       'locationAdmin': locationAdmin,
       'loginRequired': loginRequired,
-      'login_methods': login_methods,
+      'loginMethods': loginMethods,
       'email': email,
     };
     _data.removeWhere((k, v) => v == null);

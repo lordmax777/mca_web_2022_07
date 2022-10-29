@@ -198,9 +198,12 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                               pickedImage = null;
                             });
                           }
-                          appStore.dispatch(
-                              UpdateSavedUserStateAction(photo: null));
-                          await appStore.dispatch(GetDeleteUserPhotoAction());
+                          bool success = await appStore
+                              .dispatch(GetDeleteUserPhotoAction());
+                          if (success) {
+                            appStore.dispatch(
+                                UpdateSavedUserStateAction(photo: null));
+                          }
                         },
                       ),
                   ],
@@ -402,20 +405,6 @@ class _UsernameAndPayrollInfoWidget extends StatelessWidget {
                   labelText: "Payroll Code",
                   controller: savedUser.payrollCode,
                 ),
-                // if (state.usersState.isNewUser)
-                //   TextInputWidget(
-                //     width: dpWidth,
-                //     controller: savedUser.upass,
-                //     labelText: "Password",
-                //     validator: (p0) {
-                //       if (p0 == null || p0.isEmpty) {
-                //         return "Password is required";
-                //       }
-                //     },
-                //     isPassword: true,
-                //     isRequired: true,
-                //   )
-                // else
                 TextInputWidget(
                   width: dpWidth,
                   controller: savedUser.upass,
@@ -431,10 +420,9 @@ class _UsernameAndPayrollInfoWidget extends StatelessWidget {
                           }
                         }
                       : (p0) {
-                          if (p0 != null && p0.isNotEmpty) {
-                            //TODO: check if password is valid
-                            return "Password is invalid";
-                          }
+                          // if (p0 != null && p0.isEmpty) {
+                          //   return "Password is invalid";
+                          // }
                         },
                   isPassword: true,
                   isRequired: true,
@@ -503,22 +491,6 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             savedUser.locationAdmin = val;
             appStore.dispatch(UpdateUsersStateAction());
           }, 'Location Manager'),
-          // DropdownWidget(
-          //   hintText: "Department Manager",
-          //   dropdownBtnWidth: dpWidth,
-          //   dropdownOptionsWidth: dpWidth,
-          //   disableAll: true,
-          //   onChanged: (_) {},
-          //   items: [],
-          // ),
-          // DropdownWidget(
-          //   hintText: "Location Manager",
-          //   dropdownBtnWidth: dpWidth,
-          //   disableAll: true,
-          //   dropdownOptionsWidth: dpWidth,
-          //   onChanged: (_) {},
-          //   items: [],
-          // ),
         ]);
   }
 

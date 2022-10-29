@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -1220,6 +1222,7 @@ class GetSaveGeneralDetailsAction {
         data: null,
         error: ErrorModel<GetSaveGeneralDetailsAction>(
             isLoading: true, action: action));
+    showLoading();
 
     //if new user => create user
     //if not new user => update user
@@ -1230,7 +1233,7 @@ class GetSaveGeneralDetailsAction {
     final ApiResponse res = await restClient()
         .getSaveUserGeneralDetails(
           id,
-          // login_methods: savedUser.loginMethods.methods, //TODO: Is not working
+          // loginMethods: savedUser.loginMethods.methods, //TODO: Is not working
           loginRequired: savedUser.loginRequired ? "1" : "0",
           maritalStatus: savedUser.maritalStatusCode.code,
           firstName: savedUser.firstName.text,
@@ -1270,6 +1273,7 @@ class GetSaveGeneralDetailsAction {
     stateValue.error.isLoading = false;
     stateValue.error.rawError = res.rawError;
 
+    await closeLoading();
     if (res.success) {
       stateValue.error.isError = false;
 
@@ -1281,11 +1285,11 @@ class GetSaveGeneralDetailsAction {
       ]);
     } else {
       String errorMessage = "";
-      // jsonDecode(res.data)['errors'].entries.forEach((e) {
-      //   errorMessage += "${e.value.first}\n";
-      // });
+      jsonDecode(res.data)['errors'].entries.forEach((e) {
+        errorMessage += "${e.value.first}\n";
+      });
 
-      errorMessage = res.data['error'].toString();
+      // errorMessage = res.data['error'].toString();
       showOverlayPopup(
           body: TableWrapperWidget(
               padding: const EdgeInsets.all(60),
@@ -1329,23 +1333,28 @@ class GetSaveUserPhotoAction {
 }
 
 class GetDeleteUserPhotoAction {
-  static Future<void> getDeleteUserPhotoAction(AppState state,
+  static Future<bool> getDeleteUserPhotoAction(AppState state,
       GetDeleteUserPhotoAction action, NextDispatcher next) async {
-    if (state.usersState.userDetailPhotos.data == null) return;
+    if (state.usersState.userDetailPhotos.data == null) return false;
 
     final int? id = state.usersState.selectedUser?.id;
     if (id == null) {
       appRouter.navigateBack();
-      return;
+      return false;
     }
+    showLoading();
 
     final ApiResponse res = await restClient()
         .deleteUserDetailsPhotos(
             id.toString(), state.usersState.userDetailPhotos.data!.id)
         .nocodeErrorHandler();
 
+    await closeLoading();
     if (res.success) {
-    } else {}
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
