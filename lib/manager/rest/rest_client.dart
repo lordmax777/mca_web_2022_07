@@ -213,6 +213,18 @@ abstract class RestClient {
   });
   @GET("/api/fe/locations")
   Future<HttpResponse> getAllLocations();
+
+  @POST("/api/fe/groups")
+  @FormUrlEncoded()
+  Future<HttpResponse> postGroup({
+    @Field() int? id,
+    @Field() required String name,
+    @Field() required bool active,
+  });
+
+  @DELETE("/api/fe/groups")
+  @FormUrlEncoded()
+  Future<HttpResponse> deleteGroup(@Query("groupid") int groupid);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

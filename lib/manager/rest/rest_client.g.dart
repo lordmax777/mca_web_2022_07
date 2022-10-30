@@ -859,7 +859,6 @@ class _RestClient implements RestClient {
     groupAdmin,
     locationAdmin,
     loginRequired,
-    loginMethods,
     email,
   }) async {
     const _extra = <String, dynamic>{};
@@ -901,7 +900,6 @@ class _RestClient implements RestClient {
       'groupAdmin': groupAdmin,
       'locationAdmin': locationAdmin,
       'loginRequired': loginRequired,
-      'loginMethods': loginMethods,
       'email': email,
     };
     _data.removeWhere((k, v) => v == null);
@@ -939,6 +937,66 @@ class _RestClient implements RestClient {
             .compose(
               _dio.options,
               '/api/fe/locations',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> postGroup({
+    id,
+    required name,
+    required active,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'id': id,
+      'name': name,
+      'active': active,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/groups',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteGroup(groupid) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'groupid': groupid};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/groups',
               queryParameters: queryParameters,
               data: _data,
             )

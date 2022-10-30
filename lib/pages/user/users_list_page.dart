@@ -21,11 +21,6 @@ class UsersListPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       onInit: (store) async {
-        await fetch(GetAccessTokenAction(
-            domain: Constants.domain,
-            username: Constants.username,
-            password: Constants.password));
-        await fetch(GetAllParamListAction());
         await fetch(GetUsersListAction());
       },
       builder: (_, state) => PageWrapper(

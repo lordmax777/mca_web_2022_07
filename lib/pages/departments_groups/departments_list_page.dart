@@ -1,9 +1,12 @@
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
-class DepartmentsListPage extends StatelessWidget {
+import 'package:get/get.dart';
+
+class DepartmentsListPage extends GetView<DepartmentsController> {
   const DepartmentsListPage({Key? key}) : super(key: key);
 
   @override
@@ -12,11 +15,11 @@ class DepartmentsListPage extends StatelessWidget {
         converter: (store) => store.state,
         onInit: (store) async {},
         builder: (_, state) => PageWrapper(
-                child: SpacedColumn(verticalSpace: 16.0, children: const [
+                child: SpacedColumn(verticalSpace: 16.0, children: [
               PagesTitleWidget(
                 title: 'Departments and Groups',
               ),
-              ErrorWrapper(errors: [], child: _Body())
+              const ErrorWrapper(errors: [], child: _Body())
             ])));
   }
 }
@@ -31,15 +34,12 @@ class _Body extends StatefulWidget {
 class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  final List<Tab> tabs = const [
-    Tab(text: 'Departments'),
-    Tab(text: 'Groups'),
-  ];
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: tabs.length, vsync: this);
+    final DepartmentsController departmentsController = Get.find();
+    _tabController = TabController(
+        length: departmentsController.reactive.value!.tabs.length, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -47,32 +47,37 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final DepartmentsController departmentsController = Get.find();
+
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) => TableWrapperWidget(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: TabBar(
-                overlayColor: MaterialStateProperty.all(Colors.transparent),
-                controller: _tabController,
-                splashFactory: NoSplash.splashFactory,
-                isScrollable: true,
-                indicatorWeight: 3.0,
-                indicatorColor: ThemeColors.blue3,
-                labelColor: ThemeColors.blue3,
-                unselectedLabelColor: ThemeColors.black,
-                labelStyle:
-                    ThemeText.tabTextStyle.copyWith(color: ThemeColors.blue3),
-                unselectedLabelStyle: ThemeText.tabTextStyle,
-                tabs: tabs,
+        child: ErrorWrapper(
+          errors: [state.generalState.paramList.error],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: TabBar(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  controller: _tabController,
+                  splashFactory: NoSplash.splashFactory,
+                  isScrollable: true,
+                  indicatorWeight: 3.0,
+                  indicatorColor: ThemeColors.blue3,
+                  labelColor: ThemeColors.blue3,
+                  unselectedLabelColor: ThemeColors.black,
+                  labelStyle:
+                      ThemeText.tabTextStyle.copyWith(color: ThemeColors.blue3),
+                  unselectedLabelStyle: ThemeText.tabTextStyle,
+                  tabs: departmentsController.reactive.value!.tabs,
+                ),
               ),
-            ),
-            const Divider(height: 0, color: ThemeColors.gray11),
-            _getTabChild(state),
-          ],
+              const Divider(height: 0, color: ThemeColors.gray11),
+              _getTabChild(state),
+            ],
+          ),
         ),
       ),
     );
@@ -81,7 +86,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   Widget _getTabChild(AppState state) {
     switch (_tabController.index) {
       case 0:
-        return DepartmentsTab(state: state);
+        return DepartmentsTab();
       case 1:
         return GroupsTab(state: state);
       default:
