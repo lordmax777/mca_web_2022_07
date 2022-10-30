@@ -10,7 +10,7 @@ import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../home_page.dart';
 
-class DepartmentsController extends GetxController {
+class GroupsController extends GetxController {
   //Etc
   final List<Tab> tabs = const [Tab(text: 'Departments'), Tab(text: 'Groups')];
 
@@ -22,8 +22,8 @@ class DepartmentsController extends GetxController {
   List<PlutoColumn> columns(BuildContext context) {
     return [
       PlutoColumn(
-          title: "Department Name",
-          field: "department_name",
+          title: "Group Name",
+          field: "group_name",
           enableRowChecked: true,
           type: PlutoColumnType.text(),
           renderer: (ctx) {
@@ -94,6 +94,7 @@ class DepartmentsController extends GetxController {
   }
 
   double get deleteBtnOpacity => _deleteBtnOpacity.value;
+
   set setDeleteBtnOpacity(double value) {
     _deleteBtnOpacity.value = value;
   }
@@ -115,7 +116,7 @@ class DepartmentsController extends GetxController {
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {
-            bool searched = element.cells['department_name']?.value
+            bool searched = element.cells['group_name']?.value
                 .toLowerCase()
                 .contains(searchController.text.toLowerCase());
             if (!searched) {
@@ -144,8 +145,7 @@ class DepartmentsController extends GetxController {
 
   void _onEditClick(BuildContext context, PlutoColumnRendererContext ctx) {
     showOverlayPopup(
-        body: DepartmentsNewDepPopupWidget(group: ctx.cell.value),
-        context: context);
+        body: GroupsNewDepPopupWidget(group: ctx.cell.value), context: context);
   }
 
   Future<void> deleteSelectedRows() async {
@@ -159,7 +159,7 @@ class DepartmentsController extends GetxController {
     for (int i = 0; i < ids.length; i++) {
       final id = ids[i];
       final ApiResponse res =
-          await restClient().deleteGroup(id).nocodeErrorHandler();
+          await restClient().deleteJobTitle(id).nocodeErrorHandler();
       if (!res.success) {
         allSuccess = false;
         resp = res;
@@ -170,6 +170,7 @@ class DepartmentsController extends GetxController {
     if (allSuccess) {
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
+
       await appStore.dispatch(GetAllParamListAction());
       closeLoading();
     } else {
@@ -179,9 +180,9 @@ class DepartmentsController extends GetxController {
   }
 
   //Departments
-  final RxList<ListGroup> _deps = <ListGroup>[].obs;
-  List<ListGroup> get departments => _deps;
-  setDepartments(List<ListGroup> d) {
+  final RxList<ListJobTitle> _deps = <ListJobTitle>[].obs;
+  List<ListJobTitle> get departments => _deps;
+  setDepartments(List<ListJobTitle> d) {
     final dd = [...d];
     dd.sort((a, b) => a.name.compareTo(b.name));
     _deps.value = dd;

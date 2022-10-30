@@ -1,6 +1,7 @@
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
+import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
@@ -133,7 +134,9 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       }
 
       final DepartmentsController departmentsController = Get.find();
+      final GroupsController groupsController = Get.find();
       departmentsController.setDepartments(l.groups);
+      groupsController.setDepartments(l.jobtitles);
 
       stateValue.error.isError = false;
       stateValue.data = l;

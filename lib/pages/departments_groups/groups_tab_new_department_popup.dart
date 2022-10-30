@@ -1,43 +1,100 @@
-import 'package:auto_route/auto_route.dart';
+import 'dart:developer';
 
+import 'package:auto_route/auto_route.dart';
+import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
+import '../../comps/custom_get_builder.dart';
+import '../../manager/redux/middlewares/users_middleware.dart';
+import '../../manager/redux/sets/app_state.dart';
+import '../../manager/rest/nocode_helpers.dart';
+import '../../manager/rest/rest_client.dart';
 import '../../theme/theme.dart';
 
-class GroupsNewDepPopupWidget extends StatefulWidget {
-  const GroupsNewDepPopupWidget({Key? key}) : super(key: key);
+class GroupsNewDepController extends GetxController {
+  final ListJobTitle? group;
+  GroupsNewDepController({this.group});
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController depNameController = TextEditingController();
+  final RxString _status = "".obs;
+  String? get status => _status.value.isEmpty ? null : _status.value;
+  bool get isActive => _status.toLowerCase() == "active";
+
+  void setStatus(String? value) => _status.value = value ?? "";
+
+  Future<void> postDepartment() async {
+    if (formKey.currentState!.validate()) {
+      showLoading();
+      final ApiResponse res = await restClient()
+          .postJobTitle(
+            id: group?.id,
+            title: depNameController.text,
+            active: isActive,
+          )
+          .nocodeErrorHandler();
+
+      if (res.success) {
+        final GroupsController groupsController = Get.find();
+        groupsController.gridStateManager.toggleAllRowChecked(false);
+        groupsController.setDeleteBtnOpacity = 0.5;
+        await appStore.dispatch(GetAllParamListAction());
+      } else {}
+      closeLoading();
+    }
+  }
 
   @override
-  State<GroupsNewDepPopupWidget> createState() =>
-      _DepartmentsNewDepWidgetState();
-}
+  void onInit() {
+    super.onInit();
+    if (group != null) {
+      depNameController.text = group!.name;
+      setStatus(group!.active ? "Active" : "Inactive");
+    }
+  }
 
-class _DepartmentsNewDepWidgetState extends State<GroupsNewDepPopupWidget> {
-  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  @override
+  void onClose() {
+    super.onClose();
+  }
 
-  final TextEditingController _depNameController = TextEditingController();
-  String? _status;
+  @override
+  void onReady() {
+    super.onReady();
+  }
 
   @override
   void dispose() {
-    _depNameController.dispose();
+    depNameController.dispose();
+
     super.dispose();
   }
+}
+
+class GroupsNewDepPopupWidget extends GetView<GroupsNewDepController> {
+  final ListJobTitle? group;
+  const GroupsNewDepPopupWidget({super.key, this.group});
 
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
+    Get.lazyPut(() => GroupsNewDepController(group: group));
 
-    return TableWrapperWidget(
+    return GBuilder<GroupsNewDepController>(
+      child: (controller) => TableWrapperWidget(
         child: Form(
-      key: formKey,
-      child: SpacedColumn(children: [
-        _header(context),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        const SizedBox(),
-        _body(dpWidth),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        _footer(),
-      ]),
-    ));
+          key: controller.formKey,
+          child: SpacedColumn(children: [
+            _header(context),
+            const Divider(color: ThemeColors.gray11, height: 1.0),
+            const SizedBox(),
+            _body(dpWidth, controller),
+            const Divider(color: ThemeColors.gray11, height: 1.0),
+            _footer(context, controller),
+          ]),
+        ),
+      ),
+    );
   }
 
   Widget _header(BuildContext context) {
@@ -65,7 +122,7 @@ class _DepartmentsNewDepWidgetState extends State<GroupsNewDepPopupWidget> {
     );
   }
 
-  Widget _body(double dpWidth) {
+  Widget _body(double dpWidth, GroupsNewDepController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -77,7 +134,7 @@ class _DepartmentsNewDepWidgetState extends State<GroupsNewDepPopupWidget> {
             isRequired: true,
             width: dpWidth / 5,
             labelText: "Group Name",
-            controller: _depNameController,
+            controller: controller.depNameController,
             validator: (p0) {
               if (p0 == null || p0.isEmpty) {
                 return "Group name is required";
@@ -87,14 +144,13 @@ class _DepartmentsNewDepWidgetState extends State<GroupsNewDepPopupWidget> {
           ),
           DropdownWidget(
             hintText: "Status",
-            value: _status,
+            value: controller.status,
             dropdownBtnWidth: dpWidth / 5,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 5,
             onChanged: (val) {
-              setState(() {
-                _status = val;
-              });
+              log("val: $val");
+              controller.setStatus(val);
             },
             items: [
               "Active",
@@ -107,7 +163,9 @@ class _DepartmentsNewDepWidgetState extends State<GroupsNewDepPopupWidget> {
     );
   }
 
-  Widget _footer() {
+  Widget _footer(BuildContext context, GroupsNewDepController controller) {
+    final bool isNew = group == null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: SpacedRow(
@@ -125,9 +183,9 @@ class _DepartmentsNewDepWidgetState extends State<GroupsNewDepPopupWidget> {
           ButtonLarge(
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
-            text: 'Add Group',
+            text: isNew ? 'Add Group' : 'Update Group',
             onPressed: () {
-              if (formKey.currentState!.validate()) {}
+              controller.postDepartment();
             },
           ),
         ],

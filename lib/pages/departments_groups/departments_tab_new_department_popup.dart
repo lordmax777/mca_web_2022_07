@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 
 import '../../app.dart';
 import '../../comps/custom_get_builder.dart';
@@ -39,6 +40,10 @@ class DepsNewDepController extends GetxController {
           .nocodeErrorHandler();
 
       if (res.success) {
+        final DepartmentsController groupsController = Get.find();
+
+        groupsController.gridStateManager.toggleAllRowChecked(false);
+        groupsController.setDeleteBtnOpacity = 0.5;
         await appStore.dispatch(GetAllParamListAction());
       } else {}
       closeLoading();

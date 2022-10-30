@@ -6,21 +6,16 @@ import '../../theme/theme.dart';
 
 import 'package:get/get.dart';
 
-class DepartmentsListPage extends GetView<DepartmentsController> {
+class DepartmentsListPage extends StatelessWidget {
   const DepartmentsListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, AppState>(
-        converter: (store) => store.state,
-        onInit: (store) async {},
-        builder: (_, state) => PageWrapper(
-                child: SpacedColumn(verticalSpace: 16.0, children: [
-              PagesTitleWidget(
-                title: 'Departments and Groups',
-              ),
-              const ErrorWrapper(errors: [], child: _Body())
-            ])));
+    return PageWrapper(
+        child: SpacedColumn(verticalSpace: 16.0, children: const [
+      PagesTitleWidget(title: 'Departments and Groups'),
+      ErrorWrapper(errors: [], child: _Body())
+    ]));
   }
 }
 
@@ -88,7 +83,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       case 0:
         return DepartmentsTab();
       case 1:
-        return GroupsTab(state: state);
+        return GroupsTab();
       default:
         return const SizedBox();
     }
