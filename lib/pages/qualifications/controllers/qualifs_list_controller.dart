@@ -10,10 +10,7 @@ import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../home_page.dart';
 
-class DepartmentsController extends GetxController {
-  //Etc
-  final List<Tab> tabs = const [Tab(text: 'Departments'), Tab(text: 'Groups')];
-
+class QualifsController extends GetxController {
   //UI Variables
   final RxDouble _deleteBtnOpacity = 0.5.obs;
   final TextEditingController searchController = TextEditingController();
@@ -22,23 +19,13 @@ class DepartmentsController extends GetxController {
   List<PlutoColumn> columns(BuildContext context) {
     return [
       PlutoColumn(
-          title: "Department Name",
-          field: "department_name",
-          enableRowChecked: true,
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              mainAxisSize: MainAxisSize.min,
-              isSelectable: false,
-              onTap: () => _onColumnItemNavigate(ctx),
-            );
-          }),
+        title: "Qualification Name",
+        field: "qualification_name",
+        enableRowChecked: true,
+        type: PlutoColumnType.text(),
+      ),
       PlutoColumn(
-        width: 700,
+        width: 500,
         title: "",
         field: "space",
         readOnly: true,
@@ -46,30 +33,24 @@ class DepartmentsController extends GetxController {
         enableSorting: false,
       ),
       PlutoColumn(
-        title: "Status",
-        field: "status",
+        title: "Expire",
+        field: "expire",
         type: PlutoColumnType.text(),
-        renderer: (rendererContext) {
-          final Color color = rendererContext.cell.value == "active"
-              ? ThemeColors.green2
-              : ThemeColors.gray8;
-          return SpacedRow(
-              horizontalSpace: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration:
-                      BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-                UsersListTable.defaultTextWidget(rendererContext.cell.value
-                    .toString()
-                    .replaceFirst(rendererContext.cell.value.toString()[0],
-                        rendererContext.cell.value.toString()[0].toUpperCase()))
-              ]);
-        },
       ),
+      PlutoColumn(
+        title: "Levels",
+        field: "levels",
+        type: PlutoColumnType.text(),
+      ),
+      PlutoColumn(
+          title: "Comment",
+          field: "comment",
+          enableSorting: false,
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            return TableTooltipWidget(
+                title: "Read Comment", message: ctx.cell.value.toString());
+          }),
       PlutoColumn(
           title: "Action",
           field: "action",
@@ -115,20 +96,24 @@ class DepartmentsController extends GetxController {
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {
-            bool searched = element.cells['department_name']?.value
+            bool searched = element.cells['qualification_name']?.value
                 .toLowerCase()
                 .contains(searchController.text.toLowerCase());
             if (!searched) {
-              searched = element.cells['status']?.value
+              searched = element.cells['expire']?.value
                   .toLowerCase()
                   .contains(searchController.text.toLowerCase());
+              if (!searched) {
+                searched = element.cells['levels']?.value
+                    .toLowerCase()
+                    .contains(searchController.text.toLowerCase());
+              }
             }
             return searched;
           },
         );
         return;
       }
-
       gridStateManager.setFilter((element) => true);
     });
   }
@@ -146,7 +131,7 @@ class DepartmentsController extends GetxController {
 
   void _onEditClick(BuildContext context, PlutoColumnRendererContext ctx) {
     showOverlayPopup(
-        body: DepartmentsNewDepPopupWidget(group: ctx.cell.value),
+        body: QualifsNewQualifPopupWidget(qualif: ctx.cell.value),
         context: context);
   }
 
@@ -161,7 +146,7 @@ class DepartmentsController extends GetxController {
     for (int i = 0; i < ids.length; i++) {
       final id = ids[i];
       final ApiResponse res =
-          await restClient().deleteGroup(id).nocodeErrorHandler();
+          await restClient().deleteQualification(id).nocodeErrorHandler();
       if (!res.success) {
         allSuccess = false;
         resp = res;
@@ -181,11 +166,11 @@ class DepartmentsController extends GetxController {
   }
 
   //Departments
-  final RxList<ListGroup> _deps = <ListGroup>[].obs;
-  List<ListGroup> get departments => _deps;
-  setList(List<ListGroup> d) {
+  final RxList<ListQualification> _deps = <ListQualification>[].obs;
+  List<ListQualification> get departments => _deps;
+  setList(List<ListQualification> d) {
     final dd = [...d];
-    dd.sort((a, b) => a.name.compareTo(b.name));
+    dd.sort((a, b) => a.title.compareTo(b.title));
     _deps.value = dd;
     return _deps;
   }

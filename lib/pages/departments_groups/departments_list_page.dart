@@ -81,9 +81,9 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   Widget _getTabChild(AppState state) {
     switch (_tabController.index) {
       case 0:
-        return DepartmentsTab();
+        return const DepartmentsTab();
       case 1:
-        return GroupsTab();
+        return const GroupsTab();
       default:
         return const SizedBox();
     }

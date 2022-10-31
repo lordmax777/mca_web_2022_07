@@ -237,6 +237,21 @@ abstract class RestClient {
   @DELETE("/api/fe/jobtitles")
   @FormUrlEncoded()
   Future<HttpResponse> deleteJobTitle(@Query("jobtitleid") int jobtitleid);
+
+  @POST("/api/fe/qualifications")
+  @FormUrlEncoded()
+  Future<HttpResponse> postQualif({
+    @Field() int? id,
+    @Field() String? comments,
+    @Field() required String title,
+    @Field() required bool active,
+    @Field() required bool levels,
+    @Field() required bool expire,
+  });
+
+  @DELETE("/api/fe/qualifications")
+  Future<HttpResponse> deleteQualification(
+      @Query("qualificationid") int qualificationid);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

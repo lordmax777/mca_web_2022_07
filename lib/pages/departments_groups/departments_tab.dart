@@ -6,6 +6,8 @@ import '../../theme/theme.dart';
 import 'controllers/deps_list_controller.dart';
 
 class DepartmentsTab extends GetView<DepartmentsController> {
+  const DepartmentsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(

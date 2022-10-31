@@ -135,6 +135,8 @@ class GroupsController extends GetxController {
   }
 
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
+    appStore
+        .dispatch(UpdateGeneralStateAction(endDrawer: const DepGroupDrawer()));
     await Future.delayed(const Duration(milliseconds: 100));
     if (scaffoldKey.currentState != null) {
       if (!scaffoldKey.currentState!.isDrawerOpen) {
@@ -182,7 +184,7 @@ class GroupsController extends GetxController {
   //Departments
   final RxList<ListJobTitle> _deps = <ListJobTitle>[].obs;
   List<ListJobTitle> get departments => _deps;
-  setDepartments(List<ListJobTitle> d) {
+  setList(List<ListJobTitle> d) {
     final dd = [...d];
     dd.sort((a, b) => a.name.compareTo(b.name));
     _deps.value = dd;

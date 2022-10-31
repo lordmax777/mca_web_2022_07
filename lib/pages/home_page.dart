@@ -39,16 +39,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      builder: (_, state) => GetBuilder<DepartmentsController>(
-        builder: (controller) => Scaffold(
-          drawer: DefaultDrawer(state: state),
-          // endDrawer: controller.rightDrawerWidget,
-          backgroundColor: ThemeColors.gray12,
-          // drawerEnableOpenDragGesture: false,
-          key: scaffoldKey,
-          appBar: NavbarWidget(scaffoldKey: scaffoldKey),
-          body: const AutoRouter(),
-        ),
+      builder: (_, state) => Scaffold(
+        drawer: DefaultDrawer(state: state),
+        endDrawer: state.generalState.endDrawer,
+        backgroundColor: ThemeColors.gray12,
+        drawerEnableOpenDragGesture: false,
+        key: scaffoldKey,
+        appBar: NavbarWidget(scaffoldKey: scaffoldKey),
+        body: const AutoRouter(),
       ),
     );
   }

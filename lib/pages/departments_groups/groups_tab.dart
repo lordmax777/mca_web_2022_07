@@ -6,6 +6,8 @@ import '../../manager/models/list_all_md.dart';
 import '../../theme/theme.dart';
 
 class GroupsTab extends GetView<GroupsController> {
+  const GroupsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(

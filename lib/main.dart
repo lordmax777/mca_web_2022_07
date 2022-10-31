@@ -4,6 +4,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/departments_tab_new_department_popup.dart';
+import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 
 import 'app.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ void main() {
       isShowFile: false, isShowTime: false, isShowNavigation: false);
   Get.lazyPut(() => DepartmentsController());
   Get.lazyPut(() => GroupsController());
+  Get.lazyPut(() => QualifsController());
 
   runApp(const McaWebApp());
 }

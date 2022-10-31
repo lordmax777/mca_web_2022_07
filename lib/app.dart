@@ -20,7 +20,7 @@ class McaWebApp extends StatelessWidget {
       store: appStore,
       child: MaterialApp.router(
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) HomeRoute(children: [DepartmentsListRoute()])
+          if (kDebugMode) HomeRoute(children: [QualificationsRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [
