@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import '../manager/redux/middlewares/auth_middleware.dart';
 import '../manager/redux/states/auth_state.dart';
 import '../manager/redux/states/general_state.dart';
+import '../manager/redux/states/users_state/users_state.dart';
 import 'departments_groups/controllers/deps_list_controller.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
           username: Constants.username,
           password: Constants.password));
       await fetch(GetAllParamListAction());
+      await fetch(GetUsersListAction());
       await fetch(GetWarehousesAction());
     });
   }

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
@@ -154,7 +155,12 @@ class GetUsersListAction {
     stateValue.error.rawError = res.rawError;
 
     if (res.success) {
-      final List l = res.data['users'].values.toList();
+      final List l;
+      if (res.data['users'].runtimeType == List) {
+        l = res.data['users'];
+      } else {
+        l = res.data['users'].values.toList();
+      }
       List<UserRes> users = [];
       for (var v in l) {
         users.add(UserRes.fromJson(v));

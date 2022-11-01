@@ -20,9 +20,7 @@ class UsersListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      onInit: (store) async {
-        await fetch(GetUsersListAction());
-      },
+      onInit: (store) async {},
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           PagesTitleWidget(
@@ -346,10 +344,11 @@ class _BodyState extends State<_Body> {
         children: [
           _header(context),
           _body(),
-          const Divider(
-            color: ThemeColors.gray11,
-            thickness: 1.0,
-          ),
+          if (_users.isNotEmpty)
+            const Divider(
+              color: ThemeColors.gray11,
+              thickness: 1.0,
+            ),
           if (_isSmLoaded) _footer(usersPageStateManger),
         ],
       ),
@@ -415,6 +414,15 @@ class _BodyState extends State<_Body> {
   }
 
   Widget _body() {
+    if (_users.isEmpty) {
+      return Center(
+        child: KText(
+            mainAxisSize: MainAxisSize.min,
+            text: "No Data",
+            textColor: ThemeColors.gray2,
+            fontSize: 24.0),
+      );
+    }
     return UsersListTable(
       onSmReady: _setSm,
       rows: widget.state.usersState.usersList.data!
@@ -474,6 +482,9 @@ class _BodyState extends State<_Body> {
   }
 
   Widget _footer(PlutoGridStateManager stateManager) {
+    if (_users.isEmpty) {
+      return const Center(child: SizedBox());
+    }
     return Padding(
       padding: const EdgeInsets.only(
           left: 16.0, right: 32.0, top: 16.0, bottom: 16.0),
