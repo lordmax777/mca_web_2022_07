@@ -1,9 +1,14 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
 import '../../theme/theme.dart';
 
 class DepGroupDrawer extends StatefulWidget {
-  const DepGroupDrawer({Key? key}) : super(key: key);
+  final ListGroup? group;
+  final ListJobTitle? department;
+  const DepGroupDrawer({Key? key, this.group, this.department})
+      : super(key: key);
 
   @override
   State<DepGroupDrawer> createState() => _DepGroupDrawerState();
@@ -55,8 +60,23 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
   @override
   void initState() {
     super.initState();
+    // items.clear();
+    // if(widget.group!=null){
+    //   final users = appStore.state.usersState.usersList.data!;
+    //   for (var user in users) {
+    //     if(user.groupId==user.groupId){
+    //       items.add({
+    //         "name": user.fullname,
+    //         "time": user.,
+    //         "items": 10,
+    //         "price": 1000,
+    //       });
+    //     }
+    //   }
+    // }
     backupItems.clear();
     backupItems.addAll(items);
+
     _onSearch();
   }
 

@@ -10,10 +10,8 @@ import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../home_page.dart';
 
-class DepartmentsController extends GetxController {
-  //Etc
-  final List<Tab> tabs = const [Tab(text: 'Departments'), Tab(text: 'Groups')];
-
+class HandoverTypesController extends GetxController {
+  static HandoverTypesController get to => Get.find();
   //UI Variables
   final RxDouble _deleteBtnOpacity = 0.5.obs;
   final TextEditingController searchController = TextEditingController();
@@ -22,21 +20,11 @@ class DepartmentsController extends GetxController {
   List<PlutoColumn> columns(BuildContext context) {
     return [
       PlutoColumn(
-          title: "Department Name",
-          field: "department_name",
-          enableRowChecked: true,
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              mainAxisSize: MainAxisSize.min,
-              isSelectable: false,
-              onTap: () => _onColumnItemNavigate(ctx),
-            );
-          }),
+        title: "Handover Name",
+        field: "handover_name",
+        enableRowChecked: true,
+        type: PlutoColumnType.text(),
+      ),
       PlutoColumn(
         width: 700,
         title: "",
@@ -115,7 +103,7 @@ class DepartmentsController extends GetxController {
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {
-            bool searched = element.cells['department_name']?.value
+            bool searched = element.cells['handover_name']?.value
                 .toLowerCase()
                 .contains(searchController.text.toLowerCase());
             if (!searched) {
@@ -133,20 +121,11 @@ class DepartmentsController extends GetxController {
     });
   }
 
-  Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
-    appStore
-        .dispatch(UpdateGeneralStateAction(endDrawer: const DepGroupDrawer()));
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (scaffoldKey.currentState != null) {
-      if (!scaffoldKey.currentState!.isDrawerOpen) {
-        scaffoldKey.currentState!.openEndDrawer();
-      }
-    }
-  }
+  Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {}
 
   void _onEditClick(BuildContext context, PlutoColumnRendererContext ctx) {
     showOverlayPopup(
-        body: DepartmentsNewDepPopupWidget(group: ctx.cell.value),
+        body: HandsNewHandoverPopupWidget(group: ctx.cell.value),
         context: context);
   }
 
@@ -155,28 +134,27 @@ class DepartmentsController extends GetxController {
         .map<int>((e) => e.cells['action']?.value.id)
         .toList();
     if (ids.isEmpty) return;
-    showLoading();
+    // showLoading();
     bool allSuccess = true;
     ApiResponse? resp;
     for (int i = 0; i < ids.length; i++) {
       final id = ids[i];
-      final ApiResponse res =
-          await restClient().deleteGroup(id).nocodeErrorHandler();
-      if (!res.success) {
-        allSuccess = false;
-        resp = res;
-        break;
-      } else {
-        _deps.removeWhere((element) => element.id == id);
-      }
+      // final ApiResponse res =
+      //     await restClient().deleteGroup(id).nocodeErrorHandler(); //TODO: Add delete handover types api
+      // if (!res.success) {
+      //   allSuccess = false;
+      //   resp = res;
+      //   break;
+      // } else {
+      _deps.removeWhere((element) => element.id == id);
+      // }
     }
 
     if (allSuccess) {
       gridStateManager.removeRows(gridStateManager.checkedRows);
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
-      // await appStore.dispatch(GetAllParamListAction());
-      closeLoading();
+      // closeLoading();
     } else {
       await closeLoading();
       showError(resp?.rawError?.data.toString() ?? "Error");
@@ -184,9 +162,9 @@ class DepartmentsController extends GetxController {
   }
 
   //Departments
-  final RxList<ListGroup> _deps = <ListGroup>[].obs;
-  List<ListGroup> get departments => _deps;
-  setList(List<ListGroup> d) {
+  final RxList<ListHandoverType> _deps = <ListHandoverType>[].obs;
+  List<ListHandoverType> get departments => _deps;
+  setList(List<ListHandoverType> d) {
     final dd = [...d];
     dd.sort((a, b) => a.name.compareTo(b.name));
     _deps.value = dd;

@@ -151,13 +151,18 @@ class QualifsController extends GetxController {
         allSuccess = false;
         resp = res;
         break;
+      } else {
+        _deps.removeWhere((element) => element.id == id);
       }
     }
 
     if (allSuccess) {
+      gridStateManager.removeRows(gridStateManager.checkedRows);
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
-      await appStore.dispatch(GetAllParamListAction());
+      // gridStateManager.toggleAllRowChecked(false);
+      // setDeleteBtnOpacity = 0.5;
+      // await appStore.dispatch(GetAllParamListAction());
       closeLoading();
     } else {
       await closeLoading();

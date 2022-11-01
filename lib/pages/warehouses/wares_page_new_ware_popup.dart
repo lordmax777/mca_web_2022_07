@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
+import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/rest/nocode_helpers.dart';
@@ -32,7 +35,8 @@ class WaresNewWareController extends GetxController {
           .postWarehouse(
             id: qualif?.id,
             contactName: name2Controller.text,
-            contactEmail: emailController.text,
+            contactEmail:
+                emailController.text.isEmpty ? null : emailController.text,
             name: nameController.text,
             sendReport: sendReport,
             active: true,
@@ -41,12 +45,19 @@ class WaresNewWareController extends GetxController {
 
       if (res.success) {
         final WarehouseController controller = Get.find();
-
         controller.gridStateManager.toggleAllRowChecked(false);
         controller.setDeleteBtnOpacity = 0.5;
         await appStore.dispatch(GetWarehousesAction());
+        closeLoading();
+      } else {
+        await closeLoading();
+        String errorMessage = "";
+        jsonDecode(res.data)['errors'].entries.forEach((e) {
+          errorMessage += "${e.value.first}\n";
+        });
+
+        showError(errorMessage);
       }
-      closeLoading();
     }
   }
 
@@ -141,17 +152,22 @@ class WaresNewWarePopupWidget extends StatelessWidget {
             controller: controller.nameController,
           ),
           TextInputWidget(
+            isRequired: true,
             width: dpWidth / 5,
             labelText: "Contact Name",
             controller: controller.name2Controller,
           ),
           TextInputWidget(
+            isRequired: controller.sendReport,
             width: dpWidth / 5,
             labelText: "Contact Email",
             controller: controller.emailController,
             validator: (p0) {
-              if (p0 != null && p0.isNotEmpty) {
-                if (!p0.isEmail) {
+              if (controller.sendReport) {
+                if (p0 == null || p0.isEmpty) {
+                  return 'Please enter a contact email';
+                }
+                if (!GetUtils.isEmail(p0)) {
                   return 'Please enter a valid email';
                 }
               }

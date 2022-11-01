@@ -50,13 +50,28 @@ class TextInputWidget extends StatefulWidget {
 
 class _TextInputWidgetState extends State<TextInputWidget> {
   bool _obscureText = true;
+
+  String? Function(String?)? _getValidator() {
+    if (widget.validator != null) {
+      return widget.validator;
+    } else if (widget.isRequired) {
+      return (value) {
+        if (value == null || value.isEmpty) {
+          return 'This field is required';
+        }
+        return null;
+      };
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
       child: TextFormField(
         onChanged: widget.onChanged,
-        validator: widget.validator,
+        validator: _getValidator(),
         obscureText: widget.isPassword ? _obscureText : false,
         onTap: widget.onTap,
         keyboardType: widget.keyboardType,

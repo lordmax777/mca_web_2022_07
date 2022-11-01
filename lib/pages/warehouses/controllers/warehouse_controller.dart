@@ -203,22 +203,27 @@ class WarehouseController extends GetxController {
         allSuccess = false;
         resp = res;
         break;
+      } else {
+        _deps.removeWhere((element) => element.id == id);
       }
     }
 
     if (allSuccess) {
+      gridStateManager.removeRows(gridStateManager.checkedRows);
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
-      await appStore.dispatch(GetWarehousesAction());
+      // await appStore.dispatch(GetWarehousesAction());
       closeLoading();
     } else {
       await closeLoading();
       showError(resp?.rawError?.data.toString() ?? "Error");
     }
+    update();
   }
 
   //Departments
   final RxList<WarehouseMd> _deps = <WarehouseMd>[].obs;
+  void removeDepsWhere(WarehouseMd w) => _deps.removeWhere((e) => e.id == w.id);
   List<WarehouseMd> get departments => _deps;
   setList(List<WarehouseMd> d) {
     final dd = [...d];

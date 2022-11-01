@@ -1,53 +1,110 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
-import '../../comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
+
+import '../../app.dart';
+import '../../comps/custom_get_builder.dart';
+import '../../manager/redux/middlewares/users_middleware.dart';
+import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
+import '../../manager/rest/nocode_helpers.dart';
+import '../../manager/rest/rest_client.dart';
 import '../../theme/theme.dart';
 
-class HandsNewHandoverPopupWidget extends StatefulWidget {
-  const HandsNewHandoverPopupWidget({Key? key}) : super(key: key);
+class HandsNewHandController extends GetxController {
+  final ListHandoverType? group;
+  HandsNewHandController({this.group});
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController depNameController = TextEditingController();
+  final RxString _status = "".obs;
+  String? get status => _status.value.isEmpty ? null : _status.value;
+  bool get isActive => _status.toLowerCase() == "active";
+
+  void setStatus(String? value) => _status.value = value ?? "";
+
+  Future<void> postDepartment() async {
+    if (formKey.currentState!.validate()) {
+      // showLoading();
+      // final ApiResponse res = await restClient() //TODO: Add create new handover type api
+      //     .postGroup(
+      //       id: group?.id,
+      //       name: depNameController.text,
+      //       active: isActive,
+      //     )
+      //     .nocodeErrorHandler();
+
+      if (true) {
+        final DepartmentsController groupsController = Get.find();
+
+        groupsController.gridStateManager.toggleAllRowChecked(false);
+        groupsController.setDeleteBtnOpacity = 0.5;
+        await appStore.dispatch(GetAllParamListAction());
+      } else {}
+      // closeLoading();
+    }
+  }
 
   @override
-  State<HandsNewHandoverPopupWidget> createState() =>
-      _HandsNewHandoverPopupWidgetState();
-}
+  void onInit() {
+    super.onInit();
+    if (group != null) {
+      depNameController.text = group!.name;
+      setStatus(group!.active ? "Active" : "Inactive");
+    }
+  }
 
-class _HandsNewHandoverPopupWidgetState
-    extends State<HandsNewHandoverPopupWidget> {
-  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  @override
+  void onClose() {
+    super.onClose();
+  }
 
-  final TextEditingController _nameController = TextEditingController();
-  CodeMap status = CodeMap(name: null, code: null);
+  @override
+  void onReady() {
+    super.onReady();
+  }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    depNameController.dispose();
+
     super.dispose();
   }
+}
 
-  @override
-  void initState() {
-    super.initState();
-  }
+class HandsNewHandoverPopupWidget extends GetView<DepsNewDepController> {
+  final ListHandoverType? group;
+  const HandsNewHandoverPopupWidget({super.key, this.group});
 
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
+    Get.lazyPut(() => HandsNewHandController(group: group));
 
-    return TableWrapperWidget(
+    return GBuilder<HandsNewHandController>(
+      child: (controller) => TableWrapperWidget(
         child: Form(
-      key: formKey,
-      child: SpacedColumn(children: [
-        _header(context),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        const SizedBox(),
-        _body(dpWidth),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        _footer(),
-      ]),
-    ));
+          key: controller.formKey,
+          child: SpacedColumn(children: [
+            _header(context),
+            const Divider(color: ThemeColors.gray11, height: 1.0),
+            const SizedBox(),
+            _body(dpWidth, controller),
+            const Divider(color: ThemeColors.gray11, height: 1.0),
+            _footer(context, controller),
+          ]),
+        ),
+      ),
+    );
   }
 
   Widget _header(BuildContext context) {
+    bool isNew = group == null;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: SpacedRow(
@@ -55,16 +112,14 @@ class _HandsNewHandoverPopupWidgetState
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           KText(
-            text: 'New Handover',
+            text: isNew ? 'New Handover Type' : 'Edit Handover Type',
             fontSize: 18.0,
             fontWeight: FWeight.bold,
             isSelectable: false,
             textColor: ThemeColors.gray2,
           ),
           IconButton(
-              onPressed: () {
-                context.popRoute();
-              },
+              onPressed: context.popRoute,
               icon: const HeroIcon(HeroIcons.x,
                   color: ThemeColors.gray2, size: 20.0)),
         ],
@@ -72,46 +127,40 @@ class _HandsNewHandoverPopupWidgetState
     );
   }
 
-  Widget _body(double dpWidth) {
-    final List<CodeMap> statuses = [
-      CodeMap(name: 'Active', code: '0'),
-      CodeMap(name: 'Inactive', code: '1'),
-    ];
+  Widget _body(double dpWidth, HandsNewHandController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
         crossAxisAlignment: CrossAxisAlignment.start,
-        verticalSpace: 24.0,
+        verticalSpace: 32.0,
         children: [
           const SizedBox(height: 1),
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 5,
-            validator: (val) {
-              if (val == null || val.isEmpty) {
-                return 'Please enter a name';
+            labelText: "Handover Name",
+            controller: controller.depNameController,
+            validator: (p0) {
+              if (p0 == null || p0.isEmpty) {
+                return "Handover name is required";
               }
               return null;
             },
-            labelText: "Handover Name",
-            controller: _nameController,
-            onTap: () {},
           ),
-          DropdownWidget1<CodeMap>(
+          DropdownWidget(
             hintText: "Status",
-            value: status.name,
+            value: controller.status,
             dropdownBtnWidth: dpWidth / 5,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 5,
-            dropdownMaxHeight: 400.0,
-            hasSearchBox: true,
-            objItems: statuses,
-            onChangedWithObj: (value) {
-              setState(() {
-                status = CodeMap(code: value.item.code, name: value.name);
-              });
+            onChanged: (val) {
+              log("val: $val");
+              controller.setStatus(val);
             },
-            items: statuses.map((e) => e.name).toList(),
+            items: const [
+              "Active",
+              "Inactive",
+            ],
           ),
           const SizedBox(height: 1),
         ],
@@ -119,7 +168,9 @@ class _HandsNewHandoverPopupWidgetState
     );
   }
 
-  Widget _footer() {
+  Widget _footer(BuildContext context, HandsNewHandController controller) {
+    final bool isNew = group == null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: SpacedRow(
@@ -130,20 +181,13 @@ class _HandsNewHandoverPopupWidgetState
           ButtonLargeSecondary(
             text: 'Cancel',
             paddingWithoutIcon: true,
-            onPressed: () {
-              context.popRoute();
-            },
+            onPressed: context.popRoute,
           ),
           ButtonLarge(
             paddingWithoutIcon: true,
-            icon: const HeroIcon(HeroIcons.check,
-                color: ThemeColors.white, size: 20.0),
-            text: 'Add Warehouse',
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                // context.popRoute();
-              }
-            },
+            icon: const HeroIcon(HeroIcons.check, size: 20.0),
+            text: isNew ? 'Add Handover' : 'Update Handover',
+            onPressed: controller.postDepartment,
           ),
         ],
       ),
