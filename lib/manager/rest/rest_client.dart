@@ -252,6 +252,23 @@ abstract class RestClient {
   @DELETE("/api/fe/qualifications")
   Future<HttpResponse> deleteQualification(
       @Query("qualificationid") int qualificationid);
+
+  @GET("/api/fe/warehouses")
+  Future<HttpResponse> getWarehouses();
+
+  @POST("/api/fe/warehouses")
+  @FormUrlEncoded()
+  Future<HttpResponse> postWarehouse({
+    @Field() int? id,
+    @Field() String? contactEmail,
+    @Field() required String name,
+    @Field() required String contactName,
+    @Field() required bool active,
+    @Field() required bool sendReport,
+  });
+
+  @DELETE("/api/fe/warehouses")
+  Future<HttpResponse> deleteWarehouse(@Query("storageid") int storageid);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

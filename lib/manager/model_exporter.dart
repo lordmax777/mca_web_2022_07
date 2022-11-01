@@ -14,3 +14,4 @@ export 'models/preffered_shift_md_md.dart';
 export 'models/list_all_md.dart';
 export 'models/photos_md.dart';
 export 'models/mobile_md.dart';
+export 'models/warehouse_md.dart';

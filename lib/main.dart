@@ -5,6 +5,7 @@ import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_c
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/departments_tab_new_department_popup.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
+import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
 
 import 'app.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ void main() {
   Get.lazyPut(() => DepartmentsController());
   Get.lazyPut(() => GroupsController());
   Get.lazyPut(() => QualifsController());
+  Get.lazyPut(() => WarehouseController());
 
   runApp(const McaWebApp());
 }

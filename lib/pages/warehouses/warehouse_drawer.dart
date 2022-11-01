@@ -1,10 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:faker/faker.dart';
 
+import '../../manager/models/warehouse_md.dart';
 import '../../theme/theme.dart';
 
 class WarehouseDrawer extends StatefulWidget {
-  const WarehouseDrawer({Key? key}) : super(key: key);
+  final WarehouseMd warehouse;
+  const WarehouseDrawer({Key? key, required this.warehouse}) : super(key: key);
 
   @override
   State<WarehouseDrawer> createState() => _WarehouseDrawerState();
@@ -25,9 +27,10 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 30; i++) {
+    final len = (widget.warehouse.properties?.length) ?? 0;
+    for (int i = 0; i < len; i++) {
       final Map map = {
-        "name": faker.address.neighborhood(),
+        "name": (widget.warehouse.properties?[i].propertyName) ?? "-",
       };
       items.add(map);
     }
@@ -82,7 +85,7 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
           children: [
             KText(
               isSelectable: false,
-              text: '170 Maze Avenue',
+              text: widget.warehouse.name,
               fontSize: 18.0,
               textColor: ThemeColors.gray2,
               fontWeight: FWeight.bold,
@@ -101,6 +104,20 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
   }
 
   Widget _body() {
+    if (items.isEmpty) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          KText(
+            text: "No properties found!",
+            fontSize: 24.0,
+            textColor: ThemeColors.gray5,
+            isSelectable: false,
+            fontWeight: FWeight.bold,
+          ),
+        ],
+      );
+    }
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: SpacedColumn(children: [

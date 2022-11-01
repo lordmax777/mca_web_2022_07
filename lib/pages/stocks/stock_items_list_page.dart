@@ -183,8 +183,10 @@ class _BodyState extends State<_Body> {
 
   void _onUserDetailsNavigationClick(PlutoColumnRendererContext ctx,
       {int index = 0}) async {
-    appStore
-        .dispatch(UpdateGeneralStateAction(endDrawer: const WarehouseDrawer()));
+    appStore.dispatch(UpdateGeneralStateAction(
+        endDrawer: WarehouseDrawer(
+      warehouse: ctx.cell.row.cells['action']?.value,
+    )));
     await Future.delayed(const Duration(milliseconds: 100));
     if (scaffoldKey.currentState != null) {
       if (!scaffoldKey.currentState!.isDrawerOpen) {

@@ -68,6 +68,7 @@ class _BodyState extends State<_Body> {
         width: 300.0,
         title: "Location Name",
         field: "location_name",
+        enableRowChecked: true,
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(

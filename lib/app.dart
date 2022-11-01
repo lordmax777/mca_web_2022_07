@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get/get.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -20,7 +19,7 @@ class McaWebApp extends StatelessWidget {
       store: appStore,
       child: MaterialApp.router(
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) HomeRoute(children: [QualificationsRoute()])
+          if (kDebugMode) HomeRoute(children: [WarehousesListRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

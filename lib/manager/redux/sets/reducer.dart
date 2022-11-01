@@ -81,6 +81,7 @@ GeneralState _updateGeneralStateAction(
     drawerStates: action.drawerStates ?? state.drawerStates,
     endDrawer: action.endDrawer,
     locationList: action.locationList ?? state.locationList,
+    warehouses: action.warehouses ?? state.warehouses,
   );
 }
 

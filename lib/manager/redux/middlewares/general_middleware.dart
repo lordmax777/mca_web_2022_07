@@ -11,6 +11,7 @@ import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../sets/state_value.dart';
 import '../states/general_state.dart';
+import 'auth_middleware.dart';
 
 class GeneralMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -20,6 +21,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getAllParamList(store.state, action, next);
       case GetAllLocationsAction:
         return GetAllLocationsAction.fetch(store.state);
+      case GetWarehousesAction:
+        return GetWarehousesAction.fetch(store.state, action, next);
       default:
         return next(action);
     }
