@@ -1,5 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 
+import '../../manager/models/list_all_md.dart';
+import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/sets/state_value.dart';
+import '../../manager/redux/states/general_state.dart';
+import '../../manager/redux/states/users_state/users_state.dart';
 import '../../theme/theme.dart';
 
 class UserDetailPreferredShiftsNewShiftPopupWidget extends StatefulWidget {
@@ -15,27 +22,30 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
     extends State<UserDetailPreferredShiftsNewShiftPopupWidget> {
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String? _day;
-  String? _week;
-  String? _location;
-  String? _shift;
+  CodeMap? _day;
+  CodeMap? _week;
+  String? shiftItemName;
+  ListShift? _shift;
 
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
 
-    return TableWrapperWidget(
-        child: Form(
-      key: formKey,
-      child: SpacedColumn(children: [
-        _header(context),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        const SizedBox(),
-        _body(dpWidth),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        _footer(),
-      ]),
-    ));
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) => TableWrapperWidget(
+          child: Form(
+        key: formKey,
+        child: SpacedColumn(children: [
+          _header(context),
+          const Divider(color: ThemeColors.gray11, height: 1.0),
+          const SizedBox(),
+          _body(dpWidth, state),
+          const Divider(color: ThemeColors.gray11, height: 1.0),
+          _footer(),
+        ]),
+      )),
+    );
   }
 
   Widget _header(BuildContext context) {
@@ -53,9 +63,7 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
             textColor: ThemeColors.gray2,
           ),
           IconButton(
-              onPressed: () {
-                context.popRoute();
-              },
+              onPressed: context.popRoute,
               icon: const HeroIcon(HeroIcons.x,
                   color: ThemeColors.gray2, size: 20.0)),
         ],
@@ -63,7 +71,13 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
     );
   }
 
-  Widget _body(double dpWidth) {
+  Widget _body(double dpWidth, AppState state) {
+    final GeneralState generalState = state.generalState;
+    final statuses = generalState.paramList.data!.statuses;
+    final locs = generalState.paramList.data!.locations;
+    final shifts = generalState.paramList.data!.shifts
+        .where((element) => element.active)
+        .toList();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -84,49 +98,44 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
             },
             items: [],
           ),
-          DropdownWidget(
-            hintText: "Location",
-            value: _location,
-            dropdownBtnWidth: dpWidth / 4,
-            isRequired: true,
-            dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (val) {
-              setState(() {
-                _location = val;
-              });
-            },
-            items: [],
-          ),
-          DropdownWidget(
+          DropdownWidget1<MapEntry>(
             hintText: "Day",
-            value: _day,
+            value: _day?.name,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
             hasSearchBox: true,
-            onChanged: (val) {
+            onChangedWithObj: (p0) {
               setState(() {
-                _day = val;
+                _day = CodeMap(
+                    name: p0.name, code: (p0.item as MapEntry).key.toString());
               });
             },
+            objItems: Constants.daysOfTheWeek.entries.toList(),
             items: Constants.daysOfTheWeek.entries
                 .map((e) => e.value.toString())
                 .toList(),
           ),
-          DropdownWidget(
+          DropdownWidget1<ListShift>(
             hintText: "Shift",
-            value: _shift,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
-            onChanged: (val) {
+            value: shiftItemName,
+            objItems: shifts,
+            hasSearchBox: true,
+            items: shifts
+                .map((e) =>
+                    "${locs.firstWhere((element) => element.toJson()['id'] == e.location_id).name}, ${e.name}")
+                .toList(),
+            onChangedWithObj: (DpItem val) {
               setState(() {
-                _shift = val;
+                shiftItemName = val.name;
+                _shift = val.item as ListShift;
               });
             },
-            items: [],
           ),
-          const SizedBox(),
+          const SizedBox(height: 1),
         ],
       ),
     );
@@ -150,8 +159,16 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
           ButtonLarge(
             paddingWithoutIcon: true,
             text: 'Add Shift',
-            onPressed: () {
-              if (formKey.currentState!.validate()) {}
+            onPressed: () async {
+              // if (formKey.currentState!.validate()) {
+              await appStore.dispatch(GetPostUserDetailsPreferredShiftAction(
+                shiftId: _shift!.id,
+                dayId: int.parse(_day!.code!),
+                weekId:
+                    1, //int.parse(_week!.code!), //TODO: only 1 and 2 is working
+                // timingId:
+              ));
+              // }
             },
           ),
         ],

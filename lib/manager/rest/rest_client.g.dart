@@ -615,6 +615,44 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<HttpResponse<dynamic>> postUserDetailsPreferredShift(
+    id, {
+    required weekId,
+    required dayId,
+    required shiftId,
+    timingid,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'weekId': weekId,
+      'dayId': dayId,
+      'shiftId': shiftId,
+      'timingid': timingid,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/preferredshifts',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
   Future<HttpResponse<dynamic>> getUserDetailsQalifications(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -859,6 +897,7 @@ class _RestClient implements RestClient {
     groupAdmin,
     locationAdmin,
     loginRequired,
+    loginmethods,
     email,
   }) async {
     const _extra = <String, dynamic>{};
@@ -900,6 +939,7 @@ class _RestClient implements RestClient {
       'groupAdmin': groupAdmin,
       'locationAdmin': locationAdmin,
       'loginRequired': loginRequired,
+      'loginmethods': loginmethods,
       'email': email,
     };
     _data.removeWhere((k, v) => v == null);
@@ -923,9 +963,10 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> getAllLocations() async {
+  Future<HttpResponse<dynamic>> getLocationsOrSingle({id}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =

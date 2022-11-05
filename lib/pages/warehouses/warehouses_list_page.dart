@@ -141,7 +141,6 @@ class _Body extends StatelessWidget {
                         .toList(),
                     dropdownBtnWidth: 120,
                     onChanged: c.onPageSizeChange,
-                    //TODO: if _pageSize is less than the last item of tablePageSizes, show that item instead of last item!
                     value: c.gridStateManager.pageSize.toString(),
                   ),
                   // MyWidget(),

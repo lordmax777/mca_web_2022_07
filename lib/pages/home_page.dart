@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/drawer.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
@@ -9,7 +8,6 @@ import '../manager/redux/middlewares/auth_middleware.dart';
 import '../manager/redux/states/auth_state.dart';
 import '../manager/redux/states/general_state.dart';
 import '../manager/redux/states/users_state/users_state.dart';
-import 'departments_groups/controllers/deps_list_controller.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -32,9 +30,12 @@ class _HomePageState extends State<HomePage> {
           domain: Constants.domain,
           username: Constants.username,
           password: Constants.password));
-      await fetch(GetAllParamListAction());
-      await fetch(GetUsersListAction());
-      await fetch(GetWarehousesAction());
+      await Future.wait([
+        fetch(GetAllParamListAction()),
+        fetch(GetUsersListAction()),
+        fetch(GetWarehousesAction()),
+        fetch(GetAllLocationsAction()),
+      ]);
     });
   }
 

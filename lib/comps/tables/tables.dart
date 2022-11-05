@@ -204,6 +204,9 @@ class UserDetailPayrollTabTable extends StatelessWidget {
     return SizedBox(
       height: _h,
       child: PlutoGrid(
+        onSelected: (event) {
+          print(event);
+        },
         configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig(
                 columnHeight: 48.0,

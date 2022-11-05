@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import '../../../app.dart';
 import '../../../comps/drawer.dart';
 import '../../model_exporter.dart';
+import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../../router/router.gr.dart';
@@ -21,7 +23,7 @@ class GeneralState {
   final DrawerStates drawerStates;
   final Widget? endDrawer;
   final StateValue<List<WarehouseMd>> warehouses;
-
+  final StateValue<List<LocationItemMd>> locationItems;
   // ignore: prefer_const_constructors_in_immutables
   GeneralState({
     required this.paramList,
@@ -29,12 +31,17 @@ class GeneralState {
     required this.warehouses,
     required this.drawerStates,
     required this.endDrawer,
+    required this.locationItems,
   });
 
   factory GeneralState.initial() {
     return GeneralState(
       endDrawer: null,
       locationList: [],
+      locationItems: StateValue(
+        error: ErrorModel(),
+        data: [],
+      ),
       warehouses: StateValue(
         error: ErrorModel(),
         data: [],
@@ -77,6 +84,7 @@ class GeneralState {
     Widget? endDrawer,
     List<LocationsMd>? locationList,
     StateValue<List<WarehouseMd>>? warehouses,
+    StateValue<List<LocationItemMd>>? locationItems,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -84,6 +92,7 @@ class GeneralState {
       warehouses: warehouses ?? this.warehouses,
       locationList: locationList ?? this.locationList,
       endDrawer: endDrawer,
+      locationItems: locationItems ?? this.locationItems,
     );
   }
 }
@@ -94,6 +103,7 @@ class UpdateGeneralStateAction {
   Widget? endDrawer;
   List<LocationsMd>? locationList;
   StateValue<List<WarehouseMd>>? warehouses;
+  StateValue<List<LocationItemMd>>? locationItems;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -101,6 +111,7 @@ class UpdateGeneralStateAction {
     this.endDrawer,
     this.locationList,
     this.warehouses,
+    this.locationItems,
   });
 }
 
@@ -146,18 +157,36 @@ class GetWarehousesAction {
 }
 
 class GetAllLocationsAction {
-  static Future<List<LocationsMd>> fetch(AppState state) async {
+  static Future<StateValue<List<LocationItemMd>>> fetch(
+      AppState state, GetAllLocationsAction action, NextDispatcher next) async {
+    StateValue<List<LocationItemMd>> stateValue = StateValue(
+        data: [],
+        error:
+            ErrorModel<GetAllLocationsAction>(isLoading: true, action: action));
+
+    next(UpdateGeneralStateAction(locationItems: stateValue));
+
     final ApiResponse res =
-        await restClient().getAllLocations().nocodeErrorHandler();
+        await restClient().getLocationsOrSingle().nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
 
     if (res.success) {
-      final List<LocationsMd> list =
-          res.data.map<LocationsMd>((e) => LocationsMd.fromJson(e)).toList();
-      appStore.dispatch(UpdateGeneralStateAction(locationList: list));
-      return list;
+      final List<LocationItemMd> list = res.data
+          .map<LocationItemMd>((e) => LocationItemMd.fromJson(e))
+          .toList();
+      list.sort((a, b) => a.name!.compareTo(b.name!));
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+      LocationsController.to.setList(list);
     } else {
-      showError(res.resMessage ?? "Error");
-      return [];
+      stateValue.error.retries = state.usersState.usersList.error.retries + 1;
     }
+    next(UpdateGeneralStateAction(locationItems: stateValue));
+    return stateValue;
   }
 }

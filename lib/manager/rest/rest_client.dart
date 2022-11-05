@@ -127,6 +127,16 @@ abstract class RestClient {
   @GET("/api/fe/userdetails/{id}/preferredshifts")
   Future<HttpResponse> getUserDetailsPreferredShifts(@Path() String id);
 
+  @POST("/api/fe/userdetails/{id}/preferredshifts")
+  @FormUrlEncoded()
+  Future<HttpResponse> postUserDetailsPreferredShift(
+    @Path() String id, {
+    @Field() required int weekId,
+    @Field() required int dayId,
+    @Field() required int shiftId,
+    @Field() int? timingid,
+  });
+
   @GET("/api/fe/userdetails/{id}/qualifications")
   Future<HttpResponse> getUserDetailsQalifications(@Path() String id);
 
@@ -205,14 +215,11 @@ abstract class RestClient {
     @Field() String? groupAdmin,
     @Field() bool? locationAdmin,
     @Field() String? loginRequired,
-    // @Field() List<String>? loginMethods, //codes
-    // @Field() String? loginMethods, //codes
+    @Field() List<int>? loginmethods, //codes
     @Field() String? email,
-
-    ///
   });
   @GET("/api/fe/locations")
-  Future<HttpResponse> getAllLocations();
+  Future<HttpResponse> getLocationsOrSingle({int? id});
 
   @POST("/api/fe/groups")
   @FormUrlEncoded()

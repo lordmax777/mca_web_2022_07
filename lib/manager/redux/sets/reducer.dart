@@ -82,6 +82,7 @@ GeneralState _updateGeneralStateAction(
     endDrawer: action.endDrawer,
     locationList: action.locationList ?? state.locationList,
     warehouses: action.warehouses ?? state.warehouses,
+    locationItems: action.locationItems ?? state.locationItems,
   );
 }
 

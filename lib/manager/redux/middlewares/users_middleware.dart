@@ -90,6 +90,9 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
       case GetDeleteUserDetailsContractAction:
         return GetDeleteUserDetailsContractAction
             .getDeleteUserDetailsContractAction(store.state, action, next);
+      case GetPostUserDetailsPreferredShiftAction:
+        return GetPostUserDetailsPreferredShiftAction.fetch(
+            store.state, action, next);
       default:
         return next(action);
     }

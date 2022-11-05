@@ -13,10 +13,9 @@ import '../../home_page.dart';
 
 class WarehouseController extends GetxController {
   static WarehouseController get to => Get.find();
+
   //UI Variables
   final RxDouble _deleteBtnOpacity = 0.5.obs;
-  final Rx<ErrorModel> error = ErrorModel().obs;
-  set setError(ErrorModel val) => error.value = val;
 
   final RxInt _pageSize = 10.obs;
   final RxInt _page = 1.obs;

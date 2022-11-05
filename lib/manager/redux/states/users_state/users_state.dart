@@ -527,7 +527,9 @@ class GetPostUserDetailsContractAction {
           awh: action.awh,
           jobDescription: action.jobDescription,
           contractid: action.contractid,
-          ahe: int.parse(action.ahe!),
+          ahe: action.ahe != null && action.ahe!.isNotEmpty
+              ? int.parse(action.ahe!)
+              : null,
           lunchtime: action.lunchtime,
           lunchtimeUnpaid: action.lunchtimeUnpaid,
         )
@@ -1239,7 +1241,8 @@ class GetSaveGeneralDetailsAction {
     final ApiResponse res = await restClient()
         .getSaveUserGeneralDetails(
           id,
-          // loginMethods: savedUser.loginMethods.methods, //TODO: Is not working
+          loginmethods:
+              savedUser.loginMethods.methodsList, //TODO: Is not working
           loginRequired: savedUser.loginRequired ? "1" : "0",
           maritalStatus: savedUser.maritalStatusCode.code,
           firstName: savedUser.firstName.text,
@@ -1361,6 +1364,52 @@ class GetDeleteUserPhotoAction {
     } else {
       return false;
     }
+  }
+}
+
+class GetPostUserDetailsPreferredShiftAction {
+  final int? timingId;
+  final int shiftId;
+  final int weekId;
+  final int dayId;
+
+  GetPostUserDetailsPreferredShiftAction({
+    required this.dayId,
+    required this.weekId,
+    required this.shiftId,
+    this.timingId,
+  });
+
+  static Future<ApiResponse?> fetch(
+      AppState state,
+      GetPostUserDetailsPreferredShiftAction action,
+      NextDispatcher next) async {
+    final int? id = state.usersState.selectedUser?.id;
+    if (id == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+
+    final ApiResponse res = await restClient()
+        .postUserDetailsPreferredShift(
+          id.toString(),
+          shiftId: action.shiftId,
+          weekId: action.weekId,
+          dayId: action.dayId,
+          timingid: action.timingId,
+        )
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      await appStore.dispatch(GetUserDetailsPreferredShiftsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(res.data ?? "Error");
+      return res;
+    }
+    return null;
   }
 }
 

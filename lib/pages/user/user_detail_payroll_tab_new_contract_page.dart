@@ -477,8 +477,12 @@ class _UserDetailsPayrollTabNewContractPageState
           await appStore.dispatch(GetPostUserDetailsContractAction(
         wdpw: agreedDaysPerWeek.text,
         salaryPH: double.parse(salaryPerHour.text.toString()),
-        salaryPA: double.parse(salaryPerAnnum.text.toString()),
-        salaryOT: double.parse(salaryPerHourOvertime.text),
+        salaryPA: salaryPerAnnum.text.isNotEmpty
+            ? double.parse(salaryPerAnnum.text.toString())
+            : null,
+        salaryOT: salaryPerHourOvertime.text.isNotEmpty
+            ? double.parse(salaryPerHourOvertime.text.toString())
+            : null,
         initHolidays: holidaysCarriedOver.text,
         jobTitle: jobTitle,
         hct: holidayCalculationType,

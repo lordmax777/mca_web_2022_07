@@ -235,24 +235,25 @@ class LoginMethds {
   bool mobileAdmin;
   bool api;
 
-  List<String> get methodsList {
-    List<String> l = [];
+  List<int> get methodsList {
+    List<int> l = [];
 
     if (web) {
-      l.add('1');
+      l.add(1);
     }
     if (mobile) {
-      l.add('2');
+      l.add(2);
     }
     if (tablet) {
-      l.add('3');
+      l.add(3);
     }
     if (mobileAdmin) {
-      l.add('4');
+      l.add(4);
     }
     if (api) {
-      l.add('5');
+      l.add(5);
     }
+
     return l;
   }
 

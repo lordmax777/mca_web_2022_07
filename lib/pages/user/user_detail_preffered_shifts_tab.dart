@@ -1,3 +1,4 @@
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -15,6 +16,7 @@ class PrefferedShiftsWidget extends StatefulWidget {
 
 class _PrefferedShiftsWidgetState extends State<PrefferedShiftsWidget> {
   final List<Widget> _generalItems = [];
+  // final List<int> selectedItemIds;
 
   @override
   void initState() {
@@ -24,27 +26,33 @@ class _PrefferedShiftsWidgetState extends State<PrefferedShiftsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SpacedColumn(
-      verticalSpace: 16.0,
-      children: [
-        const SizedBox(),
-        _header(),
-        ListView.separated(
-          separatorBuilder: (context, index) => const Divider(
-              color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _generalItems.length + 1,
-          itemBuilder: (context, index) {
-            if (index == _generalItems.length) {
-              return SaveAndCancelButtonsWidget(
-                formKeys: [],
-              );
-            }
-            return _generalItems[index];
-          },
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) => ErrorWrapper(
+        errors: [state.usersState.userDetailPreferredShift.error],
+        child: SpacedColumn(
+          verticalSpace: 16.0,
+          children: [
+            const SizedBox(),
+            _header(),
+            ListView.separated(
+              separatorBuilder: (context, index) => const Divider(
+                  color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _generalItems.length + 1,
+              itemBuilder: (context, index) {
+                if (index == _generalItems.length) {
+                  return SaveAndCancelButtonsWidget(
+                    formKeys: [],
+                  );
+                }
+                return _generalItems[index];
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -76,13 +84,13 @@ class _PrefferedShiftsWidgetState extends State<PrefferedShiftsWidget> {
   }
 
   void _addGeneralTabItems() {
-    _generalItems.add(_buildExpanableItem(1));
-    _generalItems.add(_buildExpanableItem(2));
-    _generalItems.add(_buildExpanableItem(3));
-    _generalItems.add(_buildExpanableItem(4));
+    _generalItems.add(_buildExpandableItem(1));
+    _generalItems.add(_buildExpandableItem(2));
+    _generalItems.add(_buildExpandableItem(3));
+    _generalItems.add(_buildExpandableItem(4));
   }
 
-  Widget _buildExpanableItem(int weekNumber) {
+  Widget _buildExpandableItem(int weekNumber) {
     bool a = true;
     return StatefulBuilder(
       builder: (context, ss) {
@@ -140,8 +148,6 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
         field: "location",
         enableRowChecked: true,
         type: PlutoColumnType.text(),
-        // renderer: (ctx) => UsersListTable.defaultTextWidget(
-        //     "${ctx.cell.value} ${(ctx.row.cells['item']?.value.title) ?? ""}"),
       ),
       PlutoColumn(
           width: 80.0,
@@ -157,8 +163,6 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
         title: "Timings",
         field: "timings",
         type: PlutoColumnType.text(),
-        // renderer: (ctx) => UsersListTable.defaultTextWidget(
-        //     "${getDateFormat(DateTime.parse((ctx.cell.value as PreferredShiftMd).start.date), timeOnly: true)}"),
       ),
     ];
   }
@@ -200,13 +204,8 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
               "day": PlutoCell(value: e.day),
               "shift": PlutoCell(value: e.title),
               "timings": PlutoCell(
-                  value: formatDateTime(e.start.date,
-                              withDate: false, withSeconds: false)
-                          .toString() +
-                      " - " +
-                      formatDateTime(e.finish.date,
-                              withDate: false, withSeconds: false)
-                          .toString())
+                  value:
+                      "${formatDateTime(e.start.date, withDate: false, withSeconds: false)} - ${formatDateTime(e.finish.date, withDate: false, withSeconds: false)}")
             }),
           )
           .toList(),
@@ -217,6 +216,9 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
   void _setSm(PlutoGridStateManager sm) {
     setState(() {
       userDetailsPayrollSm = sm;
+      userDetailsPayrollSm.setOnSelected((event) {
+        logger(event);
+      });
       _isSmLoaded = true;
     });
   }

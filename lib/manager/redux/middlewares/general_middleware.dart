@@ -21,7 +21,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       case GetAllParamListAction:
         return _getAllParamList(store.state, action, next);
       case GetAllLocationsAction:
-        return GetAllLocationsAction.fetch(store.state);
+        return GetAllLocationsAction.fetch(store.state, action, next);
       case GetWarehousesAction:
         return GetWarehousesAction.fetch(store.state, action, next);
       default:
