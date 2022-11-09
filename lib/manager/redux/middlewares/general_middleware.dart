@@ -142,9 +142,11 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       final DepartmentsController departmentsController = Get.find();
       final GroupsController groupsController = Get.find();
       final QualifsController qualifsController = Get.find();
+      final HandoverTypesController handoverTypesController = Get.find();
       departmentsController.setList(l.groups);
       groupsController.setList(l.jobtitles);
       qualifsController.setList(l.qualifications);
+      handoverTypesController.setList(l.handover_types);
 
       stateValue.error.isError = false;
       stateValue.data = l;

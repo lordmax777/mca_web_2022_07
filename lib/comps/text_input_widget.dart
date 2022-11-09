@@ -52,6 +52,9 @@ class _TextInputWidgetState extends State<TextInputWidget> {
   bool _obscureText = true;
 
   String? Function(String?)? _getValidator() {
+    if (widget.disableAll) {
+      return null;
+    }
     if (widget.validator != null) {
       return widget.validator;
     } else if (widget.isRequired) {

@@ -149,14 +149,14 @@ Map<String, dynamic> _$ListEthnicToJson(ListEthnic instance) =>
 ListHandoverType _$ListHandoverTypeFromJson(Map<String, dynamic> json) =>
     ListHandoverType(
       id: json['id'] as int,
-      name: json['name'] as String,
+      title: json['title'] as String,
       active: json['active'] as bool,
     );
 
 Map<String, dynamic> _$ListHandoverTypeToJson(ListHandoverType instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'name': instance.name,
+      'title': instance.title,
       'active': instance.active,
     };
 

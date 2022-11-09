@@ -129,12 +129,13 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
           contentPadding: EdgeInsets.zero,
           border: InputBorder.none,
         ),
-        onChanged: widget.onChangedWithObj != null
-            ? (value) => widget.onChangedWithObj!(DpItem<T>(
-                value.toString(), widget.objItems![itemList.indexOf(value)]))
-            : (widget.disableAll
-                ? null
-                : (value) {
+        onChanged: widget.disableAll
+            ? null
+            : widget.onChangedWithObj != null
+                ? (value) => widget.onChangedWithObj!(DpItem<T>(
+                    value.toString(),
+                    widget.objItems![itemList.indexOf(value)]))
+                : ((value) {
                     return widget.onChanged != null
                         ? widget.onChanged!(value)
                         : null;

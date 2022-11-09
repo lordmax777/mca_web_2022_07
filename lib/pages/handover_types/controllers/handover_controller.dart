@@ -166,7 +166,7 @@ class HandoverTypesController extends GetxController {
   List<ListHandoverType> get departments => _deps;
   setList(List<ListHandoverType> d) {
     final dd = [...d];
-    dd.sort((a, b) => a.name.compareTo(b.name));
+    dd.sort((a, b) => a.title.compareTo(b.title));
     _deps.value = dd;
     return _deps;
   }

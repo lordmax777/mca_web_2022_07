@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -293,30 +294,31 @@ class LocationsController extends GetxController {
     newContr.setStatus = CodeMap(
         name: Constants.userAccountStatusTypes[loc.active!]!,
         code: loc.active!.toString());
-    newContr.setIsLocationBound = loc.anywhere!;
+    newContr.setIsLocationBound = !loc.anywhere!;
     newContr.ipAddressesController.text = "";
     if (loc.ipaddress != null && loc.ipaddress!.isNotEmpty) {
       final str = loc.ipaddress!.map((e) => e.ipAddress).join(",");
       newContr.ipAddressesController.text = str;
     }
+    newContr.setIsFixedIpAddress = loc.fixedipaddress!;
+    newContr.emailController.text = loc.email ?? "";
+    newContr.phoneController.text = loc.phone?.mobile ?? "";
+    newContr.landlineController.text = loc.phone?.landline ?? "";
+    newContr.faxController.text = loc.phone?.fax ?? "";
+    // newContr.setIsSendChecklist = loc.  //TODO: check this
+    newContr.streetController.text = loc.address?.line1 ?? "";
+    newContr.cityController.text = loc.address?.city ?? "";
+    newContr.postCodeController.text = loc.address?.postcode ?? "";
+    final country =
+        appStore.state.generalState.findCountryByName(loc.address?.country);
+    newContr.setCountry = country;
+    newContr.countyController.text = loc.address?.county ?? "";
+    newContr.radiusController.text = loc.address?.radius?.toString() ?? "";
+    newContr.latitudeController.text = loc.address?.latitude?.toString() ?? "";
+    newContr.longitudeController.text =
+        loc.address?.longitude?.toString() ?? "";
 
-    // _status.value = CodeMap(name: "Active", code: "true");
-    // onLocationBoundChange(true);
-    // ipAddressesController.text = ipAddress;
-    // emailController.text = "test@mail.ru";
-    // phoneController.text = "123456789";
-    // landlineController.text = "123456789";
-    // faxController.text = "123456789";
-    // onSendChecklistChange(true);
-    // streetController.text = "Test Street";
-    // postCodeController.text = "NW1 8PR";
-    // cityController.text = "London";
-    // countyController.text = "London";
-    // setCountry = CodeMap(name: "United Kingdom", code: "GB");
-    // radiusController.text = "300";
-    // await onGpsLookupPress();
     appRouter.navigate(const NewLocationRoute());
-    logger(loc.toJson());
   }
 
   Future<void> deleteSelectedRows() async {

@@ -34,6 +34,20 @@ class GeneralState {
     required this.locationItems,
   });
 
+  CodeMap findCountryByName(String? name) {
+    CodeMap c = CodeMap(name: null, code: null);
+    if (paramList.data != null) {
+      for (ListCountry item in (paramList.data?.countries) ?? <ListCountry>[]) {
+        if (item.code == name) {
+          c = CodeMap(name: item.name, code: item.code);
+          break;
+        }
+      }
+    }
+
+    return c;
+  }
+
   factory GeneralState.initial() {
     return GeneralState(
       endDrawer: null,

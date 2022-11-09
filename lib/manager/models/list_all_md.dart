@@ -120,13 +120,13 @@ class ListEthnic {
 @JsonSerializable()
 class ListHandoverType {
   int id;
-  String name;
+  String title;
   bool active;
 
   @override
   ListHandoverType({
     required this.id,
-    required this.name,
+    required this.title,
     required this.active,
   });
 

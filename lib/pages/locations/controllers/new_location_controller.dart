@@ -20,7 +20,10 @@ import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
 
 class NewLocationController extends GetxController {
-  static NewLocationController get to => Get.find();
+  static NewLocationController get to {
+    Get.lazyPut(() => NewLocationController());
+    return Get.find();
+  }
 
   static final GoogleMapsGeocoding geocoding =
       GoogleMapsGeocoding(apiKey: Constants.googleMapApiKey);
@@ -43,6 +46,7 @@ class NewLocationController extends GetxController {
   List<String> get ipAddressesList => ipAddressesController.text.split(',');
   final RxBool _isFixedIpAddress = false.obs;
   bool get isFixedIpAddress => _isFixedIpAddress.value;
+  set setIsFixedIpAddress(bool value) => _isFixedIpAddress.value = value;
   final RxString _ipAddress = ''.obs;
   String get ipAddress => _ipAddress.value;
   set setIpAddress(String value) => _ipAddress.value = value;
@@ -76,8 +80,7 @@ class NewLocationController extends GetxController {
   final TextEditingController longitudeController = TextEditingController();
   final TextEditingController radiusController = TextEditingController();
 
-  @override
-  void onClose() {
+  void onPop() {
     nameController.clear();
     ipAddressesController.clear();
     emailController.clear();
@@ -97,15 +100,14 @@ class NewLocationController extends GetxController {
     setIsLocationBound = false;
     setPostCodeError = false;
     setIsSendChecklist = false;
-
-    super.onClose();
+    setId = -1;
   }
 
-  //FUNCTIONS
   @override
-  void onInit() async {
-    super.onInit();
-    await _onIpLookup();
+  void onReady() {
+    super.onReady();
+    logger('NewLocationController onReady');
+    _onIpLookup();
 
     // if (kDebugMode) {
     //   nameController.text = "Test Location Name 1";
@@ -123,13 +125,12 @@ class NewLocationController extends GetxController {
     //   countyController.text = "London";
     //   setCountry = CodeMap(name: "United Kingdom", code: "GB");
     //   radiusController.text = "300";
-    //   await onGpsLookupPress();
+    //   onGpsLookupPress();
     // }
   }
 
   void onStatusChange(DpItem value) {
     _status.value = CodeMap(name: value.name, code: value.item.key.toString());
-    logger(status.toJson());
   }
 
   void onLocationBoundChange(bool? value) {
@@ -174,37 +175,38 @@ class NewLocationController extends GetxController {
 
   Future<void> _createNewLocation() async {
     showLoading();
-    final ApiResponse response = await restClient()
-        .postLocation(
-          id: id,
-          name: nameController.text,
-          active: status.code == 'true',
-          latitude: latitudeController.text,
-          longitude: longitudeController.text,
-          anywhere: isLocationBound,
-          radius: radiusController.text,
-          base: false,
-          fixedipaddress: isFixedIpAddress,
-          sendChecklist: isSendChecklist,
-          timelimit: false,
-          email: emailController.text,
-          phoneLandline: landlineController.text,
-          phoneMobile: phoneController.text,
-          addressPostcode: postCodeController.text,
-          addressLine1: streetController.text,
-          addressCity: cityController.text,
-          addressCountry: country.code,
-          addressCounty:
-              countyController.text.isEmpty ? null : countyController.text,
-          ipaddress: ipAddressesController.text.isEmpty
-              ? null
-              : ipAddressesController.text,
-          phoneFax: faxController.text.isEmpty ? null : faxController.text,
-        )
-        .nocodeErrorHandler();
+    final ApiResponse response = await (isUpdate
+        ? restClient().updateLocation
+        : restClient().postLocation)(
+      id: isUpdate ? id : null,
+      name: nameController.text,
+      active: status.code == 'true',
+      latitude: latitudeController.text,
+      longitude: longitudeController.text,
+      anywhere: !isLocationBound,
+      radius: radiusController.text,
+      base: false,
+      fixedipaddress: isFixedIpAddress,
+      sendChecklist: isSendChecklist,
+      timelimit: false,
+      email: emailController.text,
+      phoneLandline: !isLocationBound ? "11111111" : landlineController.text,
+      phoneMobile: !isLocationBound ? "11111111" : phoneController.text,
+      addressPostcode: postCodeController.text,
+      addressLine1: streetController.text,
+      addressCity: cityController.text,
+      addressCountry: country.code,
+      addressCounty:
+          countyController.text.isEmpty ? null : countyController.text,
+      ipaddress: ipAddressesController.text.isEmpty
+          ? null
+          : ipAddressesController.text,
+      phoneFax: !isLocationBound
+          ? "11111111"
+          : (faxController.text.isEmpty ? null : faxController.text),
+    ).nocodeErrorHandler();
 
     if (response.success) {
-      logger(response.data);
       LocationsController.to.gridStateManager.toggleAllRowChecked(false);
       LocationsController.to.setDeleteBtnOpacity = 0.5;
       LocationsController.to.searchController.clear();
@@ -213,11 +215,15 @@ class NewLocationController extends GetxController {
       appRouter.navigate(const LocationsListRoute());
     } else {
       await closeLoading();
-      showError(jsonDecode(response.data)['errors']
-          .values
-          .first
-          .join(",")
-          .toString());
+      if (response.resCode == 400) {
+        showError(jsonDecode(response.data)['errors']
+            .values
+            .first
+            .join(",")
+            .toString());
+      } else {
+        showError(response.data);
+      }
     }
   }
 
@@ -226,12 +232,16 @@ class NewLocationController extends GetxController {
       showError("Please check your internet connection");
       return;
     }
-
-    if (generalFormKey.currentState!.validate() &&
+    bool isValidForm = false;
+    isValidForm = generalFormKey.currentState!.validate() &&
         contactFormKey.currentState!.validate() &&
         addressFormKey.currentState!.validate() &&
-        gpsFormKey.currentState!.validate()) {
+        gpsFormKey.currentState!.validate();
+
+    if (isValidForm) {
       await _createNewLocation();
+    } else {
+      showError("Please check your inputs");
     }
   }
 

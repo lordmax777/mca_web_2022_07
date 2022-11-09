@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
@@ -15,13 +14,15 @@ class NewLocationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.lazyPut(() => NewLocationController());
     return GetBuilder<NewLocationController>(
-      dispose: (state) => state.controller!.onClose(),
-      builder: (_) => PageWrapper(
+      dispose: (state) => state.controller!.onPop(),
+      builder: (controller) => PageWrapper(
           child: SpacedColumn(
         verticalSpace: 16.0,
-        children: const [
-          PageGobackWidget(),
-          TableWrapperWidget(child: _GeneralWidget()),
+        children: [
+          PageGobackWidget(
+              text:
+                  controller.isUpdate ? controller.nameController.text : null),
+          const TableWrapperWidget(child: _GeneralWidget()),
         ],
       )),
     );
@@ -55,6 +56,9 @@ class __GeneralWidgetState extends State<_GeneralWidget> {
       itemBuilder: (context, index) {
         if (index == _generalItems.length) {
           return SaveAndCancelButtonsWidget(
+            saveText: NewLocationController.to.isUpdate
+                ? 'Update Location'
+                : 'Create Location',
             formKeys: [],
             onSave: NewLocationController.to.onSave,
           );
@@ -121,6 +125,7 @@ class _GeneralInfoWidget extends StatelessWidget {
 
     return GBuilder<NewLocationController>(
       tag: _GeneralInfoWidget.title,
+      autoRemove: false,
       child: (controller) {
         return Form(
             key: controller.generalFormKey,
@@ -225,17 +230,19 @@ class _ContactWidget extends StatelessWidget {
     final dpWidth = MediaQuery.of(context).size.width * 0.2;
     return GBuilder<NewLocationController>(
       tag: _ContactWidget.title,
+      autoRemove: false,
       child: (controller) => Form(
           key: controller.contactFormKey,
           child: SpacedColumn(
               verticalSpace: 32.0,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 0.1),
                 TextInputWidget(
                   width: dpWidth,
                   controller: controller.emailController,
                   labelText: "Email Address",
-                  isRequired: true,
+                  isRequired: controller.isSendChecklist,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Email Address is required";
@@ -250,7 +257,8 @@ class _ContactWidget extends StatelessWidget {
                   width: dpWidth,
                   controller: controller.phoneController,
                   labelText: "Phone Number",
-                  isRequired: true,
+                  disableAll: !controller.isLocationBound,
+                  isRequired: controller.isLocationBound,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Phone Number is required";
@@ -265,7 +273,8 @@ class _ContactWidget extends StatelessWidget {
                   width: dpWidth,
                   controller: controller.landlineController,
                   labelText: "Phone Landline",
-                  isRequired: true,
+                  disableAll: !controller.isLocationBound,
+                  isRequired: controller.isLocationBound,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Phone Landline is required";
@@ -280,7 +289,8 @@ class _ContactWidget extends StatelessWidget {
                   width: dpWidth,
                   controller: controller.faxController,
                   labelText: "Fax Number",
-                  isRequired: true,
+                  disableAll: !controller.isLocationBound,
+                  isRequired: controller.isLocationBound,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Fax Number is required";
@@ -327,6 +337,7 @@ class _AddressWidget extends StatelessWidget {
         builder: (context, state) {
           final general = state.generalState.paramList.data!;
           return GBuilder<NewLocationController>(
+              autoRemove: false,
               tag: _AddressWidget.title,
               child: (controller) {
                 return Form(
@@ -336,10 +347,12 @@ class _AddressWidget extends StatelessWidget {
                         verticalSpace: 32.0,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 0.1),
                           SpacedRow(
                             horizontalSpace: dpWidth / 3.8,
                             children: [
                               TextInputWidget(
+                                disableAll: !controller.isLocationBound,
                                 width: (dpWidth * 1.7),
                                 labelText: "Street Address",
                                 validator: (p0) {
@@ -348,13 +361,14 @@ class _AddressWidget extends StatelessWidget {
                                   }
                                   return null;
                                 },
-                                isRequired: true,
+                                isRequired: controller.isLocationBound,
                                 controller: controller.streetController,
                               ),
                               TextInputWidget(
+                                disableAll: !controller.isLocationBound,
                                 width: dpWidth / 1.5,
                                 labelText: "Post Code",
-                                isRequired: true,
+                                isRequired: controller.isLocationBound,
                                 validator: (p0) {
                                   if (p0!.isEmpty) {
                                     return "Post Code is required";
@@ -366,9 +380,10 @@ class _AddressWidget extends StatelessWidget {
                           ),
                           SpacedRow(horizontalSpace: dpWidth / 3.8, children: [
                             TextInputWidget(
+                              disableAll: !controller.isLocationBound,
                               width: dpWidth / 1.4,
                               labelText: "City/Town",
-                              isRequired: true,
+                              isRequired: controller.isLocationBound,
                               validator: (p0) {
                                 if (p0!.isEmpty) {
                                   return "City/Town is required";
@@ -377,19 +392,21 @@ class _AddressWidget extends StatelessWidget {
                               controller: controller.cityController,
                             ),
                             TextInputWidget(
+                              disableAll: !controller.isLocationBound,
                               width: dpWidth / 1.4,
                               labelText: "County",
                               controller: controller.countyController,
                             ),
                           ]),
                           DropdownWidget1(
+                            disableAll: !controller.isLocationBound,
                             hintText: "Country",
                             dropdownMaxHeight: 400.0,
                             dropdownBtnWidth: (dpWidth * 1.7),
                             dropdownOptionsWidth: (dpWidth * 2) + 24.0,
-                            value: controller.country?.name,
+                            value: controller.country.name,
                             hasSearchBox: true,
-                            isRequired: true,
+                            isRequired: controller.isLocationBound,
                             onChangedWithObj: controller.onCountryChange,
                             objItems: general.countries,
                             items:
@@ -415,6 +432,7 @@ class _GpsWidget extends StatelessWidget {
         converter: (store) => store.state,
         builder: (context, state) {
           return GBuilder<NewLocationController>(
+            autoRemove: false,
             tag: _GpsWidget.title,
             child: (controller) => Form(
                 key: controller.gpsFormKey,

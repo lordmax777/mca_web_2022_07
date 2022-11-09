@@ -117,7 +117,7 @@ class _Body extends GetView<HandoverTypesController> {
 
   PlutoRow _buildItem(ListHandoverType e) {
     return PlutoRow(cells: {
-      "handover_name": PlutoCell(value: e.name),
+      "handover_name": PlutoCell(value: e.title),
       "space": PlutoCell(value: ""),
       "status": PlutoCell(value: e.active ? "active" : "inactive"),
       "action": PlutoCell(value: e),

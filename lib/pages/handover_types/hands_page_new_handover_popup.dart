@@ -54,7 +54,7 @@ class HandsNewHandController extends GetxController {
   void onInit() {
     super.onInit();
     if (group != null) {
-      depNameController.text = group!.name;
+      depNameController.text = group!.title;
       setStatus(group!.active ? "Active" : "Inactive");
     }
   }

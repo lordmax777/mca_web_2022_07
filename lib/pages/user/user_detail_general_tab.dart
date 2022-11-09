@@ -899,8 +899,15 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
   final List<GlobalKey<FormState>> formKeys;
   final VoidCallback? onSave;
   final bool isDisabled;
-  SaveAndCancelButtonsWidget(
-      {Key? key, required this.formKeys, this.onSave, this.isDisabled = false})
+  final String? saveText;
+  final VoidCallback? onCancel;
+  const SaveAndCancelButtonsWidget(
+      {Key? key,
+      required this.formKeys,
+      this.onSave,
+      this.isDisabled = false,
+      this.saveText,
+      this.onCancel})
       : super(key: key);
 
   @override
@@ -914,14 +921,15 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
           ButtonLargeSecondary(
             paddingWithoutIcon: true,
             text: "Cancel",
-            onPressed: () {
-              context.navigateBack();
-            },
+            onPressed: onCancel ??
+                () {
+                  context.navigateBack();
+                },
             bgColor: ThemeColors.white,
           ),
           ButtonLarge(
             icon: const HeroIcon(HeroIcons.check),
-            text: "Save Changes",
+            text: saveText != null ? saveText! : "Save Changes",
             onPressed: isDisabled
                 ? null
                 : (onSave ??

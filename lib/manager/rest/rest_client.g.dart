@@ -1085,6 +1085,78 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<HttpResponse<dynamic>> updateLocation({
+    id,
+    required name,
+    required active,
+    required base,
+    required timelimit,
+    required latitude,
+    required longitude,
+    required radius,
+    phoneLandline,
+    phoneMobile,
+    phoneFax,
+    email,
+    required sendChecklist,
+    required anywhere,
+    addressLine1,
+    addressLine2,
+    addressCity,
+    addressCounty,
+    addressCountry,
+    addressPostcode,
+    required fixedipaddress,
+    ipaddress,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'name': name,
+      'active': active,
+      'base': base,
+      'timelimit': timelimit,
+      'latitude': latitude,
+      'longitude': longitude,
+      'radius': radius,
+      'phoneLandline': phoneLandline,
+      'phoneMobile': phoneMobile,
+      'phoneFax': phoneFax,
+      'email': email,
+      'sendChecklist': sendChecklist,
+      'anywhere': anywhere,
+      'addressLine1': addressLine1,
+      'addressLine2': addressLine2,
+      'addressCity': addressCity,
+      'addressCounty': addressCounty,
+      'addressCountry': addressCountry,
+      'addressPostcode': addressPostcode,
+      'fixedipaddress': fixedipaddress,
+      'ipaddress': ipaddress,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/locations/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
   Future<HttpResponse<dynamic>> postGroup({
     id,
     required name,
