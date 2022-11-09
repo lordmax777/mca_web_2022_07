@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
@@ -111,13 +112,14 @@ Future<void> showLoading({bool? barrierDismissible = false}) async {
   );
 }
 
-Future<void> showError(String msg, {bool? barrierDismissible = false}) async {
+Future<void> showError(dynamic msg,
+    {bool? barrierDismissible = false, String titleMsg = "Error"}) async {
   showDialog(
     context: appRouter.navigatorKey.currentContext!,
     builder: (context) {
       return AlertDialog(
-        title: const Text("Error"),
-        content: Text(msg),
+        title: Text(titleMsg),
+        content: Text(msg.toString()),
         actions: [
           TextButton(
             child: const Text("OK"),
@@ -130,5 +132,6 @@ Future<void> showError(String msg, {bool? barrierDismissible = false}) async {
 }
 
 Future<void> closeLoading() async {
+  await Future.delayed(300.milliseconds);
   await appRouter.pop();
 }

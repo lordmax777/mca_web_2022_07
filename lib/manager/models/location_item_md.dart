@@ -1,4 +1,4 @@
-import '../../utils/log_tester.dart';
+import 'package:mca_web_2022_07/manager/models/users_list.dart';
 
 class LocationItemMd {
   int? id;
@@ -9,7 +9,7 @@ class LocationItemMd {
   String? email;
   bool? active;
   bool? fixedipaddress;
-  String? ipaddress;
+  List<IpAddress>? ipaddress;
   List<Members>? members;
 
   LocationItemMd(
@@ -33,7 +33,12 @@ class LocationItemMd {
     email = json['email'];
     active = json['active'];
     fixedipaddress = json['fixedipaddress'];
-    ipaddress = json['ipaddress'];
+    if (json['ipaddress'] != null) {
+      ipaddress = <IpAddress>[];
+      json['ipaddress'].forEach((v) {
+        ipaddress!.add(IpAddress.fromJson(v));
+      });
+    }
     if (json['members'] != null) {
       members = <Members>[];
       json['members'].forEach((v) {
@@ -52,9 +57,11 @@ class LocationItemMd {
     data['email'] = email;
     data['active'] = active;
     data['fixedipaddress'] = fixedipaddress;
-    data['ipaddress'] = ipaddress;
     if (members != null) {
       data['members'] = members!.map((v) => v.toJson()).toList();
+    }
+    if (ipaddress != null) {
+      data['ipaddress'] = ipaddress!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -149,6 +156,38 @@ class Members {
     data['name'] = name;
     data['min'] = min;
     data['max'] = max;
+    return data;
+  }
+}
+
+class IpAddress {
+  //{id: 33, locationId: 167, ipAddress: 115.91.214.12, startTime: {date: 2022-11-09 06:25:49.000000, timezone_type: 3, timezone: UTC}, endTime: null}
+  int? id;
+  String? locationId;
+  String? ipAddress;
+  LastTime? startTime;
+  LastTime? endTime;
+
+  IpAddress(
+      {this.id, this.locationId, this.ipAddress, this.startTime, this.endTime});
+
+  IpAddress.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    locationId = json['locationId'];
+    ipAddress = json['ipAddress'];
+    startTime =
+        json['startTime'] != null ? LastTime.fromJson(json['startTime']) : null;
+    endTime =
+        json['endTime'] != null ? LastTime.fromJson(json['endTime']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['locationId'] = locationId;
+    data['ipAddress'] = ipAddress;
+    data['startTime'] = startTime;
+    data['endTime'] = endTime;
     return data;
   }
 }

@@ -20,6 +20,13 @@ class Constants {
   static const String username = "96189831";
   static const String password = "F00tba11";
 
+  ///geo.ipify.org api key
+  static const String geoIpifyApiKey = "at_in4YK83J9JYwn3ZzaVAr5gwlaEMLP";
+
+  //Google Maps API Key
+  static const String googleMapApiKey =
+      "AIzaSyAJppOsTzcnks6yfcR9WmJk-Cjqfw3zIww";
+
   //Drawer
   static List<Map<String, dynamic>> drawerItems = [
     {

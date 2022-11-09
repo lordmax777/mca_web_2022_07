@@ -27,7 +27,7 @@ class LocationsListPage extends StatelessWidget {
           ),
           ErrorWrapper(errors: [
             state.generalState.paramList.error,
-            state.generalState.locationItems.error
+            state.generalState.locationItems.error,
           ], child: _Body())
         ]),
       ),

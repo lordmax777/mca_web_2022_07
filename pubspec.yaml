@@ -20,6 +20,17 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  pluto_grid:
+    path:
+      ./pluto_grid
+  simpleicons:
+    path: ./simpleicons
+#  google_maps_webservice:
+#    path: ./google_maps_webservice
+  google_maps_webservice:
+    git:
+      url: https://github.com/YakivGalkin/google_maps_webservice
+
   cupertino_icons: ^1.0.2
 
   retrofit: ^3.0.1+1
@@ -31,14 +42,9 @@ dependencies:
 
   intl: ^0.17.0
   dropdown_button2: ^1.7.0
-  pluto_grid:
-    path:
-      ./pluto_grid
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   responsive_framework: ^0.2.0
-  simpleicons:
-    path: ./simpleicons
   mix: ^0.0.6
   flutter_easylogger: ^2.3.3
   collection: ^1.16.0
@@ -46,6 +52,8 @@ dependencies:
   faker: ^2.0.0
   geolocator: ^9.0.2
   get: ^4.6.5
+  dart_ipify: ^1.1.1
+#  google_maps_flutter_web: ^0.4.0+3
 
 dev_dependencies:
   flutter_test:

@@ -897,7 +897,10 @@ class _NextOfKinInfoWidget extends StatelessWidget {
 
 class SaveAndCancelButtonsWidget extends StatelessWidget {
   final List<GlobalKey<FormState>> formKeys;
-  SaveAndCancelButtonsWidget({Key? key, required this.formKeys})
+  final VoidCallback? onSave;
+  final bool isDisabled;
+  SaveAndCancelButtonsWidget(
+      {Key? key, required this.formKeys, this.onSave, this.isDisabled = false})
       : super(key: key);
 
   @override
@@ -919,16 +922,18 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
           ButtonLarge(
             icon: const HeroIcon(HeroIcons.check),
             text: "Save Changes",
-            onPressed: () async {
-              bool allValid = true;
-              if (formKeys
-                  .every((element) => element.currentState!.validate())) {
-                logger('Valid');
-                await fetch(GetSaveGeneralDetailsAction());
-              } else {
-                logger('Invalid');
-              }
-            },
+            onPressed: isDisabled
+                ? null
+                : (onSave ??
+                    () async {
+                      if (formKeys.every(
+                          (element) => element.currentState!.validate())) {
+                        logger('Valid');
+                        await fetch(GetSaveGeneralDetailsAction());
+                      } else {
+                        logger('Invalid');
+                      }
+                    }),
           ),
         ],
       ),

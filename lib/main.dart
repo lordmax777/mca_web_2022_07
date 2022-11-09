@@ -4,6 +4,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
+import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
 
@@ -23,6 +24,7 @@ void main() {
   Get.lazyPut(() => WarehouseController());
   Get.lazyPut(() => HandoverTypesController());
   Get.lazyPut(() => LocationsController());
+  Get.lazyPut(() => NewLocationController());
 
   runApp(const McaWebApp());
 }

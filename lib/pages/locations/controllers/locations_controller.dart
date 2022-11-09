@@ -1,18 +1,13 @@
 import 'package:get/get.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
+import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import '../../../comps/show_overlay_popup.dart';
-import '../../../manager/model_exporter.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
-import '../../../manager/redux/sets/app_state.dart';
-import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
+import '../../../manager/router/router.gr.dart';
 import '../../../theme/theme.dart';
 import '../../home_page.dart';
 
@@ -101,25 +96,44 @@ class LocationsController extends GetxController {
             children: [
               for (Members member in members)
                 UsersListTable.defaultTextWidget(
-                    "${member.name}: ${member.min} - ${member.max}"),
+                    "${member.name}: ${member.min ?? ""} - ${member.max ?? ""}"),
             ],
           );
-          // return SpacedColumn(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: [
-          //     for (Members member in members)
-          //       UsersListTable.defaultTextWidget(
-          //           "${member.name}: ${member.max}"),
-          //   ],
-          // );
         },
       ),
       PlutoColumn(
-        width: 250.0,
-        title: "IP Address",
-        field: "ip_address",
-        type: PlutoColumnType.text(),
-      ),
+          width: 250.0,
+          title: "IP Address",
+          field: "ip_address",
+          type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            if (rendererContext.cell.value.runtimeType == String) {
+              return KText(
+                text: rendererContext.cell.value,
+                textColor: ThemeColors.gray5,
+                fontWeight: FWeight.regular,
+                fontSize: 14,
+                isSelectable: false,
+              );
+            }
+            final List<IpAddress> ips = rendererContext.cell.value ?? [];
+            if (ips.isEmpty) {
+              return KText(
+                text: "Not Specified",
+                textColor: ThemeColors.gray5,
+                fontWeight: FWeight.regular,
+                fontSize: 14,
+                isSelectable: false,
+              );
+            }
+            return TableTooltipWidget1(
+              title: "IP(s): ${ips.length}",
+              children: [
+                for (IpAddress member in ips)
+                  UsersListTable.defaultTextWidget("${member.ipAddress}"),
+              ],
+            );
+          }),
       PlutoColumn(
         // width: 85.0,
         title: "Status",
@@ -217,18 +231,28 @@ class LocationsController extends GetxController {
                     .toLowerCase()
                     .contains(search);
                 if (!searched) {
-                  searched = element.cells['ip_address']?.value
-                      .toLowerCase()
-                      .contains(search);
+                  if (element.cells['ip_address']?.value.runtimeType !=
+                      String) {
+                    searched = (element.cells['ip_address']?.value
+                            as List<IpAddress>)
+                        .any((element) =>
+                            element.ipAddress?.toLowerCase().contains(search) ??
+                            false);
+                  }
                   if (!searched) {
                     searched = element.cells['status']?.value
                         .toLowerCase()
                         .contains(search);
-                    // if (!searched) {
-                    // searched = element.cells['required_staff']?.value
-                    //     .toLowerCase()
-                    //     .contains(search);
-                    // }
+                    if (!searched) {
+                      if (element.cells['required_staff']?.value.runtimeType !=
+                          String) {
+                        searched = (element.cells['required_staff']?.value
+                                as List<Members>)
+                            .any((element) =>
+                                element.name?.toLowerCase().contains(search) ??
+                                false);
+                      }
+                    }
                   }
                 }
               }
@@ -262,7 +286,37 @@ class LocationsController extends GetxController {
   }
 
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
-    logger(ctx.toString());
+    final LocationItemMd loc = ctx.cell.value;
+    final newContr = NewLocationController.to;
+    newContr.setId = loc.id ?? -1;
+    newContr.nameController.text = loc.name ?? "";
+    newContr.setStatus = CodeMap(
+        name: Constants.userAccountStatusTypes[loc.active!]!,
+        code: loc.active!.toString());
+    newContr.setIsLocationBound = loc.anywhere!;
+    newContr.ipAddressesController.text = "";
+    if (loc.ipaddress != null && loc.ipaddress!.isNotEmpty) {
+      final str = loc.ipaddress!.map((e) => e.ipAddress).join(",");
+      newContr.ipAddressesController.text = str;
+    }
+
+    // _status.value = CodeMap(name: "Active", code: "true");
+    // onLocationBoundChange(true);
+    // ipAddressesController.text = ipAddress;
+    // emailController.text = "test@mail.ru";
+    // phoneController.text = "123456789";
+    // landlineController.text = "123456789";
+    // faxController.text = "123456789";
+    // onSendChecklistChange(true);
+    // streetController.text = "Test Street";
+    // postCodeController.text = "NW1 8PR";
+    // cityController.text = "London";
+    // countyController.text = "London";
+    // setCountry = CodeMap(name: "United Kingdom", code: "GB");
+    // radiusController.text = "300";
+    // await onGpsLookupPress();
+    appRouter.navigate(const NewLocationRoute());
+    logger(loc.toJson());
   }
 
   Future<void> deleteSelectedRows() async {
@@ -276,7 +330,7 @@ class LocationsController extends GetxController {
     for (int i = 0; i < ids.length; i++) {
       final id = ids[i];
       final ApiResponse res =
-          await restClient().deleteWarehouse(id).nocodeErrorHandler();
+          await restClient().deleteLocation(id).nocodeErrorHandler();
       if (!res.success) {
         allSuccess = false;
         resp = res;
@@ -290,7 +344,7 @@ class LocationsController extends GetxController {
       gridStateManager.removeRows(gridStateManager.checkedRows);
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
-      // await appStore.dispatch(GetWarehousesAction());
+      // await appStore.dispatch(GetAllLocationsAction());
       closeLoading();
     } else {
       await closeLoading();
