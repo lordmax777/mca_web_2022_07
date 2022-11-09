@@ -224,33 +224,6 @@ abstract class RestClient {
   @DELETE("/api/fe/locations/{id}")
   Future<HttpResponse> deleteLocation(@Path() int id);
 
-  //  @POST("/api/fe/locations")
-  //   @FormUrlEncoded()
-  //   Future<HttpResponse> postLocation({
-  //     @Field() int? id,
-  //     @Field() required String name,
-  //     @Field() required bool active,
-  //     @Field() required bool base, //if the location is in the base
-  //     @Field() required bool timelimit,
-  //     @Field() required String latitude,
-  //     @Field() required String longitude,
-  //     @Field() required String radius,
-  //     @Field() String? phoneLandline,
-  //     @Field() String? phoneMobile,
-  //     @Field() String? phoneFax,
-  //     @Field() String? email,
-  //     @Field() required bool sendChecklist,
-  //     @Field() required bool anywhere, // False
-  //     @Field() String? addressLine1,
-  //     @Field() String? addressLine2,
-  //     @Field() String? addressCity,
-  //     @Field() String? addressCounty,
-  //     @Field() String? addressCountry,
-  //     @Field() String? addressPostcode,
-  //     @Field() required bool fixedipaddress,
-  //     @Field() String? ipaddress, //String separated by comma
-  //   });
-
   @POST("/api/fe/locations")
   @FormUrlEncoded()
   Future<HttpResponse> postLocation({
@@ -358,8 +331,28 @@ abstract class RestClient {
     @Field() required bool sendReport,
   });
 
-  @DELETE("/api/fe/warehouses")
-  Future<HttpResponse> deleteWarehouse(@Query("storageid") int storageid);
+  @DELETE("/api/fe/warehouses/{storageid}")
+  Future<HttpResponse> deleteWarehouse(@Path() int storageid);
+
+  @POST("/api/fe/handovertypes")
+  @FormUrlEncoded()
+  Future<HttpResponse> postHandoverTypes({
+    @Path() int? id,
+    @Field() required String title,
+    @Field() required bool active,
+  });
+
+  @POST("/api/fe/handovertypes/{id}")
+  @FormUrlEncoded()
+  Future<HttpResponse> updateHandoverTypes({
+    @Path() int? id,
+    @Field() required String title,
+    @Field() required bool active,
+  });
+
+  @DELETE("/api/fe/handovertypes/{id}")
+  @FormUrlEncoded()
+  Future<HttpResponse> deleteHandoverTypes(@Path() int id);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

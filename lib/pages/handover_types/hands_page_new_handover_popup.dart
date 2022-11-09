@@ -1,23 +1,27 @@
+import 'dart:convert';
 import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
-
+import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
+import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
+import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
 import '../../app.dart';
 import '../../comps/custom_get_builder.dart';
 import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../manager/rest/rest_client.dart';
 import '../../theme/theme.dart';
 
 class HandsNewHandController extends GetxController {
+  static HandsNewHandController get to {
+    return Get.find();
+  }
+
   final ListHandoverType? group;
   HandsNewHandController({this.group});
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -30,22 +34,30 @@ class HandsNewHandController extends GetxController {
 
   Future<void> postDepartment() async {
     if (formKey.currentState!.validate()) {
-      // showLoading();
-      // final ApiResponse res = await restClient() //TODO: Add create new handover type api
-      //     .postGroup(
-      //       id: group?.id,
-      //       name: depNameController.text,
-      //       active: isActive,
-      //     )
-      //     .nocodeErrorHandler();
+      showLoading();
+      final ApiResponse res = await (group != null
+          ? restClient().updateHandoverTypes
+          : restClient().postHandoverTypes)(
+        id: group?.id,
+        title: depNameController.text,
+        active: isActive,
+      ).nocodeErrorHandler();
 
-      if (true) {
-        final DepartmentsController groupsController = Get.find();
-
-        groupsController.gridStateManager.toggleAllRowChecked(false);
-        groupsController.setDeleteBtnOpacity = 0.5;
+      if (res.success) {
+        HandoverTypesController.to.gridStateManager.toggleAllRowChecked(false);
+        HandoverTypesController.to.setDeleteBtnOpacity = 0.5;
+        HandoverTypesController.to.searchController.clear();
         await appStore.dispatch(GetAllParamListAction());
-      } else {}
+        await closeLoading();
+      } else {
+        await closeLoading();
+        if (res.resCode == 400) {
+          showError(
+              jsonDecode(res.data)['errors'].values.first.join(",").toString());
+        } else {
+          showError(res.data);
+        }
+      }
       // closeLoading();
     }
   }

@@ -29,7 +29,7 @@ class HandoverTypesPage extends StatelessWidget {
 }
 
 class _Body extends GetView<HandoverTypesController> {
-  const _Body({super.key});
+  const _Body({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

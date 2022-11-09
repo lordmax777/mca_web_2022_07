@@ -121,8 +121,6 @@ class HandoverTypesController extends GetxController {
     });
   }
 
-  Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {}
-
   void _onEditClick(BuildContext context, PlutoColumnRendererContext ctx) {
     showOverlayPopup(
         body: HandsNewHandoverPopupWidget(group: ctx.cell.value),
@@ -134,31 +132,32 @@ class HandoverTypesController extends GetxController {
         .map<int>((e) => e.cells['action']?.value.id)
         .toList();
     if (ids.isEmpty) return;
-    // showLoading();
+    showLoading();
     bool allSuccess = true;
     ApiResponse? resp;
     for (int i = 0; i < ids.length; i++) {
       final id = ids[i];
-      // final ApiResponse res =
-      //     await restClient().deleteGroup(id).nocodeErrorHandler(); //TODO: Add delete handover types api
-      // if (!res.success) {
-      //   allSuccess = false;
-      //   resp = res;
-      //   break;
-      // } else {
-      _deps.removeWhere((element) => element.id == id);
-      // }
+      final ApiResponse res =
+          await restClient().deleteHandoverTypes(id).nocodeErrorHandler();
+      if (!res.success) {
+        allSuccess = false;
+        resp = res;
+        break;
+      } else {
+        _deps.removeWhere((element) => element.id == id);
+      }
     }
 
     if (allSuccess) {
       gridStateManager.removeRows(gridStateManager.checkedRows);
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
-      // closeLoading();
+      closeLoading();
     } else {
       await closeLoading();
       showError(resp?.rawError?.data.toString() ?? "Error");
     }
+    update();
   }
 
   //Departments

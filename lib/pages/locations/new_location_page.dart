@@ -298,8 +298,9 @@ class _ContactWidget extends StatelessWidget {
                     return null;
                   },
                 ),
-                _check(controller.isSendChecklist,
-                    controller.onSendChecklistChange, "Send Checklist"),
+                if (!controller.isUpdate)
+                  _check(controller.isSendChecklist,
+                      controller.onSendChecklistChange, "Send Checklist"),
               ])),
     );
   }
