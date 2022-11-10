@@ -1,11 +1,11 @@
 {
-    "name": "mca_web_2022_07",
-    "short_name": "mca_web_2022_07",
+    "name": "My Cleaning App Dashboard",
+    "short_name": "MCA Dashboard",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "My Cleaning App Dashboard App",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

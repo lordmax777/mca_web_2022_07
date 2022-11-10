@@ -1,16 +1,19 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
+import 'package:mca_web_2022_07/comps/show_overlay_popup.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import '../../../comps/custom_gmaps_widget.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../manager/router/router.gr.dart';
 import '../../../theme/theme.dart';
 import '../../home_page.dart';
+import 'package:google_maps_widget/google_maps_widget.dart';
 
 class LocationsController extends GetxController {
   static LocationsController get to => Get.find();
@@ -68,7 +71,7 @@ class LocationsController extends GetxController {
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              onTap: () => _onColumnItemNavigate(ctx),
+              onTap: () => _onShowMap(ctx),
             );
           }),
       PlutoColumn(
@@ -319,6 +322,55 @@ class LocationsController extends GetxController {
         loc.address?.longitude?.toString() ?? "";
 
     appRouter.navigate(const NewLocationRoute());
+  }
+
+  Future<void> _onShowMap(PlutoColumnRendererContext ctx) async {
+    final LocationItemMd loc = ctx.row.cells['action']!.value;
+
+    showOverlayPopup(
+      horizontalPadding: 24.0,
+      paddingBottom: 24.0,
+      paddingTop: 24.0,
+      margin: const EdgeInsets.symmetric(horizontal: 200.0),
+      body: SpacedColumn(
+        verticalSpace: 16.0,
+        children: [
+          _header(loc.name ?? ""),
+          const Divider(height: 1, thickness: 1, color: ThemeColors.gray11),
+          Container(
+            height: 500.0,
+            width: MediaQuery.of(appRouter.navigatorKey.currentContext!)
+                .size
+                .width,
+            color: Colors.blue,
+            child: CustomGMapsWidget(location: loc),
+          ),
+        ],
+      ),
+      context: appRouter.navigatorKey.currentContext!,
+    );
+  }
+
+  Widget _header(String title) {
+    return SpacedRow(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        KText(
+          text: title,
+          fontSize: 18.0,
+          fontWeight: FWeight.bold,
+          isSelectable: false,
+          textColor: ThemeColors.gray2,
+        ),
+        IconButton(
+            onPressed: () {
+              appRouter.pop();
+            },
+            icon: const HeroIcon(HeroIcons.x,
+                color: ThemeColors.gray2, size: 20.0)),
+      ],
+    );
   }
 
   Future<void> deleteSelectedRows() async {

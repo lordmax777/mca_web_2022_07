@@ -215,7 +215,13 @@ class WarehouseController extends GetxController {
       closeLoading();
     } else {
       await closeLoading();
-      showError(resp?.rawError?.data.toString() ?? "Error");
+      if (resp != null) {
+        if (resp.resCode == 401) {
+          showError("Can delete only what was created today!");
+        } else {
+          showError(resp.rawError?.data.toString() ?? "Error");
+        }
+      }
     }
     update();
   }

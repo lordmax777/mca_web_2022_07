@@ -109,24 +109,26 @@ class NewLocationController extends GetxController {
     logger('NewLocationController onReady');
     _onIpLookup();
 
-    // if (kDebugMode) {
-    //   nameController.text = "Test Location Name 1";
-    //   _status.value = CodeMap(name: "Active", code: "true");
-    //   onLocationBoundChange(true);
-    //   ipAddressesController.text = ipAddress;
-    //   emailController.text = "test@mail.ru";
-    //   phoneController.text = "123456789";
-    //   landlineController.text = "123456789";
-    //   faxController.text = "123456789";
-    //   onSendChecklistChange(true);
-    //   streetController.text = "Test Street";
-    //   postCodeController.text = "NW1 8PR";
-    //   cityController.text = "London";
-    //   countyController.text = "London";
-    //   setCountry = CodeMap(name: "United Kingdom", code: "GB");
-    //   radiusController.text = "300";
-    //   onGpsLookupPress();
-    // }
+    if (kDebugMode) {
+      nameController.text = "Test Location Name 1";
+      _status.value = CodeMap(name: "Active", code: "true");
+      onLocationBoundChange(true);
+      ipAddressesController.text = ipAddress;
+      emailController.text = "test@mail.ru";
+      phoneController.text = "123456789";
+      landlineController.text = "123456789";
+      faxController.text = "123456789";
+      onSendChecklistChange(true);
+      streetController.text = "Test Street";
+      postCodeController.text = "NW1 8PR";
+      cityController.text = "London";
+      countyController.text = "London";
+      setCountry = CodeMap(name: "United Kingdom", code: "GB");
+      radiusController.text = "300";
+      // onGpsLookupPress();
+      latitudeController.text = "37.594333";
+      longitudeController.text = "127.123966";
+    }
   }
 
   void onStatusChange(DpItem value) {
