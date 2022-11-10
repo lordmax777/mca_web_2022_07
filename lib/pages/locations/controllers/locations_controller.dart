@@ -342,7 +342,6 @@ class LocationsController extends GetxController {
             width: MediaQuery.of(appRouter.navigatorKey.currentContext!)
                 .size
                 .width,
-            color: Colors.blue,
             child: CustomGMapsWidget(location: loc),
           ),
         ],
