@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/custom_get_builder.dart';
+import '../../comps/custom_gmaps_widget.dart';
 import '../../manager/models/location_item_md.dart';
 import '../../theme/theme.dart';
 
@@ -88,7 +89,7 @@ class _Body extends StatelessWidget {
               text: "View All Locations",
               leftIcon: const HeroIcon(HeroIcons.pin,
                   size: 20, color: ThemeColors.blue3),
-              onPressed: () {},
+              onPressed: () => showMapPopup(isSingle: false),
             ),
             TableColumnHiderWidget(
               gKey: controller.columnsMenuKey,

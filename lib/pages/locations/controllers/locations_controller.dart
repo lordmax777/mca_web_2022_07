@@ -326,50 +326,7 @@ class LocationsController extends GetxController {
 
   Future<void> _onShowMap(PlutoColumnRendererContext ctx) async {
     final LocationItemMd loc = ctx.row.cells['action']!.value;
-
-    showOverlayPopup(
-      horizontalPadding: 24.0,
-      paddingBottom: 24.0,
-      paddingTop: 24.0,
-      margin: const EdgeInsets.symmetric(horizontal: 200.0),
-      body: SpacedColumn(
-        verticalSpace: 16.0,
-        children: [
-          _header(loc.name ?? ""),
-          const Divider(height: 1, thickness: 1, color: ThemeColors.gray11),
-          Container(
-            height: 500.0,
-            width: MediaQuery.of(appRouter.navigatorKey.currentContext!)
-                .size
-                .width,
-            child: CustomGMapsWidget(location: loc),
-          ),
-        ],
-      ),
-      context: appRouter.navigatorKey.currentContext!,
-    );
-  }
-
-  Widget _header(String title) {
-    return SpacedRow(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        KText(
-          text: title,
-          fontSize: 18.0,
-          fontWeight: FWeight.bold,
-          isSelectable: false,
-          textColor: ThemeColors.gray2,
-        ),
-        IconButton(
-            onPressed: () {
-              appRouter.pop();
-            },
-            icon: const HeroIcon(HeroIcons.x,
-                color: ThemeColors.gray2, size: 20.0)),
-      ],
-    );
+    showMapPopup(location: loc);
   }
 
   Future<void> deleteSelectedRows() async {
