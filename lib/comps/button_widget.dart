@@ -8,7 +8,10 @@ class ButtonMedium extends StatelessWidget {
   ButtonMedium(
       {Key? key, this.onPressed, required this.text, this.icon, this.bgColor})
       : super(key: key) {
-    bgColor ??= ThemeColors.blue3;
+    bgColor ??= ThemeColors.MAIN_COLOR;
+    if (icon != null) {
+      icon = HeroIcon(icon!.icon, size: icon!.size, color: ThemeColors.white);
+    }
   }
 
   @override
@@ -80,7 +83,10 @@ class ButtonLarge extends StatelessWidget {
       this.icon,
       this.bgColor})
       : super(key: key) {
-    bgColor ??= ThemeColors.blue3;
+    bgColor ??= ThemeColors.MAIN_COLOR;
+    if (icon != null) {
+      icon = HeroIcon(icon!.icon, size: icon!.size, color: ThemeColors.white);
+    }
   }
 
   @override
@@ -150,7 +156,10 @@ class ButtonSmall extends StatelessWidget {
   ButtonSmall(
       {Key? key, this.onPressed, required this.text, this.icon, this.bgColor})
       : super(key: key) {
-    bgColor ??= ThemeColors.blue3;
+    bgColor ??= ThemeColors.MAIN_COLOR;
+    if (icon != null) {
+      icon = HeroIcon(icon!.icon, size: icon!.size, color: ThemeColors.white);
+    }
   }
 
   @override
@@ -160,11 +169,11 @@ class ButtonSmall extends StatelessWidget {
           const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.disabled)) {
-          return ThemeColors.blue3.withOpacity(0.4);
+          return ThemeColors.MAIN_COLOR.withOpacity(0.4);
         } else if (states.contains(MaterialState.pressed)) {
-          return ThemeColors.blue3;
+          return ThemeColors.MAIN_COLOR;
         } else if (states.contains(MaterialState.hovered)) {
-          return ThemeColors.blue6;
+          return ThemeColors.MAIN_COLOR;
         } else {
           return bgColor;
         }
@@ -173,7 +182,7 @@ class ButtonSmall extends StatelessWidget {
       splashFactory: NoSplash.splashFactory,
       side: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return const BorderSide(color: ThemeColors.blue10, width: 2.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 2.0);
         } else {
           return const BorderSide(color: ThemeColors.gray11, width: 0.0);
         }
@@ -222,6 +231,10 @@ class ButtonMediumSecondary extends StatelessWidget {
       this.bgColor})
       : super(key: key) {
     bgColor ??= ThemeColors.transparent;
+    if (leftIcon != null) {
+      leftIcon = HeroIcon(leftIcon!.icon,
+          size: leftIcon!.size, color: ThemeColors.MAIN_COLOR.withOpacity(0.9));
+    }
   }
 
   @override
@@ -237,9 +250,9 @@ class ButtonMediumSecondary extends StatelessWidget {
       }),
       side: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return const BorderSide(color: ThemeColors.blue3, width: 2.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 2.0);
         } else if (states.contains(MaterialState.hovered)) {
-          return const BorderSide(color: ThemeColors.blue6, width: 1.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 1.0);
         } else {
           return const BorderSide(color: ThemeColors.gray11, width: 1.0);
         }
@@ -260,8 +273,8 @@ class ButtonMediumSecondary extends StatelessWidget {
             text: text,
             isSelectable: false,
             textColor: onPressed == null
-                ? ThemeColors.blue3.withOpacity(0.4)
-                : ThemeColors.blue3,
+                ? ThemeColors.MAIN_COLOR.withOpacity(0.4)
+                : ThemeColors.MAIN_COLOR,
             fontSize: 14,
             fontWeight: FWeight.bold,
           ));
@@ -274,8 +287,8 @@ class ButtonMediumSecondary extends StatelessWidget {
           isSelectable: false,
           fontSize: 14,
           textColor: onPressed == null
-              ? ThemeColors.blue3.withOpacity(0.4)
-              : ThemeColors.blue3,
+              ? ThemeColors.MAIN_COLOR.withOpacity(0.4)
+              : ThemeColors.MAIN_COLOR,
           fontWeight: FWeight.bold,
         ));
   }
@@ -296,6 +309,10 @@ class ButtonLargeSecondary extends StatelessWidget {
       this.bgColor})
       : super(key: key) {
     bgColor ??= ThemeColors.transparent;
+    if (leftIcon != null) {
+      leftIcon = HeroIcon(leftIcon!.icon,
+          size: leftIcon!.size, color: ThemeColors.MAIN_COLOR.withOpacity(0.9));
+    }
   }
 
   @override
@@ -312,9 +329,9 @@ class ButtonLargeSecondary extends StatelessWidget {
       }),
       side: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return const BorderSide(color: ThemeColors.blue3, width: 2.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 2.0);
         } else if (states.contains(MaterialState.hovered)) {
-          return const BorderSide(color: ThemeColors.blue6, width: 1.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 1.0);
         } else {
           return const BorderSide(color: ThemeColors.gray11, width: 1.0);
         }
@@ -335,8 +352,8 @@ class ButtonLargeSecondary extends StatelessWidget {
             text: text,
             isSelectable: false,
             textColor: onPressed == null
-                ? ThemeColors.blue3.withOpacity(0.4)
-                : ThemeColors.blue3,
+                ? ThemeColors.MAIN_COLOR.withOpacity(0.4)
+                : ThemeColors.MAIN_COLOR,
             fontSize: 16,
             fontWeight: FWeight.bold,
           ));
@@ -352,8 +369,8 @@ class ButtonLargeSecondary extends StatelessWidget {
             isSelectable: false,
             fontSize: 16,
             textColor: onPressed == null
-                ? ThemeColors.blue3.withOpacity(0.4)
-                : ThemeColors.blue3,
+                ? ThemeColors.MAIN_COLOR.withOpacity(0.4)
+                : ThemeColors.MAIN_COLOR,
             fontWeight: FWeight.bold,
           ),
         ));
@@ -373,6 +390,10 @@ class ButtonSmallSecondary extends StatelessWidget {
       this.bgColor})
       : super(key: key) {
     bgColor ??= ThemeColors.transparent;
+    if (leftIcon != null) {
+      leftIcon = HeroIcon(leftIcon!.icon,
+          size: leftIcon!.size, color: ThemeColors.MAIN_COLOR.withOpacity(0.9));
+    }
   }
 
   @override
@@ -388,9 +409,9 @@ class ButtonSmallSecondary extends StatelessWidget {
       }),
       side: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return const BorderSide(color: ThemeColors.blue3, width: 2.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 2.0);
         } else if (states.contains(MaterialState.hovered)) {
-          return const BorderSide(color: ThemeColors.blue6, width: 1.0);
+          return BorderSide(color: ThemeColors.MAIN_COLOR, width: 1.0);
         } else {
           return const BorderSide(color: ThemeColors.gray11, width: 1.0);
         }
@@ -411,8 +432,8 @@ class ButtonSmallSecondary extends StatelessWidget {
             text: text,
             isSelectable: false,
             textColor: onPressed == null
-                ? ThemeColors.blue3.withOpacity(0.4)
-                : ThemeColors.blue3,
+                ? ThemeColors.MAIN_COLOR.withOpacity(0.4)
+                : ThemeColors.MAIN_COLOR,
             fontSize: 14,
             fontWeight: FWeight.bold,
           ));
@@ -425,8 +446,8 @@ class ButtonSmallSecondary extends StatelessWidget {
           isSelectable: false,
           fontSize: 14,
           textColor: onPressed == null
-              ? ThemeColors.blue3.withOpacity(0.4)
-              : ThemeColors.blue3,
+              ? ThemeColors.MAIN_COLOR.withOpacity(0.4)
+              : ThemeColors.MAIN_COLOR,
           fontWeight: FWeight.bold,
         ));
   }

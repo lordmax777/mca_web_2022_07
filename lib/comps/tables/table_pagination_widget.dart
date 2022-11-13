@@ -175,7 +175,7 @@ class TablePaginationWidget extends StatelessWidget {
           padding: MaterialStateProperty.all(
               const EdgeInsets.symmetric(vertical: 20.0, horizontal: 0.0)),
           backgroundColor: MaterialStateProperty.resolveWith((states) {
-            return ThemeColors.blue3;
+            return ThemeColors.MAIN_COLOR;
           }),
         ),
         onPressed: null,

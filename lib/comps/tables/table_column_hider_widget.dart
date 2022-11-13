@@ -40,7 +40,7 @@ class TableColumnHiderWidget extends StatelessWidget {
       },
       child: ButtonMediumSecondary(
           leftIcon:
-              const HeroIcon(HeroIcons.cog, color: ThemeColors.blue3, size: 20),
+              HeroIcon(HeroIcons.cog, color: ThemeColors.MAIN_COLOR, size: 20),
           text: "Columns",
           onPressed: () {
             dynamic state = gKey.currentState;
@@ -64,7 +64,6 @@ class TableColumnHiderWidget extends StatelessWidget {
                   height: 16.0,
                   toggleSize: 14.0,
                   padding: 1.0,
-                  activeColor: ThemeColors.blue3,
                   inactiveColor: ThemeColors.gray11,
                   onToggle: (bool value) {
                     setState(() {

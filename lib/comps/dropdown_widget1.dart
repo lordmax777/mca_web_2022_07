@@ -172,7 +172,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
                 color: isError
                     ? ThemeColors.red3
                     : isOpen
-                        ? ThemeColors.blue3
+                        ? ThemeColors.MAIN_COLOR
                         : (widget.dropdownBtnColor ?? ThemeColors.gray11),
                 width: isOpen
                     ? 2.0
@@ -295,7 +295,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
               alignment: Alignment.centerRight,
               child: HeroIcon(
                 HeroIcons.up,
-                color: isOpen ? ThemeColors.blue3 : ThemeColors.gray2,
+                color: isOpen ? ThemeColors.MAIN_COLOR : ThemeColors.gray2,
                 size: 15,
               )),
         ),
@@ -314,7 +314,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
             decoration: BoxDecoration(
               // borderRadius: BorderRadius.circular(14),
               color: widget.value == listValues[i]
-                  ? ThemeColors.blue4
+                  ? ThemeColors.MAIN_COLOR
                   : ThemeColors.transparent,
             ),
             alignment: Alignment.centerLeft,

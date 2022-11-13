@@ -20,8 +20,9 @@ class NewLocationPage extends StatelessWidget {
         verticalSpace: 16.0,
         children: [
           PageGobackWidget(
-              text:
-                  controller.isUpdate ? controller.nameController.text : null),
+              text: controller.isUpdate
+                  ? controller.nameController.text
+                  : "New Location"),
           const TableWrapperWidget(child: _GeneralWidget()),
         ],
       )),
@@ -29,87 +30,27 @@ class NewLocationPage extends StatelessWidget {
   }
 }
 
-class _GeneralWidget extends StatefulWidget {
+class _GeneralWidget extends StatelessWidget {
   const _GeneralWidget({Key? key}) : super(key: key);
 
   @override
-  State<_GeneralWidget> createState() => __GeneralWidgetState();
-}
-
-class __GeneralWidgetState extends State<_GeneralWidget> {
-  final List<Widget> _generalItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _addGeneralTabItems(isExpanded: true);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      separatorBuilder: (context, index) =>
-          const Divider(color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _generalItems.length + 1,
-      itemBuilder: (context, index) {
-        if (index == _generalItems.length) {
-          return SaveAndCancelButtonsWidget(
-            saveText: NewLocationController.to.isUpdate
-                ? 'Update Location'
-                : 'Create Location',
-            formKeys: [],
-            onSave: NewLocationController.to.onSave,
-          );
-        }
-        return _generalItems[index];
-      },
-    );
-  }
-
-  void _addGeneralTabItems({bool isExpanded = false}) {
-    _generalItems.add(_buildExpanableItem(
-        const _GeneralInfoWidget(), _GeneralInfoWidget.title,
-        isExpanded: isExpanded));
-    _generalItems
-        .add(_buildExpanableItem(const _ContactWidget(), _ContactWidget.title));
-    _generalItems
-        .add(_buildExpanableItem(const _AddressWidget(), _AddressWidget.title));
-    _generalItems
-        .add(_buildExpanableItem(const _GpsWidget(), _GpsWidget.title));
-  }
-
-  Widget _buildExpanableItem(Widget child, String title,
-      {bool isExpanded = false}) {
-    bool a = true;
-    return StatefulBuilder(
-      builder: (context, ss) {
-        return ExpansionTile(
-          maintainState: true,
-          initiallyExpanded: isExpanded,
-          childrenPadding:
-              const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 0.0),
-          tilePadding:
-              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
-          trailing: const SizedBox(),
-          onExpansionChanged: (value) {
-            ss(() {
-              a = !value;
-            });
-          },
-          leading: HeroIcon(a ? HeroIcons.up : HeroIcons.down, size: 18.0),
-          title: KText(
-            text: title,
-            isSelectable: false,
-            fontWeight: FWeight.bold,
-            fontSize: 16.0,
-            textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
-          ),
-          expandedAlignment: Alignment.topLeft,
-          children: [child],
-        );
-      },
+    return CustomExpandableTabBar(
+      saveText: NewLocationController.to.isUpdate
+          ? 'Update Location'
+          : 'Create Location',
+      onSave: NewLocationController.to.onSave,
+      expandedWidgetList: [
+        ExpandedWidgetType(
+            title: _GeneralInfoWidget.title,
+            child: const _GeneralInfoWidget(),
+            initExpanded: true),
+        ExpandedWidgetType(
+            title: _ContactWidget.title, child: const _ContactWidget()),
+        ExpandedWidgetType(
+            title: _AddressWidget.title, child: const _AddressWidget()),
+        ExpandedWidgetType(title: _GpsWidget.title, child: const _GpsWidget()),
+      ],
     );
   }
 }

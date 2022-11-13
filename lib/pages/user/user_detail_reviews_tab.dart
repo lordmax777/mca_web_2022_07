@@ -57,7 +57,7 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
           renderer: (ctx) {
             return KText(
               text: "Edit",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
@@ -67,9 +67,9 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
                         review: ctx.cell.value),
                     context: context);
               },
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.pen,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
               ),
             );
           }),

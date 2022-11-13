@@ -60,11 +60,11 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
                   splashFactory: NoSplash.splashFactory,
                   isScrollable: true,
                   indicatorWeight: 3.0,
-                  indicatorColor: ThemeColors.blue3,
-                  labelColor: ThemeColors.blue3,
+                  indicatorColor: ThemeColors.MAIN_COLOR,
+                  labelColor: ThemeColors.MAIN_COLOR,
                   unselectedLabelColor: ThemeColors.black,
-                  labelStyle:
-                      ThemeText.tabTextStyle.copyWith(color: ThemeColors.blue3),
+                  labelStyle: ThemeText.tabTextStyle
+                      .copyWith(color: ThemeColors.MAIN_COLOR),
                   unselectedLabelStyle: ThemeText.tabTextStyle,
                   tabs: departmentsController.reactive.value!.tabs,
                 ),

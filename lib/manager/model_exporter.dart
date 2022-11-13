@@ -15,3 +15,4 @@ export 'models/list_all_md.dart';
 export 'models/photos_md.dart';
 export 'models/mobile_md.dart';
 export 'models/warehouse_md.dart';
+export 'models/logged_in_user_md.dart';

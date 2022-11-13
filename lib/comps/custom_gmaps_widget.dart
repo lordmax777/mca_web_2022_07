@@ -8,10 +8,7 @@ import '../theme/theme.dart';
 
 class CustomGMapsWidget extends StatefulWidget {
   final LocationItemMd? location;
-  final bool isSingle;
-
-  ///If single location must be provided, otherwise all locations will be shown
-  const CustomGMapsWidget({super.key, this.location, this.isSingle = true});
+  const CustomGMapsWidget({super.key, this.location});
 
   @override
   State<CustomGMapsWidget> createState() => _CustomGMapsWidgetState();
@@ -25,7 +22,7 @@ class _CustomGMapsWidgetState extends State<CustomGMapsWidget> {
   void initState() {
     super.initState();
     final List<LocationItemMd> locs = [...LocationsController.to.departments];
-    if (widget.isSingle) {
+    if (widget.location != null) {
       locs.clear();
       locs.add(widget.location!);
     }
@@ -37,7 +34,7 @@ class _CustomGMapsWidgetState extends State<CustomGMapsWidget> {
         radius: location.address?.radius?.toDouble() ?? 0,
         fillColor: ThemeColors.red3.withOpacity(0.2),
         strokeWidth: 2,
-        strokeColor: ThemeColors.black,
+        strokeColor: location.active! ? ThemeColors.black : ThemeColors.gray5,
       ));
       markers.add(Marker(
         markerId: MarkerId(location.id.toString()),
@@ -50,7 +47,7 @@ class _CustomGMapsWidgetState extends State<CustomGMapsWidget> {
   @override
   Widget build(BuildContext context) {
     var location = LocationsController.to.departments.first;
-    if (widget.isSingle) {
+    if (widget.location != null) {
       location = widget.location!;
     }
     return GoogleMapsWidget(
@@ -61,12 +58,12 @@ class _CustomGMapsWidgetState extends State<CustomGMapsWidget> {
           location.address!.longitude!.toDouble()),
       circles: circles.toSet(),
       markers: markers.toSet(),
-      defaultCameraZoom: widget.isSingle ? 15 : 10,
+      defaultCameraZoom: widget.location != null ? 15 : 10,
     );
   }
 }
 
-void showMapPopup({LocationItemMd? location, bool isSingle = true}) {
+void showMapPopup({LocationItemMd? location}) {
   showOverlayPopup(
     horizontalPadding: 24.0,
     paddingBottom: 24.0,
@@ -81,10 +78,7 @@ void showMapPopup({LocationItemMd? location, bool isSingle = true}) {
           height: 500.0,
           width:
               MediaQuery.of(appRouter.navigatorKey.currentContext!).size.width,
-          child: CustomGMapsWidget(
-            location: location,
-            isSingle: isSingle,
-          ),
+          child: CustomGMapsWidget(location: location),
         ),
       ],
     ),

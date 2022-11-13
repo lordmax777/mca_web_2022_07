@@ -1,52 +1,35 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:get/get.dart';
+import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
+import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_new_controller.dart';
 
 import '../../theme/theme.dart';
 
-class StocksNewItemPopupWidget extends StatefulWidget {
+class StocksNewItemPopupWidget extends StatelessWidget {
   const StocksNewItemPopupWidget({Key? key}) : super(key: key);
 
   @override
-  State<StocksNewItemPopupWidget> createState() =>
-      _DepartmentsNewDepWidgetState();
-}
-
-class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
-  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  final TextEditingController _depNameController = TextEditingController();
-  final TextEditingController _ourPriceController = TextEditingController();
-  final TextEditingController _customPriceController = TextEditingController();
-  final TextEditingController _taxController = TextEditingController();
-
-  @override
-  void dispose() {
-    _depNameController.dispose();
-    _ourPriceController.dispose();
-
-    _customPriceController.dispose();
-    _taxController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => StockItemsNewItemController());
     final dpWidth = MediaQuery.of(context).size.width;
 
-    return TableWrapperWidget(
-        child: Form(
-      key: formKey,
-      child: SpacedColumn(children: [
-        _header(context),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        const SizedBox(),
-        _body(dpWidth),
-        const Divider(color: ThemeColors.gray11, height: 1.0),
-        _footer(),
-      ]),
-    ));
+    return GBuilder<StockItemsNewItemController>(
+      child: (controller) => TableWrapperWidget(
+          child: Form(
+        key: controller.formKey,
+        child: SpacedColumn(children: [
+          _header(context, controller),
+          Divider(color: ThemeColors.gray11, height: 1.0),
+          const SizedBox(),
+          _body(dpWidth, controller),
+          Divider(color: ThemeColors.gray11, height: 1.0),
+          _footer(context, controller),
+        ]),
+      )),
+    );
   }
 
-  Widget _header(BuildContext context) {
+  Widget _header(BuildContext context, StockItemsNewItemController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: SpacedRow(
@@ -64,14 +47,14 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
               onPressed: () {
                 context.popRoute();
               },
-              icon: const HeroIcon(HeroIcons.x,
-                  color: ThemeColors.gray2, size: 20.0)),
+              icon:
+                  HeroIcon(HeroIcons.x, color: ThemeColors.gray2, size: 20.0)),
         ],
       ),
     );
   }
 
-  Widget _body(double dpWidth) {
+  Widget _body(double dpWidth, StockItemsNewItemController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -83,7 +66,7 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
             isRequired: true,
             width: dpWidth / 5,
             labelText: "Item Name",
-            controller: _depNameController,
+            controller: controller.nameController,
             validator: (p0) {
               if (p0 == null || p0.isEmpty) {
                 return "Item name is required";
@@ -97,7 +80,7 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
             labelText: "Our Price",
             rightIcon: HeroIcons.pound,
             keyboardType: TextInputType.number,
-            controller: _ourPriceController,
+            controller: controller.ourPriceController,
             validator: (p0) {
               if (p0 == null || p0.isEmpty) {
                 return "Price is required";
@@ -111,7 +94,7 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
             rightIcon: HeroIcons.pound,
             keyboardType: TextInputType.number,
             labelText: "Customer Price",
-            controller: _customPriceController,
+            controller: controller.customPriceController,
             validator: (p0) {
               if (p0 == null || p0.isEmpty) {
                 return "Price is required";
@@ -125,7 +108,7 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
             rightIcon: HeroIcons.percent,
             keyboardType: TextInputType.number,
             labelText: "Tax",
-            controller: _taxController,
+            controller: controller.taxController,
             validator: (p0) {
               if (p0 == null || p0.isEmpty) {
                 return "Tax is required";
@@ -133,13 +116,13 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
               return null;
             },
           ),
-          const SizedBox(),
+          const SizedBox(height: 1),
         ],
       ),
     );
   }
 
-  Widget _footer() {
+  Widget _footer(BuildContext context, StockItemsNewItemController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: SpacedRow(
@@ -150,16 +133,14 @@ class _DepartmentsNewDepWidgetState extends State<StocksNewItemPopupWidget> {
           ButtonLargeSecondary(
             text: 'Cancel',
             paddingWithoutIcon: true,
-            onPressed: () {
-              context.popRoute();
-            },
+            onPressed: context.popRoute,
           ),
           ButtonLarge(
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: 'Add Item',
             onPressed: () {
-              if (formKey.currentState!.validate()) {}
+              if (controller.formKey.currentState!.validate()) {}
             },
           ),
         ],

@@ -85,7 +85,7 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               mainAxisSize: MainAxisSize.min,
@@ -101,7 +101,7 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
@@ -127,14 +127,14 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: "View",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 1),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.link,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );
@@ -148,14 +148,14 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: "View",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 2),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.link,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );
@@ -169,14 +169,14 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: "View",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 3),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.link,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );
@@ -195,14 +195,14 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: "View",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 4),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.link,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );
@@ -216,14 +216,14 @@ class _BodyState extends State<_Body> {
           renderer: (ctx) {
             return KText(
               text: "View",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 5),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.link,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );

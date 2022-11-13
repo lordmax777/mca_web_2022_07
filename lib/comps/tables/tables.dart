@@ -146,7 +146,7 @@ class DepsListTable extends StatelessWidget {
               columnTextStyle: ThemeText.tableColumnTextStyle,
               enableRowColorAnimation: true,
             ),
-            columnSize: PlutoGridColumnSizeConfig(
+            columnSize: const PlutoGridColumnSizeConfig(
                 autoSizeMode: PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,

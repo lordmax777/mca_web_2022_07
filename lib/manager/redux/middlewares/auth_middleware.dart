@@ -1,4 +1,5 @@
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -46,6 +47,8 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
       stateValue.data = r;
 
       next(UpdateAuthAction(authRes: stateValue));
+
+      await GeneralController.to.getLoggedInUser();
     } else {
       stateValue.error.retries = state.authState.authRes.error.retries + 1;
 

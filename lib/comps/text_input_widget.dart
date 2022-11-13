@@ -84,6 +84,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             : SystemMouseCursors.text,
         controller: widget.controller,
         readOnly: widget.disableAll || !widget.enabled,
+        cursorColor: ThemeColors.MAIN_COLOR,
         style: widget.disableAll
             ? ThemeText.md.copyWith(color: ThemeColors.gray8)
             : ThemeText.bold14.copyWith(color: ThemeColors.gray2),
@@ -95,10 +96,10 @@ class _TextInputWidgetState extends State<TextInputWidget> {
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
               borderSide: BorderSide(
-                  width: 1.0,
+                  width: 2.0,
                   color: widget.disableAll
                       ? ThemeColors.gray8
-                      : ThemeColors.blue6)),
+                      : ThemeColors.MAIN_COLOR)),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           label: widget.labelText != null

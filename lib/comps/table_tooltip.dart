@@ -47,13 +47,13 @@ class TableTooltipWidget extends StatelessWidget {
       child: KText(
         onTap: () {},
         text: title,
-        textColor: ThemeColors.blue3,
+        textColor: ThemeColors.MAIN_COLOR,
         fontWeight: FWeight.regular,
         fontSize: 14,
         isSelectable: false,
-        icon: const HeroIcon(
+        icon:  HeroIcon(
           HeroIcons.eye,
-          color: ThemeColors.blue3,
+          color: ThemeColors.MAIN_COLOR,
         ),
       ),
     );
@@ -111,13 +111,13 @@ class TableTooltipWidget1 extends StatelessWidget {
       child: KText(
         onTap: () {},
         text: title,
-        textColor: ThemeColors.blue3,
+        textColor: ThemeColors.MAIN_COLOR,
         fontWeight: FWeight.regular,
         fontSize: 14,
         isSelectable: false,
-        icon: const HeroIcon(
+        icon:  HeroIcon(
           HeroIcons.eye,
-          color: ThemeColors.blue3,
+          color: ThemeColors.MAIN_COLOR,
         ),
       ),
     );

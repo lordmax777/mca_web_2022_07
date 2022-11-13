@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -10,16 +11,27 @@ import 'package:mca_web_2022_07/manager/router/router.gr.dart';
 
 final appRouter = AppRouter();
 
-class McaWebApp extends StatelessWidget {
+class McaWebApp extends StatefulWidget {
   const McaWebApp({Key? key}) : super(key: key);
+
+  @override
+  State<McaWebApp> createState() => _McaWebAppState();
+}
+
+class _McaWebAppState extends State<McaWebApp> {
+  @override
+  void initState() {
+    super.initState();
+    Get.addKey(appRouter.navigatorKey);
+  }
 
   @override
   Widget build(BuildContext context) {
     return StoreProvider(
       store: appStore,
-      child: MaterialApp.router(
+      child: GetMaterialApp.router(
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [LocationsListRoute()])
+          if (kDebugMode) const HomeRoute(children: [DepartmentsListRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

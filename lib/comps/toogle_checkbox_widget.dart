@@ -9,11 +9,10 @@ class ToggleCheckboxWidget extends StatefulWidget {
   /// * [onToggle] is called when the user toggles the switch on or off.
   ///
 
-  const ToggleCheckboxWidget({
+  ToggleCheckboxWidget({
     Key? key,
     required this.value,
     required this.onToggle,
-    this.activeColor = ThemeColors.blue5,
     this.inactiveColor = ThemeColors.gray2,
     this.activeTextColor = ThemeColors.white,
     this.inactiveTextColor = ThemeColors.white,
@@ -50,8 +49,9 @@ class ToggleCheckboxWidget extends StatefulWidget {
             (toggleBorder == null || activeToggleBorder == null) &&
                 (toggleBorder == null || inactiveToggleBorder == null),
             'Cannot provide toggleBorder when an activeToggleBorder or inactiveToggleBorder was given\n'
-            'To give the toggle a border, use "activeToggleBorder: color" or "inactiveToggleBorder: color".'),
-        super(key: key);
+            'To give the toggle a border, use "activeToggleBorder: color" or "inactiveToggleBorder: color".') {
+    activeColor ??= ThemeColors.MAIN_COLOR;
+  }
 
   /// Determines if the switch is on or off.
   ///
@@ -112,7 +112,7 @@ class ToggleCheckboxWidget extends StatefulWidget {
   /// The color to use on the switch when the switch is on.
   ///
   /// Defaults to [Colors.blue].
-  final Color activeColor;
+  Color? activeColor;
 
   /// The color to use on the switch when the switch is off.
   ///
@@ -305,7 +305,7 @@ class _ToggleCheckboxWidgetState extends State<ToggleCheckboxWidget>
 
     if (widget.value) {
       _toggleColor = widget.activeToggleColor ?? widget.toggleColor;
-      _switchColor = widget.activeColor;
+      _switchColor = widget.activeColor!;
       _switchBorder = widget.activeSwitchBorder as Border? ??
           widget.switchBorder as Border?;
       _toggleBorder = widget.activeToggleBorder as Border? ??
@@ -494,9 +494,9 @@ class CheckboxWidget extends StatelessWidget {
         overlayColor: MaterialStateProperty.all(Colors.transparent),
         fillColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.hovered)) {
-            return ThemeColors.blue5;
+            return ThemeColors.MAIN_COLOR;
           }
-          return ThemeColors.blue3;
+          return ThemeColors.MAIN_COLOR;
         }),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),

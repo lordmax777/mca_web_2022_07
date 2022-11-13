@@ -87,9 +87,9 @@ class _Body extends StatelessWidget {
             ),
             ButtonMediumSecondary(
               text: "View All Locations",
-              leftIcon: const HeroIcon(HeroIcons.pin,
-                  size: 20, color: ThemeColors.blue3),
-              onPressed: () => showMapPopup(isSingle: false),
+              leftIcon: HeroIcon(HeroIcons.pin,
+                  size: 20, color: ThemeColors.MAIN_COLOR),
+              onPressed: () => showMapPopup(),
             ),
             TableColumnHiderWidget(
               gKey: controller.columnsMenuKey,

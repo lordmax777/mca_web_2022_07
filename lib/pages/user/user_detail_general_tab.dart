@@ -12,21 +12,8 @@ import '../../manager/redux/states/users_state/saved_user_state.dart';
 import '../../theme/theme.dart';
 import 'package:image_picker/image_picker.dart';
 
-class GeneralWidget extends StatefulWidget {
+class GeneralWidget extends StatelessWidget {
   const GeneralWidget({Key? key}) : super(key: key);
-
-  @override
-  State<GeneralWidget> createState() => _GeneralWidgetState();
-}
-
-class _GeneralWidgetState extends State<GeneralWidget> {
-  final List<Widget> _generalItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _addGeneralTabItems(isExpanded: appStore.state.usersState.isNewUser);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,80 +27,38 @@ class _GeneralWidgetState extends State<GeneralWidget> {
         }
 
         return ErrorWrapper(
-          errors: errors,
-          child: ListView.separated(
-            separatorBuilder: (context, index) => const Divider(
-                color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _generalItems.length + 1,
-            itemBuilder: (context, index) {
-              if (index == _generalItems.length) {
-                return SaveAndCancelButtonsWidget(
-                  formKeys: [
-                    _PersonalDetailsWidget.formKey,
-                    _UsernameAndPayrollInfoWidget.formKey,
-                    _RolesDepsAndLoginOptionsWidget.formKey,
-                    _AddressWidget.formKey,
-                    _NextOfKinInfoWidget.formKey,
-                  ],
-                );
-              }
-              return _generalItems[index];
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  void _addGeneralTabItems({bool isExpanded = false}) {
-    _generalItems.add(_buildExpanableItem(
-        const _PersonalDetailsWidget(), _PersonalDetailsWidget.title,
-        isExpanded: isExpanded));
-    _generalItems.add(_buildExpanableItem(const _UsernameAndPayrollInfoWidget(),
-        _UsernameAndPayrollInfoWidget.title));
-    _generalItems.add(_buildExpanableItem(
-        const _RolesDepsAndLoginOptionsWidget(),
-        _RolesDepsAndLoginOptionsWidget.title));
-    _generalItems
-        .add(_buildExpanableItem(const _AddressWidget(), _AddressWidget.title));
-    _generalItems.add(_buildExpanableItem(
-        const _EthnicAndReligionWidget(), _EthnicAndReligionWidget.title));
-    _generalItems.add(_buildExpanableItem(
-        const _NextOfKinInfoWidget(), _NextOfKinInfoWidget.title));
-  }
-
-  Widget _buildExpanableItem(Widget child, String title,
-      {bool isExpanded = false}) {
-    bool a = true;
-    return StatefulBuilder(
-      builder: (context, ss) {
-        return ExpansionTile(
-          maintainState: true,
-          initiallyExpanded: isExpanded,
-          childrenPadding:
-              const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
-          tilePadding:
-              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
-          trailing: const SizedBox(),
-          onExpansionChanged: (value) {
-            ss(() {
-              a = !value;
-            });
-          },
-          // childrenPadding: EdgeInsets.symmetric(vertical: 16.0),
-          leading: HeroIcon(!a ? HeroIcons.up : HeroIcons.down, size: 18.0),
-          title: KText(
-            text: title,
-            isSelectable: false,
-            fontWeight: FWeight.bold,
-            fontSize: 16.0,
-            textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
-          ),
-          expandedAlignment: Alignment.topLeft,
-          children: [child],
-        );
+            errors: errors,
+            child: CustomExpandableTabBar(
+              saveText: 'Save Changes',
+              onSave: () async {
+                if (_PersonalDetailsWidget.formKey.currentState!.validate() &&
+                    _UsernameAndPayrollInfoWidget.formKey.currentState!
+                        .validate() &&
+                    _RolesDepsAndLoginOptionsWidget.formKey.currentState!
+                        .validate() &&
+                    _AddressWidget.formKey.currentState!.validate() &&
+                    _NextOfKinInfoWidget.formKey.currentState!.validate()) {
+                  await fetch(GetSaveGeneralDetailsAction());
+                }
+              },
+              expandedWidgetList: [
+                ExpandedWidgetType(
+                    title: _PersonalDetailsWidget.title,
+                    child: const _PersonalDetailsWidget(),
+                    initExpanded: true),
+                ExpandedWidgetType(
+                    title: _UsernameAndPayrollInfoWidget.title,
+                    child: const _UsernameAndPayrollInfoWidget()),
+                ExpandedWidgetType(
+                    title: _RolesDepsAndLoginOptionsWidget.title,
+                    child: const _RolesDepsAndLoginOptionsWidget()),
+                ExpandedWidgetType(
+                    title: _AddressWidget.title, child: const _AddressWidget()),
+                ExpandedWidgetType(
+                    title: _NextOfKinInfoWidget.title,
+                    child: const _NextOfKinInfoWidget()),
+              ],
+            ));
       },
     );
   }
@@ -153,7 +98,7 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                   child: Container(
                     width: 100,
                     height: 100,
-                    color: ThemeColors.blue7,
+                    color: ThemeColors.MAIN_COLOR.withOpacity(0.8),
                     child: Center(
                       child: userAvatar != null
                           ? Image.memory(base64Decode(userAvatar))
@@ -168,8 +113,8 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                   horizontalSpace: 8.0,
                   children: [
                     ButtonSmallSecondary(
-                      leftIcon: const HeroIcon(HeroIcons.upload,
-                          size: 20.0, color: ThemeColors.blue3),
+                      leftIcon:  HeroIcon(HeroIcons.upload,
+                          size: 20.0, color: ThemeColors.MAIN_COLOR),
                       text: "Upload Photo",
                       onPressed: () {
                         final ImagePicker _picker = ImagePicker();
@@ -668,7 +613,6 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
             height: 16.0,
             toggleSize: 14.0,
             padding: 1.0,
-            activeColor: ThemeColors.blue3,
             inactiveColor: ThemeColors.gray11,
             onToggle: onChanged),
         KText(

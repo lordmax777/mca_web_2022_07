@@ -76,7 +76,7 @@ class _PayrollWidgetState extends State<PayrollWidget> {
           renderer: (PlutoColumnRendererContext ctx) {
             return KText(
               text: "Edit",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
@@ -84,9 +84,9 @@ class _PayrollWidgetState extends State<PayrollWidget> {
                 context.pushRoute(UserDetailsPayrollTabNewContractRoute(
                     contract: ctx.cell.value));
               },
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.pen,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );

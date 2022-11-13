@@ -44,4 +44,6 @@ class ThemeColors {
 
   static const red3 = Color(0xFFF42829);
   static const green2 = Color(0xFF1BD2A4);
+
+  static Color MAIN_COLOR = blue3;
 }

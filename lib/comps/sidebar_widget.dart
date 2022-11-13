@@ -259,11 +259,13 @@ class YSSidebarParentItem extends StatelessWidget {
         height(40),
         rounded(6),
         paddingHorizontal(12),
-        bgColor(isExpanded ? ThemeColors.blue12 : Colors.transparent),
+        bgColor(isExpanded
+            ? ThemeColors.MAIN_COLOR.withOpacity(0.2)
+            : Colors.transparent),
       );
 
   Mix get titleMix => Mix(textStyle(ThemeText.md1
-      .apply(color: !isExpanded ? ThemeColors.gray5 : ThemeColors.blue3)));
+      .apply(color: !isExpanded ? ThemeColors.gray5 : ThemeColors.MAIN_COLOR)));
 
   @override
   Widget build(BuildContext context) {
@@ -286,7 +288,7 @@ class YSSidebarParentItem extends StatelessWidget {
                           size: 24,
                           color: !isExpanded
                               ? ThemeColors.gray5
-                              : ThemeColors.blue3),
+                              : ThemeColors.MAIN_COLOR),
                     TextMix(title, mix: titleMix),
                   ],
                 ),
@@ -347,7 +349,8 @@ class YSSidebarChildItem extends StatelessWidget {
           child: Text(
             title,
             style: ThemeText.md2.apply(
-                color: !isSelected ? ThemeColors.gray5 : ThemeColors.blue3),
+                color:
+                    !isSelected ? ThemeColors.gray5 : ThemeColors.MAIN_COLOR),
             // mix: titleMix
           ),
         ),

@@ -42,7 +42,7 @@ class _ErrorWrapperState extends State<ErrorWrapper> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 verticalSpace: 16,
                 children: [
-                  const CircularProgressIndicator(color: ThemeColors.blue5),
+                  CircularProgressIndicator(color: ThemeColors.MAIN_COLOR),
                   KText(
                     text: "Data is Loading...",
                     fontSize: 24,

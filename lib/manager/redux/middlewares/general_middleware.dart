@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
@@ -5,10 +6,12 @@ import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
 
+import '../../general_controller.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../sets/state_value.dart';
@@ -33,30 +36,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   Future<StateValue<ListAllMd>> _getAllParamList(
       AppState state, GetAllParamListAction action, NextDispatcher next) async {
     StateValue<ListAllMd> stateValue = StateValue(
-        data: ListAllMd(
-            holiday_calculation_types: [],
-            contract_starts: [],
-            contract_types: [],
-            countries: [],
-            currencies: [],
-            locations: [],
-            ethnics: [],
-            groups: [],
-            handover_types: [],
-            jobtitles: [],
-            qualification_levels: [],
-            qualifications: [],
-            religions: [],
-            request_types: [],
-            roles: [],
-            shifts: [],
-            special_rates: [],
-            statuses: [],
-            storage_items: [],
-            storages: [],
-            visas: [],
-            login_methods: [],
-            marital_statuses: []),
+        data: ListAllMd.init(),
         error:
             ErrorModel<GetAllParamListAction>(isLoading: true, action: action));
 
@@ -138,7 +118,18 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       for (var e in r['holiday_calculation_types']) {
         l.holiday_calculation_types.add(HolidayCalculationTypes.fromJson(e));
       }
+      for (var e in r['colour_schemas']) {
+        l.color_schemas.add(ColorSchemas.fromJson(e));
+      }
 
+      final userColor = l.color_schemas
+          .firstWhere((element) =>
+              element.id ==
+              GeneralController.to.loggedInUserValue.colourSchemaId!)
+          .colour1
+          .substring(1);
+      final color = "0xFF$userColor";
+      ThemeColors.MAIN_COLOR = Color(int.parse(color));
       final DepartmentsController departmentsController = Get.find();
       final GroupsController groupsController = Get.find();
       final QualifsController qualifsController = Get.find();

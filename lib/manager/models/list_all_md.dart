@@ -26,6 +26,36 @@ class ListAllMd {
   List<ContractStarts> contract_starts;
   List<ContractTypes> contract_types;
   List<HolidayCalculationTypes> holiday_calculation_types;
+  List<ColorSchemas> color_schemas;
+
+  static ListAllMd init() {
+    return ListAllMd(
+      holiday_calculation_types: [],
+      contract_starts: [],
+      contract_types: [],
+      countries: [],
+      currencies: [],
+      locations: [],
+      ethnics: [],
+      groups: [],
+      handover_types: [],
+      jobtitles: [],
+      qualification_levels: [],
+      qualifications: [],
+      religions: [],
+      request_types: [],
+      roles: [],
+      shifts: [],
+      special_rates: [],
+      statuses: [],
+      storage_items: [],
+      storages: [],
+      visas: [],
+      login_methods: [],
+      marital_statuses: [],
+      color_schemas: [],
+    );
+  }
 
   @override
   ListAllMd({
@@ -52,6 +82,7 @@ class ListAllMd {
     required this.marital_statuses,
     required this.contract_types,
     required this.contract_starts,
+    required this.color_schemas,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -570,4 +601,34 @@ class HolidayCalculationTypes {
       _$HolidayCalculationTypesFromJson(json);
 
   Map<String, dynamic> toJson() => _$HolidayCalculationTypesToJson(this);
+}
+
+@JsonSerializable()
+class ColorSchemas {
+  // {
+  //  "id": 1,
+  //  "name": "Blue 1",
+  //  "colour1": "#3B5998",
+  //  "colour2": "#8b9dc3",
+  //  "colour3": "#f0f0f0"
+  // },
+  int id;
+  String name;
+  String colour1;
+  String colour2;
+  String colour3;
+
+  @override
+  ColorSchemas({
+    required this.id,
+    required this.name,
+    required this.colour1,
+    required this.colour2,
+    required this.colour3,
+  });
+
+  factory ColorSchemas.fromJson(Map<String, dynamic> json) =>
+      _$ColorSchemasFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ColorSchemasToJson(this);
 }

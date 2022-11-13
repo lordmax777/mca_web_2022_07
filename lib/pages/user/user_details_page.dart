@@ -100,8 +100,8 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
                     ),
                   ]),
                   ButtonMediumSecondary(
-                    leftIcon: const HeroIcon(HeroIcons.send,
-                        size: 20.0, color: ThemeColors.blue3),
+                    leftIcon: HeroIcon(HeroIcons.send,
+                        size: 20.0, color: ThemeColors.MAIN_COLOR),
                     text: "Direct Message",
                     onPressed: _onSendMsg,
                   ),
@@ -120,7 +120,7 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 16.0,
         children: [
-          HeroIcon(icon, size: 32.0, color: ThemeColors.blue3),
+          HeroIcon(icon, size: 32.0, color: ThemeColors.MAIN_COLOR),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -201,11 +201,11 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
               splashFactory: NoSplash.splashFactory,
               isScrollable: true,
               indicatorWeight: 3.0,
-              indicatorColor: ThemeColors.blue3,
-              labelColor: ThemeColors.blue3,
+              indicatorColor: ThemeColors.MAIN_COLOR,
+              labelColor: ThemeColors.MAIN_COLOR,
               unselectedLabelColor: ThemeColors.black,
-              labelStyle:
-                  ThemeText.tabTextStyle.copyWith(color: ThemeColors.blue3),
+              labelStyle: ThemeText.tabTextStyle
+                  .copyWith(color: ThemeColors.MAIN_COLOR),
               unselectedLabelStyle: ThemeText.tabTextStyle,
               tabs: tabs,
             ),

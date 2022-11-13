@@ -67,7 +67,7 @@ class LocationsController extends GetxController {
             }
             return KText(
               text: ctx.cell.value,
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
@@ -172,14 +172,14 @@ class LocationsController extends GetxController {
           renderer: (ctx) {
             return KText(
               text: "Edit",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onColumnItemNavigate(ctx),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.edit,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );

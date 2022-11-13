@@ -79,6 +79,9 @@ ListAllMd _$ListAllMdFromJson(Map<String, dynamic> json) => ListAllMd(
       contract_starts: (json['contract_starts'] as List<dynamic>)
           .map((e) => ContractStarts.fromJson(e as Map<String, dynamic>))
           .toList(),
+      color_schemas: (json['color_schemas'] as List<dynamic>)
+          .map((e) => ColorSchemas.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
@@ -105,6 +108,7 @@ Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
       'contract_starts': instance.contract_starts,
       'contract_types': instance.contract_types,
       'holiday_calculation_types': instance.holiday_calculation_types,
+      'color_schemas': instance.color_schemas,
     };
 
 ListCurrency _$ListCurrencyFromJson(Map<String, dynamic> json) => ListCurrency(
@@ -438,4 +442,21 @@ Map<String, dynamic> _$HolidayCalculationTypesToJson(
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+    };
+
+ColorSchemas _$ColorSchemasFromJson(Map<String, dynamic> json) => ColorSchemas(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      colour1: json['colour1'] as String,
+      colour2: json['colour2'] as String,
+      colour3: json['colour3'] as String,
+    );
+
+Map<String, dynamic> _$ColorSchemasToJson(ColorSchemas instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'colour1': instance.colour1,
+      'colour2': instance.colour2,
+      'colour3': instance.colour3,
     };

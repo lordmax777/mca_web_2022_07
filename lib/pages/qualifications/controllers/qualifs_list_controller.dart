@@ -59,14 +59,14 @@ class QualifsController extends GetxController {
           renderer: (ctx) {
             return KText(
               text: "Edit",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onEditClick(context, ctx),
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.edit,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
                 size: 12,
               ),
             );

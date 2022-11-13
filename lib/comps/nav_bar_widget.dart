@@ -11,7 +11,7 @@ class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
       height: 64,
       width: double.infinity,
       alignment: Alignment.center,
-      color: ThemeColors.blue3,
+      color: ThemeColors.MAIN_COLOR,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [

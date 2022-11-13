@@ -51,13 +51,13 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
             return KText(
               onTap: () {},
               text: "View",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.eye,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
               ),
             );
           }),
@@ -95,7 +95,7 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
           renderer: (ctx) {
             return KText(
               text: "Edit",
-              textColor: ThemeColors.blue3,
+              textColor: ThemeColors.MAIN_COLOR,
               fontWeight: FWeight.regular,
               fontSize: 14,
               isSelectable: false,
@@ -105,9 +105,9 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
                         qualif: ctx.cell.value),
                     context: context);
               },
-              icon: const HeroIcon(
+              icon:  HeroIcon(
                 HeroIcons.pen,
-                color: ThemeColors.blue3,
+                color: ThemeColors.MAIN_COLOR,
               ),
             );
           }),
