@@ -33,7 +33,7 @@ class PlutoLoading extends StatelessWidget {
             children: [
               CircularProgressIndicator(
                 backgroundColor: backgroundColor ?? Colors.white,
-                color: indicatorColor ?? Colors.lightBlue,
+                color: indicatorColor ?? Colors.black,
                 strokeWidth: 2,
               ),
               const SizedBox(height: 10),

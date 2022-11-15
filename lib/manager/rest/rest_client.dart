@@ -356,6 +356,24 @@ abstract class RestClient {
   @DELETE("/api/fe/handovertypes/{id}")
   @FormUrlEncoded()
   Future<HttpResponse> deleteHandoverTypes(@Path() int id);
+
+  @GET("/api/fe/storageitems")
+  Future<HttpResponse> getStorageItems();
+
+  @POST("/api/fe/storageitems/{id}")
+  @FormUrlEncoded()
+  Future<HttpResponse> postStorageItems({
+    @Path() int? id,
+    @Field() required String name,
+    @Field() required int taxId,
+    @Field() required String incomingPrice, // Our price
+    @Field() required String outgoingPrice, // Customer price
+    @Field() required bool service,
+    @Field() required bool active,
+  });
+
+  @DELETE("/api/fe/storageitems/{id}")
+  Future<HttpResponse> deleteStorageItems(@Path() int id);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

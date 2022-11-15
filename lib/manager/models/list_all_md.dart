@@ -1,4 +1,8 @@
+import 'package:get/get.dart';
+import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../redux/sets/app_state.dart';
 part 'list_all_md.g.dart';
 
 @JsonSerializable()
@@ -27,6 +31,7 @@ class ListAllMd {
   List<ContractTypes> contract_types;
   List<HolidayCalculationTypes> holiday_calculation_types;
   List<ColorSchemas> color_schemas;
+  List<ListTaxes> taxes;
 
   static ListAllMd init() {
     return ListAllMd(
@@ -54,6 +59,7 @@ class ListAllMd {
       login_methods: [],
       marital_statuses: [],
       color_schemas: [],
+      taxes: [],
     );
   }
 
@@ -83,6 +89,7 @@ class ListAllMd {
     required this.contract_types,
     required this.contract_starts,
     required this.color_schemas,
+    required this.taxes,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -631,4 +638,35 @@ class ColorSchemas {
       _$ColorSchemasFromJson(json);
 
   Map<String, dynamic> toJson() => _$ColorSchemasToJson(this);
+}
+
+@JsonSerializable()
+class ListTaxes {
+// {
+//             "id": 1,
+//             "rate": 0,
+//             "active": true
+//         }
+  int id;
+  int rate;
+  bool active;
+
+  static ListTaxes? byRate(int r) =>
+      appStore.state.generalState.paramList.data!.taxes
+          .firstWhereOrNull((element) => element.rate == r);
+  static ListTaxes? byId(int i) =>
+      appStore.state.generalState.paramList.data!.taxes
+          .firstWhereOrNull((element) => element.id == i);
+
+  @override
+  ListTaxes({
+    required this.id,
+    required this.active,
+    required this.rate,
+  });
+
+  factory ListTaxes.fromJson(Map<String, dynamic> json) =>
+      _$ListTaxesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ListTaxesToJson(this);
 }

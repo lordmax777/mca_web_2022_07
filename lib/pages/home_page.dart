@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
         fetch(GetUsersListAction()),
         fetch(GetWarehousesAction()),
         fetch(GetAllLocationsAction()),
+        fetch(GetAllStorageItemsAction()),
       ]);
     });
   }

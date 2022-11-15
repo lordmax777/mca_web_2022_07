@@ -83,6 +83,7 @@ GeneralState _updateGeneralStateAction(
     locationList: action.locationList ?? state.locationList,
     warehouses: action.warehouses ?? state.warehouses,
     locationItems: action.locationItems ?? state.locationItems,
+    storageItems: action.storageItems ?? state.storageItems,
   );
 }
 

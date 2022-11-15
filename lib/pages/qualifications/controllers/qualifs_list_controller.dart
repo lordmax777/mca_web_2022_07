@@ -64,7 +64,7 @@ class QualifsController extends GetxController {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onEditClick(context, ctx),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.edit,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -93,6 +93,8 @@ class QualifsController extends GetxController {
 
   void _setFilter() {
     searchController.addListener(() {
+      gridStateManager.toggleAllRowChecked(false);
+      setDeleteBtnOpacity = 0.5;
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {

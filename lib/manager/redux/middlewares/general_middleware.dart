@@ -28,6 +28,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return GetAllLocationsAction.fetch(store.state, action, next);
       case GetWarehousesAction:
         return GetWarehousesAction.fetch(store.state, action, next);
+      case GetAllStorageItemsAction:
+        return GetAllStorageItemsAction.fetch(store.state, action, next);
       default:
         return next(action);
     }
@@ -121,6 +123,9 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       for (var e in r['colour_schemas']) {
         l.color_schemas.add(ColorSchemas.fromJson(e));
       }
+      for (var e in r['taxes']) {
+        l.taxes.add(ListTaxes.fromJson(e));
+      }
 
       final userColor = l.color_schemas
           .firstWhere((element) =>
@@ -130,6 +135,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           .substring(1);
       final color = "0xFF$userColor";
       ThemeColors.MAIN_COLOR = Color(int.parse(color));
+
       final DepartmentsController departmentsController = Get.find();
       final GroupsController groupsController = Get.find();
       final QualifsController qualifsController = Get.find();

@@ -1547,6 +1547,95 @@ class _RestClient implements RestClient {
     return httpResponse;
   }
 
+  @override
+  Future<HttpResponse<dynamic>> getStorageItems() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/storageitems',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> postStorageItems({
+    id,
+    required name,
+    required taxId,
+    required incomingPrice,
+    required outgoingPrice,
+    required service,
+    required active,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'name': name,
+      'taxId': taxId,
+      'incomingPrice': incomingPrice,
+      'outgoingPrice': outgoingPrice,
+      'service': service,
+      'active': active,
+    };
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/storageitems/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteStorageItems(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/storageitems/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

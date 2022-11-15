@@ -177,7 +177,7 @@ class LocationsController extends GetxController {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onColumnItemNavigate(ctx),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.edit,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -216,6 +216,8 @@ class LocationsController extends GetxController {
 
   void _setFilter() {
     searchController.addListener(() {
+      gridStateManager.toggleAllRowChecked(false);
+      setDeleteBtnOpacity = 0.5;
       if (searchController.text.isNotEmpty) {
         if (gridStateManager.page > 1) {
           gridStateManager.setPage(1);

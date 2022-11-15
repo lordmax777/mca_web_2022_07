@@ -1,8 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_new_controller.dart';
 
+import '../../comps/dropdown_widget1.dart';
+import '../../manager/models/list_all_md.dart';
 import '../../theme/theme.dart';
 
 class StocksNewItemPopupWidget extends StatelessWidget {
@@ -19,10 +22,10 @@ class StocksNewItemPopupWidget extends StatelessWidget {
         key: controller.formKey,
         child: SpacedColumn(children: [
           _header(context, controller),
-          Divider(color: ThemeColors.gray11, height: 1.0),
+          const Divider(color: ThemeColors.gray11, height: 1.0),
           const SizedBox(),
           _body(dpWidth, controller),
-          Divider(color: ThemeColors.gray11, height: 1.0),
+          const Divider(color: ThemeColors.gray11, height: 1.0),
           _footer(context, controller),
         ]),
       )),
@@ -30,6 +33,7 @@ class StocksNewItemPopupWidget extends StatelessWidget {
   }
 
   Widget _header(BuildContext context, StockItemsNewItemController controller) {
+    controller.forObxValue;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: SpacedRow(
@@ -47,8 +51,8 @@ class StocksNewItemPopupWidget extends StatelessWidget {
               onPressed: () {
                 context.popRoute();
               },
-              icon:
-                  HeroIcon(HeroIcons.x, color: ThemeColors.gray2, size: 20.0)),
+              icon: const HeroIcon(HeroIcons.x,
+                  color: ThemeColors.gray2, size: 20.0)),
         ],
       ),
     );
@@ -85,6 +89,9 @@ class StocksNewItemPopupWidget extends StatelessWidget {
               if (p0 == null || p0.isEmpty) {
                 return "Price is required";
               }
+              if (!p0.isNum) {
+                return "Price must be a number";
+              }
               return null;
             },
           ),
@@ -99,23 +106,42 @@ class StocksNewItemPopupWidget extends StatelessWidget {
               if (p0 == null || p0.isEmpty) {
                 return "Price is required";
               }
-              return null;
-            },
-          ),
-          TextInputWidget(
-            isRequired: true,
-            width: dpWidth / 5,
-            rightIcon: HeroIcons.percent,
-            keyboardType: TextInputType.number,
-            labelText: "Tax",
-            controller: controller.taxController,
-            validator: (p0) {
-              if (p0 == null || p0.isEmpty) {
-                return "Tax is required";
+              if (!p0.isNum) {
+                return "Price must be a number";
               }
               return null;
             },
           ),
+          DropdownWidget1<ListTaxes>(
+            hintText: "Tax",
+            dropdownBtnWidth: dpWidth / 5,
+            isRequired: true,
+            value: controller.tax.name,
+            leftIcon: HeroIcons.percent,
+            dropdownOptionsWidth: dpWidth / 5,
+            objItems: appStore.state.generalState.paramList.data!.taxes,
+            onChangedWithObj: controller.onTaxChange,
+            items: appStore.state.generalState.paramList.data!.taxes
+                .map((e) => e.rate.toString())
+                .toList(),
+          ),
+          // TextInputWidget(
+          //   isRequired: true,
+          //   width: dpWidth / 5,
+          //   rightIcon: HeroIcons.percent,
+          //   keyboardType: TextInputType.number,
+          //   labelText: "Tax",
+          //   controller: controller.taxController,
+          //   validator: (p0) {
+          //     if (p0 == null || p0.isEmpty) {
+          //       return "Tax is required";
+          //     }
+          //     if (!p0.isNumericOnly) {
+          //       return "Tax must be a number";
+          //     }
+          //     return null;
+          //   },
+          // ),
           const SizedBox(height: 1),
         ],
       ),
@@ -139,9 +165,7 @@ class StocksNewItemPopupWidget extends StatelessWidget {
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: 'Add Item',
-            onPressed: () {
-              if (controller.formKey.currentState!.validate()) {}
-            },
+            onPressed: controller.create,
           ),
         ],
       ),

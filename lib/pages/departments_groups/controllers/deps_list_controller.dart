@@ -112,6 +112,8 @@ class DepartmentsController extends GetxController {
 
   void _setFilter() {
     searchController.addListener(() {
+      gridStateManager.toggleAllRowChecked(false);
+      setDeleteBtnOpacity = 0.5;
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {

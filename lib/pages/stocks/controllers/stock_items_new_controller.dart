@@ -1,10 +1,23 @@
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
 
+import '../../../manager/redux/middlewares/users_middleware.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/sets/state_value.dart';
+import '../../../manager/rest/nocode_helpers.dart';
+import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 
 class StockItemsNewItemController extends GetxController {
   final ListStorageItem? stockItem;
+
+  static StockItemsNewItemController get to {
+    Get.lazyPut(() => StockItemsNewItemController());
+    return Get.find();
+  }
 
   StockItemsNewItemController({this.stockItem});
 
@@ -12,14 +25,49 @@ class StockItemsNewItemController extends GetxController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ourPriceController = TextEditingController();
   final TextEditingController customPriceController = TextEditingController();
-  final TextEditingController taxController = TextEditingController();
+  final Rx<CodeMap> _tax = Rx<CodeMap>(CodeMap(name: null, code: null));
+  CodeMap get tax => _tax.value;
+  void onTaxChange(DpItem val) => _tax.value =
+      CodeMap(name: val.name, code: (val.item as ListTaxes).id.toString());
+
+  RxInt forObx = RxInt(0);
+  int get forObxValue => forObx.value;
+  set forObxValue(int value) => forObx.value = value;
+
+  Future<void> create() async {
+    if (formKey.currentState!.validate()) {
+      showLoading();
+      final ApiResponse res = await restClient()
+          .postStorageItems(
+            id: stockItem?.id ?? 0,
+            name: nameController.text,
+            active: true,
+            service: true,
+            incomingPrice: ourPriceController.text,
+            outgoingPrice: customPriceController.text,
+            taxId: int.parse(tax.code!),
+          )
+          .nocodeErrorHandler();
+
+      if (res.success) {
+        final StockItemsController controller = Get.find();
+        controller.gridStateManager.toggleAllRowChecked(false);
+        controller.setDeleteBtnOpacity = 0.5;
+        await appStore.dispatch(GetAllStorageItemsAction());
+        closeLoading();
+      } else {
+        await closeLoading();
+        showError(res.data['errors'].toString());
+      }
+    }
+  }
 
   @override
   void onClose() {
     nameController.dispose();
     ourPriceController.dispose();
     customPriceController.dispose();
-    taxController.dispose();
+    _tax.value = CodeMap(name: null, code: null);
     super.onClose();
   }
 

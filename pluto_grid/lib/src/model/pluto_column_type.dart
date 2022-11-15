@@ -58,6 +58,25 @@ abstract class PlutoColumnType {
     );
   }
 
+  /// Provides a selection list and sets it as a selection column.
+  factory PlutoColumnType.customSelect(
+    List<dynamic> items,
+    List objects, {
+    dynamic defaultValue = '',
+    bool hasSearchBox = true,
+    bool enableColumnFilter = false,
+    int dropdownItemsMaxLen = 10,
+  }) {
+    return PlutoColumnTypeCustomSelect(
+      defaultValue: defaultValue,
+      hasSearchBox: true,
+      dropdownItemsMaxLen: dropdownItemsMaxLen,
+      items: items,
+      objects: objects,
+      enableColumnFilter: enableColumnFilter,
+    );
+  }
+
   /// Set as a date column.
   ///
   /// [startDate] Range start date (If there is no value, Can select the date without limit)
@@ -302,6 +321,45 @@ class PlutoColumnTypeSelect implements PlutoColumnType {
     this.defaultValue,
     required this.items,
     required this.enableColumnFilter,
+  });
+
+  @override
+  bool isValid(dynamic value) => items.contains(value) == true;
+
+  @override
+  int compare(dynamic a, dynamic b) {
+    return compareWithNull(a, b, () {
+      return items.indexOf(a).compareTo(items.indexOf(b));
+    });
+  }
+
+  @override
+  dynamic makeCompareValue(dynamic v) {
+    return v;
+  }
+}
+
+class PlutoColumnTypeCustomSelect implements PlutoColumnType {
+  @override
+  dynamic defaultValue;
+
+  List<dynamic> items;
+
+  List objects;
+
+  bool enableColumnFilter;
+
+  bool hasSearchBox;
+
+  int dropdownItemsMaxLen;
+
+  PlutoColumnTypeCustomSelect({
+    this.defaultValue,
+    required this.items,
+    required this.objects,
+    required this.enableColumnFilter,
+    this.hasSearchBox = false,
+    this.dropdownItemsMaxLen = 10,
   });
 
   @override

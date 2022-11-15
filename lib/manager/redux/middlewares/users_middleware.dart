@@ -105,8 +105,10 @@ Future<void> showLoading({bool? barrierDismissible = false}) async {
     barrierDismissible: barrierDismissible!,
     context: appRouter.navigatorKey.currentContext!,
     builder: (context) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: CircularProgressIndicator(
+          color: ThemeColors.MAIN_COLOR,
+        ),
       );
     },
   );

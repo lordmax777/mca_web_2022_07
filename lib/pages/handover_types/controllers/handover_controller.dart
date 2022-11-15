@@ -100,6 +100,8 @@ class HandoverTypesController extends GetxController {
 
   void _setFilter() {
     searchController.addListener(() {
+      gridStateManager.toggleAllRowChecked(false);
+      setDeleteBtnOpacity = 0.5;
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {
@@ -148,13 +150,12 @@ class HandoverTypesController extends GetxController {
       }
     }
 
+    await closeLoading();
     if (allSuccess) {
       gridStateManager.removeRows(gridStateManager.checkedRows);
       gridStateManager.toggleAllRowChecked(false);
       setDeleteBtnOpacity = 0.5;
-      closeLoading();
     } else {
-      await closeLoading();
       if (resp != null) {
         if (resp.resCode == 401) {
           showError("Can delete only what was created today!");

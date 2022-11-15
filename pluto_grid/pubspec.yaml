@@ -17,6 +17,7 @@ dependencies:
   simpleicons:
     path: ../simpleicons
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

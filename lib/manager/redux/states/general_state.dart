@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
+import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
@@ -24,7 +25,8 @@ class GeneralState {
   final Widget? endDrawer;
   final StateValue<List<WarehouseMd>> warehouses;
   final StateValue<List<LocationItemMd>> locationItems;
-  // ignore: prefer_const_constructors_in_immutables
+  final StateValue<List<StorageItemMd>> storageItems;
+
   GeneralState({
     required this.paramList,
     required this.locationList,
@@ -32,6 +34,7 @@ class GeneralState {
     required this.drawerStates,
     required this.endDrawer,
     required this.locationItems,
+    required this.storageItems,
   });
 
   CodeMap findCountryByName(String? name) {
@@ -56,6 +59,10 @@ class GeneralState {
         error: ErrorModel(),
         data: [],
       ),
+      storageItems: StateValue(
+        error: ErrorModel(),
+        data: [],
+      ),
       warehouses: StateValue(
         error: ErrorModel(),
         data: [],
@@ -75,6 +82,7 @@ class GeneralState {
     List<LocationsMd>? locationList,
     StateValue<List<WarehouseMd>>? warehouses,
     StateValue<List<LocationItemMd>>? locationItems,
+    StateValue<List<StorageItemMd>>? storageItems,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -83,6 +91,7 @@ class GeneralState {
       locationList: locationList ?? this.locationList,
       endDrawer: endDrawer,
       locationItems: locationItems ?? this.locationItems,
+      storageItems: storageItems ?? this.storageItems,
     );
   }
 }
@@ -94,7 +103,7 @@ class UpdateGeneralStateAction {
   List<LocationsMd>? locationList;
   StateValue<List<WarehouseMd>>? warehouses;
   StateValue<List<LocationItemMd>>? locationItems;
-
+  StateValue<List<StorageItemMd>>? storageItems;
   UpdateGeneralStateAction({
     this.paramList,
     this.drawerStates,
@@ -102,6 +111,7 @@ class UpdateGeneralStateAction {
     this.locationList,
     this.warehouses,
     this.locationItems,
+    this.storageItems,
   });
 }
 
@@ -174,9 +184,46 @@ class GetAllLocationsAction {
       stateValue.data = list;
       LocationsController.to.setList(list);
     } else {
-      stateValue.error.retries = state.usersState.usersList.error.retries + 1;
+      stateValue.error.retries =
+          state.generalState.locationItems.error.retries + 1;
     }
     next(UpdateGeneralStateAction(locationItems: stateValue));
+    return stateValue;
+  }
+}
+
+class GetAllStorageItemsAction {
+  static Future<StateValue<List<StorageItemMd>>> fetch(AppState state,
+      GetAllStorageItemsAction action, NextDispatcher next) async {
+    StateValue<List<StorageItemMd>> stateValue = StateValue(
+        data: [],
+        error: ErrorModel<GetAllStorageItemsAction>(
+            isLoading: true, action: action));
+
+    next(UpdateGeneralStateAction(storageItems: stateValue));
+
+    final ApiResponse res =
+        await restClient().getStorageItems().nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final List<StorageItemMd> list = res.data['storageitems']
+          .map<StorageItemMd>((e) => StorageItemMd.fromJson(e))
+          .toList();
+      list.sort((a, b) => a.name!.compareTo(b.name!));
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+      StockItemsController.to.setList(list);
+    } else {
+      stateValue.error.retries =
+          state.generalState.storageItems.error.retries + 1;
+    }
+    next(UpdateGeneralStateAction(storageItems: stateValue));
     return stateValue;
   }
 }
