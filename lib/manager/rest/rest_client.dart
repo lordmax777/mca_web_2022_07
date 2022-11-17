@@ -22,6 +22,15 @@ abstract class RestClient {
     @Field() String password,
   );
 
+  @POST("/oauth/v2/token")
+  @FormUrlEncoded()
+  Future<HttpResponse> refreshToken(
+    @Field() String grant_type,
+    @Field() String refresh_token,
+    @Field() String client_id,
+    @Field() String client_secret,
+  );
+
   @GET("/api/fe/managedusers")
   Future<HttpResponse> getUsersList();
 

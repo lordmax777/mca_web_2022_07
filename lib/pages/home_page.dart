@@ -25,18 +25,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      //Do init stuff here
-      await fetch(GetAccessTokenAction(
-          domain: Constants.domain,
-          username: Constants.username,
-          password: Constants.password));
-      await Future.wait([
-        fetch(GetAllParamListAction()),
-        fetch(GetUsersListAction()),
-        fetch(GetWarehousesAction()),
-        fetch(GetAllLocationsAction()),
-        fetch(GetAllStorageItemsAction()),
-      ]);
+      // await Future.wait([
+      //   fetch(GetAllParamListAction()),
+      //   fetch(GetUsersListAction()),
+      //   fetch(GetWarehousesAction()),
+      //   fetch(GetAllLocationsAction()),
+      //   fetch(GetAllStorageItemsAction()),
+      // ]);
     });
   }
 

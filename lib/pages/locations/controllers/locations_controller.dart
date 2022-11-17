@@ -10,7 +10,7 @@ import '../../../comps/custom_gmaps_widget.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
-import '../../../manager/router/router.gr.dart';
+import '../../../manager/router/router.dart';
 import '../../../theme/theme.dart';
 import '../../home_page.dart';
 import 'package:google_maps_widget/google_maps_widget.dart';

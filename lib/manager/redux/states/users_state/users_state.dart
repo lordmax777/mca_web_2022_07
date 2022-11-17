@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/saved_user_state.dart';
-import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import '../../../../app.dart';

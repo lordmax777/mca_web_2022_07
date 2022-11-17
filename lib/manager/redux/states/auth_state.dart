@@ -40,3 +40,5 @@ class GetAccessTokenAction {
     required this.password,
   });
 }
+
+class GetRefreshTokenAction {}

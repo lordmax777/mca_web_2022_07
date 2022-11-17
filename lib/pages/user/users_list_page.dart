@@ -4,7 +4,7 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
-import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../manager/model_exporter.dart';
@@ -132,7 +132,7 @@ class _BodyState extends State<_Body> {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 1),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -153,7 +153,7 @@ class _BodyState extends State<_Body> {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 2),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -174,7 +174,7 @@ class _BodyState extends State<_Body> {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 3),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -200,7 +200,7 @@ class _BodyState extends State<_Body> {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 4),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -221,7 +221,7 @@ class _BodyState extends State<_Body> {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onUserDetailsNavigationClick(ctx, index: 5),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.link,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,

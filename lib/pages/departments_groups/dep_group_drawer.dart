@@ -15,39 +15,8 @@ class DepGroupDrawer extends StatefulWidget {
 }
 
 class _DepGroupDrawerState extends State<DepGroupDrawer> {
-  List<Map> items = [
-    {
-      "name": "Devin Kei",
-      "time": 8,
-      "items": 10,
-      "price": 1000,
-    },
-    {
-      "name": "John Doe",
-      "time": 32,
-      "items": 88,
-      "price": 89677,
-    },
-    {
-      "name": "Kom Shoh",
-      "time": 12,
-      "items": 18,
-      "price": 9000,
-    },
-    {
-      "name": "Sardor Kom",
-      "time": 2,
-      "items": 1,
-      "price": 100,
-    },
-    {
-      "name": "Java Raj",
-      "time": 1,
-      "items": 100,
-      "price": 10000,
-    },
-  ];
-  List<Map> backupItems = [];
+  final List<Map> items = [];
+  final List<Map> backupItems = [];
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -60,20 +29,31 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
   @override
   void initState() {
     super.initState();
-    // items.clear();
-    // if(widget.group!=null){
-    //   final users = appStore.state.usersState.usersList.data!;
-    //   for (var user in users) {
-    //     if(user.groupId==user.groupId){
-    //       items.add({
-    //         "name": user.fullname,
-    //         "time": user.,
-    //         "items": 10,
-    //         "price": 1000,
-    //       });
-    //     }
-    //   }
-    // }
+    items.clear();
+    final users = appStore.state.usersState.usersList.data!;
+    if (widget.group != null) {
+      for (var user in users) {
+        if (user.groupId == widget.group!.id.toString()) {
+          items.add({
+            "name": user.fullname,
+            "time": "NO_TIME", //TODO:
+            "items": "NO_ITEMS", //TODO:
+            "price": "NO_PRICE", //TODO:
+          });
+        }
+      }
+    } else {
+      for (var user in users) {
+        if (user.groupId == widget.department!.id.toString()) {
+          items.add({
+            "name": user.fullname,
+            "time": "NO_TIME", //TODO:
+            "items": "NO_ITEMS", //TODO:
+            "price": "NO_PRICE", //TODO:
+          });
+        }
+      }
+    }
     backupItems.clear();
     backupItems.addAll(items);
 
@@ -84,12 +64,11 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
     _searchController.addListener(() {
       setState(() {
         if (_searchController.text.isNotEmpty) {
-          items = backupItems.where((element) {
+          items.addAll(backupItems.where((element) {
             return element['name']
                 .toLowerCase()
                 .contains(RegExp(_searchController.text.toLowerCase()));
-          }).toList();
-          return;
+          }).toList());
         }
         items.clear();
         items.addAll(backupItems);
@@ -126,7 +105,9 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
           children: [
             KText(
               isSelectable: false,
-              text: 'Cleaner',
+              text: widget.group != null
+                  ? widget.group!.name
+                  : widget.department!.name,
               fontSize: 18.0,
               textColor: ThemeColors.gray2,
               fontWeight: FWeight.bold,
@@ -157,7 +138,7 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
             leftIcon: HeroIcons.search),
         const SizedBox(height: 16.0),
         SizedBox(
-          height: 600,
+          height: MediaQuery.of(context).size.height - 200,
           width: double.infinity,
           child: ListView.builder(
               itemBuilder: _itemBuilder, itemCount: items.length),

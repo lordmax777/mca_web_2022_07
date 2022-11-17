@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/custom_get_builder.dart';

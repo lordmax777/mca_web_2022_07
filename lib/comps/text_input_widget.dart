@@ -18,9 +18,11 @@ class TextInputWidget extends StatefulWidget {
   final int maxLines;
   final ValueChanged<String>? onChanged;
   final String? Function(String?)? validator;
+  final VoidCallback? onRightIconClick;
   TextInputWidget(
       {Key? key,
       this.defaultBorderColor,
+      this.onRightIconClick,
       this.validator,
       this.maxLines = 1,
       this.enabled = true,

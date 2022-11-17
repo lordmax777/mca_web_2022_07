@@ -137,8 +137,9 @@ class GroupsController extends GetxController {
   }
 
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
-    appStore
-        .dispatch(UpdateGeneralStateAction(endDrawer: const DepGroupDrawer()));
+    final ListJobTitle dep = ctx.row.cells['action']!.value;
+    appStore.dispatch(
+        UpdateGeneralStateAction(endDrawer: DepGroupDrawer(department: dep)));
     await Future.delayed(const Duration(milliseconds: 100));
     if (scaffoldKey.currentState != null) {
       if (!scaffoldKey.currentState!.isDrawerOpen) {

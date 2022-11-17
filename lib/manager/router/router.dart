@@ -1,14 +1,22 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:mca_web_2022_07/manager/router/route_guards.dart';
 import 'package:mca_web_2022_07/pages/home_page.dart';
 import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
+import '../../pages/auth/login_page.dart';
 import '../../pages/user/user_details_page.dart';
+import '../models/contract_md.dart';
+
+part 'router.gr.dart';
 
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
-    AutoRoute(page: HomePage, initial: true, children: [
+    AutoRoute(page: LoginPage),
+    AutoRoute(page: HomePage, initial: true, guards: [
+      AuthGuard
+    ], children: [
       AutoRoute(page: UsersListPage, path: ""),
       AutoRoute(page: UserDetailsPage, path: "user-detail"),
       AutoRoute(
@@ -26,4 +34,6 @@ import '../../pages/user/user_details_page.dart';
   ],
 )
 // extend the generated private router
-class $AppRouter {}
+class AppRouter extends _$AppRouter {
+  AppRouter({required AuthGuard authGuard}) : super(authGuard: authGuard);
+}

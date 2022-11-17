@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
@@ -14,14 +15,18 @@ import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controlle
 import 'app.dart';
 import 'package:get/get.dart';
 
+import 'manager/hive.dart';
 import 'pages/locations/controllers/locations_controller.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Logger.init(kDebugMode,
       isShowFile: false, isShowTime: false, isShowNavigation: false);
+
   Get.lazyPut(() => DepartmentsController());
+  Get.lazyPut(() => HiveController());
+  Get.lazyPut(() => LoginController());
   Get.lazyPut(() => GeneralController());
   Get.lazyPut(() => GroupsController());
   Get.lazyPut(() => QualifsController());
@@ -31,6 +36,8 @@ void main() {
   Get.lazyPut(() => NewLocationController());
   Get.lazyPut(() => StockItemsController());
   Get.lazyPut(() => StockItemsNewItemController());
+
+  await HiveController.initHive();
 
   runApp(const McaWebApp());
 }

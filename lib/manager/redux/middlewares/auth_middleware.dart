@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
 import '../../../app.dart';
 import '../../../theme/theme.dart';
+import '../../hive.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../sets/state_value.dart';
@@ -17,6 +18,8 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     switch (action.runtimeType) {
       case GetAccessTokenAction:
         return _getAccessTokenAction(store.state, action, next);
+      case GetRefreshTokenAction:
+        return _getRefreshTokenAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -32,8 +35,13 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     next(UpdateAuthAction(authRes: stateValue));
 
     final ApiResponse res = await restClient()
-        .getAccessToken(Constants.grant_type, action.domain, Constants.clientId,
-            Constants.clientSecret, action.username, action.password)
+        .getAccessToken(
+            Constants.grant_type(),
+            action.domain,
+            Constants.clientId,
+            Constants.clientSecret,
+            action.username,
+            action.password)
         .nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
@@ -47,6 +55,49 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
       stateValue.data = r;
 
       next(UpdateAuthAction(authRes: stateValue));
+
+      await HiveController.to.setAccessToken(r.access_token);
+      await HiveController.to.setRefreshToken(r.refresh_token);
+
+      await GeneralController.to.getLoggedInUser();
+    } else {
+      stateValue.error.retries = state.authState.authRes.error.retries + 1;
+
+      next(UpdateAuthAction(authRes: stateValue));
+    }
+    return stateValue;
+  }
+
+  Future<StateValue<AuthRes>> _getRefreshTokenAction(
+      AppState state, GetRefreshTokenAction action, NextDispatcher next) async {
+    StateValue<AuthRes> stateValue = StateValue(
+        data: null,
+        error:
+            ErrorModel<GetRefreshTokenAction>(isLoading: true, action: action));
+
+    next(UpdateAuthAction(authRes: stateValue));
+
+    final refresh_token = HiveController.to.getRefreshToken()!;
+
+    final ApiResponse res = await restClient()
+        .refreshToken(Constants.grant_type(refresh: true), refresh_token,
+            Constants.clientId, Constants.clientSecret)
+        .nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final AuthRes r = AuthRes.fromJson(res.data);
+      stateValue.error.isError = false;
+      stateValue.data = r;
+
+      next(UpdateAuthAction(authRes: stateValue));
+
+      await HiveController.to.setAccessToken(r.access_token);
+      await HiveController.to.setRefreshToken(r.refresh_token);
 
       await GeneralController.to.getLoggedInUser();
     } else {

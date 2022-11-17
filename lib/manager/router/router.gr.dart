@@ -10,40 +10,42 @@
 //
 // ignore_for_file: type=lint
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i5;
-import 'package:flutter/material.dart' as _i6;
+part of 'router.dart';
 
-import '../../pages/home_page.dart' as _i1;
-import '../../pages/user/user_details_page.dart' as _i3;
-import '../../pages/user/users_list_page.dart' as _i2;
-import '../../theme/theme.dart' as _i4;
-import '../model_exporter.dart' as _i7;
+class _$AppRouter extends RootStackRouter {
+  _$AppRouter({
+    GlobalKey<NavigatorState>? navigatorKey,
+    required this.authGuard,
+  }) : super(navigatorKey);
 
-class AppRouter extends _i5.RootStackRouter {
-  AppRouter([_i6.GlobalKey<_i6.NavigatorState>? navigatorKey])
-      : super(navigatorKey);
+  final AuthGuard authGuard;
 
   @override
-  final Map<String, _i5.PageFactory> pagesMap = {
-    HomeRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+  final Map<String, PageFactory> pagesMap = {
+    LoginRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i1.HomePage(),
+        child: const LoginPage(),
+      );
+    },
+    HomeRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const HomePage(),
       );
     },
     UsersListRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i2.UsersListPage(),
+        child: const UsersListPage(),
       );
     },
     UserDetailsRoute.name: (routeData) {
       final args = routeData.argsAs<UserDetailsRouteArgs>(
           orElse: () => const UserDetailsRouteArgs());
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i3.UserDetailsPage(
+        child: UserDetailsPage(
           key: args.key,
           tabIndex: args.tabIndex,
         ),
@@ -52,150 +54,167 @@ class AppRouter extends _i5.RootStackRouter {
     UserDetailsPayrollTabNewContractRoute.name: (routeData) {
       final args = routeData.argsAs<UserDetailsPayrollTabNewContractRouteArgs>(
           orElse: () => const UserDetailsPayrollTabNewContractRouteArgs());
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i4.UserDetailsPayrollTabNewContractPage(
+        child: UserDetailsPayrollTabNewContractPage(
           key: args.key,
           contract: args.contract,
         ),
       );
     },
     DepartmentsListRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.DepartmentsListPage(),
+        child: const DepartmentsListPage(),
       );
     },
     QualificationsRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.QualificationsPage(),
+        child: const QualificationsPage(),
       );
     },
     LocationsListRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.LocationsListPage(),
+        child: const LocationsListPage(),
       );
     },
     NewLocationRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.NewLocationPage(),
+        child: const NewLocationPage(),
       );
     },
     WarehousesListRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.WarehousesListPage(),
+        child: const WarehousesListPage(),
       );
     },
     StockItemsListRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.StockItemsListPage(),
+        child: const StockItemsListPage(),
       );
     },
     ChecklistTemplatesRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.ChecklistTemplatesPage(),
+        child: const ChecklistTemplatesPage(),
       );
     },
     NewChecklistTemplateRoute.name: (routeData) {
       final args = routeData.argsAs<NewChecklistTemplateRouteArgs>(
           orElse: () => const NewChecklistTemplateRouteArgs());
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i4.NewChecklistTemplatePage(
+        child: NewChecklistTemplatePage(
           key: args.key,
           id: args.id,
         ),
       );
     },
     HandoverTypesRoute.name: (routeData) {
-      return _i5.MaterialPageX<dynamic>(
+      return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.HandoverTypesPage(),
+        child: const HandoverTypesPage(),
       );
     },
   };
 
   @override
-  List<_i5.RouteConfig> get routes => [
-        _i5.RouteConfig(
+  List<RouteConfig> get routes => [
+        RouteConfig(
+          LoginRoute.name,
+          path: '/login-page',
+        ),
+        RouteConfig(
           HomeRoute.name,
           path: '/',
+          guards: [authGuard],
           children: [
-            _i5.RouteConfig(
+            RouteConfig(
               UsersListRoute.name,
               path: '',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               UserDetailsRoute.name,
               path: 'user-detail',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               UserDetailsPayrollTabNewContractRoute.name,
               path: 'new-contract',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               DepartmentsListRoute.name,
               path: 'departments',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               QualificationsRoute.name,
               path: 'qualifications',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               LocationsListRoute.name,
               path: 'locations',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               NewLocationRoute.name,
               path: 'new-location',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               WarehousesListRoute.name,
               path: 'warehouses',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               StockItemsListRoute.name,
               path: 'stock-items',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               ChecklistTemplatesRoute.name,
               path: 'checklist-templates',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               NewChecklistTemplateRoute.name,
               path: 'new-checklist-template',
               parent: HomeRoute.name,
             ),
-            _i5.RouteConfig(
+            RouteConfig(
               HandoverTypesRoute.name,
               path: 'handover-types',
               parent: HomeRoute.name,
             ),
           ],
-        )
+        ),
       ];
 }
 
 /// generated route for
-/// [_i1.HomePage]
-class HomeRoute extends _i5.PageRouteInfo<void> {
-  const HomeRoute({List<_i5.PageRouteInfo>? children})
+/// [LoginPage]
+class LoginRoute extends PageRouteInfo<void> {
+  const LoginRoute()
+      : super(
+          LoginRoute.name,
+          path: '/login-page',
+        );
+
+  static const String name = 'LoginRoute';
+}
+
+/// generated route for
+/// [HomePage]
+class HomeRoute extends PageRouteInfo<void> {
+  const HomeRoute({List<PageRouteInfo>? children})
       : super(
           HomeRoute.name,
           path: '/',
@@ -206,8 +225,8 @@ class HomeRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i2.UsersListPage]
-class UsersListRoute extends _i5.PageRouteInfo<void> {
+/// [UsersListPage]
+class UsersListRoute extends PageRouteInfo<void> {
   const UsersListRoute()
       : super(
           UsersListRoute.name,
@@ -218,10 +237,10 @@ class UsersListRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i3.UserDetailsPage]
-class UserDetailsRoute extends _i5.PageRouteInfo<UserDetailsRouteArgs> {
+/// [UserDetailsPage]
+class UserDetailsRoute extends PageRouteInfo<UserDetailsRouteArgs> {
   UserDetailsRoute({
-    _i4.Key? key,
+    Key? key,
     int? tabIndex,
   }) : super(
           UserDetailsRoute.name,
@@ -241,7 +260,7 @@ class UserDetailsRouteArgs {
     this.tabIndex,
   });
 
-  final _i4.Key? key;
+  final Key? key;
 
   final int? tabIndex;
 
@@ -252,12 +271,12 @@ class UserDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i4.UserDetailsPayrollTabNewContractPage]
+/// [UserDetailsPayrollTabNewContractPage]
 class UserDetailsPayrollTabNewContractRoute
-    extends _i5.PageRouteInfo<UserDetailsPayrollTabNewContractRouteArgs> {
+    extends PageRouteInfo<UserDetailsPayrollTabNewContractRouteArgs> {
   UserDetailsPayrollTabNewContractRoute({
-    _i4.Key? key,
-    _i7.ContractMd? contract,
+    Key? key,
+    ContractMd? contract,
   }) : super(
           UserDetailsPayrollTabNewContractRoute.name,
           path: 'new-contract',
@@ -276,9 +295,9 @@ class UserDetailsPayrollTabNewContractRouteArgs {
     this.contract,
   });
 
-  final _i4.Key? key;
+  final Key? key;
 
-  final _i7.ContractMd? contract;
+  final ContractMd? contract;
 
   @override
   String toString() {
@@ -287,8 +306,8 @@ class UserDetailsPayrollTabNewContractRouteArgs {
 }
 
 /// generated route for
-/// [_i4.DepartmentsListPage]
-class DepartmentsListRoute extends _i5.PageRouteInfo<void> {
+/// [DepartmentsListPage]
+class DepartmentsListRoute extends PageRouteInfo<void> {
   const DepartmentsListRoute()
       : super(
           DepartmentsListRoute.name,
@@ -299,8 +318,8 @@ class DepartmentsListRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.QualificationsPage]
-class QualificationsRoute extends _i5.PageRouteInfo<void> {
+/// [QualificationsPage]
+class QualificationsRoute extends PageRouteInfo<void> {
   const QualificationsRoute()
       : super(
           QualificationsRoute.name,
@@ -311,8 +330,8 @@ class QualificationsRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.LocationsListPage]
-class LocationsListRoute extends _i5.PageRouteInfo<void> {
+/// [LocationsListPage]
+class LocationsListRoute extends PageRouteInfo<void> {
   const LocationsListRoute()
       : super(
           LocationsListRoute.name,
@@ -323,8 +342,8 @@ class LocationsListRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.NewLocationPage]
-class NewLocationRoute extends _i5.PageRouteInfo<void> {
+/// [NewLocationPage]
+class NewLocationRoute extends PageRouteInfo<void> {
   const NewLocationRoute()
       : super(
           NewLocationRoute.name,
@@ -335,8 +354,8 @@ class NewLocationRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.WarehousesListPage]
-class WarehousesListRoute extends _i5.PageRouteInfo<void> {
+/// [WarehousesListPage]
+class WarehousesListRoute extends PageRouteInfo<void> {
   const WarehousesListRoute()
       : super(
           WarehousesListRoute.name,
@@ -347,8 +366,8 @@ class WarehousesListRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.StockItemsListPage]
-class StockItemsListRoute extends _i5.PageRouteInfo<void> {
+/// [StockItemsListPage]
+class StockItemsListRoute extends PageRouteInfo<void> {
   const StockItemsListRoute()
       : super(
           StockItemsListRoute.name,
@@ -359,8 +378,8 @@ class StockItemsListRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.ChecklistTemplatesPage]
-class ChecklistTemplatesRoute extends _i5.PageRouteInfo<void> {
+/// [ChecklistTemplatesPage]
+class ChecklistTemplatesRoute extends PageRouteInfo<void> {
   const ChecklistTemplatesRoute()
       : super(
           ChecklistTemplatesRoute.name,
@@ -371,11 +390,11 @@ class ChecklistTemplatesRoute extends _i5.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.NewChecklistTemplatePage]
+/// [NewChecklistTemplatePage]
 class NewChecklistTemplateRoute
-    extends _i5.PageRouteInfo<NewChecklistTemplateRouteArgs> {
+    extends PageRouteInfo<NewChecklistTemplateRouteArgs> {
   NewChecklistTemplateRoute({
-    _i4.Key? key,
+    Key? key,
     int? id,
   }) : super(
           NewChecklistTemplateRoute.name,
@@ -395,7 +414,7 @@ class NewChecklistTemplateRouteArgs {
     this.id,
   });
 
-  final _i4.Key? key;
+  final Key? key;
 
   final int? id;
 
@@ -406,8 +425,8 @@ class NewChecklistTemplateRouteArgs {
 }
 
 /// generated route for
-/// [_i4.HandoverTypesPage]
-class HandoverTypesRoute extends _i5.PageRouteInfo<void> {
+/// [HandoverTypesPage]
+class HandoverTypesRoute extends PageRouteInfo<void> {
   const HandoverTypesRoute()
       : super(
           HandoverTypesRoute.name,

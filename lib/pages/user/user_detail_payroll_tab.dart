@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../manager/models/list_all_md.dart';

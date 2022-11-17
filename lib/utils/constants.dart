@@ -1,4 +1,4 @@
-import '../manager/router/router.gr.dart';
+import '../manager/router/router.dart';
 import '../theme/theme.dart';
 
 class Constants {
@@ -16,7 +16,8 @@ class Constants {
   static const String clientSecret =
       "4ok2x70rlfokc8g0wws8c8kwcokw80k44sg48goc0ok4w0so0k";
   static const String token_type = "bearer";
-  static const String grant_type = "password";
+  static String grant_type({bool refresh = false}) =>
+      refresh ? "refresh_token" : "password";
   static const String username = "96189831";
   static const String password = "F00tba11";
 

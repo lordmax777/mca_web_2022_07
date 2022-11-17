@@ -3,7 +3,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
-import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/pages/home_page.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/show_overlay_popup.dart';

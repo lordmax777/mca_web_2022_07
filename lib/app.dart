@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -7,9 +6,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/intl_conf/intl/l10n.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:mca_web_2022_07/manager/router/router.gr.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 
-final appRouter = AppRouter();
+import 'manager/router/route_guards.dart';
+
+final appRouter = AppRouter(authGuard: AuthGuard());
 
 class McaWebApp extends StatefulWidget {
   const McaWebApp({Key? key}) : super(key: key);
@@ -31,7 +32,7 @@ class _McaWebAppState extends State<McaWebApp> {
       store: appStore,
       child: GetMaterialApp.router(
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [StockItemsListRoute()])
+          // if (kDebugMode) const HomeRoute(children: [StockItemsListRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

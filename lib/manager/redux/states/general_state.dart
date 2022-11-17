@@ -13,7 +13,7 @@ import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
-import '../../router/router.gr.dart';
+import '../../router/router.dart';
 import '../middlewares/users_middleware.dart';
 import '../sets/app_state.dart';
 
