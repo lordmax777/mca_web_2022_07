@@ -113,7 +113,7 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                   horizontalSpace: 8.0,
                   children: [
                     ButtonSmallSecondary(
-                      leftIcon:  HeroIcon(HeroIcons.upload,
+                      leftIcon: HeroIcon(HeroIcons.upload,
                           size: 20.0, color: ThemeColors.MAIN_COLOR),
                       text: "Upload Photo",
                       onPressed: () {
@@ -214,7 +214,7 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                     ),
                     TextInputWidget(
                       width: dpWidth,
-                      enabled: false,
+                      disableAll: false,
                       labelText: "Date of Birth",
                       leftIcon: HeroIcons.calendar,
                       controller: TextEditingController(

@@ -33,15 +33,14 @@ class NewLocationController extends GetxController {
   int get id => _id.value;
   set setId(int value) => _id.value = value;
   bool get isUpdate => _id.value != -1;
-
   GlobalKey<FormState> generalFormKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final Rx<CodeMap> _status = CodeMap(name: null, code: null).obs;
   CodeMap get status => _status.value;
   set setStatus(CodeMap value) => _status.value = value;
-  final RxBool _isLocationBound = false.obs;
-  bool get isLocationBound => _isLocationBound.value;
-  set setIsLocationBound(bool value) => _isLocationBound.value = value;
+  final RxBool _isAnywhere = false.obs;
+  bool get isAnywhere => _isAnywhere.value;
+  set setIsLocationBound(bool value) => _isAnywhere.value = value;
   final TextEditingController ipAddressesController = TextEditingController();
   List<String> get ipAddressesList => ipAddressesController.text.split(',');
   final RxBool _isFixedIpAddress = false.obs;
@@ -60,6 +59,9 @@ class NewLocationController extends GetxController {
   final RxBool _isSendChecklist = false.obs;
   bool get isSendChecklist => _isSendChecklist.value;
   set setIsSendChecklist(bool value) => _isSendChecklist.value = value;
+  final RxInt _oneContactIsOpen = RxInt(0);
+  int get oneContactIsOpen => _oneContactIsOpen.value;
+  set setOneContactIsOpen(int value) => _oneContactIsOpen.value = value;
 
   //Address
   GlobalKey<FormState> addressFormKey = GlobalKey<FormState>();
@@ -108,12 +110,12 @@ class NewLocationController extends GetxController {
     super.onReady();
     logger('NewLocationController onReady');
     _onIpLookup();
-
-    if (kDebugMode) {
-      nameController.text = "Test Location Name 1";
+    const r = true;
+    if (r) {
+      nameController.text = "Test Location Name 1111";
       _status.value = CodeMap(name: "Active", code: "true");
-      onLocationBoundChange(true);
-      ipAddressesController.text = ipAddress;
+      onAnywhereChange(true);
+      ipAddressesController.text = ipAddressesController.text;
       emailController.text = "test@mail.ru";
       phoneController.text = "123456789";
       landlineController.text = "123456789";
@@ -135,9 +137,9 @@ class NewLocationController extends GetxController {
     _status.value = CodeMap(name: value.name, code: value.item.key.toString());
   }
 
-  void onLocationBoundChange(bool? value) {
+  void onAnywhereChange(bool? value) {
     if (value != null) {
-      _isLocationBound.value = value;
+      _isAnywhere.value = value;
     }
   }
 
@@ -185,15 +187,15 @@ class NewLocationController extends GetxController {
       active: status.code == 'true',
       latitude: latitudeController.text,
       longitude: longitudeController.text,
-      anywhere: !isLocationBound,
+      anywhere: isAnywhere,
       radius: radiusController.text,
       base: false,
       fixedipaddress: isFixedIpAddress,
       sendChecklist: isSendChecklist,
       timelimit: false,
       email: emailController.text,
-      phoneLandline: !isLocationBound ? "11111111" : landlineController.text,
-      phoneMobile: !isLocationBound ? "11111111" : phoneController.text,
+      phoneLandline: isAnywhere ? "11111111" : landlineController.text,
+      phoneMobile: isAnywhere ? "11111111" : phoneController.text,
       addressPostcode: postCodeController.text,
       addressLine1: streetController.text,
       addressCity: cityController.text,
@@ -203,7 +205,7 @@ class NewLocationController extends GetxController {
       ipaddress: ipAddressesController.text.isEmpty
           ? null
           : ipAddressesController.text,
-      phoneFax: !isLocationBound
+      phoneFax: isAnywhere
           ? "11111111"
           : (faxController.text.isEmpty ? null : faxController.text),
     ).nocodeErrorHandler();

@@ -207,7 +207,7 @@ class _UserDetailsPayrollTabNewContractPageState
                     text: contractStartDate?.formattedDate),
                 isRequired: true,
                 width: dpWidth / 6,
-                enabled: false,
+                disableAll: false,
                 labelText: "Contract Start Date",
                 leftIcon: HeroIcons.calendar,
                 validator: (value) {
@@ -234,7 +234,7 @@ class _UserDetailsPayrollTabNewContractPageState
                 width: dpWidth / 6,
                 controller:
                     TextEditingController(text: contractEndDate?.formattedDate),
-                enabled: false,
+                disableAll: false,
                 labelText: "Contract End Date",
                 leftIcon: HeroIcons.calendar,
                 validator: (p0) {

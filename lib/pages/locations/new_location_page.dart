@@ -105,8 +105,8 @@ class _GeneralInfoWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  _check(controller.isLocationBound,
-                      controller.onLocationBoundChange, "Not Location Bound"),
+                  _check(controller.isAnywhere, controller.onAnywhereChange,
+                      "Anywhere"),
                   const SizedBox(height: 8.0),
                   KText(
                       fontWeight: FWeight.bold,
@@ -120,9 +120,10 @@ class _GeneralInfoWidget extends StatelessWidget {
                     children: [
                       TextInputWidget(
                         width: dpWidth,
-                        disableAll: !controller.isFixedIpAddress,
                         labelText: "IP Address(es)",
                         maxLines: 5,
+                        isRequired: !controller.isAnywhere ||
+                            controller.isFixedIpAddress,
                         controller: controller.ipAddressesController,
                       ),
                       KText(
@@ -198,8 +199,16 @@ class _ContactWidget extends StatelessWidget {
                   width: dpWidth,
                   controller: controller.phoneController,
                   labelText: "Phone Number",
-                  disableAll: !controller.isLocationBound,
-                  isRequired: controller.isLocationBound,
+                  disableAll: controller.isAnywhere,
+                  onChanged: (value) {
+                    if (value.isEmpty) {
+                      controller.setOneContactIsOpen = 0;
+                      return;
+                    }
+                    controller.setOneContactIsOpen = 1;
+                  },
+                  isRequired: controller.oneContactIsOpen == 1 ||
+                      controller.oneContactIsOpen == 0,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Phone Number is required";
@@ -214,8 +223,16 @@ class _ContactWidget extends StatelessWidget {
                   width: dpWidth,
                   controller: controller.landlineController,
                   labelText: "Phone Landline",
-                  disableAll: !controller.isLocationBound,
-                  isRequired: controller.isLocationBound,
+                  disableAll: controller.isAnywhere,
+                  onChanged: (value) {
+                    if (value.isEmpty) {
+                      controller.setOneContactIsOpen = 0;
+                      return;
+                    }
+                    controller.setOneContactIsOpen = 2;
+                  },
+                  isRequired: controller.oneContactIsOpen == 2 ||
+                      controller.oneContactIsOpen == 0,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Phone Landline is required";
@@ -230,8 +247,16 @@ class _ContactWidget extends StatelessWidget {
                   width: dpWidth,
                   controller: controller.faxController,
                   labelText: "Fax Number",
-                  disableAll: !controller.isLocationBound,
-                  isRequired: controller.isLocationBound,
+                  disableAll: controller.isAnywhere,
+                  onChanged: (value) {
+                    if (value.isEmpty) {
+                      controller.setOneContactIsOpen = 0;
+                      return;
+                    }
+                    controller.setOneContactIsOpen = 3;
+                  },
+                  isRequired: controller.oneContactIsOpen == 3 ||
+                      controller.oneContactIsOpen == 0,
                   validator: (p0) {
                     if (p0 != null && p0.isEmpty) {
                       return "Fax Number is required";
@@ -294,7 +319,7 @@ class _AddressWidget extends StatelessWidget {
                             horizontalSpace: dpWidth / 3.8,
                             children: [
                               TextInputWidget(
-                                disableAll: !controller.isLocationBound,
+                                disableAll: controller.isAnywhere,
                                 width: (dpWidth * 1.7),
                                 labelText: "Street Address",
                                 validator: (p0) {
@@ -303,14 +328,14 @@ class _AddressWidget extends StatelessWidget {
                                   }
                                   return null;
                                 },
-                                isRequired: controller.isLocationBound,
+                                isRequired: controller.isAnywhere,
                                 controller: controller.streetController,
                               ),
                               TextInputWidget(
-                                disableAll: !controller.isLocationBound,
+                                disableAll: controller.isAnywhere,
                                 width: dpWidth / 1.5,
                                 labelText: "Post Code",
-                                isRequired: controller.isLocationBound,
+                                isRequired: controller.isAnywhere,
                                 validator: (p0) {
                                   if (p0!.isEmpty) {
                                     return "Post Code is required";
@@ -322,10 +347,10 @@ class _AddressWidget extends StatelessWidget {
                           ),
                           SpacedRow(horizontalSpace: dpWidth / 3.8, children: [
                             TextInputWidget(
-                              disableAll: !controller.isLocationBound,
+                              disableAll: controller.isAnywhere,
                               width: dpWidth / 1.4,
                               labelText: "City/Town",
-                              isRequired: controller.isLocationBound,
+                              isRequired: controller.isAnywhere,
                               validator: (p0) {
                                 if (p0!.isEmpty) {
                                   return "City/Town is required";
@@ -334,21 +359,21 @@ class _AddressWidget extends StatelessWidget {
                               controller: controller.cityController,
                             ),
                             TextInputWidget(
-                              disableAll: !controller.isLocationBound,
+                              disableAll: controller.isAnywhere,
                               width: dpWidth / 1.4,
                               labelText: "County",
                               controller: controller.countyController,
                             ),
                           ]),
                           DropdownWidget1(
-                            disableAll: !controller.isLocationBound,
+                            disableAll: controller.isAnywhere,
                             hintText: "Country",
                             dropdownMaxHeight: 400.0,
                             dropdownBtnWidth: (dpWidth * 1.7),
                             dropdownOptionsWidth: (dpWidth * 2) + 24.0,
                             value: controller.country.name,
                             hasSearchBox: true,
-                            isRequired: controller.isLocationBound,
+                            isRequired: controller.isAnywhere,
                             onChangedWithObj: controller.onCountryChange,
                             objItems: general.countries,
                             items:

@@ -164,7 +164,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
                 TextInputWidget(
                   isRequired: true,
                   width: dpWidth / 6,
-                  enabled: false,
+                  disableAll: false,
                   controller:
                       TextEditingController(text: _startDate?.formattedDate),
                   labelText: "Start Date",
@@ -191,7 +191,7 @@ class _UserDetailVisaNewVisaPopupWidgetState
                 TextInputWidget(
                   isRequired: true,
                   width: dpWidth / 6,
-                  enabled: false,
+                  disableAll: false,
                   labelText: "Expire Date",
                   controller:
                       TextEditingController(text: _endDate?.formattedDate),

@@ -78,7 +78,6 @@ class _NewChecklistTemplatePageState extends State<NewChecklistTemplatePage> {
         TextInputWidget(
           isRequired: true,
           width: dpWidth / 2.5,
-          enabled: false,
           labelText: "Template Name",
           controller: nameContr,
           validator: (value) {

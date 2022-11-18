@@ -213,7 +213,7 @@ class _UserDetailQualifNewQualifPopupWidgetState
               TextInputWidget(
                 isRequired: true,
                 width: dpWidth / 6,
-                enabled: false,
+                disableAll: false,
                 labelText: "Start Date",
                 validator: (p0) {
                   if (p0 == null || p0.isEmpty) {
@@ -243,7 +243,7 @@ class _UserDetailQualifNewQualifPopupWidgetState
                 TextInputWidget(
                   isRequired: true,
                   width: dpWidth / 6,
-                  enabled: false,
+                  disableAll: false,
                   labelText: "Expiry Date",
                   validator: (p0) {
                     if (p0 == null || p0.isEmpty) {

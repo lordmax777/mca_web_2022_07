@@ -154,7 +154,7 @@ class _UserDetailReviewNewReviewPopupWidgetState
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 6,
-            enabled: false,
+            disableAll: false,
             labelText: "Conducted On",
             controller:
                 TextEditingController(text: _conductedOn?.formattedDate),

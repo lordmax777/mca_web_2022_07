@@ -11,7 +11,6 @@ class TextInputWidget extends StatefulWidget {
   final bool isRequired;
   final String? labelText;
   final VoidCallback? onTap;
-  final bool enabled;
   final bool disableAll;
   final bool isPassword;
   final TextInputType keyboardType;
@@ -25,7 +24,6 @@ class TextInputWidget extends StatefulWidget {
       this.onRightIconClick,
       this.validator,
       this.maxLines = 1,
-      this.enabled = true,
       this.disableAll = false,
       this.onChanged,
       this.controller,
@@ -57,9 +55,10 @@ class _TextInputWidgetState extends State<TextInputWidget> {
     if (widget.disableAll) {
       return null;
     }
-    if (widget.validator != null) {
-      return widget.validator;
-    } else if (widget.isRequired) {
+    if (widget.isRequired) {
+      if (widget.validator != null) {
+        return widget.validator;
+      }
       return (value) {
         if (value == null || value.isEmpty) {
           return 'This field is required';
@@ -85,7 +84,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             ? SystemMouseCursors.forbidden
             : SystemMouseCursors.text,
         controller: widget.controller,
-        readOnly: widget.disableAll || !widget.enabled,
+        readOnly: widget.disableAll,
         cursorColor: ThemeColors.MAIN_COLOR,
         style: widget.disableAll
             ? ThemeText.md.copyWith(color: ThemeColors.gray8)
