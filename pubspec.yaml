@@ -55,7 +55,9 @@ dependencies:
   geolocator: ^9.0.2
   get: ^4.6.5
   dart_ipify: ^1.1.1
+  dotted_border: ^2.0.0+3
 #  google_maps_flutter_web: ^0.4.0+3
+
 
 dev_dependencies:
   flutter_test:

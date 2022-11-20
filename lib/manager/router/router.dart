@@ -5,6 +5,7 @@ import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../pages/auth/login_page.dart';
+import '../../pages/settings/settings_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/contract_md.dart';
 
@@ -30,6 +31,7 @@ part 'router.gr.dart';
       AutoRoute(page: ChecklistTemplatesPage, path: "checklist-templates"),
       AutoRoute(page: NewChecklistTemplatePage, path: "new-checklist-template"),
       AutoRoute(page: HandoverTypesPage, path: "handover-types"),
+      AutoRoute(page: SettingsPage, path: "settings-page"),
     ]),
   ],
 )

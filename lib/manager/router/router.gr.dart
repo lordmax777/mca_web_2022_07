@@ -121,6 +121,12 @@ class _$AppRouter extends RootStackRouter {
         child: const HandoverTypesPage(),
       );
     },
+    SettingsRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const SettingsPage(),
+      );
+    },
   };
 
   @override
@@ -192,6 +198,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               HandoverTypesRoute.name,
               path: 'handover-types',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              SettingsRoute.name,
+              path: 'settings-page',
               parent: HomeRoute.name,
             ),
           ],
@@ -434,4 +445,16 @@ class HandoverTypesRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'HandoverTypesRoute';
+}
+
+/// generated route for
+/// [SettingsPage]
+class SettingsRoute extends PageRouteInfo<void> {
+  const SettingsRoute()
+      : super(
+          SettingsRoute.name,
+          path: 'settings-page',
+        );
+
+  static const String name = 'SettingsRoute';
 }

@@ -82,6 +82,10 @@ class Constants {
           "title": "Handover Types",
           "name": const HandoverTypesRoute(),
         },
+        {
+          "title": "Settings",
+          "name": const SettingsRoute(),
+        },
       ]
     },
   ];
@@ -116,5 +120,14 @@ class Constants {
     5: "Friday",
     6: "Saturday",
     7: "Sunday",
+  };
+
+  static const Map<String, String> settingsSection = {
+    "account": "Account",
+    "change_password": "Change Password",
+    "login_and_status": "Login and Status",
+    "holidays_and_sick": "Holidays and Sick",
+    "shift": "Shift",
+    "color_theme": "Color Theme"
   };
 }
