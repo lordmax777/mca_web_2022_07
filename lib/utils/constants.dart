@@ -123,6 +123,7 @@ class Constants {
   };
 
   static const Map<String, String> settingsSection = {
+    "company": "Company",
     "account": "Account",
     "change_password": "Change Password",
     "login_and_status": "Login and Status",

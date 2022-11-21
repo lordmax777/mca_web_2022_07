@@ -14,25 +14,13 @@ class SettingsController extends GetxController {
   static SettingsController get to => Get.find();
   //UI Variables
   final RxDouble _deleteBtnOpacity = 0.5.obs;
-  final TextEditingController searchController = TextEditingController();
 
-  late PlutoGridStateManager gridStateManager;
+  List<String> settingsMenus = Constants.settingsSection.values.toList().obs;
+  final RxString _settingState = Constants.settingsSection.values.first.obs;
+  String get settingState => _settingState.value;
 
-  String selectedMenu = "";
-
-  double get deleteBtnOpacity => _deleteBtnOpacity.value;
-  set setDeleteBtnOpacity(double value) {
-    _deleteBtnOpacity.value = value;
-  }
-
-  //Departments
-  final RxList<ListHandoverType> _deps = <ListHandoverType>[].obs;
-  List<ListHandoverType> get departments => _deps;
-  setList(List<ListHandoverType> d) {
-    final dd = [...d];
-    dd.sort((a, b) => a.title.compareTo(b.title));
-    _deps.value = dd;
-    return _deps;
+  void updateSettingsState(int i) {
+    _settingState.value = settingsMenus[i];
   }
 
   //Functions
@@ -43,7 +31,6 @@ class SettingsController extends GetxController {
 
   @override
   void dispose() {
-    searchController.dispose();
     super.dispose();
   }
 }
