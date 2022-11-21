@@ -206,7 +206,105 @@ class _Body extends GetView<SettingsController> {
   }
 
   Widget _accountBody(BuildContext context) {
-    return SizedBox();
+    final dpWidth = MediaQuery.of(context).size.width / 3.5;
+
+    return SizedBox(
+        height: 700,
+        child: SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          horizontalSpace: 80,
+          children: [
+            SpacedColumn(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                verticalSpace: 16.0,
+                children: [
+                  const SizedBox(height: 50),
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(24.0),
+                      child: Container(
+                          width: 100,
+                          height: 100,
+                          color: ThemeColors.MAIN_COLOR.withOpacity(0.8),
+                          child: const Center(
+                              child: (HeroIcon(HeroIcons.userCircle,
+                                  size: 48.0, color: ThemeColors.white))))),
+                  ButtonLargeSecondary(
+                      text: "Upload Photo",
+                      leftIcon: HeroIcon(HeroIcons.upload),
+                      onPressed: () {}),
+                ]),
+            SpacedColumn(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                verticalSpace: 32.0,
+                children: [
+                  const SizedBox(height: 50),
+                  DropdownWidget(
+                    hintText: "Holiday Calculation Type *",
+                    isRequired: true,
+                    dropdownBtnWidth: dpWidth,
+                    onChanged: (val) {},
+                    items: const [
+                      "Basic",
+                      "Premium",
+                      "Enterprise",
+                    ],
+                  ),
+                  SizedBox(
+                    width: dpWidth,
+                    child: SpacedRow(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        horizontalSpace: 8.0,
+                        children: [
+                          CheckboxWidget(
+                            value: false,
+                            onChanged: (val) {},
+                          ),
+                          KText(
+                              text: "Show Title",
+                              isSelectable: false,
+                              fontSize: 14.0,
+                              fontWeight: FWeight.bold,
+                              textColor: ThemeColors.gray2)
+                        ]),
+                  ),
+                  TextInputWidget(
+                      isRequired: true,
+                      labelText: "First Name *",
+                      width: dpWidth,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a name";
+                        }
+                        return null;
+                      }),
+                  TextInputWidget(
+                      isRequired: true,
+                      labelText: "Last Name *",
+                      width: dpWidth,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a name";
+                        }
+                        return null;
+                      }),
+                  TextInputWidget(
+                      isRequired: true,
+                      disableAll: true,
+                      labelText: "Email Address *",
+                      width: dpWidth,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a name";
+                        }
+                        return null;
+                      }),
+                ]),
+          ],
+        ));
   }
 
   Widget _changePassBody(BuildContext context) {
@@ -426,7 +524,7 @@ class _Body extends GetView<SettingsController> {
   Widget inputWithTextHelper({
     required String labelText,
     required double dpWidth,
-    required String bottomText,
+    String? bottomText,
     String? checkText,
     bool? checkValue,
     ValueChanged<bool?>? onChanged,
@@ -446,11 +544,12 @@ class _Body extends GetView<SettingsController> {
                   }
                   return null;
                 }),
-            KText(
-                text: bottomText,
-                textColor: ThemeColors.gray8,
-                textAlign: TextAlign.left,
-                fontWeight: FWeight.medium),
+            if (bottomText != null)
+              KText(
+                  text: bottomText,
+                  textColor: ThemeColors.gray8,
+                  textAlign: TextAlign.left,
+                  fontWeight: FWeight.medium),
             if (checkValue != null && onChanged != null && checkText != null)
               const SizedBox(height: 32),
             if (checkValue != null && onChanged != null && checkText != null)
