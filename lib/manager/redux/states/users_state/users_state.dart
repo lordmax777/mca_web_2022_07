@@ -449,7 +449,7 @@ class GetPostUserDetailsContractAction {
   CodeMap AHEonYS;
   CodeMap hct;
   CodeMap contractType;
-  double salaryPH;
+  double? salaryPH;
   double? salaryOT;
   double? salaryPA;
   int awh;
@@ -490,7 +490,7 @@ class GetPostUserDetailsContractAction {
     required this.wdpw,
 
     ///Salary Per Hour
-    required this.salaryPH,
+    this.salaryPH,
 
     ///Salary Per Annum
     this.salaryPA,

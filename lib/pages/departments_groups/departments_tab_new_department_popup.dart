@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/manager/rest/dio_client_for_retrofit.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 
@@ -39,14 +40,19 @@ class DepsNewDepController extends GetxController {
           )
           .nocodeErrorHandler();
 
+      logger(res.rawError?.data);
+
       if (res.success) {
         final DepartmentsController groupsController = Get.find();
 
         groupsController.gridStateManager.toggleAllRowChecked(false);
         groupsController.setDeleteBtnOpacity = 0.5;
         await appStore.dispatch(GetAllParamListAction());
-      } else {}
-      closeLoading();
+        await closeLoading();
+      } else {
+        await closeLoading();
+        showError(res.data);
+      }
     }
   }
 
@@ -155,7 +161,6 @@ class DepartmentsNewDepPopupWidget extends GetView<DepsNewDepController> {
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 5,
             onChanged: (val) {
-              log("val: $val");
               controller.setStatus(val);
             },
             items: [

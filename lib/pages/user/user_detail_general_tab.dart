@@ -7,6 +7,7 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import '../../manager/models/list_all_md.dart';
+import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../manager/redux/states/users_state/saved_user_state.dart';
 import '../../theme/theme.dart';
@@ -32,13 +33,13 @@ class GeneralWidget extends StatelessWidget {
               saveText: 'Save Changes',
               onSave: () async {
                 if (_PersonalDetailsWidget.formKey.currentState!.validate() &&
-                    _UsernameAndPayrollInfoWidget.formKey.currentState!
-                        .validate() &&
                     _RolesDepsAndLoginOptionsWidget.formKey.currentState!
                         .validate() &&
                     _AddressWidget.formKey.currentState!.validate() &&
                     _NextOfKinInfoWidget.formKey.currentState!.validate()) {
                   await fetch(GetSaveGeneralDetailsAction());
+                } else {
+                  showError("Please check your inputs");
                 }
               },
               expandedWidgetList: [
@@ -47,13 +48,16 @@ class GeneralWidget extends StatelessWidget {
                     child: const _PersonalDetailsWidget(),
                     initExpanded: true),
                 ExpandedWidgetType(
-                    title: _UsernameAndPayrollInfoWidget.title,
-                    child: const _UsernameAndPayrollInfoWidget()),
-                ExpandedWidgetType(
                     title: _RolesDepsAndLoginOptionsWidget.title,
                     child: const _RolesDepsAndLoginOptionsWidget()),
+                // ExpandedWidgetType(
+                //     title: _UsernameAndPayrollInfoWidget.title,
+                //     child: const _UsernameAndPayrollInfoWidget()),
                 ExpandedWidgetType(
                     title: _AddressWidget.title, child: const _AddressWidget()),
+                ExpandedWidgetType(
+                    title: _EthnicAndReligionWidget.title,
+                    child: const _EthnicAndReligionWidget()),
                 ExpandedWidgetType(
                     title: _NextOfKinInfoWidget.title,
                     child: const _NextOfKinInfoWidget()),
@@ -234,6 +238,17 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                         }
                       },
                     ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "Username",
+                      controller: savedUser.username,
+                      disableAll: true,
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      labelText: "Payroll Code",
+                      controller: savedUser.payrollCode,
+                    ),
                   ]),
               SpacedColumn(
                   verticalSpace: 32.0,
@@ -311,6 +326,43 @@ class _PersonalDetailsWidgetState extends State<_PersonalDetailsWidget> {
                         appStore.dispatch(UpdateUsersStateAction());
                       },
                       items: Constants.userAccountStatusTypes.values.toList(),
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      controller: savedUser.upass,
+                      labelText: "Password",
+                      validator: state.usersState.isNewUser
+                          ? (p0) {
+                              if (p0 != null && p0.isEmpty) {
+                                //TODO: check if password is valid
+                                return "Password cannot be empty";
+                              }
+                              if (p0 != null && p0.length < 4) {
+                                return "Password must be more than 4 characters";
+                              }
+                            }
+                          : (p0) {
+                              // if (p0 != null && p0.isEmpty) {
+                              //   return "Password is invalid";
+                              // }
+                            },
+                      isPassword: true,
+                      isRequired: true,
+                    ),
+                    TextInputWidget(
+                      width: dpWidth,
+                      controller: savedUser.upassRepeat,
+                      labelText: "Repeat Password",
+                      validator: (p0) {
+                        if (state.savedUserState.upass.text.isNotEmpty) {
+                          if (state.savedUserState.upassRepeat.text !=
+                              state.savedUserState.upass.text) {
+                            return "Passwords do not match";
+                          }
+                        }
+                      },
+                      isPassword: true,
+                      isRequired: true,
                     ),
                   ]),
             ]),

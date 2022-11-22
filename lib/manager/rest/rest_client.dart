@@ -79,7 +79,7 @@ abstract class RestClient {
     @Field() required int awh,
     @Field() required int jobTitle,
     @Field() required String wdpw,
-    @Field() required double salaryPH,
+    @Field() double? salaryPH,
     @Field() int? contractid,
     @Field() String? ced,
     @Field() String? initHolidays,

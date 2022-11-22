@@ -99,7 +99,9 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
       await HiveController.to.setAccessToken(r.access_token);
       await HiveController.to.setRefreshToken(r.refresh_token);
 
-      await GeneralController.to.getLoggedInUser();
+      if (action.doInitFunc) {
+        await GeneralController.to.getLoggedInUser();
+      }
     } else {
       stateValue.error.retries = state.authState.authRes.error.retries + 1;
 

@@ -64,6 +64,8 @@ class UserDetailsPage extends StatelessWidget {
 class _UserDetailsQuickViewWidget extends StatelessWidget {
   const _UserDetailsQuickViewWidget({Key? key}) : super(key: key);
 
+  final bool hasDirectMsg = false;
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
@@ -99,12 +101,13 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
                           : "-",
                     ),
                   ]),
-                  ButtonMediumSecondary(
-                    leftIcon: HeroIcon(HeroIcons.send,
-                        size: 20.0, color: ThemeColors.MAIN_COLOR),
-                    text: "Direct Message",
-                    onPressed: _onSendMsg,
-                  ),
+                  if (hasDirectMsg)
+                    ButtonMediumSecondary(
+                      leftIcon: HeroIcon(HeroIcons.send,
+                          size: 20.0, color: ThemeColors.MAIN_COLOR),
+                      text: "Direct Message",
+                      onPressed: _onSendMsg,
+                    ),
                 ],
               ),
             ),

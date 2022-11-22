@@ -358,7 +358,7 @@ class _RestClient implements RestClient {
     required awh,
     required jobTitle,
     required wdpw,
-    required salaryPH,
+    salaryPH,
     contractid,
     ced,
     initHolidays,

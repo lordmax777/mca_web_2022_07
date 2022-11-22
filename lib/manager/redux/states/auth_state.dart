@@ -41,4 +41,10 @@ class GetAccessTokenAction {
   });
 }
 
-class GetRefreshTokenAction {}
+class GetRefreshTokenAction {
+  final bool doInitFunc;
+
+  GetRefreshTokenAction({
+    this.doInitFunc = true,
+  });
+}

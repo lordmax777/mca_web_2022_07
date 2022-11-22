@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
@@ -87,7 +88,7 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
   }
 }
 
-Future<void> showLoading({bool? barrierDismissible = false}) async {
+Future<void> showLoading({bool? barrierDismissible = kDebugMode}) async {
   showDialog(
     barrierDismissible: barrierDismissible!,
     context: appRouter.navigatorKey.currentContext!,

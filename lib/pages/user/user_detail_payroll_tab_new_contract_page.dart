@@ -25,6 +25,8 @@ class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
 
 class _UserDetailsPayrollTabNewContractPageState
     extends State<UserDetailsPayrollTabNewContractPage> {
+  int _oneContactIsOpen = 0;
+
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isNewContract = true;
 
@@ -174,6 +176,7 @@ class _UserDetailsPayrollTabNewContractPageState
             hintText: "Job Title",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
+            isRequired: true,
             value: jobTitle.name,
             objItems: jobTitles,
             items: jobTitles.map<String>((e) => e.name).toList(),
@@ -368,14 +371,44 @@ class _UserDetailsPayrollTabNewContractPageState
   }
 
   Widget _buildLeftBottom(double dpWidth) {
+    logger("build left bottom");
     return SpacedColumn(verticalSpace: 24.0, children: [
-      _buildSalary(dpWidth, 'Salary Per Hour', true, salaryPerHour),
+      _buildSalary(
+        dpWidth,
+        'Salary Per Hour',
+        _oneContactIsOpen == 1 || _oneContactIsOpen == 0,
+        salaryPerHour,
+        onChanged: (value) {
+          setState(() {
+            if (value.isEmpty) {
+              _oneContactIsOpen = 0;
+              return;
+            }
+            _oneContactIsOpen = 1;
+          });
+        },
+      ),
       _buildSalary(
           dpWidth, 'Salary Per Hour (Overtime)', false, salaryPerHourOvertime),
-      _buildSalary(dpWidth, 'Salary Per Annum', true, salaryPerAnnum),
+      _buildSalary(
+        dpWidth,
+        'Salary Per Annum',
+        _oneContactIsOpen == 2 || _oneContactIsOpen == 0,
+        salaryPerAnnum,
+        onChanged: (value) {
+          setState(() {
+            if (value.isEmpty) {
+              _oneContactIsOpen = 0;
+              return;
+            }
+            _oneContactIsOpen = 2;
+          });
+        },
+      ),
       if (errors.isNotEmpty)
         Center(
           child: KText(
+            textAlign: TextAlign.center,
             text: errors.join(".\n"),
             textColor: ThemeColors.red3,
             fontSize: 18,
@@ -385,7 +418,8 @@ class _UserDetailsPayrollTabNewContractPageState
   }
 
   Widget _buildSalary(double dpWidth, String label, bool isRequired,
-      TextEditingController controller) {
+      TextEditingController controller,
+      {ValueChanged? onChanged}) {
     return SpacedRow(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -415,15 +449,14 @@ class _UserDetailsPayrollTabNewContractPageState
           width: dpWidth / 8,
           hintText: "0.00",
           controller: controller,
-          validator: isRequired
-              ? (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter a value";
-                  }
-                }
-              : null,
+          onChanged: onChanged,
+          isRequired: isRequired,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter a value";
+            }
+          },
           rightIcon: HeroIcons.pound,
-          onTap: () {},
         ),
       ],
     );
@@ -454,29 +487,15 @@ class _UserDetailsPayrollTabNewContractPageState
   Future<void> _onSaveContract() async {
     if (formKey.currentState!.validate()) {
       //Print all variables
-      print("Contract Type: ${contractType.toJson()}");
-      print("Contract Start Date: $contractStartDate");
-      print("Contract End Date: $contractEndDate");
-      print("Holiday Entitlement Start: ${holidayEntitlementStart.toJson()}");
-      print("Holiday Calculation Type: ${holidayCalculationType.toJson()}");
-      print("Salary Per Hour: ${salaryPerHour.text}");
-      print("Salary Per Hour (Overtime): ${salaryPerHourOvertime.text}");
-      print("Salary Per Annum: ${salaryPerAnnum.text}");
-      print("Agreed Weekly Hours: ${aveWeeklyHours.text}");
-      print("Agreed Days per Week: ${agreedDaysPerWeek.text}");
-      print("Paid Lunchtime (min): ${paidLunchtime.text}");
-      print("Unpaid Lunchtime (min): ${unpaidLunchtime.text}");
-      print("Holidays Carried Over: ${holidaysCarriedOver.text}");
-      print("Annual Holiday Entitlement: ${annualHolidayEntitlement.text}");
-      print("Job Title: ${jobTitle.toJson()}");
-      print("Holidays Carried Over: ${holidaysCarriedOver.text}");
       setState(() {
         errors.clear();
       });
       ApiResponse? res =
           await appStore.dispatch(GetPostUserDetailsContractAction(
         wdpw: agreedDaysPerWeek.text,
-        salaryPH: double.parse(salaryPerHour.text.toString()),
+        salaryPH: salaryPerHour.text.isNotEmpty
+            ? double.parse(salaryPerHour.text.toString())
+            : null,
         salaryPA: salaryPerAnnum.text.isNotEmpty
             ? double.parse(salaryPerAnnum.text.toString())
             : null,
