@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import '../manager/general_controller.dart';
 import '../theme/theme.dart';
 
 class DefaultDrawer extends StatelessWidget {
@@ -10,7 +11,10 @@ class DefaultDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DrawerStates drawerState = state.generalState.drawerStates;
+    final String companyTitle = GeneralController.to.companyInfo.name ?? 'MCA';
+
     return YSSidebar(
+      title: companyTitle,
       initialIndex: drawerState.initialIndex,
       onTabChange: (p0) async {
         appStore.dispatch(UpdateGeneralStateAction(

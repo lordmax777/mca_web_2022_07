@@ -1,3 +1,4 @@
+import '../manager/general_controller.dart';
 import '../theme/theme.dart';
 import 'package:mix/mix.dart';
 

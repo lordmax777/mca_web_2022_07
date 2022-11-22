@@ -1,15 +1,11 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
-import 'package:mca_web_2022_07/manager/hive.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
-import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 
 import '../../../manager/general_controller.dart';
 import '../../../manager/redux/states/auth_state.dart';
-import '../../../manager/redux/states/general_state.dart';
-import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../theme/theme.dart';
 
 class LoginController extends GetxController {

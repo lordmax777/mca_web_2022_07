@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import '../app.dart';
+import '../manager/general_controller.dart';
 import '../theme/theme.dart';
 
 class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
@@ -79,13 +82,21 @@ class _Title extends StatelessWidget {
   }
 
   Widget _getLogo() {
+    final companyImage = GeneralController.to.companyInfo.logo;
+    Widget image = Image.asset('assets/images/mca-logo.png');
+
+    if (companyImage != null) {
+      image = Image.memory(base64Decode(companyImage));
+    }
+
     return CircleAvatar(
       backgroundColor: ThemeColors.white,
-      child: Image.asset('assets/images/mca-logo.png'),
+      child: image,
     );
   }
 
   Widget _getTitle() {
-    return KText(text: "MCA Timesheet", isSelectable: false, fontSize: 18);
+    final String companyTitle = GeneralController.to.companyInfo.name ?? "MCA";
+    return KText(text: companyTitle, fontSize: 18);
   }
 }

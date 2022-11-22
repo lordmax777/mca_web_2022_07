@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 
 import '../../manager/models/list_all_md.dart';
 import '../../manager/redux/sets/app_state.dart';
@@ -73,11 +74,18 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
 
   Widget _body(double dpWidth, AppState state) {
     final GeneralState generalState = state.generalState;
-    final statuses = generalState.paramList.data!.statuses;
     final locs = generalState.paramList.data!.locations;
     final shifts = generalState.paramList.data!.shifts
         .where((element) => element.active)
         .toList();
+    final List<int> weeks = [];
+    final int? rotaLen = GeneralController.to.companyInfo.rotalength;
+
+    if (rotaLen != null) {
+      weeks.addAll([...Constants.weeksOfTheMonth]);
+      weeks.removeWhere((element) => element > rotaLen);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -85,18 +93,18 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
         verticalSpace: 32.0,
         children: [
           const SizedBox(height: 1),
-          DropdownWidget(
+          DropdownWidget1(
             hintText: "Week",
-            value: _week,
+            value: _week?.name,
             dropdownBtnWidth: dpWidth / 4,
             isRequired: true,
             dropdownOptionsWidth: dpWidth / 4,
             onChanged: (val) {
               setState(() {
-                _week = val;
+                _week = CodeMap(name: val, code: val);
               });
             },
-            items: [],
+            items: weeks.map((e) => e.toString()).toList(),
           ),
           DropdownWidget1<MapEntry>(
             hintText: "Day",
@@ -164,8 +172,7 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
               await appStore.dispatch(GetPostUserDetailsPreferredShiftAction(
                 shiftId: _shift!.id,
                 dayId: int.parse(_day!.code!),
-                weekId:
-                    1, //int.parse(_week!.code!), //TODO: only 1 and 2 is working
+                weekId: int.parse(_week!.code!),
                 // timingId:
               ));
               // }

@@ -13,6 +13,11 @@ class GeneralController extends GetxController {
   final Rx<LoggedInUserMd> loggedInUser = Rx<LoggedInUserMd>(LoggedInUserMd());
   LoggedInUserMd get loggedInUserValue => loggedInUser.value;
   set setLoggedInUser(LoggedInUserMd value) => loggedInUser.value = value;
+
+  final Rx<CompanyMd> _companyInfo = Rx<CompanyMd>(CompanyMd());
+  CompanyMd get companyInfo => _companyInfo.value;
+  set setCompanyInfo(CompanyMd value) => _companyInfo.value = value;
+
   bool get isLoggedIn =>
       loggedInUserValue.username != null &&
       loggedInUserValue.username!.isNotEmpty;
@@ -31,6 +36,17 @@ class GeneralController extends GetxController {
         fetch(GetAllLocationsAction()),
         fetch(GetAllStorageItemsAction()),
       ]);
+      await getCompanyInfo();
+    }
+  }
+
+  Future<void> getCompanyInfo() async {
+    final ApiResponse res =
+        await restClient().getCompanyInfo().nocodeErrorHandler();
+
+    if (res.success) {
+      final r = res.data;
+      setCompanyInfo = CompanyMd.fromJson(r);
     }
   }
 }

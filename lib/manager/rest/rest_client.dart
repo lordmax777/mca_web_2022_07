@@ -49,6 +49,9 @@ abstract class RestClient {
   @GET("/api/fe/details")
   Future<HttpResponse> getLoggedInUserDetails();
 
+  @GET("/api/fe/company")
+  Future<HttpResponse> getCompanyInfo();
+
   @GET("/api/fe/userdetails/{id}/photos")
   Future<HttpResponse> getUserDetailsPhotos(@Path() String id);
 

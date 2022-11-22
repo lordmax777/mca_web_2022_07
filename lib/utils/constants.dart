@@ -122,6 +122,8 @@ class Constants {
     7: "Sunday",
   };
 
+  static const List<int> weeksOfTheMonth = [1, 2, 3, 4];
+
   static const Map<String, String> settingsSection = {
     "company": "Company",
     "account": "Account",
