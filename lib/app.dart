@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -32,7 +33,7 @@ class _McaWebAppState extends State<McaWebApp> {
       store: appStore,
       child: GetMaterialApp.router(
         routerDelegate: appRouter.delegate(initialRoutes: [
-          // if (kDebugMode) const HomeRoute(children: [StockItemsListRoute()])
+          if (kDebugMode) const HomeRoute(children: [DepartmentsListRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

@@ -46,7 +46,7 @@ class DropdownWidget1<T> extends StatefulWidget {
       this.hasSearchBox = false,
       this.value,
       this.leftIcon,
-      this.dropdownBtnWidth = 115,
+      this.dropdownBtnWidth = 125,
       this.dropdownOptionsWidth = 224,
       this.hintText,
       this.dropdownMaxHeight = 400.0,

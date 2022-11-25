@@ -19,6 +19,11 @@ import '../../manager/rest/rest_client.dart';
 import '../../theme/theme.dart';
 
 class DepsNewDepController extends GetxController {
+  static DepsNewDepController get to {
+    Get.lazyPut(() => DepsNewDepController());
+    return Get.find();
+  }
+
   final ListGroup? group;
   DepsNewDepController({this.group});
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -29,50 +34,45 @@ class DepsNewDepController extends GetxController {
 
   void setStatus(String? value) => _status.value = value ?? "";
 
-  Future<void> postDepartment() async {
-    if (formKey.currentState!.validate()) {
+  Future<ApiResponse?> postDepartment(
+      {ListGroup? updateableItem, BuildContext? context}) async {
+    if (updateableItem == null ? formKey.currentState!.validate() : true) {
       showLoading();
+      final id = (updateableItem?.id) ?? group?.id;
+      final name = (updateableItem?.name) ?? depNameController.text;
+      final status = (updateableItem?.active) ?? isActive;
       final ApiResponse res = await restClient()
           .postGroup(
-            id: group?.id,
-            name: depNameController.text,
-            active: isActive,
+            id: id,
+            name: name,
+            active: status,
           )
           .nocodeErrorHandler();
 
-      logger(res.rawError?.data);
-
+      await closeLoading();
       if (res.success) {
         final DepartmentsController groupsController = Get.find();
 
         groupsController.gridStateManager.toggleAllRowChecked(false);
-        groupsController.setDeleteBtnOpacity = 0.5;
+
+        context?.popRoute();
+
         await appStore.dispatch(GetAllParamListAction());
-        await closeLoading();
       } else {
-        await closeLoading();
         showError(res.data);
       }
+      return res;
     }
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    if (group != null) {
-      depNameController.text = group!.name;
-      setStatus(group!.active ? "Active" : "Inactive");
-    }
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
+    return null;
   }
 
   @override
   void onReady() {
     super.onReady();
+    if (group != null) {
+      depNameController.text = group!.name;
+      setStatus(group!.active ? "Active" : "Inactive");
+    }
   }
 
   @override
@@ -124,9 +124,7 @@ class DepartmentsNewDepPopupWidget extends GetView<DepsNewDepController> {
             textColor: ThemeColors.gray2,
           ),
           IconButton(
-              onPressed: () {
-                context.popRoute();
-              },
+              onPressed: context.popRoute,
               icon: const HeroIcon(HeroIcons.x,
                   color: ThemeColors.gray2, size: 20.0)),
         ],
@@ -196,7 +194,7 @@ class DepartmentsNewDepPopupWidget extends GetView<DepsNewDepController> {
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: isNew ? 'Add Department' : 'Update Department',
             onPressed: () {
-              controller.postDepartment();
+              controller.postDepartment(context: context);
             },
           ),
         ],

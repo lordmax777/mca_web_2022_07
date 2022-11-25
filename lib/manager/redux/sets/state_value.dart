@@ -209,9 +209,9 @@ class ErrorModel<T> {
 //   });
 // }
 
-class CodeMap {
+class CodeMap<T> {
   String? name;
-  String? code;
+  T? code;
 
   Map toJson() => {
         'name': name,
@@ -219,8 +219,10 @@ class CodeMap {
       };
 
   CodeMap({required this.name, required this.code}) {
-    if (code != null && code!.isEmpty) {
-      code = null;
+    if (code != null && code is String) {
+      if ((code as String).isEmpty) {
+        code = null;
+      }
     }
     if (name != null && name!.isEmpty) {
       name = null;

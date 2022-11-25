@@ -13,6 +13,11 @@ import '../../manager/rest/rest_client.dart';
 import '../../theme/theme.dart';
 
 class GroupsNewDepController extends GetxController {
+  static GroupsNewDepController get to {
+    Get.lazyPut(() => GroupsNewDepController());
+    return Get.find();
+  }
+
   final ListJobTitle? group;
   GroupsNewDepController({this.group});
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -23,30 +28,42 @@ class GroupsNewDepController extends GetxController {
 
   void setStatus(String? value) => _status.value = value ?? "";
 
-  Future<void> postDepartment() async {
-    if (formKey.currentState!.validate()) {
+  Future<ApiResponse?> postDepartment(
+      {ListJobTitle? updateableItem, BuildContext? context}) async {
+    if (updateableItem == null ? formKey.currentState!.validate() : true) {
       showLoading();
+      final id = (updateableItem?.id) ?? group?.id;
+      final name = (updateableItem?.name) ?? depNameController.text;
+      final status = (updateableItem?.active) ?? isActive;
       final ApiResponse res = await restClient()
           .postJobTitle(
-            id: group?.id,
-            title: depNameController.text,
-            active: isActive,
+            id: id,
+            title: name,
+            active: status,
           )
           .nocodeErrorHandler();
 
+      await closeLoading();
       if (res.success) {
         final GroupsController groupsController = Get.find();
+
         groupsController.gridStateManager.toggleAllRowChecked(false);
-        groupsController.setDeleteBtnOpacity = 0.5;
+
+        context?.popRoute();
+
         await appStore.dispatch(GetAllParamListAction());
-      } else {}
-      closeLoading();
+      } else {
+        showError(res.data);
+      }
+
+      return res;
     }
+    return null;
   }
 
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
     if (group != null) {
       depNameController.text = group!.name;
       setStatus(group!.active ? "Active" : "Inactive");
@@ -54,19 +71,8 @@ class GroupsNewDepController extends GetxController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
   void dispose() {
     depNameController.dispose();
-
     super.dispose();
   }
 }
@@ -185,7 +191,7 @@ class GroupsNewDepPopupWidget extends GetView<GroupsNewDepController> {
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: isNew ? 'Add Group' : 'Update Group',
             onPressed: () {
-              controller.postDepartment();
+              controller.postDepartment(context: context);
             },
           ),
         ],

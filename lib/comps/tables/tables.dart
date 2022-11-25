@@ -84,10 +84,12 @@ class DepsListTable extends StatelessWidget {
   final List<PlutoColumn> cols;
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
+  final void Function(PlutoGridOnSelectedEvent)? onOneTapSelect;
   const DepsListTable(
       {Key? key,
       required this.rows,
       required this.onSmReady,
+      this.onOneTapSelect,
       required this.cols})
       : super(key: key);
 
@@ -122,18 +124,10 @@ class DepsListTable extends StatelessWidget {
       };
       _cols.add(col);
     }
-    var _w = MediaQuery.of(context).size.width;
-    var _tableSize = 0.0;
-    for (var c in cols) {
-      _tableSize += c.width;
-    }
-    bool isEqual = _tableSize == _w;
-
     double _h = 625;
 
     return SizedBox(
       height: _h,
-      // width: 1920,
       child: PlutoGrid(
         configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig(
@@ -150,6 +144,8 @@ class DepsListTable extends StatelessWidget {
                 autoSizeMode: PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
+        mode: PlutoGridMode.selectWithOneTap,
+        onSelected: onOneTapSelect,
         onLoaded: (e) => onSmReady(e.stateManager),
       ),
     );

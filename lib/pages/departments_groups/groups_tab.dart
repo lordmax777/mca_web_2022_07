@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import '../../comps/dropdown_widget1.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/models/list_all_md.dart';
 import '../../theme/theme.dart';
@@ -17,7 +18,7 @@ class GroupsTab extends GetView<GroupsController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _header(context, controller.deleteBtnOpacity),
+            _header(context),
             _body(controller.departments.isEmpty, context),
           ],
         ),
@@ -25,7 +26,7 @@ class GroupsTab extends GetView<GroupsController> {
     );
   }
 
-  Widget _header(BuildContext context, double opacity) {
+  Widget _header(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -38,16 +39,17 @@ class GroupsTab extends GetView<GroupsController> {
               leftIcon: HeroIcons.search),
           SpacedRow(horizontalSpace: 16.0, children: [
             AnimatedOpacity(
-              opacity: opacity,
+              opacity: controller.deleteBtnOpacity,
               duration: const Duration(milliseconds: 100),
-              child: ButtonMedium(
-                bgColor: ThemeColors.red3,
-                text: "Delete Selected",
-                icon: const HeroIcon(
-                  HeroIcons.bin,
-                  size: 20,
-                ),
-                onPressed: controller.deleteSelectedRows,
+              child: DropdownWidget1<MapEntry<bool, String>>(
+                hintText: "Status",
+                value: controller.status.name,
+                disableAll: controller.deleteBtnOpacity != 1.0,
+                objItems: Constants.userAccountStatusTypes.entries.toList(),
+                onChangedWithObj: controller.onStatusChange,
+                items: Constants.userAccountStatusTypes.entries
+                    .map((e) => e.value)
+                    .toList(),
               ),
             ),
             ButtonMedium(
@@ -80,6 +82,7 @@ class GroupsTab extends GetView<GroupsController> {
       ));
     }
     return DepsListTable(
+      onOneTapSelect: controller.onOneTapSelect,
       onSmReady: controller.setSm,
       rows: controller.departments.reactive.value
               ?.map<PlutoRow>(_buildItem)

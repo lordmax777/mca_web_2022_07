@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import '../../../comps/dropdown_widget1.dart';
 import '../../../comps/show_overlay_popup.dart';
 import '../../../manager/model_exporter.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/sets/state_value.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
@@ -15,7 +17,16 @@ class GroupsController extends GetxController {
   final List<Tab> tabs = const [Tab(text: 'Departments'), Tab(text: 'Groups')];
 
   //UI Variables
+  //UI Variables
+  final Rx<CodeMap<bool>> _status = CodeMap<bool>(name: null, code: null).obs;
+  CodeMap<bool> get status => _status.value;
+  set setStatus(CodeMap<bool> value) => _status.value = value;
   final RxDouble _deleteBtnOpacity = 0.5.obs;
+  double get deleteBtnOpacity => _deleteBtnOpacity.value;
+  set setDeleteBtnOpacity(double value) {
+    _deleteBtnOpacity.value = value;
+  }
+
   final TextEditingController searchController = TextEditingController();
 
   late PlutoGridStateManager gridStateManager;
@@ -93,16 +104,24 @@ class GroupsController extends GetxController {
     ];
   }
 
-  double get deleteBtnOpacity => _deleteBtnOpacity.value;
-
-  set setDeleteBtnOpacity(double value) {
-    _deleteBtnOpacity.value = value;
+  //Departments
+  final RxList<ListJobTitle> _deps = <ListJobTitle>[].obs;
+  List<ListJobTitle> get departments => _deps;
+  setList(List<ListJobTitle> d) {
+    final dd = [...d];
+    dd.sort((a, b) => a.name.compareTo(b.name));
+    _deps.value = dd;
+    return _deps;
   }
 
+//Functions
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
     gridStateManager.setOnRowChecked((event) {
       if (gridStateManager.checkedRows.isNotEmpty) {
+        if (gridStateManager.checkedRows.length > 1) {
+          resetStatus;
+        }
         setDeleteBtnOpacity = 1.0;
       } else {
         setDeleteBtnOpacity = 0.5;
@@ -148,67 +167,106 @@ class GroupsController extends GetxController {
     }
   }
 
+  void onOneTapSelect(PlutoGridOnSelectedEvent event) {
+    gridStateManager.toggleAllRowChecked(false);
+    event.row!.setChecked(!event.row!.checked!);
+    if (gridStateManager.checkedRows.isNotEmpty) {
+      final item = event.row!.cells['action']!.value as ListJobTitle;
+      setStatus = CodeMap(
+        name: Constants.userAccountStatusTypes[item.active],
+        code: item.active,
+      );
+      setDeleteBtnOpacity = 1.0;
+    } else {
+      setDeleteBtnOpacity = 0.5;
+      resetStatus;
+    }
+  }
+
   void _onEditClick(BuildContext context, PlutoColumnRendererContext ctx) {
     showOverlayPopup(
         body: GroupsNewDepPopupWidget(group: ctx.cell.value), context: context);
   }
 
-  Future<void> deleteSelectedRows() async {
-    final ids = gridStateManager.checkedRows
-        .map<int>((e) => e.cells['action']?.value.id)
-        .toList();
-    if (ids.isEmpty) return;
-    showLoading();
-    bool allSuccess = true;
-    ApiResponse? resp;
-    for (int i = 0; i < ids.length; i++) {
-      final id = ids[i];
-      final ApiResponse res =
-          await restClient().deleteJobTitle(id).nocodeErrorHandler();
-      if (!res.success) {
-        allSuccess = false;
-        resp = res;
-        break;
-      } else {
-        _deps.removeWhere((element) => element.id == id);
+  Future<void> onStatusChange(DpItem value) async {
+    final List<PlutoRow> selectedRows = gridStateManager.checkedRows;
+    if (selectedRows.isEmpty) {
+      showError("Please select at least one item!");
+      return;
+    }
+    if (gridStateManager.checkedRows.length > 1) {
+      final ids = gridStateManager.checkedRows
+          .map<int>((e) => e.cells['action']?.value.id)
+          .toList();
+      showLoading();
+      bool allSuccess = true;
+      ApiResponse? resp;
+      for (int i = 0; i < ids.length; i++) {
+        final item = selectedRows[i].cells['action']!.value as ListJobTitle;
+
+        final ListJobTitle updateableItem = ListJobTitle(
+            id: item.id,
+            name: item.name,
+            active: (value.item as MapEntry<bool, String>).key);
+
+        final ApiResponse res = await restClient()
+            .postJobTitle(
+              title: updateableItem.name,
+              active: updateableItem.active,
+              id: updateableItem.id,
+            )
+            .nocodeErrorHandler();
+
+        if (!res.success) {
+          allSuccess = false;
+          resp = res;
+          break;
+        }
       }
+
+      if (allSuccess) {
+        gridStateManager.toggleAllRowChecked(false);
+        if (allSuccess) {
+          resetStatus;
+        }
+        setDeleteBtnOpacity = 0.5;
+        await appStore.dispatch(GetAllParamListAction());
+        closeLoading();
+      } else {
+        await closeLoading();
+        showError(resp?.rawError?.data.toString() ?? "Error");
+      }
+
+      return;
+    }
+    final item = selectedRows[0].cells['action']!.value as ListJobTitle;
+
+    final ListJobTitle updateableItem = ListJobTitle(
+        id: item.id,
+        name: item.name,
+        active: (value.item as MapEntry<bool, String>).key);
+
+    if (item.active == (value.item as MapEntry<bool, String>).key) {
+      return;
     }
 
-    if (allSuccess) {
-      gridStateManager.removeRows(gridStateManager.checkedRows);
-      gridStateManager.toggleAllRowChecked(false);
-      setDeleteBtnOpacity = 0.5;
-      // await appStore.dispatch(GetAllParamListAction());
-      closeLoading();
-    } else {
-      await closeLoading();
-      if (resp!.resCode == 401) {
-        showError("Can delete only what was created today!");
-      } else {
-        showError(resp.rawError?.data.toString() ?? "Error");
-      }
+    ApiResponse? success = await GroupsNewDepController.to
+        .postDepartment(updateableItem: updateableItem);
+    if (success != null && success.success) {
+      resetStatus;
     }
   }
 
-  //Departments
-  final RxList<ListJobTitle> _deps = <ListJobTitle>[].obs;
-  List<ListJobTitle> get departments => _deps;
-  setList(List<ListJobTitle> d) {
-    final dd = [...d];
-    dd.sort((a, b) => a.name.compareTo(b.name));
-    _deps.value = dd;
-    return _deps;
-  }
-
-  //Functions
-  @override
-  void onInit() {
-    super.onInit();
+  void get resetStatus {
+    setStatus = CodeMap<bool>(
+      name: null,
+      code: null,
+    );
   }
 
   @override
-  void dispose() {
+  void onClose() {
     searchController.dispose();
-    super.dispose();
+    super.onClose();
   }
 }
