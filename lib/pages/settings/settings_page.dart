@@ -1,13 +1,9 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
-import 'package:pluto_grid/pluto_grid.dart';
-import '../../comps/custom_get_builder.dart';
-import '../../comps/show_overlay_popup.dart';
-import '../../manager/models/list_all_md.dart';
+import 'package:mca_web_2022_07/pages/settings/settings_color_theme_widget.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
-import '../handover_types/controllers/handover_controller.dart';
 import 'controllers/settings_controller.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -211,100 +207,99 @@ class _Body extends GetView<SettingsController> {
     return SizedBox(
         height: 700,
         child: SpacedRow(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          horizontalSpace: 80,
-          children: [
-            SpacedColumn(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                verticalSpace: 16.0,
-                children: [
-                  const SizedBox(height: 50),
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(24.0),
-                      child: Container(
-                          width: 100,
-                          height: 100,
-                          color: ThemeColors.MAIN_COLOR.withOpacity(0.8),
-                          child: const Center(
-                              child: (HeroIcon(HeroIcons.userCircle,
-                                  size: 48.0, color: ThemeColors.white))))),
-                  ButtonLargeSecondary(
-                      text: "Upload Photo",
-                      leftIcon: HeroIcon(HeroIcons.upload),
-                      onPressed: () {}),
-                ]),
-            SpacedColumn(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                verticalSpace: 32.0,
-                children: [
-                  const SizedBox(height: 50),
-                  DropdownWidget(
-                    hintText: "Holiday Calculation Type *",
-                    isRequired: true,
-                    dropdownBtnWidth: dpWidth,
-                    onChanged: (val) {},
-                    items: const [
-                      "Basic",
-                      "Premium",
-                      "Enterprise",
-                    ],
-                  ),
-                  SizedBox(
-                    width: dpWidth,
-                    child: SpacedRow(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        horizontalSpace: 8.0,
-                        children: [
-                          CheckboxWidget(
-                            value: false,
-                            onChanged: (val) {},
-                          ),
-                          KText(
-                              text: "Show Title",
-                              isSelectable: false,
-                              fontSize: 14.0,
-                              fontWeight: FWeight.bold,
-                              textColor: ThemeColors.gray2)
-                        ]),
-                  ),
-                  TextInputWidget(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            horizontalSpace: 80,
+            children: [
+              SpacedColumn(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  verticalSpace: 16.0,
+                  children: [
+                    const SizedBox(height: 50),
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(24.0),
+                        child: Container(
+                            width: 100,
+                            height: 100,
+                            color: ThemeColors.MAIN_COLOR.withOpacity(0.8),
+                            child: const Center(
+                                child: (HeroIcon(HeroIcons.userCircle,
+                                    size: 48.0, color: ThemeColors.white))))),
+                    ButtonLargeSecondary(
+                        text: "Upload Photo",
+                        leftIcon: HeroIcon(HeroIcons.upload),
+                        onPressed: () {}),
+                  ]),
+              SpacedColumn(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  verticalSpace: 32.0,
+                  children: [
+                    const SizedBox(height: 50),
+                    DropdownWidget(
+                      hintText: "Holiday Calculation Type *",
                       isRequired: true,
-                      labelText: "First Name *",
+                      dropdownBtnWidth: dpWidth,
+                      onChanged: (val) {},
+                      items: const [
+                        "Basic",
+                        "Premium",
+                        "Enterprise",
+                      ],
+                    ),
+                    SizedBox(
                       width: dpWidth,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please enter a name";
-                        }
-                        return null;
-                      }),
-                  TextInputWidget(
-                      isRequired: true,
-                      labelText: "Last Name *",
-                      width: dpWidth,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please enter a name";
-                        }
-                        return null;
-                      }),
-                  TextInputWidget(
-                      isRequired: true,
-                      disableAll: true,
-                      labelText: "Email Address *",
-                      width: dpWidth,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please enter a name";
-                        }
-                        return null;
-                      }),
-                ]),
-          ],
-        ));
+                      child: SpacedRow(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          horizontalSpace: 8.0,
+                          children: [
+                            CheckboxWidget(
+                              value: false,
+                              onChanged: (val) {},
+                            ),
+                            KText(
+                                text: "Show Title",
+                                isSelectable: false,
+                                fontSize: 14.0,
+                                fontWeight: FWeight.bold,
+                                textColor: ThemeColors.gray2)
+                          ]),
+                    ),
+                    TextInputWidget(
+                        isRequired: true,
+                        labelText: "First Name *",
+                        width: dpWidth,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter a name";
+                          }
+                          return null;
+                        }),
+                    TextInputWidget(
+                        isRequired: true,
+                        labelText: "Last Name *",
+                        width: dpWidth,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter a name";
+                          }
+                          return null;
+                        }),
+                    TextInputWidget(
+                        isRequired: true,
+                        disableAll: true,
+                        labelText: "Email Address *",
+                        width: dpWidth,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter a name";
+                          }
+                          return null;
+                        })
+                  ])
+            ]));
   }
 
   Widget _changePassBody(BuildContext context) {
@@ -401,90 +396,82 @@ class _Body extends GetView<SettingsController> {
     return SizedBox(
         height: 700,
         child: SpacedColumn(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          verticalSpace: 32.0,
-          children: [
-            TextInputWidget(
-              isRequired: true,
-              width: dpWidth,
-              disableAll: false,
-              labelText: "Year Start",
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter a value";
-                }
-              },
-              leftIcon: HeroIcons.calendar,
-              onTap: () async {
-                DateTime? val = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2015),
-                  lastDate: DateTime(2035),
-                );
-              },
-            ),
-            DropdownWidget(
-              hintText: "Holiday Calculation Type *",
-              isRequired: true,
-              dropdownBtnWidth: dpWidth,
-              onChanged: (val) {},
-              items: const [
-                "Basic",
-                "Premium",
-                "Enterprise",
-              ],
-            ),
-            inputWithTextHelper(
-              dpWidth: dpWidth,
-              bottomText: "Default: 5.6 Weeks",
-              labelText: "Annual Holiday Entitlement (Weeks) *",
-            ),
-            inputWithTextHelper(
-              dpWidth: dpWidth,
-              bottomText: "Default: 3 Days",
-              labelText: "SSP Waiting Days *",
-            ),
-            inputWithTextHelper(
-              dpWidth: dpWidth,
-              bottomText: "Default: 8 Weeks",
-              labelText: "SSP Link Period of Incapacity for Work (Weeks) *",
-            ),
-          ],
-        ));
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            verticalSpace: 32.0,
+            children: [
+              TextInputWidget(
+                  isRequired: true,
+                  width: dpWidth,
+                  disableAll: false,
+                  labelText: "Year Start",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a value";
+                    }
+                  },
+                  leftIcon: HeroIcons.calendar,
+                  onTap: () async {
+                    DateTime? val = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2015),
+                      lastDate: DateTime(2035),
+                    );
+                  }),
+              DropdownWidget(
+                  hintText: "Holiday Calculation Type *",
+                  isRequired: true,
+                  dropdownBtnWidth: dpWidth,
+                  onChanged: (val) {},
+                  items: const [
+                    "Basic",
+                    "Premium",
+                    "Enterprise",
+                  ]),
+              inputWithTextHelper(
+                  dpWidth: dpWidth,
+                  bottomText: "Default: 5.6 Weeks",
+                  labelText: "Annual Holiday Entitlement (Weeks) *"),
+              inputWithTextHelper(
+                  dpWidth: dpWidth,
+                  bottomText: "Default: 3 Days",
+                  labelText: "SSP Waiting Days *"),
+              inputWithTextHelper(
+                  dpWidth: dpWidth,
+                  bottomText: "Default: 8 Weeks",
+                  labelText:
+                      "SSP Link Period of Incapacity for Work (Weeks) *"),
+            ]));
   }
 
   Widget _shiftBody(BuildContext context) {
-    return SizedBox();
+    return SpacedColumn(
+        verticalSpace: 16.0, children: [_ShiftBodyWithTab(tabIndex: 0)]);
   }
 
   Widget _colorThemeBody(BuildContext context) {
-    final dpWidth = MediaQuery.of(context).size.width / 3.5;
-
+    List<Color> colors = [
+      ThemeColors.blue5,
+    ];
     return SizedBox(
         height: 700,
         child: SpacedColumn(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          verticalSpace: 32.0,
-          children: [
-            const SizedBox(height: 32),
-            Image.asset(
-              "assets/images/widget_temp_mca.jpg",
-              width: dpWidth,
-            ),
-            DropdownWidget(
-              hintText: "Color Theme",
-              dropdownBtnWidth: dpWidth,
-              onChanged: (val) {},
-              items: const [
-                "Blue (High Contrast)",
-                "Blue (High Contrast)",
-                "Blue (High Contrast)",
-              ],
-            ),
-          ],
-        ));
+            crossAxisAlignment: CrossAxisAlignment.start,
+            verticalSpace: 32.0,
+            children: [
+              const SizedBox(height: 32),
+              const SettingsColorThemeWidget(),
+              DropdownWidget(
+                  hintText: "Color Theme",
+                  dropdownBtnWidth: 400,
+                  onChanged: (val) {},
+                  items: const [
+                    "Blue (High Contrast)",
+                    "Blue (High Contrast)",
+                    "Blue (High Contrast)",
+                  ])
+            ]));
   }
 
   Widget uploadCompanyLogo(BuildContext context) {
@@ -520,56 +507,261 @@ class _Body extends GetView<SettingsController> {
                   const SizedBox()
                 ])));
   }
+}
 
-  Widget inputWithTextHelper({
-    required String labelText,
-    required double dpWidth,
-    String? bottomText,
-    String? checkText,
-    bool? checkValue,
-    ValueChanged<bool?>? onChanged,
-  }) {
-    return SizedBox(
-      width: dpWidth,
-      child: SpacedColumn(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextInputWidget(
-                isRequired: true,
-                labelText: labelText,
-                width: dpWidth,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter a name";
-                  }
-                  return null;
-                }),
-            if (bottomText != null)
-              KText(
-                  text: bottomText,
-                  textColor: ThemeColors.gray8,
-                  textAlign: TextAlign.left,
-                  fontWeight: FWeight.medium),
-            if (checkValue != null && onChanged != null && checkText != null)
-              const SizedBox(height: 32),
-            if (checkValue != null && onChanged != null && checkText != null)
-              SpacedRow(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  horizontalSpace: 8.0,
-                  children: [
-                    CheckboxWidget(
-                      value: checkValue,
-                      onChanged: onChanged,
-                    ),
-                    KText(
-                        text: checkText,
-                        isSelectable: false,
-                        fontSize: 14.0,
-                        fontWeight: FWeight.bold,
-                        textColor: ThemeColors.gray2)
-                  ]),
-          ]),
+class _ShiftBodyWithTab extends StatefulWidget {
+  final int? tabIndex;
+
+  _ShiftBodyWithTab({Key? key, this.tabIndex}) : super(key: key) {
+    tabIndex ?? 0;
+  }
+
+  @override
+  State<_ShiftBodyWithTab> createState() => _ShiftBodyWithTabState();
+}
+
+class _ShiftBodyWithTabState extends State<_ShiftBodyWithTab>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  final List<Tab> tabs = const [
+    Tab(text: 'Shift Timings'),
+    Tab(text: 'Reminders'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: tabs.length, vsync: this);
+    if (widget.tabIndex != null) {
+      _tabController.animateTo(widget.tabIndex!);
+    }
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: TabBar(
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            controller: _tabController,
+            splashFactory: NoSplash.splashFactory,
+            isScrollable: true,
+            indicatorWeight: 3.0,
+            indicatorColor: ThemeColors.MAIN_COLOR,
+            labelColor: ThemeColors.MAIN_COLOR,
+            unselectedLabelColor: ThemeColors.black,
+            labelStyle:
+                ThemeText.tabTextStyle.copyWith(color: ThemeColors.MAIN_COLOR),
+            unselectedLabelStyle: ThemeText.tabTextStyle,
+            tabs: tabs,
+          ),
+        ),
+        const Divider(height: 0, color: ThemeColors.gray11),
+        _getTabChild(),
+      ],
     );
   }
+
+  Widget _getTabChild() {
+    switch (_tabController.index) {
+      case 0:
+        return shiftTiming();
+      case 1:
+        return reminders();
+      default:
+        return const SizedBox();
+    }
+  }
+
+  Widget shiftTiming() {
+    double dpWidth = 400;
+
+    return SizedBox(
+        height: 650,
+        child: SingleChildScrollView(
+          child: Center(
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: SpacedColumn(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      verticalSpace: 24.0,
+                      children: [
+                        const SizedBox(height: 40),
+                        SpacedRow(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            horizontalSpace: 64,
+                            children: [
+                              SpacedColumn(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    DropdownWidget(
+                                        hintText: "Length of the Rota *",
+                                        isRequired: true,
+                                        dropdownBtnWidth: dpWidth,
+                                        dropdownOptionsWidth: dpWidth,
+                                        onChanged: (val) {},
+                                        items: const [
+                                          "Basic",
+                                          "Premium",
+                                          "Enterprise"
+                                        ]),
+                                    KText(
+                                        text: "Default: Weekly",
+                                        textColor: ThemeColors.gray8,
+                                        textAlign: TextAlign.left,
+                                        fontWeight: FWeight.medium)
+                                  ]),
+                              inputWithTextHelper(
+                                  labelText: "Paid Lunchtime (Minutes) *",
+                                  bottomText: "Default: 40",
+                                  dpWidth: dpWidth)
+                            ]),
+                        Center(
+                            child: SizedBox(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: SpacedRow(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    horizontalSpace: 64,
+                                    children: [
+                                      inputWithTextHelper(
+                                          labelText: "Rounding (Minutes) *",
+                                          bottomText: "Default: 15",
+                                          dpWidth: dpWidth),
+                                      inputWithTextHelper(
+                                          labelText:
+                                              "Unpaid Lunchtime (Minutes) *",
+                                          bottomText: "Default: 20",
+                                          dpWidth: dpWidth)
+                                    ]))),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: SpacedRow(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                horizontalSpace: 64,
+                                children: [
+                                  inputWithTextHelper(
+                                      labelText: "Grace Period (Minutes) *",
+                                      bottomText: "Default: 5",
+                                      dpWidth: dpWidth),
+                                  inputWithTextHelper(
+                                      labelText:
+                                          "Minimum Working Hours for Lunchtime *",
+                                      bottomText: "Default: 6",
+                                      dpWidth: dpWidth)
+                                ])),
+                        inputWithTextHelper(
+                            labelText: "Number of Breaktime Allowed *",
+                            bottomText: "Default: 1",
+                            dpWidth: dpWidth),
+                        inputWithTextHelper(
+                            labelText: "Breaktime per Session (Minutes) *",
+                            bottomText: "Default: 20",
+                            dpWidth: dpWidth),
+                        inputWithTextHelper(
+                            labelText: "Total Breaktime per Shift (Minutes) *",
+                            bottomText: "Default: 30",
+                            dpWidth: dpWidth),
+                        inputWithTextHelper(
+                            labelText: "Minimum Rest Between Shifts (Hours) *",
+                            bottomText: "Default: 11",
+                            dpWidth: dpWidth),
+                        inputWithTextHelper(
+                            labelText:
+                                "Punch Time Before and After Shift (Minutes) *",
+                            bottomText: "Default: 60",
+                            dpWidth: dpWidth),
+                        const SizedBox(height: 40),
+                      ]))),
+        ));
+  }
+
+  Widget reminders() {
+    final dpWidth = MediaQuery.of(context).size.width / 3.5;
+
+    return SizedBox(
+        height: 650,
+        child: Center(
+          child: SpacedColumn(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              verticalSpace: 32.0,
+              children: [
+                inputWithTextHelper(
+                    labelText: "Shift Timings",
+                    bottomText: "Default: 5, 15",
+                    dpWidth: dpWidth),
+                inputWithTextHelper(
+                    labelText: "Reminders",
+                    bottomText: "Default: 5, 15",
+                    dpWidth: dpWidth),
+                inputWithTextHelper(
+                    labelText: "Helper Text",
+                    bottomText: "Default: 15, 30",
+                    dpWidth: dpWidth),
+                inputWithTextHelper(
+                    labelText: "Length of the Rota *",
+                    bottomText: "Default: 35",
+                    dpWidth: dpWidth),
+              ]),
+        ));
+  }
+}
+
+Widget inputWithTextHelper({
+  required String labelText,
+  required double dpWidth,
+  String? bottomText,
+  String? checkText,
+  bool? checkValue,
+  ValueChanged<bool?>? onChanged,
+}) {
+  return SizedBox(
+    width: dpWidth,
+    child:
+        SpacedColumn(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      TextInputWidget(
+          isRequired: true,
+          labelText: labelText,
+          width: dpWidth,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter a name";
+            }
+            return null;
+          }),
+      if (bottomText != null)
+        KText(
+            text: bottomText,
+            textColor: ThemeColors.gray8,
+            textAlign: TextAlign.left,
+            fontWeight: FWeight.medium),
+      if (checkValue != null && onChanged != null && checkText != null)
+        const SizedBox(height: 32),
+      if (checkValue != null && onChanged != null && checkText != null)
+        SpacedRow(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            horizontalSpace: 8.0,
+            children: [
+              CheckboxWidget(
+                value: checkValue,
+                onChanged: onChanged,
+              ),
+              KText(
+                  text: checkText,
+                  isSelectable: false,
+                  fontSize: 14.0,
+                  fontWeight: FWeight.bold,
+                  textColor: ThemeColors.gray2)
+            ]),
+    ]),
+  );
 }
