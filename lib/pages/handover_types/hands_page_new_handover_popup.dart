@@ -72,11 +72,6 @@ class HandsNewHandController extends GetxController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
-  }
-
-  @override
   void onReady() {
     super.onReady();
   }

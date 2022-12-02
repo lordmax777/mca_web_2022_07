@@ -1,6 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:faker/faker.dart';
-
 import '../../manager/models/warehouse_md.dart';
 import '../../theme/theme.dart';
 
@@ -13,8 +11,8 @@ class WarehouseDrawer extends StatefulWidget {
 }
 
 class _WarehouseDrawerState extends State<WarehouseDrawer> {
-  List<Map> items = [];
-  List<Map> backupItems = [];
+  List<PropertyMd> items = [];
+  List<PropertyMd> backupItems = [];
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -29,13 +27,18 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
     super.initState();
     final len = (widget.warehouse.properties?.length) ?? 0;
     for (int i = 0; i < len; i++) {
-      final Map map = {
-        "name": (widget.warehouse.properties?[i].propertyName) ?? "-",
-      };
-      items.add(map);
+      items.add(widget.warehouse.properties![i]);
     }
     backupItems.clear();
     backupItems.addAll(items);
+    _searchController.addListener(() {
+      if (_searchController.text.isEmpty) {
+        setState(() {
+          items.clear();
+          items.addAll(backupItems);
+        });
+      }
+    });
     _onSearch();
   }
 
@@ -43,15 +46,13 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
     _searchController.addListener(() {
       setState(() {
         if (_searchController.text.isNotEmpty) {
-          items = backupItems.where((element) {
-            return element['name']
+          items.clear();
+          items.addAll(backupItems.where((element) {
+            return element.propertyName
                 .toLowerCase()
-                .contains(RegExp(_searchController.text.toLowerCase()));
-          }).toList();
-          return;
+                .contains((_searchController.text.toLowerCase()));
+          }).toList());
         }
-        items.clear();
-        items.addAll(backupItems);
       });
     });
   }
@@ -83,12 +84,15 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            KText(
-              isSelectable: false,
-              text: widget.warehouse.name,
-              fontSize: 18.0,
-              textColor: ThemeColors.gray2,
-              fontWeight: FWeight.bold,
+            SizedBox(
+              width: 440,
+              child: KText(
+                isSelectable: false,
+                text: widget.warehouse.name,
+                fontSize: 18.0,
+                textColor: ThemeColors.gray2,
+                fontWeight: FWeight.bold,
+              ),
             ),
             InkWell(
                 child: const HeroIcon(
@@ -104,20 +108,6 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
   }
 
   Widget _body() {
-    if (items.isEmpty) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          KText(
-            text: "No properties found!",
-            fontSize: 24.0,
-            textColor: ThemeColors.gray5,
-            isSelectable: false,
-            fontWeight: FWeight.bold,
-          ),
-        ],
-      );
-    }
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: SpacedColumn(children: [
@@ -129,33 +119,53 @@ class _WarehouseDrawerState extends State<WarehouseDrawer> {
             // onChanged: (value) => _onSearch(),
             leftIcon: HeroIcons.search),
         const SizedBox(height: 16.0),
-        SizedBox(
-          height: 600,
-          width: double.infinity,
-          child: ListView.separated(
-              separatorBuilder: (context, index) => SizedBox(height: 16.0),
-              itemBuilder: _itemBuilder,
-              itemCount: items.length),
-        ),
+        if (items.isEmpty)
+          KText(
+              text: "No property found",
+              textColor: ThemeColors.gray5,
+              fontSize: 14.0,
+              fontWeight: FWeight.bold)
+        else
+          SizedBox(
+            height: MediaQuery.of(context).size.height - 200,
+            width: double.infinity,
+            child: ListView.builder(
+                // separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+                itemBuilder: _itemBuilder,
+                itemCount: items.length),
+          ),
       ]),
     );
   }
 
   Widget _itemBuilder(BuildContext context, int index) {
+    final user = items[index];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const HeroIcon(
-            HeroIcons.house,
-            size: 24.0,
-            color: ThemeColors.gray5,
+          // const HeroIcon(
+          //   HeroIcons.house,
+          //   size: 24.0,
+          //   color: ThemeColors.gray5,
+          // ),
+          CircleAvatar(
+            backgroundColor: user.userRandomBgColor,
+            maxRadius: 24.0,
+            child: KText(
+              fontSize: 16.0,
+              isSelectable: false,
+              textColor: ThemeColors.black,
+              fontWeight: FWeight.bold,
+              text: user.propertyName.substring(0, 2).toUpperCase(),
+            ),
           ),
           const SizedBox(width: 16.0),
           KText(
             isSelectable: false,
-            text: items[index]['name'],
+            text: items[index].propertyName,
             fontSize: 16.0,
             textColor: ThemeColors.gray2,
           ),

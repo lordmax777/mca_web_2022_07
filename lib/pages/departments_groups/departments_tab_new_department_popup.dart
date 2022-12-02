@@ -24,7 +24,6 @@ class DepsNewDepController extends GetxController {
   final RxString _status = "".obs;
   String? get status => _status.value.isEmpty ? null : _status.value;
   bool get isActive => _status.toLowerCase() == "active";
-
   void setStatus(String? value) => _status.value = value ?? "";
 
   Future<ApiResponse?> postDepartment(

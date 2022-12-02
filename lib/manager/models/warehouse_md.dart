@@ -1,3 +1,5 @@
+import 'package:faker/faker.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'users_list.dart';
@@ -34,6 +36,14 @@ class PropertyMd {
   int id;
   String locationName;
   String propertyName;
+
+  @JsonKey(ignore: true)
+  Color userRandomBgColor = Color.fromRGBO(
+      faker.randomGenerator.integer(255),
+      faker.randomGenerator.integer(255),
+      faker.randomGenerator.integer(255),
+      0.3);
+
   @override
   PropertyMd({
     required this.id,

@@ -1,8 +1,6 @@
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/models/warehouse_md.dart';
 import '../../theme/theme.dart';
@@ -68,29 +66,26 @@ class _Body extends StatelessWidget {
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
-          SpacedRow(horizontalSpace: 16.0, children: [
-            AnimatedOpacity(
-              opacity: c.deleteBtnOpacity,
-              duration: const Duration(milliseconds: 100),
-              child: ButtonMedium(
-                bgColor: ThemeColors.red3,
-                text: "Delete Selected",
-                icon: const HeroIcon(
-                  HeroIcons.bin,
-                  size: 20,
+          SpacedRow(
+              horizontalSpace: 16.0,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomCheckboxWidget(
+                  isChecked: c.isShowInactive,
+                  onChanged: c.setShowInactive,
+                  label: "Show inactive",
+                  labelPosition: CheckboxLabelPosition.left,
                 ),
-                onPressed: c.deleteSelectedRows,
-              ),
-            ),
-            ButtonMedium(
-              text: "New Warehouse",
-              icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
-              onPressed: () {
-                showOverlayPopup(
-                    body: const WaresNewWarePopupWidget(), context: context);
-              },
-            ),
-          ]),
+                ButtonMedium(
+                  text: "New Warehouse",
+                  icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
+                  onPressed: () {
+                    showOverlayPopup(
+                        body: const WaresNewWarePopupWidget(),
+                        context: context);
+                  },
+                ),
+              ]),
         ],
       ),
     );
@@ -114,6 +109,7 @@ class _Body extends StatelessWidget {
       "contact_name": PlutoCell(value: e.contactName ?? "-"),
       "contact_email": PlutoCell(value: e.contactEmail ?? "-"),
       "linked_properties": PlutoCell(value: e.properties?.length ?? 0),
+      "status": PlutoCell(value: e.active ? "active" : "inactive"),
       "action": PlutoCell(value: e),
     });
   }

@@ -18,9 +18,11 @@ class TextInputWidget extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final String? Function(String?)? validator;
   final VoidCallback? onRightIconClick;
+  final String? Function(String?)? customValidator;
   TextInputWidget(
       {Key? key,
       this.defaultBorderColor,
+      this.customValidator,
       this.onRightIconClick,
       this.validator,
       this.maxLines = 1,
@@ -52,6 +54,9 @@ class _TextInputWidgetState extends State<TextInputWidget> {
   bool _obscureText = true;
 
   String? Function(String?)? _getValidator() {
+    if (widget.customValidator != null) {
+      return widget.customValidator;
+    }
     if (widget.disableAll) {
       return null;
     }

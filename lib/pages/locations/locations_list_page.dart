@@ -6,7 +6,6 @@ import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import '../../comps/custom_get_builder.dart';
 import '../../comps/custom_gmaps_widget.dart';
-import '../../comps/dropdown_widget1.dart';
 import '../../manager/models/location_item_md.dart';
 import '../../theme/theme.dart';
 

@@ -60,12 +60,12 @@ class StockItemsNewItemController extends GetxController {
   }
 
   @override
-  void onClose() {
+  void dispose() {
     nameController.dispose();
     ourPriceController.dispose();
     customPriceController.dispose();
     _tax.value = CodeMap(name: null, code: null);
-    super.onClose();
+    super.dispose();
   }
 
   @override

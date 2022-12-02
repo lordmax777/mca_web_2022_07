@@ -339,10 +339,10 @@ abstract class RestClient {
   @GET("/api/fe/warehouses")
   Future<HttpResponse> getWarehouses();
 
-  @POST("/api/fe/warehouses")
+  @POST("/api/fe/warehouses/{id}")
   @FormUrlEncoded()
   Future<HttpResponse> postWarehouse({
-    @Field() int? id,
+    @Path() int? id,
     @Field() String? contactEmail,
     @Field() required String name,
     @Field() required String contactName,

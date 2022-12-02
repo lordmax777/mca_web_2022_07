@@ -118,8 +118,8 @@ class GroupsController extends GetxController {
   }
 
   @override
-  void onClose() {
+  void dispose() {
     searchController.dispose();
-    super.onClose();
+    super.dispose();
   }
 }

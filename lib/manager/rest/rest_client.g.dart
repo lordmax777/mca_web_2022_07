@@ -1491,7 +1491,6 @@ class _RestClient implements RestClient {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = {
-      'id': id,
       'contactEmail': contactEmail,
       'name': name,
       'contactName': contactName,
@@ -1508,7 +1507,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/warehouses',
+              '/api/fe/warehouses/${id}',
               queryParameters: queryParameters,
               data: _data,
             )

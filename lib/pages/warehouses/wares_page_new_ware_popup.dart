@@ -6,14 +6,14 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
-import 'package:pluto_grid/pluto_grid.dart';
 
+import '../../comps/dropdown_widget1.dart';
 import '../../manager/redux/middlewares/users_middleware.dart';
+import '../../manager/redux/sets/state_value.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../manager/rest/rest_client.dart';
 import '../../theme/theme.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 
 class WaresNewWareController extends GetxController {
   final WarehouseMd? qualif;
@@ -23,32 +23,35 @@ class WaresNewWareController extends GetxController {
   final TextEditingController name2Controller = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final RxBool _sendReport = false.obs;
+  final Rx<CodeMap<bool>> _status = CodeMap<bool>(name: null, code: null).obs;
+  CodeMap<bool> get status => _status.value;
+  set setStatus(CodeMap<bool> value) => _status.value = value;
 
   bool get sendReport => _sendReport.value;
 
   void setSendReport(bool? val) => _sendReport.value = val!;
 
-  Future<void> create() async {
+  Future<void> create({BuildContext? context}) async {
     if (formKey.currentState!.validate()) {
       showLoading();
       final ApiResponse res = await restClient()
           .postWarehouse(
-            id: qualif?.id,
+            id: qualif?.id ?? 0,
             contactName: name2Controller.text,
             contactEmail:
                 emailController.text.isEmpty ? null : emailController.text,
             name: nameController.text,
             sendReport: sendReport,
-            active: true,
+            active: status.code ?? false,
           )
           .nocodeErrorHandler();
 
       if (res.success) {
         final WarehouseController controller = Get.find();
         controller.gridStateManager.toggleAllRowChecked(false);
-        controller.setDeleteBtnOpacity = 0.5;
         await appStore.dispatch(GetWarehousesAction());
-        closeLoading();
+        await closeLoading();
+        context?.popRoute();
       } else {
         await closeLoading();
         String errorMessage = "";
@@ -61,6 +64,10 @@ class WaresNewWareController extends GetxController {
     }
   }
 
+  void onStatusChange(DpItem value) {
+    _status.value = CodeMap(name: value.name, code: value.item.key);
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -69,6 +76,8 @@ class WaresNewWareController extends GetxController {
       name2Controller.text = qualif!.contactName ?? "";
       emailController.text = qualif!.contactEmail ?? "";
       setSendReport(qualif!.sendReport);
+      setStatus = CodeMap(
+          name: qualif!.active ? "Active" : "Inactive", code: qualif!.active);
     }
   }
 
@@ -87,6 +96,7 @@ class WaresNewWarePopupWidget extends StatelessWidget {
   const WaresNewWarePopupWidget({Key? key, this.qualif}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    logger(qualif?.toJson());
     Get.lazyPut(() => WaresNewWareController(qualif: qualif));
 
     final dpWidth = MediaQuery.of(context).size.width;
@@ -162,6 +172,14 @@ class WaresNewWarePopupWidget extends StatelessWidget {
             width: dpWidth / 5,
             labelText: "Contact Email",
             controller: controller.emailController,
+            customValidator: (p0) {
+              if (p0 != null && p0.isNotEmpty) {
+                if (!GetUtils.isEmail(p0)) {
+                  return 'Please enter a valid email';
+                }
+              }
+              return null;
+            },
             validator: (p0) {
               if (controller.sendReport) {
                 if (p0 == null || p0.isEmpty) {
@@ -173,6 +191,18 @@ class WaresNewWarePopupWidget extends StatelessWidget {
               }
               return null;
             },
+          ),
+          DropdownWidget1<MapEntry<bool, String>>(
+            hintText: "Status",
+            dropdownBtnWidth: dpWidth / 5,
+            isRequired: true,
+            value: controller.status.name,
+            dropdownOptionsWidth: dpWidth / 5,
+            objItems: Constants.userAccountStatusTypes.entries.toList(),
+            onChangedWithObj: controller.onStatusChange,
+            items: Constants.userAccountStatusTypes.entries
+                .map((e) => e.value)
+                .toList(),
           ),
           SpacedRow(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -216,7 +246,7 @@ class WaresNewWarePopupWidget extends StatelessWidget {
             icon: const HeroIcon(HeroIcons.check,
                 color: ThemeColors.white, size: 20.0),
             text: isNew ? 'Add Warehouse' : ' Save Changes',
-            onPressed: controller.create,
+            onPressed: () => controller.create(context: context),
           ),
         ],
       ),

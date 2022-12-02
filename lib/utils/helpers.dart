@@ -80,7 +80,7 @@ class GridTableHelpers {
   static Widget getActionRenderer(PlutoColumnRendererContext ctx,
       {String title = "Edit",
       ValueChanged<PlutoColumnRendererContext>? onTap,
-      HeroIcon? icon}) {
+      HeroIcons? icon}) {
     return KText(
       text: title,
       textColor: ThemeColors.MAIN_COLOR,
@@ -89,12 +89,11 @@ class GridTableHelpers {
       mainAxisSize: MainAxisSize.min,
       isSelectable: false,
       onTap: onTap != null ? () => onTap(ctx) : null,
-      icon: icon ??
-          HeroIcon(
-            HeroIcons.edit,
-            color: ThemeColors.MAIN_COLOR,
-            size: 12,
-          ),
+      icon: HeroIcon(
+        icon ?? HeroIcons.edit,
+        color: ThemeColors.MAIN_COLOR,
+        size: 12,
+      ),
     );
   }
 }

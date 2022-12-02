@@ -277,7 +277,6 @@ class LocationsController extends GetxController {
     showMapPopup(location: loc);
   }
 
-  //Functions
   @override
   void onInit() {
     super.onInit();
@@ -291,8 +290,8 @@ class LocationsController extends GetxController {
   }
 
   @override
-  void onClose() {
+  void dispose() {
     searchController.dispose();
-    super.onClose();
+    super.dispose();
   }
 }
