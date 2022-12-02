@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
-import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import '../../comps/custom_get_builder.dart';
 import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/redux/sets/app_state.dart';
@@ -45,12 +44,7 @@ class GroupsNewDepController extends GetxController {
 
       await closeLoading();
       if (res.success) {
-        final GroupsController groupsController = Get.find();
-
-        groupsController.gridStateManager.toggleAllRowChecked(false);
-
         context?.popRoute();
-
         await appStore.dispatch(GetAllParamListAction());
       } else {
         showError(res.data);

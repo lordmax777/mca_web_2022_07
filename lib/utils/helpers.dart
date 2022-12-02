@@ -68,7 +68,7 @@ class GridTableHelpers {
       {ValueChanged<PlutoColumnRendererContext>? onTap}) {
     return KText(
       text: ctx.cell.value,
-      textColor: ThemeColors.MAIN_COLOR,
+      textColor: onTap != null ? ThemeColors.MAIN_COLOR : ThemeColors.gray8,
       fontWeight: FWeight.regular,
       fontSize: 14,
       mainAxisSize: MainAxisSize.min,

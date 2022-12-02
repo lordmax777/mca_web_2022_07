@@ -42,6 +42,15 @@ class DepartmentsController extends GetxController {
     ];
   }
 
+  final RxList<ListGroup> _deps = <ListGroup>[].obs;
+  List<ListGroup> get departments => _deps;
+  setList(List<ListGroup> d) {
+    final dd = [...d];
+    dd.sort((a, b) => a.name.compareTo(b.name));
+    _deps.value = dd;
+    return _deps;
+  }
+
   final TextEditingController searchController = TextEditingController();
   late PlutoGridStateManager gridStateManager;
   final List<PlutoRow> inactiveRows = [];
@@ -56,15 +65,6 @@ class DepartmentsController extends GetxController {
     // ignore: invalid_use_of_visible_for_testing_member
     searchController.notifyListeners();
     _isShowInactive.value = val;
-  }
-
-  final RxList<ListGroup> _deps = <ListGroup>[].obs;
-  List<ListGroup> get departments => _deps;
-  setList(List<ListGroup> d) {
-    final dd = [...d];
-    dd.sort((a, b) => a.name.compareTo(b.name));
-    _deps.value = dd;
-    return _deps;
   }
 
   //Functions

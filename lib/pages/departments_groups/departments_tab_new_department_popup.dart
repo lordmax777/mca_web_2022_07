@@ -51,10 +51,6 @@ class DepsNewDepController extends GetxController {
 
       await closeLoading();
       if (res.success) {
-        final DepartmentsController groupsController = Get.find();
-
-        groupsController.gridStateManager.toggleAllRowChecked(false);
-
         context?.popRoute();
 
         await appStore.dispatch(GetAllParamListAction());

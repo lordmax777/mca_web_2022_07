@@ -2,7 +2,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../theme/theme.dart';
 import 'controllers/qualifs_list_controller.dart';
@@ -41,7 +40,7 @@ class _Body extends GetView<QualifsController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _header(context, controller.deleteBtnOpacity),
+              _header(context),
               _body(controller.departments.isEmpty, context),
             ],
           ),
@@ -50,7 +49,7 @@ class _Body extends GetView<QualifsController> {
     );
   }
 
-  Widget _header(BuildContext context, double opacity) {
+  Widget _header(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -62,33 +61,17 @@ class _Body extends GetView<QualifsController> {
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
-          SpacedRow(horizontalSpace: 16.0, children: [
-            AnimatedOpacity(
-              opacity: opacity,
-              duration: const Duration(milliseconds: 100),
-              child: ButtonMedium(
-                bgColor: ThemeColors.red3,
-                text: "Delete Selected",
-                icon: const HeroIcon(
-                  HeroIcons.bin,
-                  size: 20,
-                ),
-                onPressed: controller.deleteSelectedRows,
-              ),
+          ButtonMedium(
+            text: "New Qualification",
+            icon: const HeroIcon(
+              HeroIcons.plusCircle,
+              size: 20,
             ),
-            ButtonMedium(
-              text: "New Qualification",
-              icon: const HeroIcon(
-                HeroIcons.plusCircle,
-                size: 20,
-              ),
-              onPressed: () {
-                showOverlayPopup(
-                    body: const QualifsNewQualifPopupWidget(),
-                    context: context);
-              },
-            ),
-          ]),
+            onPressed: () {
+              showOverlayPopup(
+                  body: const QualifsNewQualifPopupWidget(), context: context);
+            },
+          ),
         ],
       ),
     );
@@ -119,7 +102,6 @@ class _Body extends GetView<QualifsController> {
   PlutoRow _buildItem(ListQualification e) {
     return PlutoRow(cells: {
       "qualification_name": PlutoCell(value: e.title),
-      "space": PlutoCell(value: ""),
       "expire": PlutoCell(value: e.expire ? "Yes" : "No"),
       "levels": PlutoCell(value: e.levels ? "Yes" : "No"),
       "comment": PlutoCell(value: e.comments),

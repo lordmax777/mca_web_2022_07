@@ -26,7 +26,7 @@ class QualifNewQualifController extends GetxController {
   void setLevels(bool? val) => _hasLevels.value = val!;
   void setExpire(bool? val) => _hasExpire.value = val!;
 
-  Future<void> create() async {
+  Future<void> create({BuildContext? context}) async {
     if (formKey.currentState!.validate()) {
       showLoading();
       final ApiResponse res = await restClient()
@@ -40,12 +40,9 @@ class QualifNewQualifController extends GetxController {
                 notesController.text.isEmpty ? null : notesController.text,
           )
           .nocodeErrorHandler();
-
+      await closeLoading();
       if (res.success) {
-        final QualifsController controller = Get.find();
-
-        controller.gridStateManager.toggleAllRowChecked(false);
-        controller.setDeleteBtnOpacity = 0.5;
+        context?.popRoute();
         await appStore.dispatch(GetAllParamListAction());
       } else {}
       closeLoading();
@@ -206,7 +203,7 @@ class QualifsNewQualifPopupWidget extends StatelessWidget {
             icon: const HeroIcon(HeroIcons.check,
                 color: ThemeColors.white, size: 20.0),
             text: isNew ? 'Add Qualification' : 'Update Qualification',
-            onPressed: controller.create,
+            onPressed: () => controller.create(context: context),
           ),
         ],
       ),
