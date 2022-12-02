@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:faker/faker.dart';
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
+import '../../manager/models/users_list.dart';
 import '../../theme/theme.dart';
 
 class DepGroupDrawer extends StatefulWidget {
@@ -15,8 +19,8 @@ class DepGroupDrawer extends StatefulWidget {
 }
 
 class _DepGroupDrawerState extends State<DepGroupDrawer> {
-  final List<Map> items = [];
-  final List<Map> backupItems = [];
+  final List<UserRes> items = [];
+  final List<UserRes> backupItems = [];
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -33,30 +37,27 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
     final users = appStore.state.usersState.usersList.data!;
     if (widget.group != null) {
       for (var user in users) {
-        if (user.groupId == widget.group!.id.toString()) {
-          items.add({
-            "name": user.fullname,
-            "time": "NO_TIME", //TODO:
-            "items": "NO_ITEMS", //TODO:
-            "price": "NO_PRICE", //TODO:
-          });
+        if (user.groupId == widget.group?.id.toString()) {
+          items.add(user);
         }
       }
     } else {
       for (var user in users) {
-        if (user.groupId == widget.department!.id.toString()) {
-          items.add({
-            "name": user.fullname,
-            "time": "NO_TIME", //TODO:
-            "items": "NO_ITEMS", //TODO:
-            "price": "NO_PRICE", //TODO:
-          });
+        if (user.groupId == widget.department?.id.toString()) {
+          items.add(user);
         }
       }
     }
     backupItems.clear();
     backupItems.addAll(items);
-
+    _searchController.addListener(() {
+      if (_searchController.text.isEmpty) {
+        setState(() {
+          items.clear();
+          items.addAll(backupItems);
+        });
+      }
+    });
     _onSearch();
   }
 
@@ -64,14 +65,20 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
     _searchController.addListener(() {
       setState(() {
         if (_searchController.text.isNotEmpty) {
+          items.clear();
           items.addAll(backupItems.where((element) {
-            return element['name']
+            return element.fullname
                 .toLowerCase()
-                .contains(RegExp(_searchController.text.toLowerCase()));
+                .contains((_searchController.text.toLowerCase()));
           }).toList());
+          if (items.isEmpty) {
+            items.addAll(backupItems.where((element) {
+              return element.username
+                  .toLowerCase()
+                  .contains((_searchController.text.toLowerCase()));
+            }).toList());
+          }
         }
-        items.clear();
-        items.addAll(backupItems);
       });
     });
   }
@@ -103,14 +110,17 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            KText(
-              isSelectable: false,
-              text: widget.group != null
-                  ? widget.group!.name
-                  : widget.department!.name,
-              fontSize: 18.0,
-              textColor: ThemeColors.gray2,
-              fontWeight: FWeight.bold,
+            SizedBox(
+              width: 440,
+              child: KText(
+                isSelectable: false,
+                text: widget.group != null
+                    ? widget.group!.name
+                    : widget.department!.name,
+                fontSize: 18.0,
+                textColor: ThemeColors.gray2,
+                fontWeight: FWeight.bold,
+              ),
             ),
             InkWell(
                 child: const HeroIcon(
@@ -134,29 +144,45 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
             controller: _searchController,
             defaultBorderColor: ThemeColors.gray11,
             width: double.infinity,
-            // onChanged: (value) => _onSearch(),
+            onChanged: (value) => _onSearch(),
             leftIcon: HeroIcons.search),
         const SizedBox(height: 16.0),
-        SizedBox(
-          height: MediaQuery.of(context).size.height - 200,
-          width: double.infinity,
-          child: ListView.builder(
-              itemBuilder: _itemBuilder, itemCount: items.length),
-        ),
+        if (items.isEmpty)
+          KText(
+              text: "No users found",
+              textColor: ThemeColors.gray5,
+              fontSize: 14.0,
+              fontWeight: FWeight.bold)
+        else
+          SizedBox(
+            height: MediaQuery.of(context).size.height - 200,
+            width: double.infinity,
+            child: ListView.builder(
+                itemBuilder: _itemBuilder, itemCount: items.length),
+          ),
       ]),
     );
   }
 
   Widget _itemBuilder(BuildContext context, int index) {
+    final user = items[index];
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const HeroIcon(
-            HeroIcons.user,
-            size: 48.0,
-            color: ThemeColors.gray5,
+          CircleAvatar(
+            backgroundColor: user.userRandomBgColor,
+            maxRadius: 24.0,
+            child: KText(
+              fontSize: 16.0,
+              isSelectable: false,
+              textColor: ThemeColors.black,
+              fontWeight: FWeight.bold,
+              text:
+                  "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"
+                      .toUpperCase(),
+            ),
           ),
           const SizedBox(width: 16.0),
           SpacedColumn(
@@ -164,65 +190,70 @@ class _DepGroupDrawerState extends State<DepGroupDrawer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               KText(
-                isSelectable: false,
-                text: items[index]['name'],
+                text: user.fullname,
                 fontSize: 14.0,
                 textColor: ThemeColors.gray2,
                 fontWeight: FWeight.bold,
               ),
-              SpacedRow(horizontalSpace: 16.0, children: [
-                SpacedRow(
-                    horizontalSpace: 4.0,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const HeroIcon(
-                        HeroIcons.clock,
-                        color: ThemeColors.gray6,
-                        size: 12.0,
-                      ),
-                      KText(
-                        isSelectable: false,
-                        text: '${items[index]['time']}',
-                        fontSize: 12.0,
-                        fontWeight: FWeight.medium,
-                        textColor: ThemeColors.gray6,
-                      ),
-                    ]),
-                SpacedRow(
-                    horizontalSpace: 4.0,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const HeroIcon(
-                        HeroIcons.briefcase,
-                        color: ThemeColors.gray6,
-                        size: 12.0,
-                      ),
-                      KText(
-                        isSelectable: false,
-                        text: '${items[index]['items']}',
-                        fontSize: 12.0,
-                        fontWeight: FWeight.medium,
-                        textColor: ThemeColors.gray6,
-                      ),
-                    ]),
-                SpacedRow(
-                    horizontalSpace: 4.0,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const HeroIcon(
-                        HeroIcons.pound,
-                        color: ThemeColors.gray6,
-                        size: 12.0,
-                      ),
-                      KText(
-                        isSelectable: false,
-                        text: '${items[index]['price']}',
-                        fontSize: 12.0,
-                        fontWeight: FWeight.medium,
-                        textColor: ThemeColors.gray6,
-                      ),
-                    ]),
-              ]),
+              KText(
+                text: user.username,
+                fontSize: 14.0,
+                textColor: ThemeColors.black,
+                fontWeight: FWeight.regular,
+              ),
+              // SpacedRow(horizontalSpace: 16.0, children: [
+              //   SpacedRow(
+              //       horizontalSpace: 4.0,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         const HeroIcon(
+              //           HeroIcons.clock,
+              //           color: ThemeColors.gray6,
+              //           size: 12.0,
+              //         ),
+              //         KText(
+              //           isSelectable: false,
+              //           text: '${items[index]['time']}',
+              //           fontSize: 12.0,
+              //           fontWeight: FWeight.medium,
+              //           textColor: ThemeColors.gray6,
+              //         ),
+              //       ]),
+              //   SpacedRow(
+              //       horizontalSpace: 4.0,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         const HeroIcon(
+              //           HeroIcons.briefcase,
+              //           color: ThemeColors.gray6,
+              //           size: 12.0,
+              //         ),
+              //         KText(
+              //           isSelectable: false,
+              //           text: '${items[index]['items']}',
+              //           fontSize: 12.0,
+              //           fontWeight: FWeight.medium,
+              //           textColor: ThemeColors.gray6,
+              //         ),
+              //       ]),
+              //   SpacedRow(
+              //       horizontalSpace: 4.0,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         const HeroIcon(
+              //           HeroIcons.pound,
+              //           color: ThemeColors.gray6,
+              //           size: 12.0,
+              //         ),
+              //         KText(
+              //           isSelectable: false,
+              //           text: '${items[index]['price']}',
+              //           fontSize: 12.0,
+              //           fontWeight: FWeight.medium,
+              //           textColor: ThemeColors.gray6,
+              //         ),
+              //       ]),
+              // ]),
             ],
           ),
         ],

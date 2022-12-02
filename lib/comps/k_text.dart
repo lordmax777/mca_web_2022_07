@@ -90,7 +90,11 @@ class KText extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   horizontalSpace: 4.0,
                   children: [
-                    Text(text, maxLines: 2, style: style, textAlign: textAlign),
+                    Text(text,
+                        maxLines: 2,
+                        softWrap: true,
+                        style: style,
+                        textAlign: textAlign),
                     icon!,
                   ],
                 ),
@@ -109,11 +113,13 @@ class KText extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: style,
+              softWrap: true,
               textAlign: textAlign),
           if (icon != null) icon!,
         ],
       );
     }
-    return Text(text, maxLines: 2, style: style, textAlign: textAlign);
+    return Text(text,
+        maxLines: 2, softWrap: true, style: style, textAlign: textAlign);
   }
 }

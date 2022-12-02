@@ -1,4 +1,7 @@
+import 'package:faker/faker.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../../theme/theme.dart';
 part 'users_list.g.dart';
 
 @JsonSerializable(anyMap: true)
@@ -23,6 +26,12 @@ class UserRes {
   bool loginRequired;
   dynamic locked;
   String fullname;
+
+  Color userRandomBgColor = Color.fromRGBO(
+      faker.randomGenerator.integer(255),
+      faker.randomGenerator.integer(255),
+      faker.randomGenerator.integer(255),
+      0.3);
 
   @override
   UserRes({
