@@ -1,13 +1,16 @@
-import 'package:pluto_grid/pluto_grid.dart';
 import '../../theme/theme.dart';
+import 'package:pluto_grid/pluto_grid.dart';
 
 class UsersListTable extends StatelessWidget {
   final List<PlutoColumn> cols;
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
+  final void Function(PlutoGridOnSelectedEvent)? onOneTapSelect;
+
   const UsersListTable(
       {Key? key,
       required this.rows,
+      this.onOneTapSelect,
       required this.onSmReady,
       required this.cols})
       : super(key: key);
@@ -74,6 +77,8 @@ class UsersListTable extends StatelessWidget {
                     : PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
+        mode: PlutoGridMode.selectWithOneTap,
+        onSelected: onOneTapSelect,
         onLoaded: (e) => onSmReady(e.stateManager),
       ),
     );
@@ -144,8 +149,6 @@ class DepsListTable extends StatelessWidget {
                 autoSizeMode: PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
-        mode: PlutoGridMode.selectWithOneTap,
-        onSelected: onOneTapSelect,
         onLoaded: (e) => onSmReady(e.stateManager),
       ),
     );
@@ -229,10 +232,12 @@ class StockItemsListTable extends StatelessWidget {
   final List<PlutoColumn> cols;
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
+  final void Function(PlutoGridOnChangedEvent)? onChanged;
   const StockItemsListTable(
       {Key? key,
       required this.rows,
       required this.onSmReady,
+      this.onChanged,
       required this.cols})
       : super(key: key);
 
@@ -294,6 +299,7 @@ class StockItemsListTable extends StatelessWidget {
                     : PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
+        onChanged: onChanged,
         onLoaded: (e) => onSmReady(e.stateManager),
       ),
     );

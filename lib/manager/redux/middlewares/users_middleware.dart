@@ -88,7 +88,7 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
   }
 }
 
-Future<void> showLoading({bool? barrierDismissible = kDebugMode}) async {
+Future<void> showLoading({bool? barrierDismissible = false}) async {
   showDialog(
     barrierDismissible: barrierDismissible!,
     context: appRouter.navigatorKey.currentContext!,

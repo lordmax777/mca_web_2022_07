@@ -93,14 +93,15 @@ class PlutoGridDatePicker {
       height: popupHeight,
       createHeader: _createHeader,
       configuration: configuration.copyWith(
+        tabKeyAction: PlutoGridTabKeyAction.normal,
         style: configuration.style.copyWith(
           enableColumnBorderVertical: false,
           enableColumnBorderHorizontal: false,
           enableCellBorderVertical: false,
           enableCellBorderHorizontal: false,
           enableRowColorAnimation: false,
-          oddRowColor: PlutoOptional(null),
-          evenRowColor: PlutoOptional(null),
+          oddRowColor: const PlutoOptional(null),
+          evenRowColor: const PlutoOptional(null),
           activatedColor: configuration.style.gridBackgroundColor,
           gridBorderColor: configuration.style.gridBackgroundColor,
           borderColor: configuration.style.gridBackgroundColor,
@@ -158,7 +159,9 @@ class PlutoGridDatePicker {
         for (var entry in rows[i].cells.entries) {
           if (rows[i].cells[entry.key]!.value == initDateString) {
             datePickerStateManager.setCurrentCell(
-                datePickerStateManager.refRows[i].cells[entry.key], i);
+              datePickerStateManager.refRows[i].cells[entry.key],
+              i,
+            );
             break;
           }
         }
@@ -322,16 +325,18 @@ class PlutoGridDatePicker {
             ? configuration.style.cellTextStyle.color
             : configuration.style.cellColorInReadOnlyState;
 
-    return Container(
-      padding: const EdgeInsets.all(5),
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: cellColor,
         shape: BoxShape.circle,
       ),
-      child: Center(
-        child: Text(
-          _dateFormatter(cell.value),
-          style: TextStyle(color: textColor),
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Center(
+          child: Text(
+            _dateFormatter(cell.value),
+            style: TextStyle(color: textColor),
+          ),
         ),
       ),
     );
@@ -434,9 +439,9 @@ abstract class _DateCellHeaderStateWithChange
   void initState() {
     super.initState();
 
-    _scroll = stateManager.scroll!.horizontal!.addAndGet();
+    _scroll = stateManager.scroll.horizontal!.addAndGet();
 
-    updateState();
+    updateState(PlutoNotifierEventForceUpdate.instance);
   }
 
   @override
@@ -447,7 +452,7 @@ abstract class _DateCellHeaderStateWithChange
   }
 
   @override
-  void updateState() {
+  void updateState(PlutoNotifierEvent event) {
     _currentCell = update<PlutoCell?>(
       _currentCell,
       stateManager.currentCell,
@@ -472,78 +477,82 @@ abstract class _DateCellHeaderStateWithChange
 
 class _DateCellHeaderState extends _DateCellHeaderStateWithChange {
   Color? get textColor =>
-      stateManager.configuration!.style.columnTextStyle.color;
+      stateManager.configuration.style.columnTextStyle.color;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: stateManager.rowTotalHeight,
-      padding: PlutoGridSettings.cellPadding,
-      alignment: Alignment.center,
-      child: SingleChildScrollView(
-        controller: _scroll,
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              padding: const EdgeInsets.all(0),
-              iconSize: stateManager.configuration!.style.iconSize,
-              onPressed: () => widget.changeMonth(-12),
-              icon: Icon(
-                Icons.navigate_before,
-                color: stateManager.configuration!.style.iconColor,
-              ),
-            ),
-            IconButton(
-              padding: const EdgeInsets.all(0),
-              iconSize: stateManager.configuration!.style.iconSize,
-              onPressed: () => widget.changeMonth(12),
-              icon: Icon(
-                Icons.navigate_next,
-                color: stateManager.configuration!.style.iconColor,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              widget.headerDateFormat.format(
-                DateTime(_currentYear, _currentMonth),
-              ),
-              style: TextStyle(
-                color: textColor,
-                fontSize:
-                    stateManager.configuration!.style.columnTextStyle.fontSize,
-                fontWeight: stateManager
-                    .configuration!.style.columnTextStyle.fontWeight,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(width: 10),
-            RotatedBox(
-              quarterTurns: 3,
-              child: IconButton(
-                padding: const EdgeInsets.all(0),
-                iconSize: stateManager.configuration!.style.iconSize,
-                onPressed: () => widget.changeMonth(-1),
-                icon: Icon(
-                  Icons.navigate_next,
-                  color: stateManager.configuration!.style.iconColor,
+      child: Padding(
+        padding: PlutoGridSettings.cellPadding,
+        child: Align(
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            controller: _scroll,
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  padding: const EdgeInsets.all(0),
+                  iconSize: stateManager.configuration.style.iconSize,
+                  onPressed: () => widget.changeMonth(-12),
+                  icon: Icon(
+                    Icons.navigate_before,
+                    color: stateManager.configuration.style.iconColor,
+                  ),
                 ),
-              ),
-            ),
-            RotatedBox(
-              quarterTurns: 3,
-              child: IconButton(
-                padding: const EdgeInsets.all(0),
-                iconSize: stateManager.configuration!.style.iconSize,
-                onPressed: () => widget.changeMonth(1),
-                icon: Icon(
-                  Icons.navigate_before,
-                  color: stateManager.configuration!.style.iconColor,
+                IconButton(
+                  padding: const EdgeInsets.all(0),
+                  iconSize: stateManager.configuration.style.iconSize,
+                  onPressed: () => widget.changeMonth(12),
+                  icon: Icon(
+                    Icons.navigate_next,
+                    color: stateManager.configuration.style.iconColor,
+                  ),
                 ),
-              ),
+                const SizedBox(width: 10),
+                Text(
+                  widget.headerDateFormat.format(
+                    DateTime(_currentYear, _currentMonth),
+                  ),
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: stateManager
+                        .configuration.style.columnTextStyle.fontSize,
+                    fontWeight: stateManager
+                        .configuration.style.columnTextStyle.fontWeight,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(width: 10),
+                RotatedBox(
+                  quarterTurns: 3,
+                  child: IconButton(
+                    padding: const EdgeInsets.all(0),
+                    iconSize: stateManager.configuration.style.iconSize,
+                    onPressed: () => widget.changeMonth(-1),
+                    icon: Icon(
+                      Icons.navigate_next,
+                      color: stateManager.configuration.style.iconColor,
+                    ),
+                  ),
+                ),
+                RotatedBox(
+                  quarterTurns: 3,
+                  child: IconButton(
+                    padding: const EdgeInsets.all(0),
+                    iconSize: stateManager.configuration.style.iconSize,
+                    onPressed: () => widget.changeMonth(1),
+                    icon: Icon(
+                      Icons.navigate_before,
+                      color: stateManager.configuration.style.iconColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

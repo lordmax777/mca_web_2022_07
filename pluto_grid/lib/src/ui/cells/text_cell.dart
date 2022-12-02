@@ -54,7 +54,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
 
     cellFocus = FocusNode(onKey: _handleOnKey);
 
-    widget.stateManager.textEditingController = _textController;
+    widget.stateManager.setTextEditingController(_textController);
 
     _textController.text = formattedValue;
 
@@ -87,7 +87,10 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       });
     }
 
-    widget.stateManager.textEditingController = null;
+    if (!widget.stateManager.isEditing ||
+        widget.stateManager.currentColumn?.enableEditingMode != true) {
+      widget.stateManager.setTextEditingController(null);
+    }
 
     super.dispose();
   }
@@ -246,7 +249,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       onEditingComplete: _handleOnComplete,
       onSubmitted: (_) => _handleOnComplete(),
       onTap: _handleOnTap,
-      style: widget.stateManager.configuration!.style.cellTextStyle,
+      style: widget.stateManager.configuration.style.cellTextStyle,
       decoration: const InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide.none,

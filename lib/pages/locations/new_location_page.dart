@@ -373,7 +373,7 @@ class _AddressWidget extends StatelessWidget {
                             dropdownOptionsWidth: (dpWidth * 2) + 24.0,
                             value: controller.country.name,
                             hasSearchBox: true,
-                            isRequired: controller.isAnywhere,
+                            isRequired: !controller.isAnywhere,
                             onChangedWithObj: controller.onCountryChange,
                             objItems: general.countries,
                             items:
@@ -436,16 +436,43 @@ class _GpsWidget extends StatelessWidget {
                         width: dpWidth,
                         controller: controller.radiusController,
                         labelText: "Radius (Metres)",
+                        // isRequired: true,
+                        // validator: (p0) {
+                        //   if (p0!.isEmpty) {
+                        //     return "Radius is required";
+                        //   }
+                        //   if (p0! == "0") {
+                        //     return "Radius is invalid";
+                        //   }
+                        // }
                       ),
                       TextInputWidget(
                         width: dpWidth,
                         controller: controller.latitudeController,
                         labelText: "Latitude",
+                        // isRequired: true,
+                        // validator: (p0) {
+                        //   if (p0!.isEmpty) {
+                        //     return "Latitude is required";
+                        //   }
+                        //   if (p0! == "0") {
+                        //     return "Latitude is invalid";
+                        //   }
+                        // }
                       ),
                       TextInputWidget(
                         width: dpWidth,
                         controller: controller.longitudeController,
                         labelText: "Longitude",
+                        // isRequired: true,
+                        // validator: (p0) {
+                        //   if (p0!.isEmpty) {
+                        //     return "Longitude is required";
+                        //   }
+                        //   if (p0! == "0") {
+                        //     return "Longitude is invalid";
+                        //   }
+                        // },
                       ),
                     ])),
           );

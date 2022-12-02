@@ -1,7 +1,7 @@
 export './colors.dart';
 export './text_style.dart';
 export 'package:simpleicons/heroicons.dart';
-
+export 'package:pluto_grid/pluto_grid.dart';
 export 'package:flutter/material.dart';
 
 //Utils
@@ -70,3 +70,4 @@ export '../comps/page_goback_widget.dart';
 export '../comps/error_wrapper.dart';
 export '../comps/table_tooltip.dart';
 export '../comps/expandable_item_widget.dart';
+export '../comps/custom_checkbox.dart';

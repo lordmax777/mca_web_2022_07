@@ -33,11 +33,11 @@ class PlutoRightFrozenColumnsState
   void initState() {
     super.initState();
 
-    updateState();
+    updateState(PlutoNotifierEventForceUpdate.instance);
   }
 
   @override
-  void updateState() {
+  void updateState(PlutoNotifierEvent event) {
     _showColumnGroups = update<bool>(
       _showColumnGroups,
       stateManager.showColumnGroups,
@@ -49,12 +49,13 @@ class PlutoRightFrozenColumnsState
       compare: listEquals,
     );
 
-    if (changed && _showColumnGroups == true) {
-      _columnGroups = stateManager.separateLinkedGroup(
-        columnGroupList: stateManager.refColumnGroups!,
+    _columnGroups = update<List<PlutoColumnGroupPair>>(
+      _columnGroups,
+      stateManager.separateLinkedGroup(
+        columnGroupList: stateManager.refColumnGroups,
         columns: _columns,
-      );
-    }
+      ),
+    );
 
     _itemCount = update<int>(_itemCount, _getItemCount());
   }
@@ -69,18 +70,18 @@ class PlutoRightFrozenColumnsState
     return _showColumnGroups == true ? _columnGroups.length : _columns.length;
   }
 
-  Widget _buildColumnGroup(PlutoColumnGroupPair e) {
+  Widget _makeColumnGroup(PlutoColumnGroupPair e) {
     return LayoutId(
       id: e.key,
       child: PlutoBaseColumnGroup(
         stateManager: stateManager,
         columnGroup: e,
-        depth: stateManager.columnGroupDepth(stateManager.refColumnGroups!),
+        depth: stateManager.columnGroupDepth(stateManager.refColumnGroups),
       ),
     );
   }
 
-  Widget _buildColumn(e) {
+  Widget _makeColumn(PlutoColumn e) {
     return LayoutId(
       id: e.field,
       child: PlutoBaseColumn(
@@ -93,14 +94,15 @@ class PlutoRightFrozenColumnsState
   @override
   Widget build(BuildContext context) {
     return CustomMultiChildLayout(
-        delegate: MainColumnLayoutDelegate(
-          stateManager: stateManager,
-          columns: _columns,
-          columnGroups: _columnGroups,
-          frozen: PlutoColumnFrozen.end,
-        ),
-        children: _showColumnGroups == true
-            ? _columnGroups.map(_buildColumnGroup).toList()
-            : _columns.map(_buildColumn).toList());
+      delegate: MainColumnLayoutDelegate(
+        stateManager: stateManager,
+        columns: _columns,
+        columnGroups: _columnGroups,
+        frozen: PlutoColumnFrozen.end,
+      ),
+      children: _showColumnGroups == true
+          ? _columnGroups.map(_makeColumnGroup).toList(growable: false)
+          : _columns.map(_makeColumn).toList(growable: false),
+    );
   }
 }

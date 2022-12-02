@@ -1,27 +1,35 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
-import 'package:mca_web_2022_07/comps/show_overlay_popup.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../../../comps/custom_gmaps_widget.dart';
+import '../../../comps/dropdown_widget1.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
+import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../manager/router/router.dart';
 import '../../../theme/theme.dart';
-import '../../home_page.dart';
-import 'package:google_maps_widget/google_maps_widget.dart';
 
 class LocationsController extends GetxController {
   static LocationsController get to => Get.find();
 
   //UI Variables
-  final RxDouble _deleteBtnOpacity = 0.5.obs;
-
   final GlobalKey columnsMenuKey = GlobalKey();
+
+  final Rx<CodeMap<bool>> _status = CodeMap<bool>(name: null, code: null).obs;
+  CodeMap<bool> get status => _status.value;
+  set setStatus(CodeMap<bool> value) => _status.value = value;
+  final RxDouble _deleteBtnOpacity = 0.5.obs;
+  double get deleteBtnOpacity => _deleteBtnOpacity.value;
+  set setDeleteBtnOpacity(double value) {
+    _deleteBtnOpacity.value = value;
+  }
+
   final RxList<ColumnHiderValues> _columnHideValues =
       List<ColumnHiderValues>.empty().obs;
   List<ColumnHiderValues> get columnHideValues => _columnHideValues;
@@ -187,11 +195,6 @@ class LocationsController extends GetxController {
     ];
   }
 
-  double get deleteBtnOpacity => _deleteBtnOpacity.value;
-  set setDeleteBtnOpacity(double value) {
-    _deleteBtnOpacity.value = value;
-  }
-
   void onColumnHide(ColumnHiderValues value) {
     PlutoColumn c = gridStateManager.refColumns.originalList
         .firstWhere((e) => e.field == value.value);
@@ -200,18 +203,148 @@ class LocationsController extends GetxController {
 
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
-    gridStateManager.setOnRowChecked((event) {
-      if (gridStateManager.checkedRows.isNotEmpty) {
-        setDeleteBtnOpacity = 1.0;
-      } else {
-        setDeleteBtnOpacity = 0.5;
-      }
-    });
     gridStateManager.setPage(0);
     gridStateManager.setPageSize(10);
     gridStateManager.setPage(page);
     _setFilter();
     setIsSmLoaded = true;
+  }
+
+  void onOneTapSelect(PlutoGridOnSelectedEvent event) {
+    gridStateManager.toggleAllRowChecked(false);
+    event.row!.setChecked(!event.row!.checked!);
+    if (gridStateManager.checkedRows.isNotEmpty) {
+      final item = event.row!.cells['action']!.value as LocationItemMd;
+      setStatus = CodeMap(
+        name: Constants.userAccountStatusTypes[item.active],
+        code: item.active,
+      );
+      setDeleteBtnOpacity = 1.0;
+    } else {
+      setDeleteBtnOpacity = 0.5;
+      resetStatus;
+    }
+  }
+
+  Future<void> onStatusChange(DpItem value, BuildContext context) async {
+    final List<PlutoRow> selectedRows = gridStateManager.checkedRows;
+    if (selectedRows.isEmpty) {
+      showError("Please select at least one item!");
+      return;
+    }
+    if (gridStateManager.checkedRows.length > 1) {
+      final ids = gridStateManager.checkedRows
+          .map<int>((e) => e.cells['action']?.value.id)
+          .toList();
+      showLoading();
+      bool allSuccess = true;
+      ApiResponse? resp;
+      for (int i = 0; i < ids.length; i++) {
+        final updateableItem =
+            selectedRows[i].cells['action']!.value as LocationItemMd;
+
+        updateableItem.active = (value.item as MapEntry<bool, String>).key;
+
+        final ApiResponse res = await restClient()
+            .updateLocation(
+              id: updateableItem.id,
+              active: updateableItem.active!,
+              name: updateableItem.name!,
+              timelimit: false,
+              base: false,
+              sendChecklist: false, //TODO: check this
+              latitude: updateableItem.address!.latitude!.toString(),
+              longitude: updateableItem.address!.longitude!.toString(),
+              radius: updateableItem.address!.radius!.toString(),
+              anywhere: updateableItem.anywhere!,
+              fixedipaddress: updateableItem.fixedipaddress!,
+              addressCity: updateableItem.address!.city,
+              addressCountry: updateableItem.address!.country,
+              addressCounty: updateableItem.address!.county,
+              addressLine1: updateableItem.address!.line1,
+              addressLine2: updateableItem.address!.line2,
+              addressPostcode: updateableItem.address!.postcode,
+              phoneLandline: updateableItem.phone!.landline,
+              phoneMobile: updateableItem.phone!.mobile,
+              phoneFax: updateableItem.phone!.fax,
+              email: updateableItem.email,
+            )
+            .nocodeErrorHandler();
+        if (!res.success) {
+          allSuccess = false;
+          resp = res;
+          break;
+        }
+      }
+
+      if (allSuccess) {
+        gridStateManager.toggleAllRowChecked(false);
+        resetStatus;
+        searchController.clear();
+        setDeleteBtnOpacity = 0.5;
+        await appStore.dispatch(GetAllLocationsAction());
+        closeLoading();
+      } else {
+        await closeLoading();
+        showError(resp?.rawError?.data.toString() ?? "Error");
+      }
+
+      return;
+    }
+    final updateableItem =
+        selectedRows[0].cells['action']!.value as LocationItemMd;
+    final isActive =
+        updateableItem.active == (value.item as MapEntry<bool, String>).key;
+
+    if (isActive) {
+      return;
+    }
+    showLoading();
+    final ApiResponse res = await restClient()
+        .updateLocation(
+          id: updateableItem.id,
+          active: (value.item as MapEntry<bool, String>).key,
+          name: updateableItem.name!,
+          timelimit: false,
+          base: false,
+          sendChecklist: false, //TODO: check this
+          latitude: updateableItem.address!.latitude!.toString(),
+          longitude: updateableItem.address!.longitude!.toString(),
+          radius: updateableItem.address!.radius!.toString(),
+          anywhere: updateableItem.anywhere!,
+          fixedipaddress: updateableItem.fixedipaddress!,
+          addressCity: updateableItem.address!.city,
+          addressCountry: updateableItem.address!.country,
+          addressCounty: updateableItem.address!.county,
+          addressLine1: updateableItem.address!.line1,
+          addressLine2: updateableItem.address!.line2,
+          addressPostcode: updateableItem.address!.postcode,
+          email: updateableItem.email,
+          phoneFax:
+              updateableItem.anywhere! ? "11111111" : updateableItem.phone!.fax,
+          phoneMobile: updateableItem.anywhere!
+              ? "11111111"
+              : updateableItem.phone!.mobile,
+          phoneLandline: updateableItem.anywhere!
+              ? "11111111"
+              : updateableItem.phone!.landline,
+        )
+        .nocodeErrorHandler();
+
+    await closeLoading();
+
+    if (res.success) {
+      searchController.clear();
+
+      gridStateManager.toggleAllRowChecked(false);
+
+      context.popRoute();
+
+      await appStore.dispatch(GetAllLocationsAction());
+      resetStatus;
+    } else {
+      showError(res.data);
+    }
   }
 
   void _setFilter() {
@@ -297,8 +430,7 @@ class LocationsController extends GetxController {
     newContr.setId = loc.id ?? -1;
     newContr.nameController.text = loc.name ?? "";
     newContr.setStatus = CodeMap(
-        name: Constants.userAccountStatusTypes[loc.active!]!,
-        code: loc.active!.toString());
+        name: Constants.userAccountStatusTypes[loc.active!]!, code: loc.active);
     newContr.setIsLocationBound = !loc.anywhere!;
     newContr.ipAddressesController.text = "";
     if (loc.ipaddress != null && loc.ipaddress!.isNotEmpty) {
@@ -314,7 +446,7 @@ class LocationsController extends GetxController {
     newContr.streetController.text = loc.address?.line1 ?? "";
     newContr.cityController.text = loc.address?.city ?? "";
     newContr.postCodeController.text = loc.address?.postcode ?? "";
-    final country =
+    final CodeMap<String> country =
         appStore.state.generalState.findCountryByName(loc.address?.country);
     newContr.setCountry = country;
     newContr.countyController.text = loc.address?.county ?? "";
@@ -375,6 +507,13 @@ class LocationsController extends GetxController {
     dd.sort((a, b) => a.name!.compareTo(b.name!));
     _deps.value = dd;
     return _deps;
+  }
+
+  void get resetStatus {
+    setStatus = CodeMap<bool>(
+      name: null,
+      code: null,
+    );
   }
 
   //Functions

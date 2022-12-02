@@ -18,6 +18,7 @@ import 'screen/feature/column_moving_screen.dart';
 import 'screen/feature/column_resizing_screen.dart';
 import 'screen/feature/column_sorting_screen.dart';
 import 'screen/feature/copy_and_paste_screen.dart';
+import 'screen/feature/currency_type_column_screen.dart';
 import 'screen/feature/dark_mode_screen.dart';
 import 'screen/feature/date_type_column_screen.dart';
 import 'screen/feature/dual_mode_screen.dart';
@@ -28,6 +29,9 @@ import 'screen/feature/listing_mode_screen.dart';
 import 'screen/feature/moving_screen.dart';
 import 'screen/feature/number_type_column_screen.dart';
 import 'screen/feature/row_color_screen.dart';
+import 'screen/feature/row_group_screen.dart';
+import 'screen/feature/row_infinity_scroll_screen.dart';
+import 'screen/feature/row_lazy_pagination_screen.dart';
 import 'screen/feature/row_moving_screen.dart';
 import 'screen/feature/row_pagination_screen.dart';
 import 'screen/feature/row_selection_screen.dart';
@@ -73,6 +77,8 @@ class MyApp extends StatelessWidget {
             const ColumnResizingScreen(),
         ColumnSortingScreen.routeName: (context) => const ColumnSortingScreen(),
         CopyAndPasteScreen.routeName: (context) => const CopyAndPasteScreen(),
+        CurrencyTypeColumnScreen.routeName: (context) =>
+            const CurrencyTypeColumnScreen(),
         DarkModeScreen.routeName: (context) => const DarkModeScreen(),
         DateTypeColumnScreen.routeName: (context) =>
             const DateTypeColumnScreen(),
@@ -85,6 +91,11 @@ class MyApp extends StatelessWidget {
         NumberTypeColumnScreen.routeName: (context) =>
             const NumberTypeColumnScreen(),
         RowColorScreen.routeName: (context) => const RowColorScreen(),
+        RowGroupScreen.routeName: (context) => const RowGroupScreen(),
+        RowInfinityScrollScreen.routeName: (context) =>
+            const RowInfinityScrollScreen(),
+        RowLazyPaginationScreen.routeName: (context) =>
+            const RowLazyPaginationScreen(),
         RowMovingScreen.routeName: (context) => const RowMovingScreen(),
         RowPaginationScreen.routeName: (context) => const RowPaginationScreen(),
         RowSelectionScreen.routeName: (context) => const RowSelectionScreen(),

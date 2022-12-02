@@ -216,9 +216,7 @@ class _WeekTableWidgetState extends State<_WeekTableWidget> {
   void _setSm(PlutoGridStateManager sm) {
     setState(() {
       userDetailsPayrollSm = sm;
-      userDetailsPayrollSm.setOnSelected((event) {
-        logger(event);
-      });
+
       _isSmLoaded = true;
     });
   }

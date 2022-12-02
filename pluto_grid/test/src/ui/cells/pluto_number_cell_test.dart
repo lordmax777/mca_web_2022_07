@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:pluto_grid/src/ui/ui.dart';
 
 import '../../../helper/pluto_widget_test_helper.dart';
-import 'pluto_number_cell_test.mocks.dart';
+import '../../../mock/shared_mocks.mocks.dart';
 
-@GenerateMocks([], customMocks: [
-  MockSpec<PlutoGridStateManager>(returnNullOnMissingStub: true),
-])
 void main() {
   group('PlutoNumberCell', () {
     late PlutoGridStateManager stateManager;
@@ -33,6 +29,8 @@ void main() {
           const PlutoGridConfiguration(),
         );
 
+        when(stateManager.isEditing).thenReturn(true);
+
         when(stateManager.keepFocus).thenReturn(true);
 
         when(stateManager.keyManager).thenReturn(PlutoGridKeyManager(
@@ -49,6 +47,8 @@ void main() {
             allowFirstDot: allowFirstDot,
           ),
         );
+
+        when(stateManager.currentColumn).thenReturn(column);
 
         final PlutoCell cell = PlutoCell(value: number);
 

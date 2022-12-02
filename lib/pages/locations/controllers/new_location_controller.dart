@@ -35,9 +35,9 @@ class NewLocationController extends GetxController {
   bool get isUpdate => _id.value != -1;
   GlobalKey<FormState> generalFormKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
-  final Rx<CodeMap> _status = CodeMap(name: null, code: null).obs;
-  CodeMap get status => _status.value;
-  set setStatus(CodeMap value) => _status.value = value;
+  final Rx<CodeMap<bool>> _status = CodeMap<bool>(name: null, code: null).obs;
+  CodeMap<bool> get status => _status.value;
+  set setStatus(CodeMap<bool> value) => _status.value = value;
   final RxBool _isAnywhere = false.obs;
   bool get isAnywhere => _isAnywhere.value;
   set setIsLocationBound(bool value) => _isAnywhere.value = value;
@@ -69,9 +69,10 @@ class NewLocationController extends GetxController {
   final TextEditingController postCodeController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController countyController = TextEditingController();
-  final Rx<CodeMap> _country = CodeMap(name: null, code: null).obs;
-  CodeMap get country => _country.value;
-  set setCountry(CodeMap value) => _country.value = value;
+  final Rx<CodeMap<String>> _country =
+      CodeMap<String>(name: null, code: null).obs;
+  CodeMap<String> get country => _country.value;
+  set setCountry(CodeMap<String> value) => _country.value = value;
   final RxBool _isPostCodeError = false.obs;
   bool get isPostCodeError => _isPostCodeError.value;
   set setPostCodeError(bool value) => _isPostCodeError.value = value;
@@ -113,7 +114,7 @@ class NewLocationController extends GetxController {
     const r = true;
     if (r) {
       nameController.text = "Test Location Name 1111";
-      _status.value = CodeMap(name: "Active", code: "true");
+      _status.value = CodeMap<bool>(name: "Active", code: true);
       onAnywhereChange(true);
       ipAddressesController.text = ipAddressesController.text;
       emailController.text = "test@mail.ru";
@@ -127,14 +128,13 @@ class NewLocationController extends GetxController {
       countyController.text = "London";
       setCountry = CodeMap(name: "United Kingdom", code: "GB");
       radiusController.text = "300";
-      // onGpsLookupPress();
       latitudeController.text = "37.594333";
       longitudeController.text = "127.123966";
     }
   }
 
   void onStatusChange(DpItem value) {
-    _status.value = CodeMap(name: value.name, code: value.item.key.toString());
+    _status.value = CodeMap(name: value.name, code: value.item.key);
   }
 
   void onAnywhereChange(bool? value) {
@@ -184,7 +184,7 @@ class NewLocationController extends GetxController {
         : restClient().postLocation)(
       id: isUpdate ? id : null,
       name: nameController.text,
-      active: status.code == 'true',
+      active: status.code!,
       latitude: latitudeController.text,
       longitude: longitudeController.text,
       anywhere: isAnywhere,
@@ -220,11 +220,16 @@ class NewLocationController extends GetxController {
     } else {
       await closeLoading();
       if (response.resCode == 400) {
-        showError(jsonDecode(response.data)['errors']
-            .values
-            .first
-            .join(",")
-            .toString());
+        if (response.data.toString().contains("errors")) {
+          showError(json
+              .decode(response.data)['errors']
+              .values
+              .first
+              .join(",")
+              .toString());
+        } else {
+          showError(response.data.toString());
+        }
       } else {
         showError(response.data);
       }
@@ -268,7 +273,7 @@ class NewLocationController extends GetxController {
           countryName = element.longName;
         }
       }
-      CodeMap country = CodeMap(name: countryName, code: countryCode);
+      CodeMap<String> country = CodeMap(name: countryName, code: countryCode);
 
       setCountry = country;
       latitudeController.text = lat;

@@ -30,11 +30,11 @@ class PlutoLeftFrozenColumnsFooterState
   void initState() {
     super.initState();
 
-    updateState();
+    updateState(PlutoNotifierEventForceUpdate.instance);
   }
 
   @override
-  void updateState() {
+  void updateState(PlutoNotifierEvent event) {
     _columns = update<List<PlutoColumn>>(
       _columns,
       _getColumns(),
@@ -54,7 +54,7 @@ class PlutoLeftFrozenColumnsFooterState
     return _columns.length;
   }
 
-  Widget _buildColumn(e) {
+  Widget _makeColumn(PlutoColumn e) {
     return LayoutId(
       id: e.field,
       child: PlutoBaseColumnFooter(
@@ -67,10 +67,11 @@ class PlutoLeftFrozenColumnsFooterState
   @override
   Widget build(BuildContext context) {
     return CustomMultiChildLayout(
-        delegate: ColumnFooterLayoutDelegate(
-          stateManager: stateManager,
-          columns: _columns,
-        ),
-        children: _columns.map(_buildColumn).toList());
+      delegate: ColumnFooterLayoutDelegate(
+        stateManager: stateManager,
+        columns: _columns,
+      ),
+      children: _columns.map(_makeColumn).toList(growable: false),
+    );
   }
 }

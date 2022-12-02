@@ -7,6 +7,7 @@ import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller
 import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/custom_get_builder.dart';
 import '../../comps/custom_gmaps_widget.dart';
+import '../../comps/dropdown_widget1.dart';
 import '../../manager/models/location_item_md.dart';
 import '../../theme/theme.dart';
 
@@ -75,14 +76,16 @@ class _Body extends StatelessWidget {
             AnimatedOpacity(
               opacity: controller.deleteBtnOpacity,
               duration: const Duration(milliseconds: 100),
-              child: ButtonMedium(
-                bgColor: ThemeColors.red3,
-                text: "Delete Selected",
-                icon: const HeroIcon(
-                  HeroIcons.bin,
-                  size: 20,
-                ),
-                onPressed: controller.deleteSelectedRows,
+              child: DropdownWidget1<MapEntry<bool, String>>(
+                hintText: "Status",
+                value: controller.status.name,
+                disableAll: controller.deleteBtnOpacity != 1.0,
+                objItems: Constants.userAccountStatusTypes.entries.toList(),
+                onChangedWithObj: (p0) =>
+                    controller.onStatusChange(p0, context),
+                items: Constants.userAccountStatusTypes.entries
+                    .map((e) => e.value)
+                    .toList(),
               ),
             ),
             ButtonMediumSecondary(
@@ -105,6 +108,7 @@ class _Body extends StatelessWidget {
   Widget _body(LocationsController controller) {
     return UsersListTable(
       onSmReady: controller.setSm,
+      onOneTapSelect: controller.onOneTapSelect,
       rows: controller.departments.reactive.value
               ?.map<PlutoRow>(_buildItem)
               .toList() ??

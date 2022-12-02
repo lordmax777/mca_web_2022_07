@@ -633,25 +633,33 @@ class _RolesDepsAndLoginOptionsWidget extends StatelessWidget {
                   appStore.dispatch(UpdateUsersStateAction());
                 }, 'API'),
               ]),
-          SpacedRow(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            horizontalSpace: 8.0,
-            children: [
-              CheckboxWidget(
-                  value: savedUser.loginRequired,
-                  onChanged: (val) {
-                    savedUser.loginRequired = val!;
-                    appStore.dispatch(UpdateUsersStateAction());
-                  }),
-              KText(
-                text: "User is required to login",
-                fontSize: 14.0,
-                textColor: ThemeColors.gray2,
-                isSelectable: false,
-                fontWeight: FWeight.bold,
-              )
-            ],
+          CustomCheckboxWidget(
+            isChecked: savedUser.loginRequired,
+            onChanged: (val) {
+              savedUser.loginRequired = val;
+              appStore.dispatch(UpdateUsersStateAction());
+            },
+            label: "User is required to login",
           ),
+          // SpacedRow(
+          //   crossAxisAlignment: CrossAxisAlignment.center,
+          //   horizontalSpace: 8.0,
+          //   children: [
+          //     CheckboxWidget(
+          //         value: savedUser.loginRequired,
+          //         onChanged: (val) {
+          //           savedUser.loginRequired = val!;
+          //           appStore.dispatch(UpdateUsersStateAction());
+          //         }),
+          //     KText(
+          //       text: "User is required to login",
+          //       fontSize: 14.0,
+          //       textColor: ThemeColors.gray2,
+          //       isSelectable: false,
+          //       fontWeight: FWeight.bold,
+          //     )
+          //   ],
+          // ),
         ]);
   }
 

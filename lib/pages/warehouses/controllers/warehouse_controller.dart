@@ -79,7 +79,7 @@ class WarehouseController extends GetxController {
               fontSize: 14,
               isSelectable: false,
               onTap: () => _onEditClick(context, ctx),
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.edit,
                 color: ThemeColors.MAIN_COLOR,
                 size: 12,
@@ -96,13 +96,7 @@ class WarehouseController extends GetxController {
 
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
-    gridStateManager.setOnRowChecked((event) {
-      if (gridStateManager.checkedRows.isNotEmpty) {
-        setDeleteBtnOpacity = 1.0;
-      } else {
-        setDeleteBtnOpacity = 0.5;
-      }
-    });
+
     gridStateManager.setPage(0);
     gridStateManager.setPageSize(10);
     gridStateManager.setPage(page);

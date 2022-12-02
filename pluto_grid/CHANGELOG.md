@@ -1,3 +1,83 @@
+## [5.4.6] - 2022. 11. 30
+
+* Fix keepAlive.  
+  Fixed a bug that slowed down when moving horizontally/vertically   
+  with the keyboard direction keys for a long time in succession.
+
+## [5.4.5] - 2022. 11. 30
+
+* Fix RTL initiation flicker.   
+  By https://github.com/Milad-Akarie
+* Fix column context menu is triggered after drag (column resizing).  
+  By https://github.com/Milad-Akarie
+
+## [5.4.4] - 2022. 11. 29
+
+* Add hovered scrollbar.
+  https://pluto.weblaze.dev/scrollbar-and-scroll-behavior
+
+## [5.4.3] - 2022. 11. 21
+
+* Add iterateRowType to PlutoAggregateColumnFooter.
+* Modify enter key.(Included numpadEnter)
+* Add onToggled to row group delegate.
+
+## [5.4.2] - 2022. 11. 15
+
+* Add properties of PlutoGridScrollbarConfig.
+  - onlyDraggingThumb
+  - mainAxisMargin
+  - crossAxisMargin
+  - scrollBarColor
+  - scrollBarTrackColor
+
+## [5.4.1] - 2022. 11. 12
+
+* Fix layout size bug.
+
+## [5.4.0] - 2022. 11. 5
+
+* Add shortcut to PlutoGridConfiguration.  
+  https://pluto.weblaze.dev/shortcuts
+* Add popupIcon for popup type column.  
+  You can change the icon that appears on the right of the date, time, or selection type column cell or set it to null to remove it.
+
+## [5.3.2] - 2022. 11. 2
+
+* Add onColumnsMoved, noRowsWidget.
+
+## [5.3.1] - 2022. 10. 30
+
+* Add readOnly, multiSelect modes to PlutoGridMode.
+* Fix Bug showing filter icon when filterOnlyEvent is true.
+
+## [5.3.0] - 2022. 10. 22
+
+* Add PlutoLazyPagination, PlutoInfinityScrollRows for server-side pagination.
+* Add tabKeyAction to PlutoGridConfiguration.
+
+## [5.2.1] - 2022. 10. 19
+
+* Add pageSizeToMove to PlutoPagination.
+
+## [5.2.0] - 2022. 10. 16
+
+* Add row group.
+
+## [5.1.3] - 2022. 10. 15
+
+* Add norway locale.
+
+## [5.1.2] - 2022. 9. 27
+
+* Change PlutoGridStateManager.configuration to not null.
+* Add Currency column.
+  https://github.com/bosskmk/pluto_grid/blob/master/demo/lib/screen/feature/currency_type_column_screen.dart
+
+## [5.1.1] - 2022. 9. 25
+
+* Fix dispose condition of TextEditingController.
+
 ## [5.1.0] - 2022. 9. 10
 
 * Add Column footer.  

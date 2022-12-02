@@ -32,9 +32,9 @@ class PlutoBodyColumnsFooterState
   void initState() {
     super.initState();
 
-    _scroll = stateManager.scroll!.horizontal!.addAndGet();
+    _scroll = stateManager.scroll.horizontal!.addAndGet();
 
-    updateState();
+    updateState(PlutoNotifierEventForceUpdate.instance);
   }
 
   @override
@@ -45,7 +45,7 @@ class PlutoBodyColumnsFooterState
   }
 
   @override
-  void updateState() {
+  void updateState(PlutoNotifierEvent event) {
     _columns = update<List<PlutoColumn>>(
       _columns,
       _getColumns(),
@@ -68,7 +68,7 @@ class PlutoBodyColumnsFooterState
     return _columns.length;
   }
 
-  PlutoVisibilityLayoutId _buildFooter(e) {
+  PlutoVisibilityLayoutId _makeFooter(PlutoColumn e) {
     return PlutoVisibilityLayoutId(
       id: e.field,
       child: PlutoBaseColumnFooter(
@@ -85,14 +85,15 @@ class PlutoBodyColumnsFooterState
       scrollDirection: Axis.horizontal,
       physics: const ClampingScrollPhysics(),
       child: PlutoVisibilityLayout(
-          delegate: ColumnFooterLayoutDelegate(
-            stateManager: stateManager,
-            columns: _columns,
-          ),
-          scrollController: _scroll,
-          initialViewportDimension: MediaQuery.of(context).size.width,
-          textDirection: stateManager.textDirection,
-          children: _columns.map(_buildFooter).toList()),
+        delegate: ColumnFooterLayoutDelegate(
+          stateManager: stateManager,
+          columns: _columns,
+        ),
+        scrollController: _scroll,
+        initialViewportDimension: MediaQuery.of(context).size.width,
+        textDirection: stateManager.textDirection,
+        children: _columns.map(_makeFooter).toList(growable: false),
+      ),
     );
   }
 }

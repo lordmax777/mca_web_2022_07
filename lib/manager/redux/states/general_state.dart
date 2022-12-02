@@ -37,8 +37,8 @@ class GeneralState {
     required this.storageItems,
   });
 
-  CodeMap findCountryByName(String? name) {
-    CodeMap c = CodeMap(name: null, code: null);
+  CodeMap<String> findCountryByName(String? name) {
+    CodeMap<String> c = CodeMap(name: null, code: null);
     if (paramList.data != null) {
       for (ListCountry item in (paramList.data?.countries) ?? <ListCountry>[]) {
         if (item.code == name) {

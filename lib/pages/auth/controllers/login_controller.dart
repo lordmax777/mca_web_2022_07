@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
@@ -15,7 +16,7 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     if (formKey.currentState!.validate()) {
-      showLoading();
+      showLoading(barrierDismissible: false);
       await fetch(GetAccessTokenAction(
           domain: Constants.domain,
           username: nameController.text,
@@ -25,7 +26,7 @@ class LoginController extends GetxController {
 
       await closeLoading();
       if (isLoggedIn) {
-        appRouter.replaceAll([
+        appRouter.popAndPushAll([
           const HomeRoute(children: [
             UsersListRoute(),
           ])
@@ -39,9 +40,10 @@ class LoginController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-
-    nameController.text = Constants.username;
-    passwordController.text = Constants.password;
+    if (kDebugMode) {
+      nameController.text = Constants.username;
+      passwordController.text = Constants.password;
+    }
   }
 
   @override

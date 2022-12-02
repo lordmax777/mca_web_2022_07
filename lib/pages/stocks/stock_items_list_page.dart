@@ -70,19 +70,6 @@ class _Body extends StatelessWidget {
             ],
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
-            AnimatedOpacity(
-              opacity: controller.deleteBtnOpacity,
-              duration: const Duration(milliseconds: 100),
-              child: ButtonMedium(
-                bgColor: ThemeColors.red3,
-                text: "Delete Selected",
-                icon: const HeroIcon(
-                  HeroIcons.bin,
-                  size: 20,
-                ),
-                onPressed: controller.deleteSelectedRows,
-              ),
-            ),
             ButtonMedium(
               text: "New Item",
               icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
@@ -100,6 +87,7 @@ class _Body extends StatelessWidget {
   Widget _body(BuildContext context, StockItemsController controller) {
     return StockItemsListTable(
       onSmReady: controller.setSm,
+      onChanged: controller.onEdit,
       rows: controller.departments.reactive.value
               ?.map<PlutoRow>(_buildItem)
               .toList() ??
@@ -114,7 +102,7 @@ class _Body extends StatelessWidget {
       "item_name": PlutoCell(value: e.name ?? "-"),
       "our_price": PlutoCell(value: e.incomingPrice ?? 0),
       "customer_price": PlutoCell(value: e.outgoingPrice ?? 0),
-      "tax": PlutoCell(value: e.taxId ?? 1),
+      "tax": PlutoCell(value: ListTaxes.byId(e.taxId ?? 1)!.rate),
     });
   }
 

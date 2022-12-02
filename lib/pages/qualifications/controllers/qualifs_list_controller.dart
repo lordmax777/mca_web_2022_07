@@ -81,13 +81,7 @@ class QualifsController extends GetxController {
 
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
-    gridStateManager.setOnRowChecked((event) {
-      if (gridStateManager.checkedRows.isNotEmpty) {
-        setDeleteBtnOpacity = 1.0;
-      } else {
-        setDeleteBtnOpacity = 0.5;
-      }
-    });
+
     _setFilter();
   }
 

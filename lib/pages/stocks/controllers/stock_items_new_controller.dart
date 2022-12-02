@@ -50,9 +50,6 @@ class StockItemsNewItemController extends GetxController {
           .nocodeErrorHandler();
 
       if (res.success) {
-        final StockItemsController controller = Get.find();
-        controller.gridStateManager.toggleAllRowChecked(false);
-        controller.setDeleteBtnOpacity = 0.5;
         await appStore.dispatch(GetAllStorageItemsAction());
         closeLoading();
       } else {

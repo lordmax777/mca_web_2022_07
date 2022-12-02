@@ -35,9 +35,9 @@ class PlutoBodyColumnsState extends PlutoStateWithChange<PlutoBodyColumns> {
   void initState() {
     super.initState();
 
-    _scroll = stateManager.scroll!.horizontal!.addAndGet();
+    _scroll = stateManager.scroll.horizontal!.addAndGet();
 
-    updateState();
+    updateState(PlutoNotifierEventForceUpdate.instance);
   }
 
   @override
@@ -48,7 +48,7 @@ class PlutoBodyColumnsState extends PlutoStateWithChange<PlutoBodyColumns> {
   }
 
   @override
-  void updateState() {
+  void updateState(PlutoNotifierEvent event) {
     _showColumnGroups = update<bool>(
       _showColumnGroups,
       stateManager.showColumnGroups,
@@ -60,12 +60,13 @@ class PlutoBodyColumnsState extends PlutoStateWithChange<PlutoBodyColumns> {
       compare: listEquals,
     );
 
-    if (changed && _showColumnGroups == true) {
-      _columnGroups = stateManager.separateLinkedGroup(
-        columnGroupList: stateManager.refColumnGroups!,
+    _columnGroups = update<List<PlutoColumnGroupPair>>(
+      _columnGroups,
+      stateManager.separateLinkedGroup(
+        columnGroupList: stateManager.refColumnGroups,
         columns: _columns,
-      );
-    }
+      ),
+    );
 
     _itemCount = update<int>(_itemCount, _getItemCount());
   }
@@ -83,20 +84,20 @@ class PlutoBodyColumnsState extends PlutoStateWithChange<PlutoBodyColumns> {
     return _showColumnGroups == true ? _columnGroups.length : _columns.length;
   }
 
-  PlutoVisibilityLayoutId _buildColumnGroup(PlutoColumnGroupPair e) {
+  PlutoVisibilityLayoutId _makeColumnGroup(PlutoColumnGroupPair e) {
     return PlutoVisibilityLayoutId(
       id: e.key,
       child: PlutoBaseColumnGroup(
         stateManager: stateManager,
         columnGroup: e,
         depth: stateManager.columnGroupDepth(
-          stateManager.refColumnGroups!,
+          stateManager.refColumnGroups,
         ),
       ),
     );
   }
 
-  PlutoVisibilityLayoutId _buildColumn(e) {
+  PlutoVisibilityLayoutId _makeColumn(PlutoColumn e) {
     return PlutoVisibilityLayoutId(
       id: e.field,
       child: PlutoBaseColumn(
@@ -113,18 +114,19 @@ class PlutoBodyColumnsState extends PlutoStateWithChange<PlutoBodyColumns> {
       scrollDirection: Axis.horizontal,
       physics: const ClampingScrollPhysics(),
       child: PlutoVisibilityLayout(
-          delegate: MainColumnLayoutDelegate(
-            stateManager: stateManager,
-            columns: _columns,
-            columnGroups: _columnGroups,
-            frozen: PlutoColumnFrozen.none,
-          ),
-          scrollController: _scroll,
-          initialViewportDimension: MediaQuery.of(context).size.width,
-          textDirection: stateManager.textDirection,
-          children: _showColumnGroups == true
-              ? _columnGroups.map(_buildColumnGroup).toList()
-              : _columns.map(_buildColumn).toList()),
+        delegate: MainColumnLayoutDelegate(
+          stateManager: stateManager,
+          columns: _columns,
+          columnGroups: _columnGroups,
+          frozen: PlutoColumnFrozen.none,
+        ),
+        scrollController: _scroll,
+        initialViewportDimension: MediaQuery.of(context).size.width,
+        textDirection: stateManager.textDirection,
+        children: _showColumnGroups == true
+            ? _columnGroups.map(_makeColumnGroup).toList(growable: false)
+            : _columns.map(_makeColumn).toList(growable: false),
+      ),
     );
   }
 }
