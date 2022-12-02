@@ -65,10 +65,10 @@ class GridTableHelpers {
   }
 
   static Widget getMainColoredRenderer(PlutoColumnRendererContext ctx,
-      {ValueChanged<PlutoColumnRendererContext>? onTap}) {
+      {ValueChanged<PlutoColumnRendererContext>? onTap, String? title}) {
     return KText(
-      text: ctx.cell.value,
-      textColor: onTap != null ? ThemeColors.MAIN_COLOR : ThemeColors.gray8,
+      text: title ?? ctx.cell.value,
+      textColor: onTap != null ? ThemeColors.MAIN_COLOR : ThemeColors.gray2,
       fontWeight: FWeight.regular,
       fontSize: 14,
       mainAxisSize: MainAxisSize.min,

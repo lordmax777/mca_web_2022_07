@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
-import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/custom_get_builder.dart';
 import '../../comps/custom_gmaps_widget.dart';
 import '../../comps/dropdown_widget1.dart';
@@ -72,34 +71,28 @@ class _Body extends StatelessWidget {
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
-          SpacedRow(horizontalSpace: 16.0, children: [
-            AnimatedOpacity(
-              opacity: controller.deleteBtnOpacity,
-              duration: const Duration(milliseconds: 100),
-              child: DropdownWidget1<MapEntry<bool, String>>(
-                hintText: "Status",
-                value: controller.status.name,
-                disableAll: controller.deleteBtnOpacity != 1.0,
-                objItems: Constants.userAccountStatusTypes.entries.toList(),
-                onChangedWithObj: (p0) =>
-                    controller.onStatusChange(p0, context),
-                items: Constants.userAccountStatusTypes.entries
-                    .map((e) => e.value)
-                    .toList(),
-              ),
-            ),
-            ButtonMediumSecondary(
-              text: "View All Locations",
-              leftIcon: HeroIcon(HeroIcons.pin,
-                  size: 20, color: ThemeColors.MAIN_COLOR),
-              onPressed: () => showMapPopup(),
-            ),
-            TableColumnHiderWidget(
-              gKey: controller.columnsMenuKey,
-              columns: controller.columnHideValues,
-              onChanged: controller.onColumnHide,
-            ),
-          ]),
+          SpacedRow(
+              horizontalSpace: 16.0,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomCheckboxWidget(
+                  isChecked: controller.isShowInactive,
+                  onChanged: controller.setShowInactive,
+                  label: "Show inactive",
+                  labelPosition: CheckboxLabelPosition.left,
+                ),
+                ButtonMediumSecondary(
+                  text: "View All Locations",
+                  leftIcon: HeroIcon(HeroIcons.pin,
+                      size: 20, color: ThemeColors.MAIN_COLOR),
+                  onPressed: () => showMapPopup(),
+                ),
+                TableColumnHiderWidget(
+                  gKey: controller.columnsMenuKey,
+                  columns: controller.columnHideValues,
+                  onChanged: controller.onColumnHide,
+                ),
+              ]),
         ],
       ),
     );
@@ -108,7 +101,6 @@ class _Body extends StatelessWidget {
   Widget _body(LocationsController controller) {
     return UsersListTable(
       onSmReady: controller.setSm,
-      onOneTapSelect: controller.onOneTapSelect,
       rows: controller.departments.reactive.value
               ?.map<PlutoRow>(_buildItem)
               .toList() ??

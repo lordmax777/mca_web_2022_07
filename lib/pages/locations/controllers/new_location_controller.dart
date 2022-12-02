@@ -211,8 +211,6 @@ class NewLocationController extends GetxController {
     ).nocodeErrorHandler();
 
     if (response.success) {
-      LocationsController.to.gridStateManager.toggleAllRowChecked(false);
-      LocationsController.to.setDeleteBtnOpacity = 0.5;
       LocationsController.to.searchController.clear();
       await appStore.dispatch(GetAllLocationsAction());
       await closeLoading();
