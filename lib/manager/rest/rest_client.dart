@@ -152,6 +152,10 @@ abstract class RestClient {
     @Field() int? timingid,
   });
 
+  @DELETE("/api/fe/userdetails/{id}/preferredshifts")
+  Future<HttpResponse> deleteUserDetailsPreferredShift(
+      @Path() String id, @Query("timingid") int timingid);
+
   @GET("/api/fe/userdetails/{id}/qualifications")
   Future<HttpResponse> getUserDetailsQalifications(@Path() String id);
 

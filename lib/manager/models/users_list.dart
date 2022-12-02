@@ -27,6 +27,7 @@ class UserRes {
   dynamic locked;
   String fullname;
 
+  @JsonKey(ignore: true)
   Color userRandomBgColor = Color.fromRGBO(
       faker.randomGenerator.integer(255),
       faker.randomGenerator.integer(255),

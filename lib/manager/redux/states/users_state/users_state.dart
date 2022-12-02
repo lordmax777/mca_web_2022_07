@@ -1372,11 +1372,12 @@ class GetPostUserDetailsPreferredShiftAction {
   final int shiftId;
   final int weekId;
   final int dayId;
-
+  final BuildContext? context;
   GetPostUserDetailsPreferredShiftAction({
     required this.dayId,
     required this.weekId,
     required this.shiftId,
+    this.context,
     this.timingId,
   });
 
@@ -1403,11 +1404,49 @@ class GetPostUserDetailsPreferredShiftAction {
 
     if (res.success) {
       await appStore.dispatch(GetUserDetailsPreferredShiftsAction());
-      closeLoading();
+      await closeLoading();
+      action.context?.popRoute();
     } else {
       await closeLoading();
       showError(res.data ?? "Error");
       return res;
+    }
+    return null;
+  }
+}
+
+class GetDeleteUserPreferredShiftAction {
+  final List<int> ids;
+  GetDeleteUserPreferredShiftAction({required this.ids});
+
+  static Future<ApiResponse?> fetch(AppState state,
+      GetDeleteUserDetailsReviewsAction action, NextDispatcher next) async {
+    final int? userId = state.usersState.selectedUser?.id;
+    if (userId == null) {
+      appRouter.navigateBack();
+      return null;
+    }
+    showLoading();
+    bool allSuccess = true;
+    ApiResponse? resp;
+    for (int i = 0; i < action.ids.length; i++) {
+      final id = action.ids[i];
+      final ApiResponse res = await restClient()
+          .deleteUserDetailsPreferredShift(userId.toString(), id)
+          .nocodeErrorHandler();
+      if (!res.success) {
+        allSuccess = false;
+        resp = res;
+        break;
+      }
+    }
+
+    if (allSuccess) {
+      await appStore.dispatch(GetUserDetailsPreferredShiftsAction());
+      closeLoading();
+    } else {
+      await closeLoading();
+      showError(resp?.rawError?.data.toString() ?? "Error");
     }
     return null;
   }

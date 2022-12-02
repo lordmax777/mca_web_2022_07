@@ -67,7 +67,15 @@ class _PrefferedShiftsWidgetState extends State<PrefferedShiftsWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () {},
+            onPressed: () {
+              // final selectedItemIds = userDetailsPayrollSm.checkedRows
+              //     .map<int>((e) => e.cells['item']?.value.uqId)
+              //     .toList();
+              // if (selectedItemIds.isNotEmpty) {
+              //   await appStore.dispatch(
+              //       GetDeleteUserDetailsQualifsAction(ids: selectedItemIds));
+              // }
+            },
           ),
           ButtonMedium(
             icon: const HeroIcon(HeroIcons.plusCircle, size: 20),

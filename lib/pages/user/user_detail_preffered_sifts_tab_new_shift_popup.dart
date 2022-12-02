@@ -170,6 +170,7 @@ class _UserDetailPreferredShiftsNewShiftPopupWidgetState
             onPressed: () async {
               // if (formKey.currentState!.validate()) {
               await appStore.dispatch(GetPostUserDetailsPreferredShiftAction(
+                context: context,
                 shiftId: _shift!.id,
                 dayId: int.parse(_day!.code!),
                 weekId: int.parse(_week!.code!),
