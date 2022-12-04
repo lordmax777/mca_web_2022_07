@@ -1,6 +1,5 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
-import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/models/list_all_md.dart';
 import '../../manager/redux/sets/app_state.dart';
@@ -61,33 +60,29 @@ class _Body extends GetView<HandoverTypesController> {
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
-          SpacedRow(horizontalSpace: 16.0, children: [
-            AnimatedOpacity(
-              opacity: controller.deleteBtnOpacity,
-              duration: const Duration(milliseconds: 100),
-              child: ButtonMedium(
-                bgColor: ThemeColors.red3,
-                text: "Delete Selected",
-                icon: const HeroIcon(
-                  HeroIcons.bin,
-                  size: 20,
+          SpacedRow(
+              horizontalSpace: 16.0,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomCheckboxWidget(
+                  isChecked: controller.isShowInactive,
+                  onChanged: controller.setShowInactive,
+                  label: "Show inactive",
+                  labelPosition: CheckboxLabelPosition.left,
                 ),
-                onPressed: controller.deleteSelectedRows,
-              ),
-            ),
-            ButtonMedium(
-              text: "New Handover",
-              icon: const HeroIcon(
-                HeroIcons.plusCircle,
-                size: 20,
-              ),
-              onPressed: () {
-                showOverlayPopup(
-                    body: const HandsNewHandoverPopupWidget(),
-                    context: context);
-              },
-            ),
-          ]),
+                ButtonMedium(
+                  text: "New Handover",
+                  icon: const HeroIcon(
+                    HeroIcons.plusCircle,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    showOverlayPopup(
+                        body: const HandsNewHandoverPopupWidget(),
+                        context: context);
+                  },
+                ),
+              ]),
         ],
       ),
     );

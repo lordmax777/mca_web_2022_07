@@ -33,7 +33,7 @@ class _McaWebAppState extends State<McaWebApp> {
       store: appStore,
       child: GetMaterialApp.router(
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [WarehousesListRoute()])
+          if (kDebugMode) const HomeRoute(children: [HandoverTypesRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

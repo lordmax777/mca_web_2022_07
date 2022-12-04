@@ -12,90 +12,72 @@ import '../../home_page.dart';
 
 class HandoverTypesController extends GetxController {
   static HandoverTypesController get to => Get.find();
-  //UI Variables
-  final RxDouble _deleteBtnOpacity = 0.5.obs;
-  final TextEditingController searchController = TextEditingController();
 
-  late PlutoGridStateManager gridStateManager;
   List<PlutoColumn> columns(BuildContext context) {
     return [
       PlutoColumn(
         title: "Handover Name",
         field: "handover_name",
-        enableRowChecked: true,
+        width: PlutoGridSettings.columnWidth + 700,
         type: PlutoColumnType.text(),
-      ),
-      PlutoColumn(
-        width: 700,
-        title: "",
-        field: "space",
-        readOnly: true,
-        type: PlutoColumnType.text(),
-        enableSorting: false,
       ),
       PlutoColumn(
         title: "Status",
         field: "status",
         type: PlutoColumnType.text(),
-        renderer: (rendererContext) {
-          final Color color = rendererContext.cell.value == "active"
-              ? ThemeColors.green2
-              : ThemeColors.gray8;
-          return SpacedRow(
-              horizontalSpace: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration:
-                      BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-                UsersListTable.defaultTextWidget(rendererContext.cell.value
-                    .toString()
-                    .replaceFirst(rendererContext.cell.value.toString()[0],
-                        rendererContext.cell.value.toString()[0].toUpperCase()))
-              ]);
-        },
+        enableSorting: false,
+        renderer: GridTableHelpers.getStatusRenderer,
       ),
       PlutoColumn(
-          title: "Action",
-          field: "action",
-          enableSorting: false,
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "Edit",
-              textColor: ThemeColors.MAIN_COLOR,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () => _onEditClick(context, ctx),
-              icon: HeroIcon(
-                HeroIcons.edit,
-                color: ThemeColors.MAIN_COLOR,
-                size: 12,
-              ),
-            );
-          }),
+        title: "Action",
+        field: "action",
+        enableSorting: false,
+        type: PlutoColumnType.text(),
+        renderer: (rendererContext) => GridTableHelpers.getActionRenderer(
+          rendererContext,
+          onTap: (PlutoColumnRendererContext ctx) => _onEditClick(context, ctx),
+        ),
+      ),
     ];
   }
 
-  double get deleteBtnOpacity => _deleteBtnOpacity.value;
-  set setDeleteBtnOpacity(double value) {
-    _deleteBtnOpacity.value = value;
+  final RxList<ListHandoverType> _deps = <ListHandoverType>[].obs;
+  List<ListHandoverType> get departments => _deps;
+  setList(List<ListHandoverType> d) {
+    final dd = [...d];
+    dd.sort((a, b) => a.title.compareTo(b.title));
+    _deps.value = dd;
+    return _deps;
+  }
+
+  final TextEditingController searchController = TextEditingController();
+  late PlutoGridStateManager gridStateManager;
+  final List<PlutoRow> inactiveRows = [];
+  final RxBool _isShowInactive = false.obs;
+  bool get isShowInactive => _isShowInactive.value;
+  void setShowInactive(bool val) {
+    if (val) {
+      gridStateManager.appendRows(inactiveRows);
+    } else {
+      gridStateManager.removeRows(inactiveRows);
+    }
+    // ignore: invalid_use_of_visible_for_testing_member
+    searchController.notifyListeners();
+    _isShowInactive.value = val;
   }
 
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
-
+    inactiveRows.addAll(gridStateManager.refRows.where((element) =>
+        !(element.cells["action"]!.value as ListHandoverType).active));
+    if (!isShowInactive) {
+      gridStateManager.removeRows(inactiveRows);
+    }
     _setFilter();
   }
 
   void _setFilter() {
     searchController.addListener(() {
-      gridStateManager.toggleAllRowChecked(false);
-      setDeleteBtnOpacity = 0.5;
       if (searchController.text.isNotEmpty) {
         gridStateManager.setFilter(
           (element) {
@@ -121,60 +103,6 @@ class HandoverTypesController extends GetxController {
     showOverlayPopup(
         body: HandsNewHandoverPopupWidget(group: ctx.cell.value),
         context: context);
-  }
-
-  Future<void> deleteSelectedRows() async {
-    final ids = gridStateManager.checkedRows
-        .map<int>((e) => e.cells['action']?.value.id)
-        .toList();
-    if (ids.isEmpty) return;
-    showLoading();
-    bool allSuccess = true;
-    ApiResponse? resp;
-    for (int i = 0; i < ids.length; i++) {
-      final id = ids[i];
-      final ApiResponse res =
-          await restClient().deleteHandoverTypes(id).nocodeErrorHandler();
-      if (!res.success) {
-        allSuccess = false;
-        resp = res;
-        break;
-      } else {
-        _deps.removeWhere((element) => element.id == id);
-      }
-    }
-
-    await closeLoading();
-    if (allSuccess) {
-      gridStateManager.removeRows(gridStateManager.checkedRows);
-      gridStateManager.toggleAllRowChecked(false);
-      setDeleteBtnOpacity = 0.5;
-    } else {
-      if (resp != null) {
-        if (resp.resCode == 401) {
-          showError("Can delete only what was created today!");
-        } else {
-          showError(resp.rawError?.data.toString() ?? "Error");
-        }
-      }
-    }
-    update();
-  }
-
-  //Departments
-  final RxList<ListHandoverType> _deps = <ListHandoverType>[].obs;
-  List<ListHandoverType> get departments => _deps;
-  setList(List<ListHandoverType> d) {
-    final dd = [...d];
-    dd.sort((a, b) => a.title.compareTo(b.title));
-    _deps.value = dd;
-    return _deps;
-  }
-
-  //Functions
-  @override
-  void onInit() {
-    super.onInit();
   }
 
   @override

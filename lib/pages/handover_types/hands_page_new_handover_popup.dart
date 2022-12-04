@@ -32,7 +32,7 @@ class HandsNewHandController extends GetxController {
 
   void setStatus(String? value) => _status.value = value ?? "";
 
-  Future<void> postDepartment() async {
+  Future<void> postDepartment({BuildContext? context}) async {
     if (formKey.currentState!.validate()) {
       showLoading();
       final ApiResponse res = await (group != null
@@ -44,13 +44,11 @@ class HandsNewHandController extends GetxController {
       ).nocodeErrorHandler();
 
       if (res.success) {
-        HandoverTypesController.to.gridStateManager.toggleAllRowChecked(false);
-        HandoverTypesController.to.setDeleteBtnOpacity = 0.5;
         HandoverTypesController.to.searchController.clear();
         await appStore.dispatch(GetAllParamListAction());
         await closeLoading();
       } else {
-        await closeLoading();
+        context?.popRoute();
         if (res.resCode == 400) {
           showError(
               jsonDecode(res.data)['errors'].values.first.join(",").toString());
@@ -58,7 +56,6 @@ class HandsNewHandController extends GetxController {
           showError(res.data);
         }
       }
-      // closeLoading();
     }
   }
 
@@ -194,7 +191,7 @@ class HandsNewHandoverPopupWidget extends GetView<DepsNewDepController> {
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: isNew ? 'Add Handover' : 'Update Handover',
-            onPressed: controller.postDepartment,
+            onPressed: () => controller.postDepartment(context: context),
           ),
         ],
       ),
