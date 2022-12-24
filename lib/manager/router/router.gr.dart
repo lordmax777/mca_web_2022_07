@@ -111,7 +111,7 @@ class _$AppRouter extends RootStackRouter {
         routeData: routeData,
         child: NewChecklistTemplatePage(
           key: args.key,
-          id: args.id,
+          checklist: args.checklist,
         ),
       );
     },
@@ -406,13 +406,13 @@ class NewChecklistTemplateRoute
     extends PageRouteInfo<NewChecklistTemplateRouteArgs> {
   NewChecklistTemplateRoute({
     Key? key,
-    int? id,
+    ChecklistTemplateMd? checklist,
   }) : super(
           NewChecklistTemplateRoute.name,
           path: 'new-checklist-template',
           args: NewChecklistTemplateRouteArgs(
             key: key,
-            id: id,
+            checklist: checklist,
           ),
         );
 
@@ -422,16 +422,16 @@ class NewChecklistTemplateRoute
 class NewChecklistTemplateRouteArgs {
   const NewChecklistTemplateRouteArgs({
     this.key,
-    this.id,
+    this.checklist,
   });
 
   final Key? key;
 
-  final int? id;
+  final ChecklistTemplateMd? checklist;
 
   @override
   String toString() {
-    return 'NewChecklistTemplateRouteArgs{key: $key, id: $id}';
+    return 'NewChecklistTemplateRouteArgs{key: $key, checklist: $checklist}';
   }
 }
 

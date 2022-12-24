@@ -35,7 +35,7 @@ class _CustomExpandableTabBarState extends State<CustomExpandableTabBar> {
 
   void _addGeneralTabItems() {
     for (var element in widget.expandedWidgetList) {
-      _generalItems.add(_ExpandableItemWidget(
+      _generalItems.add(ExpandableItemWidget(
           title: element.title,
           isExpanded: element.initExpanded,
           child: element.child));
@@ -64,23 +64,29 @@ class _CustomExpandableTabBarState extends State<CustomExpandableTabBar> {
   }
 }
 
-class _ExpandableItemWidget extends StatefulWidget {
+class ExpandableItemWidget extends StatefulWidget {
   final String title;
   final Widget child;
   final bool isExpanded;
-  const _ExpandableItemWidget(
+  final ValueChanged<LabeledGlobalKey<ExpandableItemWidgetState>>? onEditName;
+  final ValueChanged<LabeledGlobalKey<ExpandableItemWidgetState>>? onDelete;
+  const ExpandableItemWidget(
       {Key? key,
       required this.title,
       required this.child,
+      this.onDelete,
+      this.onEditName,
       this.isExpanded = false})
       : super(key: key);
 
   @override
-  State<_ExpandableItemWidget> createState() => __ExpandableItemWidgetState();
+  State<ExpandableItemWidget> createState() => ExpandableItemWidgetState();
 }
 
-class __ExpandableItemWidgetState extends State<_ExpandableItemWidget> {
+class ExpandableItemWidgetState extends State<ExpandableItemWidget> {
   bool? _isExpanded;
+
+  final TextEditingController title = TextEditingController();
 
   @override
   void initState() {
@@ -88,6 +94,7 @@ class __ExpandableItemWidgetState extends State<_ExpandableItemWidget> {
     if (widget.isExpanded) {
       _isExpanded = widget.isExpanded;
     }
+    title.text = widget.title;
   }
 
   @override
@@ -98,7 +105,7 @@ class __ExpandableItemWidgetState extends State<_ExpandableItemWidget> {
       childrenPadding:
           const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
       tilePadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
-      trailing: const SizedBox(),
+      trailing: _getTrailing(),
       iconColor: ThemeColors.MAIN_COLOR,
       collapsedTextColor: ThemeColors.gray2,
       textColor: ThemeColors.MAIN_COLOR,
@@ -117,8 +124,8 @@ class __ExpandableItemWidgetState extends State<_ExpandableItemWidget> {
                   : HeroIcons.down,
           size: 18.0),
       title: Text(
-        widget.title,
-        style: TextStyle(
+        title.text,
+        style: const TextStyle(
             fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: "Medium"),
         // isSelectable: false,
         // fontWeight: FWeight.bold,
@@ -128,5 +135,33 @@ class __ExpandableItemWidgetState extends State<_ExpandableItemWidget> {
       expandedAlignment: Alignment.topLeft,
       children: [widget.child],
     );
+  }
+
+  Widget _getTrailing() {
+    final List<Widget> trailing = [];
+    if (widget.onEditName != null) {
+      trailing.add(
+        IconButton(
+            onPressed: () {
+              widget.onEditName!(
+                  widget.key as LabeledGlobalKey<ExpandableItemWidgetState>);
+            },
+            icon: const HeroIcon(HeroIcons.edit,
+                color: ThemeColors.gray5, size: 18.0)),
+      );
+    }
+    if (widget.onDelete != null) {
+      trailing.add(
+        IconButton(
+            onPressed: () {
+              widget.onDelete!(
+                  widget.key as LabeledGlobalKey<ExpandableItemWidgetState>);
+            },
+            icon: const HeroIcon(HeroIcons.bin,
+                color: ThemeColors.red3, size: 18.0)),
+      );
+    }
+
+    return SpacedRow(mainAxisSize: MainAxisSize.min, children: trailing);
   }
 }

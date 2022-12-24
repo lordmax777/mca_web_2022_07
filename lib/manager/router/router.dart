@@ -7,6 +7,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import '../../pages/auth/login_page.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/user/user_details_page.dart';
+import '../models/checklist_template_md.dart';
 import '../models/contract_md.dart';
 
 part 'router.gr.dart';

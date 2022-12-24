@@ -30,6 +30,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return GetWarehousesAction.fetch(store.state, action, next);
       case GetAllStorageItemsAction:
         return GetAllStorageItemsAction.fetch(store.state, action, next);
+      case GetChecklistTemplatesAction:
+        return GetChecklistTemplatesAction.fetch(store.state, action, next);
       default:
         return next(action);
     }

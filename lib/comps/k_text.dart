@@ -3,7 +3,7 @@ import '../theme/theme.dart';
 enum FWeight { regular, medium, bold, light }
 
 class KText extends StatelessWidget {
-  final String text;
+  final dynamic text;
   TextStyle? style;
   TextAlign? textAlign;
   Color? textColor;
@@ -14,9 +14,11 @@ class KText extends StatelessWidget {
   final VoidCallback? onTap;
   final bool rowCenter;
   final MainAxisSize mainAxisSize;
+  final int? maxLines;
   KText(
       {Key? key,
       required this.text,
+      this.maxLines,
       this.style,
       this.rowCenter = false,
       this.onTap,
@@ -70,7 +72,8 @@ class KText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 4.0,
         children: [
-          SelectableText(text, style: style, textAlign: textAlign),
+          SelectableText(text.toString(),
+              maxLines: maxLines, style: style, textAlign: textAlign),
           if (icon != null) icon!,
         ],
       );
@@ -81,7 +84,8 @@ class KText extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: icon == null
-              ? Text(text, maxLines: 2, style: style, textAlign: textAlign)
+              ? Text(text.toString(),
+                  maxLines: 2, style: style, textAlign: textAlign)
               : SpacedRow(
                   mainAxisSize: mainAxisSize,
                   mainAxisAlignment: rowCenter
@@ -90,7 +94,7 @@ class KText extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   horizontalSpace: 4.0,
                   children: [
-                    Text(text,
+                    Text(text.toString(),
                         maxLines: 2,
                         softWrap: true,
                         style: style,
@@ -109,7 +113,7 @@ class KText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 4.0,
         children: [
-          Text(text,
+          Text(text.toString(),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: style,
@@ -119,7 +123,7 @@ class KText extends StatelessWidget {
         ],
       );
     }
-    return Text(text,
-        maxLines: 2, softWrap: true, style: style, textAlign: textAlign);
+    return Text(text.toString(),
+        maxLines: maxLines, softWrap: true, style: style, textAlign: textAlign);
   }
 }

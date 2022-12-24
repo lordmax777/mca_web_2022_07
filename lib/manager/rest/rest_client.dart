@@ -353,6 +353,20 @@ abstract class RestClient {
   @DELETE("/api/fe/warehouses/{storageid}")
   Future<HttpResponse> deleteWarehouse(@Path() int storageid);
 
+  @GET("/api/fe/checklisttemplates/{id}/details")
+
+  ///Pass 0 to get all templates
+  Future<HttpResponse> getChecklistTemplates(@Path() int id);
+
+  @POST("/api/fe/checklisttemplates/{id}/details")
+  @FormUrlEncoded()
+  Future<HttpResponse> postChecklistTemplate({
+    @Path() int? id,
+    @Field() required String name,
+    @Field() required String title,
+    @Field() required bool active,
+  });
+
   @POST("/api/fe/handovertypes")
   @FormUrlEncoded()
   Future<HttpResponse> postHandoverTypes({

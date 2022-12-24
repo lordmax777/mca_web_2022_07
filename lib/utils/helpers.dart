@@ -78,7 +78,7 @@ class GridTableHelpers {
   }
 
   static Widget getActionRenderer(PlutoColumnRendererContext ctx,
-      {String title = "Edit",
+      {dynamic title = "Edit",
       ValueChanged<PlutoColumnRendererContext>? onTap,
       HeroIcons? icon}) {
     return KText(

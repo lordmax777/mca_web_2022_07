@@ -122,7 +122,7 @@ class DepsListTable extends StatelessWidget {
       col.enableEditingMode = false;
       col.renderer ??= (ctx) {
         return KText(
-          text: ctx.cell.value,
+          text: ctx.cell.value.toString(),
           textColor: ThemeColors.gray2,
           fontWeight: FWeight.regular,
           fontSize: 14,

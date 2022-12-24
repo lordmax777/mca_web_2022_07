@@ -35,6 +35,7 @@ class GeneralController extends GetxController {
         fetch(GetWarehousesAction()),
         fetch(GetAllLocationsAction()),
         fetch(GetAllStorageItemsAction()),
+        fetch(GetChecklistTemplatesAction()),
       ]);
       await getCompanyInfo();
     }

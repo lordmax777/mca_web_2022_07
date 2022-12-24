@@ -11,29 +11,10 @@ import '../manager/redux/states/users_state/users_state.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({
     Key? key,
   }) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // await Future.wait([
-      //   fetch(GetAllParamListAction()),
-      //   fetch(GetUsersListAction()),
-      //   fetch(GetWarehousesAction()),
-      //   fetch(GetAllLocationsAction()),
-      //   fetch(GetAllStorageItemsAction()),
-      // ]);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

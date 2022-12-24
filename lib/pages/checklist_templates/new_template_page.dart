@@ -1,173 +1,232 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
+import 'controllers/new_template_controller.dart';
 
-class NewChecklistTemplatePage extends StatefulWidget {
-  final int? id;
-  const NewChecklistTemplatePage({Key? key, this.id}) : super(key: key);
+class RoomWidget extends StatefulWidget {
+  final ValueChanged<LabeledGlobalKey<RoomWidgetState>> onAddItem;
+  final void Function(LabeledGlobalKey<RoomWidgetState> key, int index)
+      onDeleteItem;
+  final void Function(LabeledGlobalKey<RoomWidgetState> key, bool isDamaged)
+      onDamageChecked;
+  final bool acceptDamagedItems;
+  final List<String> items;
+
+  const RoomWidget(
+      {Key? key,
+      required this.onAddItem,
+      required this.acceptDamagedItems,
+      required this.onDeleteItem,
+      required this.onDamageChecked,
+      required this.items})
+      : super(key: key);
 
   @override
-  State<NewChecklistTemplatePage> createState() =>
-      _NewChecklistTemplatePageState();
+  State<RoomWidget> createState() => RoomWidgetState();
 }
 
-class _NewChecklistTemplatePageState extends State<NewChecklistTemplatePage> {
-  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  bool isNewContract = true;
-
-  TextEditingController nameContr = TextEditingController();
-  TextEditingController titleContr = TextEditingController();
-
-  final List<Widget> _generalItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.id != null) {
-      isNewContract = false;
-    }
-  }
-
+class RoomWidgetState extends State<RoomWidget> {
+  final List<TextEditingController> controllers = [];
+  bool acceptDamagedItems = false;
   @override
   void dispose() {
-    nameContr.dispose();
-    titleContr.dispose();
+    for (var element in controllers) {
+      element.dispose();
+    }
     super.dispose();
   }
 
   @override
+  void initState() {
+    super.initState();
+    for (var item in widget.items) {
+      controllers.add(TextEditingController(text: item));
+    }
+    acceptDamagedItems = widget.acceptDamagedItems;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SpacedColumn(
+        verticalSpace: 32,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SpacedRow(
+            horizontalSpace: 8.0,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CustomCheckboxWidget(
+                  onChanged: (value) {
+                    setState(() {
+                      acceptDamagedItems = value;
+                    });
+                    widget.onDamageChecked(
+                        widget.key as LabeledGlobalKey<RoomWidgetState>, value);
+                  },
+                  isChecked: acceptDamagedItems),
+              KText(
+                isSelectable: false,
+                onTap: () {
+                  setState(() {
+                    acceptDamagedItems = !acceptDamagedItems;
+                  });
+                  widget.onDamageChecked(
+                      widget.key as LabeledGlobalKey<RoomWidgetState>,
+                      acceptDamagedItems);
+                },
+                text:
+                    'Check if the checklist template room will accept damage images and descriptions.',
+                textColor: ThemeColors.gray2,
+                fontSize: 14.0,
+                fontWeight: FWeight.bold,
+              ),
+            ],
+          ),
+          if (controllers.isNotEmpty)
+            _buildItems()
+          else
+            KText(
+                text: "Please Add Rooms",
+                textColor: ThemeColors.gray5,
+                fontSize: 14.0,
+                fontWeight: FWeight.bold),
+          ButtonLarge(
+              icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
+              text: "Add Item",
+              onPressed: () async {
+                widget
+                    .onAddItem(widget.key as LabeledGlobalKey<RoomWidgetState>);
+              }),
+        ]);
+  }
+
+  Widget _buildItems() {
+    List<Widget> w = [];
+
+    for (var i = 0; i < widget.items.length; i++) {
+      w.add(_buildItem(i));
+    }
+
+    return SpacedColumn(
+        verticalSpace: 24.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: w);
+  }
+
+  SpacedRow _buildItem(int i) {
+    return SpacedRow(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      horizontalSpace: 32.0,
+      children: [
+        Expanded(flex: 8, child: TextInputWidget(controller: controllers[i])),
+        Expanded(
+            flex: 1,
+            child: ButtonLarge(
+                paddingWithoutIcon: true,
+                text: "Delete Item",
+                bgColor: ThemeColors.red3,
+                onPressed: () {
+                  controllers.removeAt(i);
+                  widget.onDeleteItem(
+                      widget.key as LabeledGlobalKey<RoomWidgetState>, i);
+                })),
+      ],
+    );
+  }
+}
+
+class NewChecklistTemplatePage extends StatelessWidget {
+  final ChecklistTemplateMd? checklist;
+  const NewChecklistTemplatePage({super.key, this.checklist});
+
+  @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
-
+    Get.lazyPut(() => NewTemplateController(checklist: checklist));
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) {
-          return PageWrapper(
-              child: SpacedColumn(verticalSpace: 16.0, children: [
-            const PageGobackWidget(),
-            TableWrapperWidget(
-              padding: const EdgeInsets.only(
-                  left: 48.0, right: 48.0, top: 48.0, bottom: 16.0),
-              child: Form(
-                key: formKey,
-                child: SpacedColumn(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  verticalSpace: 16.0,
-                  children: [
-                    _buildBody(dpWidth),
-                    const Divider(color: ThemeColors.gray11, thickness: 1.0),
-                    _buildExpandable(),
-                    _buildAdder(),
-                    const Divider(color: ThemeColors.gray11, thickness: 1.0),
-                    _SaveAndCancelButtonsWidget(isNewContract: isNewContract),
-                  ],
+          return GetBuilder<NewTemplateController>(
+            dispose: (state) => state.controller?.onPop(),
+            builder: (controller) => PageWrapper(
+                child: SpacedColumn(verticalSpace: 16.0, children: [
+              const PageGobackWidget(),
+              TableWrapperWidget(
+                padding: const EdgeInsets.only(
+                    left: 48.0, right: 48.0, top: 0.0, bottom: 16.0),
+                child: Form(
+                  key: controller.formKey,
+                  child: SpacedColumn(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    verticalSpace: 16.0,
+                    children: [
+                      _buildBody(dpWidth, controller),
+                      ListView.separated(
+                        separatorBuilder: (context, index) => const Divider(
+                            color: ThemeColors.gray11,
+                            height: 1.0,
+                            thickness: 1.0),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.generalItems.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == controller.generalItems.length) {
+                            return SaveAndCancelButtonsWidget(
+                              saveText: controller.isNew
+                                  ? "Add Contract"
+                                  : "Save Contract",
+                              formKeys: const [],
+                              onSave: controller.onSave,
+                            );
+                          }
+                          return controller.generalItems[index];
+                        },
+                      ),
+                      // const Divider(color: ThemeColors.gray11, thickness: 1.0),
+                      // _buildExpandable(),
+                      // _buildAdder(),
+                      // const Divider(color: ThemeColors.gray11, thickness: 1.0),
+                      // _SaveAndCancelButtonsWidget(isNewContract: controller.isNew),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ]));
+            ])),
+          );
         });
   }
 
-  Widget _buildBody(double dpWidth) {
+  Widget _buildBody(double dpWidth, NewTemplateController controller) {
     return SpacedColumn(
       verticalSpace: 32.0,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 1),
         TextInputWidget(
           isRequired: true,
           width: dpWidth / 2.5,
           labelText: "Template Name",
-          controller: nameContr,
+          controller: controller.nameController,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter a name";
             }
+            return null;
           },
         ),
         TextInputWidget(
           isRequired: true,
           width: dpWidth / 2.5,
           labelText: "Template Title",
-          controller: titleContr,
+          controller: controller.titleController,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter a title";
             }
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAdder() {
-    return Container();
-  }
-
-  Widget _buildExpandable() {
-    return Container();
-  }
-
-  Widget _buildExpandableItem(Widget child, String title,
-      {bool isExpanded = false}) {
-    bool a = true;
-    return StatefulBuilder(
-      builder: (context, ss) {
-        return ExpansionTile(
-          maintainState: true,
-          initiallyExpanded: isExpanded,
-          childrenPadding:
-              const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
-          tilePadding:
-              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
-          trailing: const SizedBox(),
-          onExpansionChanged: (value) {
-            ss(() {
-              a = !value;
-            });
-          },
-          // childrenPadding: EdgeInsets.symmetric(vertical: 16.0),
-          leading: HeroIcon(!a ? HeroIcons.up : HeroIcons.down, size: 18.0),
-          title: KText(
-            text: title,
-            isSelectable: false,
-            fontWeight: FWeight.bold,
-            fontSize: 16.0,
-            textColor: !a ? ThemeColors.blue6 : ThemeColors.gray2,
-          ),
-          expandedAlignment: Alignment.topLeft,
-          children: [child],
-        );
-      },
-    );
-  }
-}
-
-class _SaveAndCancelButtonsWidget extends StatelessWidget {
-  final bool isNewContract;
-  const _SaveAndCancelButtonsWidget({Key? key, this.isNewContract = true})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SpacedRow(
-      mainAxisAlignment: MainAxisAlignment.end,
-      horizontalSpace: 14.0,
-      children: [
-        ButtonLargeSecondary(
-          paddingWithoutIcon: true,
-          text: "Cancel",
-          onPressed: () {
-            context.navigateBack();
-          },
-          bgColor: ThemeColors.white,
-        ),
-        ButtonLarge(
-          icon: const HeroIcon(HeroIcons.check),
-          text: isNewContract ? "Add Contract" : "Save Contract",
-          onPressed: () {
-            _NewChecklistTemplatePageState.formKey.currentState?.validate();
+            return null;
           },
         ),
       ],

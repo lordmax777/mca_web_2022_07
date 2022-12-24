@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import '../../../app.dart';
 import '../../../comps/drawer.dart';
+import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
 import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
@@ -26,6 +27,7 @@ class GeneralState {
   final StateValue<List<WarehouseMd>> warehouses;
   final StateValue<List<LocationItemMd>> locationItems;
   final StateValue<List<StorageItemMd>> storageItems;
+  final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
 
   GeneralState({
     required this.paramList,
@@ -35,6 +37,7 @@ class GeneralState {
     required this.endDrawer,
     required this.locationItems,
     required this.storageItems,
+    required this.checklistTemplates,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -67,6 +70,10 @@ class GeneralState {
         error: ErrorModel(),
         data: [],
       ),
+      checklistTemplates: StateValue(
+        error: ErrorModel(),
+        data: [],
+      ),
       drawerStates: DrawerStates(initialIndex: 1, name: const UsersListRoute()),
       paramList: StateValue(
         error: ErrorModel(),
@@ -83,6 +90,7 @@ class GeneralState {
     StateValue<List<WarehouseMd>>? warehouses,
     StateValue<List<LocationItemMd>>? locationItems,
     StateValue<List<StorageItemMd>>? storageItems,
+    StateValue<List<ChecklistTemplateMd>>? checklistTemplates,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -92,6 +100,7 @@ class GeneralState {
       endDrawer: endDrawer,
       locationItems: locationItems ?? this.locationItems,
       storageItems: storageItems ?? this.storageItems,
+      checklistTemplates: checklistTemplates ?? this.checklistTemplates,
     );
   }
 }
@@ -104,6 +113,7 @@ class UpdateGeneralStateAction {
   StateValue<List<WarehouseMd>>? warehouses;
   StateValue<List<LocationItemMd>>? locationItems;
   StateValue<List<StorageItemMd>>? storageItems;
+  StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
   UpdateGeneralStateAction({
     this.paramList,
     this.drawerStates,
@@ -112,6 +122,7 @@ class UpdateGeneralStateAction {
     this.warehouses,
     this.locationItems,
     this.storageItems,
+    this.checklistTemplates,
   });
 }
 
@@ -224,6 +235,42 @@ class GetAllStorageItemsAction {
           state.generalState.storageItems.error.retries + 1;
     }
     next(UpdateGeneralStateAction(storageItems: stateValue));
+    return stateValue;
+  }
+}
+
+class GetChecklistTemplatesAction {
+  static Future<StateValue<List<ChecklistTemplateMd>>> fetch(AppState state,
+      GetChecklistTemplatesAction action, NextDispatcher next) async {
+    StateValue<List<ChecklistTemplateMd>> stateValue = StateValue(
+        data: [],
+        error: ErrorModel<GetChecklistTemplatesAction>(
+            isLoading: true, action: action));
+
+    next(UpdateGeneralStateAction(checklistTemplates: stateValue));
+
+    final ApiResponse res =
+        await restClient().getChecklistTemplates(0).nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+
+    if (res.success) {
+      final List<ChecklistTemplateMd> list = res.data
+          .map<ChecklistTemplateMd>((e) => ChecklistTemplateMd.fromJson(e))
+          .toList();
+      list.sort((a, b) => a.name.compareTo(b.name));
+
+      stateValue.error.isError = false;
+      stateValue.data = list;
+      ChecklistController.to.setList(list);
+    } else {
+      stateValue.error.retries =
+          state.generalState.checklistTemplates.error.retries + 1;
+    }
+    next(UpdateGeneralStateAction(checklistTemplates: stateValue));
     return stateValue;
   }
 }
