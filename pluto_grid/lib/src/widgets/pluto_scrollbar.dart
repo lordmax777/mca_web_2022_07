@@ -465,67 +465,67 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
     _callFadeoutTimer();
   }
 
-  void _handleHover(PointerHoverEvent event) {
-    final hoverAxis = _getHoverAxis(event.position, event.kind, forHover: true);
-    if (hoverAxis == _currentHoverAxis) return;
-    _currentHoverAxis = hoverAxis;
-
-    ScrollMetrics? metrics;
-    bool needUpdate = false;
-
-    switch (hoverAxis) {
-      case _HoverAxis.vertical:
-        _currentAxis = Axis.vertical;
-        _currentController = widget.verticalController;
-        needUpdate = _needUpdatePainterByHover(Axis.vertical);
-        if (needUpdate) {
-          metrics = FixedScrollMetrics(
-            minScrollExtent:
-                widget.verticalController?.position.minScrollExtent,
-            maxScrollExtent:
-                widget.verticalController?.position.maxScrollExtent,
-            pixels: widget.verticalController?.position.pixels,
-            viewportDimension:
-                widget.verticalController?.position.viewportDimension,
-            axisDirection: widget.verticalController?.position.axisDirection ??
-                AxisDirection.down,
-          );
-        }
-        break;
-      case _HoverAxis.horizontal:
-        _currentAxis = Axis.horizontal;
-        _currentController = widget.horizontalController;
-        needUpdate = _needUpdatePainterByHover(Axis.horizontal);
-        if (needUpdate) {
-          metrics = FixedScrollMetrics(
-            minScrollExtent:
-                widget.horizontalController?.position.minScrollExtent,
-            maxScrollExtent:
-                widget.horizontalController?.position.maxScrollExtent,
-            pixels: widget.horizontalController?.position.pixels,
-            viewportDimension:
-                widget.horizontalController?.position.viewportDimension,
-            axisDirection:
-                widget.horizontalController?.position.axisDirection ??
-                    AxisDirection.right,
-          );
-        }
-        break;
-      case _HoverAxis.none:
-        _callFadeoutTimer();
-        return;
-    }
-
-    if (_fadeoutAnimationController.status != AnimationStatus.forward) {
-      _fadeoutAnimationController.forward();
-    }
-
-    _fadeoutTimer?.cancel();
-
-    if (needUpdate) {
-      _painter!.update(metrics!, metrics.axisDirection);
-    }
-  }
+  // void _handleHover(PointerHoverEvent event) {
+  //   final hoverAxis = _getHoverAxis(event.position, event.kind, forHover: true);
+  //   if (hoverAxis == _currentHoverAxis) return;
+  //   _currentHoverAxis = hoverAxis;
+  //
+  //   ScrollMetrics? metrics;
+  //   bool needUpdate = false;
+  //
+  //   switch (hoverAxis) {
+  //     case _HoverAxis.vertical:
+  //       _currentAxis = Axis.vertical;
+  //       _currentController = widget.verticalController;
+  //       needUpdate = _needUpdatePainterByHover(Axis.vertical);
+  //       if (needUpdate) {
+  //         metrics = FixedScrollMetrics(
+  //           minScrollExtent:
+  //               widget.verticalController?.position.minScrollExtent,
+  //           maxScrollExtent:
+  //               widget.verticalController?.position.maxScrollExtent,
+  //           pixels: widget.verticalController?.position.pixels,
+  //           viewportDimension:
+  //               widget.verticalController?.position.viewportDimension,
+  //           axisDirection: widget.verticalController?.position.axisDirection ??
+  //               AxisDirection.down,
+  //         );
+  //       }
+  //       break;
+  //     case _HoverAxis.horizontal:
+  //       _currentAxis = Axis.horizontal;
+  //       _currentController = widget.horizontalController;
+  //       needUpdate = _needUpdatePainterByHover(Axis.horizontal);
+  //       if (needUpdate) {
+  //         metrics = FixedScrollMetrics(
+  //           minScrollExtent:
+  //               widget.horizontalController?.position.minScrollExtent,
+  //           maxScrollExtent:
+  //               widget.horizontalController?.position.maxScrollExtent,
+  //           pixels: widget.horizontalController?.position.pixels,
+  //           viewportDimension:
+  //               widget.horizontalController?.position.viewportDimension,
+  //           axisDirection:
+  //               widget.horizontalController?.position.axisDirection ??
+  //                   AxisDirection.right,
+  //         );
+  //       }
+  //       break;
+  //     case _HoverAxis.none:
+  //       _callFadeoutTimer();
+  //       return;
+  //   }
+  //
+  //   if (_fadeoutAnimationController.status != AnimationStatus.forward) {
+  //     _fadeoutAnimationController.forward();
+  //   }
+  //
+  //   _fadeoutTimer?.cancel();
+  //
+  //   if (needUpdate) {
+  //     _painter!.update(metrics!, metrics.axisDirection);
+  //   }
+  // }
 
   _HoverAxis _getHoverAxis(
     Offset position,
@@ -589,10 +589,10 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
         },
         onHover: (PointerHoverEvent event) {
           switch (event.kind) {
-            case PointerDeviceKind.mouse:
-            case PointerDeviceKind.trackpad:
-              _handleHover(event);
-              break;
+            // case PointerDeviceKind.mouse:
+            // case PointerDeviceKind.trackpad:
+            //   _handleHover(event);
+            //   break;
             case PointerDeviceKind.stylus:
             case PointerDeviceKind.invertedStylus:
             case PointerDeviceKind.unknown:
