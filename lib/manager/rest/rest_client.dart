@@ -367,6 +367,15 @@ abstract class RestClient {
     @Field() required bool active,
   });
 
+  @POST("/api/fe/checklisttemplates/{id}/rooms")
+  @FormUrlEncoded()
+  Future<HttpResponse> postChecklistTemplateRoom({
+    @Path() int? id,
+    @Field() required String name,
+    @Field() required String items,
+    @Field() required bool damage,
+  });
+
   @POST("/api/fe/handovertypes")
   @FormUrlEncoded()
   Future<HttpResponse> postHandoverTypes({

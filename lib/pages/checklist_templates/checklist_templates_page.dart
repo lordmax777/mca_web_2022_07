@@ -21,7 +21,7 @@ class ChecklistTemplatesPage extends StatelessWidget {
             title: 'Checklist Templates',
           ),
           ErrorWrapper(
-              errors: [state.generalState.paramList.error],
+              errors: [state.generalState.checklistTemplates.error],
               child: const _Body())
         ]),
       ),

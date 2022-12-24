@@ -2,11 +2,17 @@ import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../../comps/show_overlay_popup.dart';
+import '../../../manager/redux/middlewares/users_middleware.dart';
+import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/sets/state_value.dart';
+import '../../../manager/rest/nocode_helpers.dart';
+import '../../../manager/rest/rest_client.dart';
 import '../new_section_popup.dart';
 
 class Checklist {
@@ -105,20 +111,20 @@ class NewTemplateController extends GetxController {
                 context: Get.key.currentContext!);
             update();
           },
-          onEditName: (t) async {
-            final String? res = await onAddNewSection(
-                title: t.currentState?.title.text, addAsNew: false);
-            if (res != null) {
-              final currentWidget = _generalItems[indexOf];
-              final currentWidgetState = (currentWidget.key
-                      as LabeledGlobalKey<ExpandableItemWidgetState>)
-                  .currentState;
-              currentWidgetState?.setState(() {
-                currentWidgetState.title.text = res;
-              });
-              checklists[indexOf].name = res;
-            }
-          },
+          // onEditName: (t) async {
+          //   final String? res = await onAddNewSection(
+          //       title: t.currentState?.title.text, addAsNew: false);
+          //   if (res != null) {
+          //     final currentWidget = _generalItems[indexOf];
+          //     final currentWidgetState = (currentWidget.key
+          //             as LabeledGlobalKey<ExpandableItemWidgetState>)
+          //         .currentState;
+          //     currentWidgetState?.setState(() {
+          //       currentWidgetState.title.text = res;
+          //     });
+          //     checklists[indexOf].name = res;
+          //   }
+          // },
           child: RoomWidget(
             key: keyRoomWidget,
             acceptDamagedItems: acceptDamagedItems,
@@ -228,8 +234,6 @@ class NewTemplateController extends GetxController {
     }
     for (var room in checklist!.getRooms) {
       rooms.add(room);
-      logger(room.name);
-      logger(room.code);
       for (var item in room.code!) {
         checklistI.add(item);
       }
@@ -249,7 +253,76 @@ class NewTemplateController extends GetxController {
     logger("NewTemplateController disposed");
   }
 
-  void onSave() {
-    if (formKey.currentState?.validate() ?? false) {}
+  Future<ApiResponse> postTemplateDetail() async {
+    final int id = checklist?.id ?? 0;
+    final String name = nameController.text;
+    final String title = titleController.text;
+    const bool status = true; //TODO: Need a active button or not not sure!
+    final ApiResponse res = await restClient()
+        .postChecklistTemplate(
+          id: id,
+          name: name,
+          title: title,
+          active: status,
+        )
+        .nocodeErrorHandler();
+    return res;
+  }
+
+  Future<ApiResponse> postTemplateRoom(Checklist chk) async {
+    final int id = checklist?.id ?? 0;
+    final String name = chk.name;
+    final String items = chk.items.join("|");
+    final bool damage = chk.acceptDamagedItems;
+    final ApiResponse res = await restClient()
+        .postChecklistTemplateRoom(
+          id: id,
+          name: name,
+          items: items,
+          damage: damage,
+        )
+        .nocodeErrorHandler();
+    return res;
+  }
+
+  void onSave({BuildContext? ctx}) async {
+    if (formKey.currentState?.validate() ?? false) {
+      for (var ch in checklists) {
+        if (ch.items.isEmpty) {
+          showError("Please add item to ${ch.name}, or delete empty section");
+          return;
+        }
+      }
+      await _apiReq(ctx: ctx);
+    }
+  }
+
+  Future<void> _apiReq({BuildContext? ctx}) async {
+    showLoading();
+    ApiResponse detailRes = await postTemplateDetail();
+    if (detailRes.success) {
+      bool isAllSuccess = true;
+      ApiResponse? roomRes;
+      for (var chk in checklists) {
+        logger(chk.items, hint: chk.name);
+        ApiResponse res = await postTemplateRoom(chk);
+        roomRes = res;
+        if (!res.success) {
+          isAllSuccess = false;
+          break;
+        }
+      }
+      if (isAllSuccess) {
+        await appStore.dispatch(GetChecklistTemplatesAction());
+        await closeLoading();
+        ctx?.popRoute();
+      } else {
+        await closeLoading();
+        showError(roomRes?.data);
+      }
+    } else {
+      await closeLoading();
+      showError(detailRes.data);
+    }
   }
 }

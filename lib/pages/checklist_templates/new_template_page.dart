@@ -121,7 +121,13 @@ class RoomWidgetState extends State<RoomWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       horizontalSpace: 32.0,
       children: [
-        Expanded(flex: 8, child: TextInputWidget(controller: controllers[i])),
+        Expanded(
+            flex: 8,
+            child: TextInputWidget(
+                controller: controllers[i],
+                onChanged: (value) {
+                  widget.items[i] = value;
+                })),
         Expanded(
             flex: 1,
             child: ButtonLarge(
@@ -153,7 +159,10 @@ class NewChecklistTemplatePage extends StatelessWidget {
             dispose: (state) => state.controller?.onPop(),
             builder: (controller) => PageWrapper(
                 child: SpacedColumn(verticalSpace: 16.0, children: [
-              const PageGobackWidget(),
+              PageGobackWidget(
+                  text: controller.isNew
+                      ? "New Template"
+                      : controller.checklist!.name),
               TableWrapperWidget(
                 padding: const EdgeInsets.only(
                     left: 48.0, right: 48.0, top: 0.0, bottom: 16.0),
@@ -176,10 +185,10 @@ class NewChecklistTemplatePage extends StatelessWidget {
                           if (index == controller.generalItems.length) {
                             return SaveAndCancelButtonsWidget(
                               saveText: controller.isNew
-                                  ? "Add Contract"
-                                  : "Save Contract",
+                                  ? "Add Template"
+                                  : "Save Template",
                               formKeys: const [],
-                              onSave: controller.onSave,
+                              onSave: () => controller.onSave(ctx: context),
                             );
                           }
                           return controller.generalItems[index];

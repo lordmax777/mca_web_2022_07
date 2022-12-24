@@ -23,6 +23,7 @@ class ChecklistTemplateMd {
       required this.active});
 
   List<CodeMap<List<String>>> get getRooms {
+    if (content.isEmpty) return [];
     var rooms = jsonDecode(content);
     List<CodeMap<List<String>>> list = [];
 
