@@ -167,14 +167,14 @@ class _Body extends StatefulWidget {
 class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  final List<Tab> tabs = const [
-    Tab(text: 'General'),
-    Tab(text: 'Payroll'),
-    Tab(text: 'Reviews'),
-    Tab(text: 'Visa, Work Permits'),
-    Tab(text: 'Preferred Shifts'),
-    Tab(text: 'Qualifications'),
-    Tab(text: 'Mobile and Status')
+  final List<Tab> tabs = [
+    const Tab(text: 'General'),
+    const Tab(text: 'Payroll'),
+    const Tab(text: 'Reviews'),
+    const Tab(text: 'Visa, Work Permits'),
+    const Tab(text: 'Preferred Shifts'),
+    const Tab(text: 'Qualifications'),
+    const Tab(text: 'Mobile and Status')
   ];
 
   @override

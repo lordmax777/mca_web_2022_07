@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 
@@ -27,7 +28,6 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class Body extends GetView<LoginController> {
-  ///Add form key
   const Body({super.key});
 
   @override
@@ -56,7 +56,7 @@ class Body extends GetView<LoginController> {
             fontWeight: FWeight.medium,
             fontSize: 24,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           TextInputWidget(
             isRequired: true,
             leftIcon: HeroIcons.user,

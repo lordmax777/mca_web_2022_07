@@ -25,7 +25,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  Future<StateValue<AuthRes>> _getAccessTokenAction(
+  Future<ApiResponse> _getAccessTokenAction(
       AppState state, GetAccessTokenAction action, NextDispatcher next) async {
     StateValue<AuthRes> stateValue = StateValue(
         data: null,
@@ -48,6 +48,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     stateValue.error.errorMessage = res.resMessage;
     stateValue.error.isLoading = false;
     stateValue.error.rawError = res.rawError;
+    stateValue.error.data = res.data;
 
     if (res.success) {
       final AuthRes r = AuthRes.fromJson(res.data);
@@ -65,7 +66,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
 
       next(UpdateAuthAction(authRes: stateValue));
     }
-    return stateValue;
+    return res;
   }
 
   Future<StateValue<AuthRes>> _getRefreshTokenAction(
@@ -112,7 +113,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
 }
 
 ///Must pass the action in StateValue<T> as T type
-Future<void> fetch(action) async {
+Future fetch(action) async {
   final res = await appStore.dispatch(action);
 
   final ErrorModel e = res.error;
@@ -161,11 +162,15 @@ Future<void> fetch(action) async {
                 username: Constants.username,
                 password: Constants.password));
 
-            await appStore.dispatch(action);
+            return await appStore.dispatch(action);
             // await appRouter.pop();
           }
         }
       }
+    } else {
+      return res;
     }
+  } else {
+    return res;
   }
 }
