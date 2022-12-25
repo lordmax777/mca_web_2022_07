@@ -395,6 +395,7 @@ class _ColumnWidget extends StatelessWidget {
                   children: [
                     if (column.enableRowChecked)
                       CheckboxAllSelectionWidget(stateManager: stateManager),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: _ColumnTextWidget(
                         column: column,

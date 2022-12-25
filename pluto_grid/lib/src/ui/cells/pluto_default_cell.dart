@@ -186,6 +186,7 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
         ),
       if (spacingWidget != null) spacingWidget,
       if (expandIcon != null) expandIcon,
+      const SizedBox(width: 10),
       Expanded(child: cellWidget),
       if (_showGroupCount)
         Text(
