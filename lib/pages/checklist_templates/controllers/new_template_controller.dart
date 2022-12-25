@@ -20,6 +20,8 @@ class Checklist {
   List<String> items = [];
   bool acceptDamagedItems = false;
 
+  List<String> get getItems => items.map<String>((e) => e.trim()).toList();
+
   Checklist({
     required this.name,
     required this.items,
@@ -51,10 +53,23 @@ class NewTemplateController extends GetxController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
 
+  String get name => nameController.text.trim();
+  String get title => titleController.text.trim();
+
+  int get checklistId => checklist?.id ?? 0;
+
   final RxBool _isNew = true.obs;
   bool get isNew => _isNew.value;
 
+  bool get nameExists => appStore.state.generalState.checklistTemplates.data!
+      .any((element) => element.name.toLowerCase() == name.toLowerCase());
+  bool get titleExists => appStore.state.generalState.checklistTemplates.data!
+      .any((element) => element.title.toLowerCase() == title.toLowerCase());
+  bool roomExists(String text) => checklists.any(
+      (element) => element.name.toLowerCase() == text.toLowerCase().trim());
+
   final RxList<Checklist> checklists = <Checklist>[].obs;
+  final RxList<Checklist> deletedChecklists = <Checklist>[].obs;
 
   final RxList<Widget> _generalItems = <Widget>[].obs;
   List<Widget> get generalItems => _generalItems;
@@ -91,6 +106,7 @@ class NewTemplateController extends GetxController {
                               _generalItems
                                   .firstWhereIndexedOrNull((index, element) {
                                 if (element.key == k) {
+                                  deletedChecklists.add(checklists[index]);
                                   checklists.removeAt(index);
                                 }
                                 return element.key == k;
@@ -136,12 +152,12 @@ class NewTemplateController extends GetxController {
             onAddItem: (k) {
               final ch = checklists[indexOf];
               k.currentState?.controllers.add(TextEditingController());
-              k.currentState?.controllers.last.addListener(() {
-                checklists[indexOf].items.last =
-                    k.currentState?.controllers.last.text ?? "";
+              // k.currentState?.controllers.last.addListener(() {
+              // checklists[indexOf].items.last =
+              //     k.currentState?.controllers.last.text.trim() ?? "";
 
-                k.currentState?.setState(() {});
-              });
+              //   k.currentState?.setState(() {});
+              // });
               ch.addItem("");
               k.currentState?.setState(() {});
             },
@@ -165,6 +181,10 @@ class NewTemplateController extends GetxController {
     final String? res = await showOverlayPopup(
         body: NewSectionPopup(title: title), context: Get.key.currentContext!);
     if (res != null) {
+      if (checklists.any((element) => element.name == res)) {
+        showError("Section with the same name already exists");
+        return null;
+      }
       if (addAsNew) {
         addItem(title: res);
       }
@@ -254,9 +274,7 @@ class NewTemplateController extends GetxController {
   }
 
   Future<ApiResponse> postTemplateDetail() async {
-    final int id = checklist?.id ?? 0;
-    final String name = nameController.text;
-    final String title = titleController.text;
+    final int id = checklistId;
     const bool status = true; //TODO: Need a active button or not not sure!
     final ApiResponse res = await restClient()
         .postChecklistTemplate(
@@ -270,14 +288,14 @@ class NewTemplateController extends GetxController {
   }
 
   Future<ApiResponse> postTemplateRoom(Checklist chk) async {
-    final int id = checklist?.id ?? 0;
-    final String name = chk.name;
-    final String items = chk.items.join("|");
+    final int id = checklistId;
+    final String nm = chk.name;
+    final String items = chk.getItems.join("|");
     final bool damage = chk.acceptDamagedItems;
     final ApiResponse res = await restClient()
         .postChecklistTemplateRoom(
           id: id,
-          name: name,
+          name: nm,
           items: items,
           damage: damage,
         )
@@ -285,11 +303,23 @@ class NewTemplateController extends GetxController {
     return res;
   }
 
+  Future<ApiResponse> deleteTemplateRoom(Checklist chk) async {
+    final int id = checklist!.id;
+    final String nm = chk.name.trim();
+    final ApiResponse res = await restClient()
+        .deleteChecklistTemplateRoom(id, nm)
+        .nocodeErrorHandler();
+    return res;
+  }
+
   void onSave({BuildContext? ctx}) async {
     if (formKey.currentState?.validate() ?? false) {
+      if (isNew) {
+        deletedChecklists.clear();
+      }
       for (var ch in checklists) {
         if (ch.items.isEmpty) {
-          showError("Please add item to ${ch.name}, or delete empty section");
+          showError("Please add item to ${ch.name}, or delete!");
           return;
         }
       }
@@ -300,11 +330,11 @@ class NewTemplateController extends GetxController {
   Future<void> _apiReq({BuildContext? ctx}) async {
     showLoading();
     ApiResponse detailRes = await postTemplateDetail();
+    //Details
     if (detailRes.success) {
       bool isAllSuccess = true;
       ApiResponse? roomRes;
       for (var chk in checklists) {
-        logger(chk.items, hint: chk.name);
         ApiResponse res = await postTemplateRoom(chk);
         roomRes = res;
         if (!res.success) {
@@ -312,17 +342,37 @@ class NewTemplateController extends GetxController {
           break;
         }
       }
+      //Room
       if (isAllSuccess) {
-        await appStore.dispatch(GetChecklistTemplatesAction());
-        await closeLoading();
-        ctx?.popRoute();
+        bool deleteAllSuccess = true;
+        ApiResponse? delRes;
+        for (var chk in deletedChecklists) {
+          ApiResponse res = await deleteTemplateRoom(chk);
+          delRes = res;
+          if (!res.success) {
+            deleteAllSuccess = false;
+            break;
+          }
+        }
+        //Delete
+        if (deleteAllSuccess) {
+          await appStore.dispatch(GetChecklistTemplatesAction());
+          await closeLoading();
+          ctx?.popRoute();
+        } else {
+          _handleError(delRes!);
+        }
       } else {
-        await closeLoading();
-        showError(roomRes?.data);
+        _handleError(roomRes!);
       }
     } else {
-      await closeLoading();
-      showError(detailRes.data);
+      _handleError(detailRes);
     }
+  }
+
+  void _handleError(ApiResponse res) async {
+    await appStore.dispatch(GetChecklistTemplatesAction());
+    await closeLoading();
+    showError(res.data);
   }
 }

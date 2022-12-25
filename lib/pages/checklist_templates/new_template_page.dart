@@ -126,7 +126,7 @@ class RoomWidgetState extends State<RoomWidget> {
             child: TextInputWidget(
                 controller: controllers[i],
                 onChanged: (value) {
-                  widget.items[i] = value;
+                  widget.items[i] = value.trim();
                 })),
         Expanded(
             flex: 1,
@@ -183,12 +183,17 @@ class NewChecklistTemplatePage extends StatelessWidget {
                         itemCount: controller.generalItems.length + 1,
                         itemBuilder: (context, index) {
                           if (index == controller.generalItems.length) {
-                            return SaveAndCancelButtonsWidget(
-                              saveText: controller.isNew
-                                  ? "Add Template"
-                                  : "Save Template",
-                              formKeys: const [],
-                              onSave: () => controller.onSave(ctx: context),
+                            return GetBuilder<NewTemplateController>(
+                              id: "name_title_fields",
+                              builder: (ctr) => SaveAndCancelButtonsWidget(
+                                saveText: controller.isNew
+                                    ? "Add Template"
+                                    : "Save Template",
+                                formKeys: const [],
+                                isDisabled: controller.isNew &&
+                                    (ctr.titleExists || ctr.nameExists),
+                                onSave: () => controller.onSave(ctx: context),
+                              ),
                             );
                           }
                           return controller.generalItems[index];
@@ -209,36 +214,73 @@ class NewChecklistTemplatePage extends StatelessWidget {
   }
 
   Widget _buildBody(double dpWidth, NewTemplateController controller) {
-    return SpacedColumn(
-      verticalSpace: 32.0,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 1),
-        TextInputWidget(
-          isRequired: true,
-          width: dpWidth / 2.5,
-          labelText: "Template Name",
-          controller: controller.nameController,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "Please enter a name";
-            }
-            return null;
-          },
-        ),
-        TextInputWidget(
-          isRequired: true,
-          width: dpWidth / 2.5,
-          labelText: "Template Title",
-          controller: controller.titleController,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "Please enter a title";
-            }
-            return null;
-          },
-        ),
-      ],
+    return GetBuilder<NewTemplateController>(
+      id: "name_title_fields",
+      builder: (controller) {
+        return SpacedColumn(
+          verticalSpace: 32.0,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 1),
+            SpacedRow(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              horizontalSpace: 16.0,
+              children: [
+                TextInputWidget(
+                  isRequired: true,
+                  width: dpWidth / 2.5,
+                  labelText: "Template Name",
+                  controller: controller.nameController,
+                  onChanged: (value) {
+                    controller.update(['name_title_fields']);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a name";
+                    }
+                    return null;
+                  },
+                ),
+                if (controller.nameExists && controller.isNew)
+                  KText(
+                      text: "Title already exists",
+                      textColor: ThemeColors.red3,
+                      fontWeight: FWeight.bold,
+                      fontSize: 16.0,
+                      isSelectable: false),
+              ],
+            ),
+            SpacedRow(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              horizontalSpace: 16.0,
+              children: [
+                TextInputWidget(
+                  isRequired: true,
+                  width: dpWidth / 2.5,
+                  labelText: "Template Title",
+                  controller: controller.titleController,
+                  onChanged: (value) {
+                    controller.update(['name_title_fields']);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a title";
+                    }
+                    return null;
+                  },
+                ),
+                if (controller.titleExists && controller.isNew)
+                  KText(
+                      text: "Title already exists",
+                      textColor: ThemeColors.red3,
+                      fontWeight: FWeight.bold,
+                      fontSize: 16.0,
+                      isSelectable: false),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -376,6 +376,10 @@ abstract class RestClient {
     @Field() required bool damage,
   });
 
+  @DELETE("/api/fe/checklisttemplates/{id}/rooms")
+  Future<HttpResponse> deleteChecklistTemplateRoom(
+      @Path() int id, @Query("name") String name);
+
   @POST("/api/fe/handovertypes")
   @FormUrlEncoded()
   Future<HttpResponse> postHandoverTypes({

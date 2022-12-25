@@ -28,88 +28,88 @@ extension FutureExceptionHandler on Future {
   /// if success is true then the data will be returned and error message is null or ok.
   /// Fits properly with retrofit.
   Future<ApiResponse> nocodeErrorHandler() async {
-    final ApiResponse _apiResponse = ApiResponse(success: false);
+    final ApiResponse apiResponse = ApiResponse(success: false);
     return await then((successRes) {
       //Success Case -> Converting to ApiResponse
-      final _res = successRes as HttpResponse<dynamic>;
-      _apiResponse.success = true;
-      _apiResponse.resCode = _res.response.statusCode;
-      _apiResponse.resMessage = successRes.response.statusMessage;
-      _apiResponse.requestOptions = successRes.response.requestOptions;
-      _apiResponse.data = successRes.data;
-      return _apiResponse;
-    }).catchError((Object errrorRes) {
+      final res = successRes as HttpResponse<dynamic>;
+      apiResponse.success = true;
+      apiResponse.resCode = res.response.statusCode;
+      apiResponse.resMessage = successRes.response.statusMessage;
+      apiResponse.requestOptions = successRes.response.requestOptions;
+      apiResponse.data = successRes.data;
+      return apiResponse;
+    }).catchError((Object errorRes) {
       //Error Case -> Converting to ApiResponse
-      _apiResponse.success = false;
-      switch (errrorRes.runtimeType) {
+      apiResponse.success = false;
+      switch (errorRes.runtimeType) {
         case DioError:
-          final _dioError = (errrorRes as DioError);
-          final _errorType = _dioError.type;
-          _apiResponse.rawError = _dioError.response;
-          _apiResponse.requestOptions = _dioError.requestOptions;
-          switch (_errorType) {
+          final dioError = (errorRes as DioError);
+          final errorType = dioError.type;
+          apiResponse.rawError = dioError.response;
+          apiResponse.requestOptions = dioError.requestOptions;
+          switch (errorType) {
             case DioErrorType.response:
-              _apiResponse.resCode = _dioError.response!.statusCode;
-              _apiResponse.resMessage = _dioError.response!.statusMessage;
-              _apiResponse.data = _dioError.response!.data;
+              apiResponse.resCode = dioError.response!.statusCode;
+              apiResponse.resMessage = dioError.response!.statusMessage;
+              apiResponse.data = dioError.response!.data;
               break;
             case DioErrorType.other:
-              Type _otherErrorType = _dioError.error.runtimeType;
-              switch (_otherErrorType) {
+              Type otherErrorType = dioError.error.runtimeType;
+              switch (otherErrorType) {
                 case SocketException:
                   //Handle no Internet access
-                  _apiResponse.resCode =
+                  apiResponse.resCode =
                       900; // 900 is custom error code for no internet
-                  _apiResponse.resMessage = 'ERR_INTERNET_DISCONNECTED';
+                  apiResponse.resMessage = 'ERR_INTERNET_DISCONNECTED';
                   break;
                 default:
                   //Handle Unknown error
-                  _apiResponse.resCode =
+                  apiResponse.resCode =
                       800; // 800 is custom error code for unknown error
-                  _apiResponse.resMessage =
-                      'ERR_UNKNOWN - [${_dioError.message}]\n[stack_trace: ${_dioError.stackTrace}]';
+                  apiResponse.resMessage =
+                      'ERR_UNKNOWN - [${dioError.message}]\n[stack_trace: ${dioError.stackTrace}]';
               }
               break;
             case DioErrorType.connectTimeout:
-              _apiResponse.resCode =
+              apiResponse.resCode =
                   910; // 910 is custom error code for connect timeout
-              _apiResponse.resMessage = _dioError.message;
+              apiResponse.resMessage = dioError.message;
               break;
             case DioErrorType.sendTimeout:
-              _apiResponse.resCode =
+              apiResponse.resCode =
                   920; // 920 is custom error code for send timeout
-              _apiResponse.resMessage = _dioError.message;
+              apiResponse.resMessage = dioError.message;
               break;
             case DioErrorType.receiveTimeout:
-              _apiResponse.resCode =
+              apiResponse.resCode =
                   930; // 930 is custom error code for receive timeout
-              _apiResponse.resMessage = _dioError.message;
+              apiResponse.resMessage = dioError.message;
               break;
             case DioErrorType.cancel:
-              _apiResponse.resCode = 940; // 940 is custom error code for cancel
-              _apiResponse.resMessage = _dioError.message;
+              apiResponse.resCode = 940; // 940 is custom error code for cancel
+              apiResponse.resMessage = dioError.message;
               break;
           }
           break;
         default:
           //Handle Unknown error
-          _apiResponse.resCode =
+          apiResponse.resCode =
               801; // 801 is custom error code for unknown(1) error
-          final _errType = errrorRes.runtimeType;
-          switch (_errType) {
+          final errType = errorRes.runtimeType;
+          switch (errType) {
             case UnsupportedError:
-              final _unsoppertedErr = errrorRes as UnsupportedError;
-              _apiResponse.resMessage =
-                  'ERR_UNKNOWN_1  - [${_unsoppertedErr.message}]\n[stack_trace: ${_unsoppertedErr.stackTrace}]';
+              final unsupportedErr = errorRes as UnsupportedError;
+              apiResponse.resMessage =
+                  'ERR_UNKNOWN_1  - [${unsupportedErr.message}]\n[stack_trace: ${unsupportedErr.stackTrace}]';
               break;
             default:
-              _apiResponse.resMessage =
-                  'ERR_UNKNOWN_1  - [${errrorRes.toString()}], [err_type: $_errType]';
+              apiResponse.resMessage =
+                  'ERR_UNKNOWN_1  - [${errorRes.toString()}], [err_type: $errType]';
           }
 
           break;
       }
-      return _apiResponse;
+      return apiResponse;
     });
   }
 }

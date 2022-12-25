@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
+import 'package:mca_web_2022_07/pages/checklist_templates/controllers/new_template_controller.dart';
 
 import '../../theme/theme.dart';
 
@@ -15,6 +16,7 @@ class _NewSectionPopupState extends State<NewSectionPopup> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   bool isNew = true;
+  bool roomExists = false;
 
   Map<ShortcutActivator, VoidCallback> bindings = {};
 
@@ -31,6 +33,12 @@ class _NewSectionPopupState extends State<NewSectionPopup> {
       nameController.text = widget.title!;
       isNew = false;
     }
+
+    nameController.addListener(() {
+      setState(() {
+        roomExists = NewTemplateController.to.roomExists(nameController.text);
+      });
+    });
 
     bindings = {
       LogicalKeySet(LogicalKeyboardKey.enter): _onSave,
@@ -92,6 +100,7 @@ class _NewSectionPopupState extends State<NewSectionPopup> {
   }
 
   Widget _body(double dpWidth) {
+    logger('roomExists: $roomExists');
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -99,17 +108,30 @@ class _NewSectionPopupState extends State<NewSectionPopup> {
         verticalSpace: 32.0,
         children: [
           const SizedBox(height: 1),
-          TextInputWidget(
-            isRequired: true,
-            width: dpWidth / 5,
-            labelText: "Section Name",
-            controller: nameController,
-            validator: (p0) {
-              if (p0 == null || p0.isEmpty) {
-                return "Name is required";
-              }
-              return null;
-            },
+          SpacedColumn(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            verticalSpace: 8.0,
+            children: [
+              TextInputWidget(
+                isRequired: true,
+                width: dpWidth / 5,
+                labelText: "Section Name",
+                controller: nameController,
+                validator: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return "Name is required";
+                  }
+                  return null;
+                },
+              ),
+              if (roomExists)
+                KText(
+                    text: "Section with this name already exists",
+                    textColor: ThemeColors.red3,
+                    fontWeight: FWeight.bold,
+                    fontSize: 16.0,
+                    isSelectable: false),
+            ],
           ),
           const SizedBox(height: 1),
         ],
@@ -136,7 +158,7 @@ class _NewSectionPopupState extends State<NewSectionPopup> {
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: isNew ? "Add Section" : "Update Section",
-            onPressed: _onSave,
+            onPressed: roomExists ? null : _onSave,
           ),
         ],
       ),
@@ -145,7 +167,7 @@ class _NewSectionPopupState extends State<NewSectionPopup> {
 
   void _onSave() {
     if (formKey.currentState!.validate()) {
-      context.popRoute(nameController.text);
+      context.popRoute(nameController.text.trim());
     }
   }
 }
