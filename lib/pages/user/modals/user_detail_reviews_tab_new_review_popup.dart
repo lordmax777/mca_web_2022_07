@@ -8,10 +8,10 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 
-import '../../manager/models/users_list.dart';
-import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
-import '../../theme/theme.dart';
+import '../../../manager/models/users_list.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/users_state/users_state.dart';
+import '../../../theme/theme.dart';
 
 class UserDetailReviewNewReviewPopupWidget extends StatefulWidget {
   final ReviewMd? review;

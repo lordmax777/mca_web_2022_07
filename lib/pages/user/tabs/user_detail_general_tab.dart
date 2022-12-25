@@ -1,16 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
-import '../../manager/models/list_all_md.dart';
-import '../../manager/redux/middlewares/users_middleware.dart';
-import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/states/users_state/saved_user_state.dart';
-import '../../theme/theme.dart';
+import '../../../manager/models/list_all_md.dart';
+import '../../../manager/redux/middlewares/users_middleware.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/users_state/saved_user_state.dart';
+import '../../../theme/theme.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GeneralWidget extends StatelessWidget {

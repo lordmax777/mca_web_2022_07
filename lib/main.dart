@@ -13,6 +13,7 @@ import 'package:mca_web_2022_07/pages/settings/controllers/settings_controller.d
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_new_controller.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 
 import 'app.dart';
 import 'package:get/get.dart';
@@ -40,6 +41,7 @@ Future<void> main() async {
   Get.lazyPut(() => StockItemsController());
   Get.lazyPut(() => StockItemsNewItemController());
   Get.lazyPut(() => SettingsController());
+  Get.lazyPut(() => PreferredShiftsController());
 
   await HiveController.initHive();
 

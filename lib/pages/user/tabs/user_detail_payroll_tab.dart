@@ -1,19 +1,19 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:pluto_grid/pluto_grid.dart';
-import '../../comps/show_overlay_popup.dart';
-import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
-import '../../theme/theme.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
+import '../../../manager/models/list_all_md.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/users_state/users_state.dart';
+import '../../../theme/theme.dart';
 
-class ReviewsWidget extends StatefulWidget {
-  ReviewsWidget({Key? key}) : super(key: key);
+class PayrollWidget extends StatefulWidget {
+  const PayrollWidget({Key? key}) : super(key: key);
 
   @override
-  State<ReviewsWidget> createState() => _ReviewsWidgetState();
+  State<PayrollWidget> createState() => _PayrollWidgetState();
 }
 
-class _ReviewsWidgetState extends State<ReviewsWidget> {
+class _PayrollWidgetState extends State<PayrollWidget> {
   final GlobalKey _columnsMenuKey = GlobalKey();
   bool _isSmLoaded = false;
   late PlutoGridStateManager userDetailsPayrollSm;
@@ -22,39 +22,56 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
   List<PlutoColumn> get _cols {
     return [
       PlutoColumn(
-          // width: 80.0,
-          title: "Conducted By",
-          field: "conducted_by",
+          title: "Contract Type",
+          field: "contract_type",
           enableRowChecked: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          // width: 50.0,
-          title: "Conducted On",
-          field: "date",
+          // width: 200.0,
+          title: "Start Date",
+          field: "start_date",
           type: PlutoColumnType.date(
             format: 'dd/MM/yyyy',
           )),
       PlutoColumn(
-          // width: 100.0,
-          title: "Title",
-          field: "title",
+          // width: 200.0,
+          title: "End Date",
+          field: "end_date",
+          type: PlutoColumnType.date(
+            format: 'dd/MM/yyyy',
+          )),
+      PlutoColumn(
+          title: "Holiday Calculation",
+          field: "holiday_calculation",
           type: PlutoColumnType.text()),
       PlutoColumn(
-          // width: 80.0,
-          title: "Comment",
-          field: "comment",
-          enableSorting: false,
-          type: PlutoColumnType.text(),
+          title: "Weekly Hours",
+          field: "weekly_hours",
           renderer: (ctx) {
-            return TableTooltipWidget(
-                title: "Read Comment", message: ctx.cell.value.toString());
-          }),
+            return UsersListTable.defaultTextWidget("${ctx.cell.value} hours");
+          },
+          type: PlutoColumnType.text()),
+      PlutoColumn(
+          title: "Working Days",
+          field: "working_days",
+          renderer: (ctx) {
+            return UsersListTable.defaultTextWidget("${ctx.cell.value} days");
+          },
+          type: PlutoColumnType.text()),
+      PlutoColumn(
+        title: "Annual Holiday Entitlement",
+        field: "annual_holiday_entitlement",
+        type: PlutoColumnType.text(),
+        renderer: (ctx) {
+          return UsersListTable.defaultTextWidget("${ctx.cell.value} days");
+        },
+      ),
       PlutoColumn(
           title: "Action",
-          enableSorting: false,
           field: "action",
+          enableSorting: false,
           type: PlutoColumnType.text(),
-          renderer: (ctx) {
+          renderer: (PlutoColumnRendererContext ctx) {
             return KText(
               text: "Edit",
               textColor: ThemeColors.MAIN_COLOR,
@@ -62,14 +79,13 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
               fontSize: 14,
               isSelectable: false,
               onTap: () {
-                showOverlayPopup(
-                    body: UserDetailReviewNewReviewPopupWidget(
-                        review: ctx.cell.value),
-                    context: context);
+                context.pushRoute(UserDetailsPayrollTabNewContractRoute(
+                    contract: ctx.cell.value));
               },
-              icon:  HeroIcon(
+              icon: HeroIcon(
                 HeroIcons.pen,
                 color: ThemeColors.MAIN_COLOR,
+                size: 12,
               ),
             );
           }),
@@ -93,8 +109,9 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
-        final e1 = state.usersState.userDetailReviews.error;
+        final e1 = state.usersState.userDetailContracts.error;
         final errors = [e1];
+
         return ErrorWrapper(
           errors: errors,
           child: SizedBox(
@@ -126,11 +143,11 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
             text: "Delete Selected",
             onPressed: () async {
               final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map<int>((e) => (e.cells['action']?.value as ReviewMd).id)
+                  .map<int>((e) => e.cells['action']?.value.id)
                   .toList();
               if (selectedItemIds.isNotEmpty) {
                 await appStore.dispatch(
-                    GetDeleteUserDetailsReviewsAction(ids: selectedItemIds));
+                    GetDeleteUserDetailsContractAction(ids: selectedItemIds));
               }
             },
           ),
@@ -146,11 +163,9 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
                 }),
             ButtonMedium(
               icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
-              text: "New Review",
+              text: "New Contract",
               onPressed: () {
-                showOverlayPopup(
-                    body: const UserDetailReviewNewReviewPopupWidget(),
-                    context: context);
+                context.navigateTo(UserDetailsPayrollTabNewContractRoute());
               },
             ),
           ]),
@@ -160,15 +175,28 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
   }
 
   Widget _body(AppState state) {
+    final List<ContractTypes> ctypes =
+        state.generalState.paramList.data?.contract_types ?? [];
+    final List<HolidayCalculationTypes> hCalcTypes =
+        state.generalState.paramList.data?.holiday_calculation_types ?? [];
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
-      rows: state.usersState.userDetailReviews.data!
+      rows: state.usersState.userDetailContracts.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
-              "conducted_by": PlutoCell(value: e.conducted_by),
-              "date": PlutoCell(value: e.date),
-              "title": PlutoCell(value: e.title),
-              "comment": PlutoCell(value: e.notes),
+              "contract_type": PlutoCell(
+                  value: ctypes
+                      .firstWhere((element) => element.id == e.contractType)
+                      .name),
+              "start_date": PlutoCell(value: e.csd?.date ?? "-"),
+              "end_date": PlutoCell(value: e.ced?.date ?? "-"),
+              "holiday_calculation": PlutoCell(
+                  value: hCalcTypes
+                      .firstWhere((element) => element.id == e.hct)
+                      .name),
+              "weekly_hours": PlutoCell(value: e.awh.toString()),
+              "working_days": PlutoCell(value: e.wdpw.toString()),
+              "annual_holiday_entitlement": PlutoCell(value: e.ahe),
               "action": PlutoCell(value: e),
             }),
           )

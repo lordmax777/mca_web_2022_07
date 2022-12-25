@@ -1420,7 +1420,7 @@ class GetDeleteUserPreferredShiftAction {
   GetDeleteUserPreferredShiftAction({required this.ids});
 
   static Future<ApiResponse?> fetch(AppState state,
-      GetDeleteUserDetailsReviewsAction action, NextDispatcher next) async {
+      GetDeleteUserPreferredShiftAction action, NextDispatcher next) async {
     final int? userId = state.usersState.selectedUser?.id;
     if (userId == null) {
       appRouter.navigateBack();

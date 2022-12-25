@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import '../../comps/dropdown_widget1.dart';
-import '../../manager/redux/sets/state_value.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
-import '../../manager/rest/nocode_helpers.dart';
-import '../../theme/theme.dart';
+import '../../../comps/dropdown_widget1.dart';
+import '../../../manager/redux/sets/state_value.dart';
+import '../../../manager/redux/states/users_state/users_state.dart';
+import '../../../manager/rest/nocode_helpers.dart';
+import '../../../theme/theme.dart';
 
 class UserDetailVisaNewVisaPopupWidget extends StatefulWidget {
   final VisaMd? visa;

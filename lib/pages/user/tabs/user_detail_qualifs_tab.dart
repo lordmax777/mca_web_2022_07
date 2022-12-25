@@ -1,25 +1,24 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
+import '../../../comps/show_overlay_popup.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../theme/theme.dart';
 
-import '../../comps/show_overlay_popup.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
-import '../../theme/theme.dart';
-
-class VisaWidget extends StatefulWidget {
-  VisaWidget({Key? key}) : super(key: key);
+class QaulifsWidget extends StatefulWidget {
+  AppState state;
+  QaulifsWidget({Key? key, required this.state}) : super(key: key);
 
   @override
-  State<VisaWidget> createState() => _VisaWidgetState();
+  State<QaulifsWidget> createState() => _QaulifsWidgetState();
 }
 
-class _VisaWidgetState extends State<VisaWidget> {
+class _QaulifsWidgetState extends State<QaulifsWidget> {
   final GlobalKey _columnsMenuKey = GlobalKey();
   bool _isSmLoaded = false;
   late PlutoGridStateManager userDetailsPayrollSm;
   final List<ColumnHiderValues> columnHideValues = [];
-  final List<VisaMd> _contracts = [];
+  final List<QualifsMd> _contracts = [];
 
   List<PlutoColumn> get _cols {
     return [
@@ -30,32 +29,61 @@ class _VisaWidgetState extends State<VisaWidget> {
           hide: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          // width: 80.0,
-          title: "Document #",
-          field: "document_no",
-          textAlign: PlutoColumnTextAlign.right,
+          // width: 140.0,
+          title: "Qualification",
+          field: "qualification",
           enableRowChecked: true,
           type: PlutoColumnType.text()),
       PlutoColumn(
-          // width: 140.0,
-          title: "Type",
-          field: "title",
+          // width: 60.0,
+          title: "Level",
+          field: "level",
           type: PlutoColumnType.text()),
       PlutoColumn(
-        // width: 100.0,
-        title: "Valid From - To",
-        field: "startToEndDate",
-        type: PlutoColumnType.text(),
-      ),
-      PlutoColumn(
-          // width: 80.0,
-          title: "Comment",
-          field: "comment",
-          enableSorting: false,
+          // width: 60.0,
+          title: "Certificate",
+          field: "certificate",
           type: PlutoColumnType.text(),
           renderer: (ctx) {
-            final String msg = ctx.cell.value.toString();
-            return TableTooltipWidget(title: "Read Comment", message: msg);
+            final QualifsMd msg = ctx.cell.value;
+            return KText(
+              onTap: () {},
+              text: "View",
+              textColor: ThemeColors.MAIN_COLOR,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              icon: HeroIcon(
+                HeroIcons.eye,
+                color: ThemeColors.MAIN_COLOR,
+              ),
+            );
+          }),
+      PlutoColumn(
+          // width: 100.0,
+          title: "Certificate #",
+          field: "certificate_no",
+          enableSorting: false,
+          type: PlutoColumnType.text()),
+      PlutoColumn(
+          // width: 120.0,
+          title: "Acheivement Date",
+          field: "achievement_date",
+          type: PlutoColumnType.date(format: "dd/MM/yyyy")),
+      PlutoColumn(
+          // width: 120.0,
+          title: "Expiry Date",
+          field: "expiry_date",
+          type: PlutoColumnType.date(format: "dd/MM/yyyy")),
+      PlutoColumn(
+          // width: 140.0,
+          title: "Comment",
+          field: "comment",
+          type: PlutoColumnType.text(),
+          renderer: (ctx) {
+            final String? msg = ctx.cell.value;
+            return TableTooltipWidget(
+                title: "Read Comment", message: msg ?? "NO-COMMENT");
           }),
       PlutoColumn(
           title: "Action",
@@ -71,8 +99,8 @@ class _VisaWidgetState extends State<VisaWidget> {
               isSelectable: false,
               onTap: () {
                 showOverlayPopup(
-                    body:
-                        UserDetailVisaNewVisaPopupWidget(visa: ctx.cell.value),
+                    body: UserDetailQualifNewQualifPopupWidget(
+                        qualif: ctx.cell.value),
                     context: context);
               },
               icon: HeroIcon(
@@ -94,33 +122,31 @@ class _VisaWidgetState extends State<VisaWidget> {
         .map<ColumnHiderValues>(
             (e) => ColumnHiderValues(value: e.field, label: e.title))
         .toList());
-    // _contracts.clear();
-    // _contracts.addAll(widget.state.usersState.userDetailVisas.data!);
+    _contracts.clear();
+    _contracts.addAll(widget.state.usersState.userDetailQualifs.data!);
   }
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
-      converter: (store) => store.state,
-      builder: (context, state) {
-        final e1 = state.usersState.userDetailVisas.error;
-        final errors = [e1];
-        return ErrorWrapper(
-          errors: errors,
-          child: SizedBox(
-            width: double.infinity,
-            child: SpacedColumn(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _header(context),
-                _body(state),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+        converter: (store) => store.state,
+        builder: (context, state) {
+          final e1 = state.usersState.userDetailQualifs.error;
+          final es = [e1];
+          return ErrorWrapper(
+              errors: es,
+              child: SizedBox(
+                width: double.infinity,
+                child: SpacedColumn(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _header(context),
+                    _body(),
+                  ],
+                ),
+              ));
+        });
   }
 
   Widget _header(BuildContext context) {
@@ -136,11 +162,11 @@ class _VisaWidgetState extends State<VisaWidget> {
             text: "Delete Selected",
             onPressed: () async {
               final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map<int>((e) => e.cells['item']?.value.id)
+                  .map<int>((e) => e.cells['item']?.value.uqId)
                   .toList();
               if (selectedItemIds.isNotEmpty) {
                 await appStore.dispatch(
-                    GetDeleteUserDetailsVisaAction(ids: selectedItemIds));
+                    GetDeleteUserDetailsQualifsAction(ids: selectedItemIds));
               }
             },
           ),
@@ -156,10 +182,10 @@ class _VisaWidgetState extends State<VisaWidget> {
                 }),
             ButtonMedium(
               icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
-              text: "New Vias/Permit",
+              text: "New Qualification",
               onPressed: () {
                 showOverlayPopup(
-                    body: const UserDetailVisaNewVisaPopupWidget(),
+                    body: const UserDetailQualifNewQualifPopupWidget(),
                     context: context);
               },
             ),
@@ -169,20 +195,21 @@ class _VisaWidgetState extends State<VisaWidget> {
     );
   }
 
-  Widget _body(AppState state) {
+  Widget _body() {
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
-      rows: state.usersState.userDetailVisas.data!
+      rows: widget.state.usersState.userDetailQualifs.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
-              'item': PlutoCell(value: e),
-              "document_no": PlutoCell(
-                  value: e.document_no.isNotEmpty ? e.document_no : "-"),
-              "title": PlutoCell(value: e.title),
-              "startToEndDate": PlutoCell(
-                  value:
-                      "${getDateFormat(DateTime.tryParse(e.startDate.date), dateSeparatorSymbol: "/")} -\n ${e.endDate != null ? getDateFormat(DateTime.tryParse(e.endDate!.date), dateSeparatorSymbol: "/") : ""}"),
-              "comment": PlutoCell(value: e.notes),
+              "item": PlutoCell(value: e),
+              "qualification": PlutoCell(value: e.title),
+              "level": PlutoCell(value: e.level),
+              "certificate": PlutoCell(value: e),
+              "certificate_no": PlutoCell(value: e.certificateNumber),
+              "achievement_date":
+                  PlutoCell(value: e.achievementDate?.date ?? "N/A"),
+              "expiry_date": PlutoCell(value: e.expiryDate.date),
+              "comment": PlutoCell(value: e.comments),
               "action": PlutoCell(value: e),
             }),
           )

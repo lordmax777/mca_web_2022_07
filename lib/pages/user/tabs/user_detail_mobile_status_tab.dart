@@ -4,10 +4,10 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import '../../comps/dropdown_widget1.dart';
-import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
-import '../../theme/theme.dart';
+import '../../../comps/dropdown_widget1.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/users_state/users_state.dart';
+import '../../../theme/theme.dart';
 
 // ignore: must_be_immutable
 class MobileStatusWidget extends StatefulWidget {

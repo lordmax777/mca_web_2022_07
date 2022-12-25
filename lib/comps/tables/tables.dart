@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/gestures.dart';
 
 import '../../theme/theme.dart';
@@ -162,9 +164,12 @@ class UserDetailPayrollTabTable extends StatelessWidget {
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
   final bool dynamicHeight;
+  final void Function(PlutoGridOnRowCheckedEvent)? onSelected;
+
   const UserDetailPayrollTabTable(
       {Key? key,
       required this.rows,
+      this.onSelected,
       this.dynamicHeight = false,
       required this.onSmReady,
       required this.cols})
@@ -205,8 +210,8 @@ class UserDetailPayrollTabTable extends StatelessWidget {
     return SizedBox(
       height: _h,
       child: PlutoGrid(
-        onSelected: (event) {
-          print(event);
+        onRowChecked: (event) {
+          onSelected?.call(event);
         },
         configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig(

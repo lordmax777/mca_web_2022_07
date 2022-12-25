@@ -1,9 +1,11 @@
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 
+import '../../manager/models/preffered_shift_md_md.dart';
 import '../../theme/theme.dart';
 
 class UserDetailsPage extends StatelessWidget {
@@ -46,7 +48,7 @@ class UserDetailsPage extends StatelessWidget {
           }
 
           return ErrorWrapper(
-            errors: [e1],
+            errors: errors,
             child: PageWrapper(
                 child: SpacedColumn(
               verticalSpace: 16.0,
@@ -165,15 +167,22 @@ class _Body extends StatefulWidget {
 class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  final List<Tab> tabs = [
+  final List<Tab> tabs = const [
     Tab(text: 'General'),
     Tab(text: 'Payroll'),
     Tab(text: 'Reviews'),
     Tab(text: 'Visa, Work Permits'),
     Tab(text: 'Preferred Shifts'),
     Tab(text: 'Qualifications'),
-    Tab(text: 'Mobile and Status'),
+    Tab(text: 'Mobile and Status')
   ];
+
+  @override
+  void dispose() {
+    logger('dispose');
+    PreferredShiftsController.to.onDispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -186,12 +195,14 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       _tabController.animateTo(widget.tabIndex!);
     }
     _tabController.addListener(() {
+      PreferredShiftsController.to.onDispose();
       setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => PreferredShiftsController());
     return TableWrapperWidget(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,13 +236,13 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       case 0:
         return const GeneralWidget();
       case 1:
-        return PayrollWidget();
+        return const PayrollWidget();
       case 2:
         return ReviewsWidget();
       case 3:
         return VisaWidget();
       case 4:
-        return const PrefferedShiftsWidget();
+        return const PreferredShiftsWidget();
       case 5:
         return QaulifsWidget(state: appStore.state);
       case 6:

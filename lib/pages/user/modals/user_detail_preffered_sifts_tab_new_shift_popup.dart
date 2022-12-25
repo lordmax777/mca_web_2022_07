@@ -3,12 +3,12 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 
-import '../../manager/models/list_all_md.dart';
-import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/sets/state_value.dart';
-import '../../manager/redux/states/general_state.dart';
-import '../../manager/redux/states/users_state/users_state.dart';
-import '../../theme/theme.dart';
+import '../../../manager/models/list_all_md.dart';
+import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/sets/state_value.dart';
+import '../../../manager/redux/states/general_state.dart';
+import '../../../manager/redux/states/users_state/users_state.dart';
+import '../../../theme/theme.dart';
 
 class UserDetailPreferredShiftsNewShiftPopupWidget extends StatefulWidget {
   const UserDetailPreferredShiftsNewShiftPopupWidget({Key? key})
