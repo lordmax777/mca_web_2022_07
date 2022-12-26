@@ -141,15 +141,20 @@ class _PayrollWidgetState extends State<PayrollWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () async {
-              final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map<int>((e) => e.cells['action']?.value.id)
-                  .toList();
-              if (selectedItemIds.isNotEmpty) {
-                await appStore.dispatch(
-                    GetDeleteUserDetailsContractAction(ids: selectedItemIds));
-              }
-            },
+            onPressed: _isSmLoaded
+                ? (userDetailsPayrollSm.checkedRows.isNotEmpty
+                    ? () async {
+                        final selectedItemIds = userDetailsPayrollSm.checkedRows
+                            .map<int>((e) => e.cells['action']?.value.id)
+                            .toList();
+                        if (selectedItemIds.isNotEmpty) {
+                          await appStore.dispatch(
+                              GetDeleteUserDetailsContractAction(
+                                  ids: selectedItemIds));
+                        }
+                      }
+                    : null)
+                : null,
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(
@@ -181,6 +186,9 @@ class _PayrollWidgetState extends State<PayrollWidget> {
         state.generalState.paramList.data?.holiday_calculation_types ?? [];
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
+      onSelected: (p0) {
+        setState(() {});
+      },
       rows: state.usersState.userDetailContracts.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {

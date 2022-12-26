@@ -17,6 +17,13 @@ class ButtonMedium extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ButtonStyle(
+      mouseCursor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return SystemMouseCursors.forbidden;
+        } else {
+          return SystemMouseCursors.click;
+        }
+      }),
       padding: MaterialStateProperty.all(const EdgeInsets.all(16.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.disabled)) {
@@ -92,6 +99,13 @@ class ButtonLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ButtonStyle(
+      mouseCursor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return SystemMouseCursors.forbidden;
+        } else {
+          return SystemMouseCursors.click;
+        }
+      }),
       padding: MaterialStateProperty.all(
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
@@ -165,6 +179,13 @@ class ButtonSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ButtonStyle(
+      mouseCursor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return SystemMouseCursors.forbidden;
+        } else {
+          return SystemMouseCursors.click;
+        }
+      }),
       padding: MaterialStateProperty.all(
           const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
@@ -240,6 +261,13 @@ class ButtonMediumSecondary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ButtonStyle(
+      mouseCursor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return SystemMouseCursors.forbidden;
+        } else {
+          return SystemMouseCursors.click;
+        }
+      }),
       padding: MaterialStateProperty.all(const EdgeInsets.all(16.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.disabled)) {
@@ -318,6 +346,13 @@ class ButtonLargeSecondary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ButtonStyle(
+      mouseCursor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return SystemMouseCursors.forbidden;
+        } else {
+          return SystemMouseCursors.click;
+        }
+      }),
       padding: MaterialStateProperty.all(
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
@@ -399,6 +434,13 @@ class ButtonSmallSecondary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ButtonStyle(
+      mouseCursor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return SystemMouseCursors.forbidden;
+        } else {
+          return SystemMouseCursors.click;
+        }
+      }),
       padding: MaterialStateProperty.all(const EdgeInsets.all(8.0)),
       backgroundColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.disabled)) {

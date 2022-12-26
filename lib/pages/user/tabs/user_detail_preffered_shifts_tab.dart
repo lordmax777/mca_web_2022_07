@@ -7,7 +7,11 @@ import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../theme/theme.dart';
 
 class PreferredShiftsController extends GetxController {
-  static PreferredShiftsController get to => Get.find();
+  static PreferredShiftsController get to {
+    Get.lazyPut(() => PreferredShiftsController());
+    return Get.find();
+  }
+
   final RxList<PreferredShiftMd> selectedShifts = <PreferredShiftMd>[].obs;
 
   void onDispose() {

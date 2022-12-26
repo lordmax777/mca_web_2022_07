@@ -160,15 +160,20 @@ class _QaulifsWidgetState extends State<QaulifsWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () async {
-              final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map<int>((e) => e.cells['item']?.value.uqId)
-                  .toList();
-              if (selectedItemIds.isNotEmpty) {
-                await appStore.dispatch(
-                    GetDeleteUserDetailsQualifsAction(ids: selectedItemIds));
-              }
-            },
+            onPressed: _isSmLoaded
+                ? (userDetailsPayrollSm.checkedRows.isNotEmpty
+                    ? () async {
+                        final selectedItemIds = userDetailsPayrollSm.checkedRows
+                            .map<int>((e) => e.cells['item']?.value.uqId)
+                            .toList();
+                        if (selectedItemIds.isNotEmpty) {
+                          await appStore.dispatch(
+                              GetDeleteUserDetailsQualifsAction(
+                                  ids: selectedItemIds));
+                        }
+                      }
+                    : null)
+                : null,
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(

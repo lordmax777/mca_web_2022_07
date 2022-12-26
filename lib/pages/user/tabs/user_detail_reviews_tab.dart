@@ -6,7 +6,7 @@ import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../theme/theme.dart';
 
 class ReviewsWidget extends StatefulWidget {
-  ReviewsWidget({Key? key}) : super(key: key);
+  const ReviewsWidget({Key? key}) : super(key: key);
 
   @override
   State<ReviewsWidget> createState() => _ReviewsWidgetState();
@@ -123,15 +123,21 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () async {
-              final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map<int>((e) => (e.cells['action']?.value as ReviewMd).id)
-                  .toList();
-              if (selectedItemIds.isNotEmpty) {
-                await appStore.dispatch(
-                    GetDeleteUserDetailsReviewsAction(ids: selectedItemIds));
-              }
-            },
+            onPressed: _isSmLoaded
+                ? (userDetailsPayrollSm.checkedRows.isNotEmpty
+                    ? () async {
+                        final selectedItemIds = userDetailsPayrollSm.checkedRows
+                            .map<int>((e) =>
+                                (e.cells['action']?.value as ReviewMd).id)
+                            .toList();
+                        if (selectedItemIds.isNotEmpty) {
+                          await appStore.dispatch(
+                              GetDeleteUserDetailsReviewsAction(
+                                  ids: selectedItemIds));
+                        }
+                      }
+                    : null)
+                : null,
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(
@@ -161,6 +167,9 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
   Widget _body(AppState state) {
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
+      onSelected: (p0) {
+        setState(() {});
+      },
       rows: state.usersState.userDetailReviews.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {

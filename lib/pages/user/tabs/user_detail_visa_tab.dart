@@ -6,7 +6,7 @@ import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../theme/theme.dart';
 
 class VisaWidget extends StatefulWidget {
-  VisaWidget({Key? key}) : super(key: key);
+  const VisaWidget({Key? key}) : super(key: key);
 
   @override
   State<VisaWidget> createState() => _VisaWidgetState();
@@ -132,15 +132,20 @@ class _VisaWidgetState extends State<VisaWidget> {
             icon: const HeroIcon(HeroIcons.bin,
                 color: ThemeColors.white, size: 20),
             text: "Delete Selected",
-            onPressed: () async {
-              final selectedItemIds = userDetailsPayrollSm.checkedRows
-                  .map<int>((e) => e.cells['item']?.value.id)
-                  .toList();
-              if (selectedItemIds.isNotEmpty) {
-                await appStore.dispatch(
-                    GetDeleteUserDetailsVisaAction(ids: selectedItemIds));
-              }
-            },
+            onPressed: _isSmLoaded
+                ? (userDetailsPayrollSm.checkedRows.isNotEmpty
+                    ? () async {
+                        final selectedItemIds = userDetailsPayrollSm.checkedRows
+                            .map<int>((e) => e.cells['item']?.value.id)
+                            .toList();
+                        if (selectedItemIds.isNotEmpty) {
+                          await appStore.dispatch(
+                              GetDeleteUserDetailsVisaAction(
+                                  ids: selectedItemIds));
+                        }
+                      }
+                    : null)
+                : null,
           ),
           SpacedRow(horizontalSpace: 16.0, children: [
             TableColumnHiderWidget(
@@ -170,6 +175,9 @@ class _VisaWidgetState extends State<VisaWidget> {
   Widget _body(AppState state) {
     return UserDetailPayrollTabTable(
       onSmReady: _setSm,
+      onSelected: (p0) {
+        setState(() {});
+      },
       rows: state.usersState.userDetailVisas.data!
           .map<PlutoRow>(
             (e) => PlutoRow(cells: {
