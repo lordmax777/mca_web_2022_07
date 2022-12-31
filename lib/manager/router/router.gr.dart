@@ -127,6 +127,12 @@ class _$AppRouter extends RootStackRouter {
         child: const SettingsPage(),
       );
     },
+    PropertiesRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const PropertiesPage(),
+      );
+    },
   };
 
   @override
@@ -203,6 +209,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               SettingsRoute.name,
               path: 'settings-page',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              PropertiesRoute.name,
+              path: 'properties',
               parent: HomeRoute.name,
             ),
           ],
@@ -457,4 +468,16 @@ class SettingsRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'SettingsRoute';
+}
+
+/// generated route for
+/// [PropertiesPage]
+class PropertiesRoute extends PageRouteInfo<void> {
+  const PropertiesRoute()
+      : super(
+          PropertiesRoute.name,
+          path: 'properties',
+        );
+
+  static const String name = 'PropertiesRoute';
 }

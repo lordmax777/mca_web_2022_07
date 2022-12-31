@@ -19,12 +19,16 @@ dependencies:
 
   simpleicons:
     path: ./simpleicons
+
   google_maps_webservice:
     git:
       url: https://github.com/YakivGalkin/google_maps_webservice
+
   google_maps_flutter: ^2.2.1
   google_maps_flutter_web: ^0.4.0+3
   google_maps_widget: ^1.0.5+1
+
+#  flutter_screenutil: ^5.6.0
 
 
   cupertino_icons: ^1.0.2

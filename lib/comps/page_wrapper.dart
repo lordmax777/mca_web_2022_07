@@ -6,11 +6,14 @@ class PageWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32.0),
-        child: child,
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: Constants.defaultWidth,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32.0),
+          child: child,
+        ),
       ),
     );
   }

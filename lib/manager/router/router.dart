@@ -33,6 +33,7 @@ part 'router.gr.dart';
       AutoRoute(page: NewChecklistTemplatePage, path: "new-checklist-template"),
       AutoRoute(page: HandoverTypesPage, path: "handover-types"),
       AutoRoute(page: SettingsPage, path: "settings-page"),
+      AutoRoute(page: PropertiesPage, path: "properties"),
     ]),
   ],
 )

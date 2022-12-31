@@ -365,9 +365,9 @@ class ListSpecialRate {
   int id;
   String name;
   double rate;
-  int min_work_time;
+  int? min_work_time;
 
-  int paid_time;
+  int? paid_time;
   bool split_time;
   int shift_id;
 
@@ -376,8 +376,8 @@ class ListSpecialRate {
     required this.id,
     required this.name,
     required this.rate,
-    required this.min_work_time,
-    required this.paid_time,
+    this.min_work_time,
+    this.paid_time,
     required this.split_time,
     required this.shift_id,
   });

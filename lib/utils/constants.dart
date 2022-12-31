@@ -5,6 +5,8 @@ class Constants {
   static const String appName = "MCA Web";
   static const String appVersion = "1.0.0";
 
+  static const double defaultWidth = 2000;
+
   //REST API related data
 
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";
@@ -64,7 +66,7 @@ class Constants {
         },
         {
           "title": "Properties",
-          "name": const UsersListRoute(),
+          "name": const PropertiesRoute(),
         },
         {
           "title": "Warehouses",

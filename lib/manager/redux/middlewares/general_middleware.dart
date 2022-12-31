@@ -4,7 +4,6 @@ import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
-import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
@@ -32,6 +31,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return GetAllStorageItemsAction.fetch(store.state, action, next);
       case GetChecklistTemplatesAction:
         return GetChecklistTemplatesAction.fetch(store.state, action, next);
+      case GetPropertiesAction:
+        return GetPropertiesAction.fetch(store.state, action, next);
       default:
         return next(action);
     }
@@ -127,6 +128,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       }
       for (var e in r['taxes']) {
         l.taxes.add(ListTaxes.fromJson(e));
+      }
+      for (var e in r['special_rates']) {
+        logger(e, hint: "SPECIAL_RATE");
+        l.special_rates.add(ListSpecialRate.fromJson(e));
       }
 
       final userColor = l.color_schemas

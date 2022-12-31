@@ -4,11 +4,6 @@ import 'package:mca_web_2022_07/comps/drawer.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
-import '../manager/redux/middlewares/auth_middleware.dart';
-import '../manager/redux/states/auth_state.dart';
-import '../manager/redux/states/general_state.dart';
-import '../manager/redux/states/users_state/users_state.dart';
-
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 class HomePage extends StatelessWidget {
@@ -26,7 +21,7 @@ class HomePage extends StatelessWidget {
         backgroundColor: ThemeColors.gray12,
         drawerEnableOpenDragGesture: false,
         key: scaffoldKey,
-        appBar: NavbarWidget(scaffoldKey: scaffoldKey),
+        appBar: NavbarWidget(),
         body: const AutoRouter(),
       ),
     );

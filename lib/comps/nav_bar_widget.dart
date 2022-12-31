@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import '../app.dart';
 import '../manager/general_controller.dart';
+import '../pages/home_page.dart';
 import '../theme/theme.dart';
 
 class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  NavbarWidget({Key? key, required this.scaffoldKey}) : super(key: key);
+  NavbarWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +16,17 @@ class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
       alignment: Alignment.center,
       color: ThemeColors.MAIN_COLOR,
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          _LeadinBtn(scaffoldKey: scaffoldKey),
-          const SizedBox(width: 20),
-          const Expanded(
-            child: _Title(),
-          ),
-        ],
+      child: SizedBox(
+        width: Constants.defaultWidth,
+        child: Row(
+          children: [
+            _LeadinBtn(scaffoldKey: scaffoldKey),
+            const SizedBox(width: 20),
+            const Expanded(
+              child: _Title(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -97,6 +100,6 @@ class _Title extends StatelessWidget {
 
   Widget _getTitle() {
     final String companyTitle = GeneralController.to.companyInfo.name ?? "MCA";
-    return KText(text: companyTitle, fontSize: 18);
+    return KText(text: companyTitle, fontSize: 18, isSelectable: false);
   }
 }

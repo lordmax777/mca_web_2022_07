@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:pluto_grid/pluto_grid.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../theme/theme.dart';
 import 'controllers/stock_items_controller.dart';
@@ -108,8 +107,8 @@ class _Body extends StatelessWidget {
 
   Widget _footer(StockItemsController controller) {
     return Padding(
-      padding: const EdgeInsets.only(
-          left: 16.0, right: 32.0, top: 16.0, bottom: 16.0),
+      padding:
+          const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
       child: SpacedRow(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

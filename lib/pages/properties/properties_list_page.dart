@@ -2,12 +2,12 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import '../../comps/show_overlay_popup.dart';
-import '../../manager/models/warehouse_md.dart';
+import '../../manager/models/property_md.dart';
 import '../../theme/theme.dart';
-import 'controllers/warehouse_controller.dart';
+import 'controllers/properties_controller.dart';
 
-class WarehousesListPage extends StatelessWidget {
-  const WarehousesListPage({Key? key}) : super(key: key);
+class PropertiesPage extends StatelessWidget {
+  const PropertiesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +15,10 @@ class WarehousesListPage extends StatelessWidget {
       converter: (store) => store.state,
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
-          const PagesTitleWidget(
-            title: 'Warehouses',
-          ),
+          const PagesTitleWidget(title: 'Properties'),
           ErrorWrapper(errors: [
             state.generalState.paramList.error,
-            state.generalState.warehouses.error,
+            state.generalState.properties.error,
           ], child: const _Body())
         ]),
       ),
@@ -33,7 +31,7 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GBuilder<WarehouseController>(
+    return GBuilder<PropertiesController>(
       child: (c) => TableWrapperWidget(
           child: SizedBox(
         width: double.infinity,
@@ -54,7 +52,7 @@ class _Body extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context, WarehouseController c) {
+  Widget _header(BuildContext context, PropertiesController c) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -62,7 +60,7 @@ class _Body extends StatelessWidget {
         children: [
           TextInputWidget(
               controller: c.searchController,
-              hintText: 'Search warehouses...',
+              hintText: 'Search properties...',
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
@@ -77,7 +75,7 @@ class _Body extends StatelessWidget {
                   labelPosition: CheckboxLabelPosition.left,
                 ),
                 ButtonMedium(
-                  text: "New Warehouse",
+                  text: "New Property",
                   icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
                   onPressed: () {
                     showOverlayPopup(
@@ -91,7 +89,7 @@ class _Body extends StatelessWidget {
     );
   }
 
-  Widget _body(BuildContext context, WarehouseController c) {
+  Widget _body(BuildContext context, PropertiesController c) {
     return UsersListTable(
       onSmReady: c.setSm,
       rows: c.departments
@@ -103,18 +101,18 @@ class _Body extends StatelessWidget {
     );
   }
 
-  PlutoRow _buildItem(WarehouseMd e) {
+  PlutoRow _buildItem(PropertiesMd e) {
     return PlutoRow(cells: {
-      "warehouse_name": PlutoCell(value: e.name),
-      "contact_name": PlutoCell(value: e.contactName ?? "-"),
-      "contact_email": PlutoCell(value: e.contactEmail ?? "-"),
-      "linked_properties": PlutoCell(value: e.properties?.length ?? 0),
-      "status": PlutoCell(value: e.active ? "active" : "inactive"),
+      "name": PlutoCell(value: e.title ?? "-"),
+      "location": PlutoCell(value: e.locationName ?? "-"),
+      "client": PlutoCell(value: e.clientName ?? "-"),
+      "warehouse": PlutoCell(value: e.warehouseName ?? "-"),
+      "status": PlutoCell(value: (e.active ?? false) ? "active" : "inactive"),
       "action": PlutoCell(value: e),
     });
   }
 
-  Widget _footer(WarehouseController c) {
+  Widget _footer(PropertiesController c) {
     return Padding(
       padding:
           const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),

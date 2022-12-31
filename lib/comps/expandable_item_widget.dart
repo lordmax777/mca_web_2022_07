@@ -103,7 +103,7 @@ class ExpandableItemWidgetState extends State<ExpandableItemWidget> {
       maintainState: true,
       initiallyExpanded: widget.isExpanded,
       childrenPadding:
-          const EdgeInsets.only(left: 48.0, bottom: 48.0, top: 24.0),
+          const EdgeInsets.only(left: 48.0, bottom: 24.0, top: 24.0),
       tilePadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
       trailing: _getTrailing(),
       iconColor: ThemeColors.MAIN_COLOR,

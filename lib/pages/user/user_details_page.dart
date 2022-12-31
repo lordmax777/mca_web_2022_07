@@ -180,6 +180,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     logger('dispose');
+    _tabController.dispose();
     PreferredShiftsController.to.onDispose();
     super.dispose();
   }

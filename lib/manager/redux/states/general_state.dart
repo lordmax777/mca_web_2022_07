@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
+import 'package:mca_web_2022_07/pages/properties/controllers/properties_controller.dart';
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
-import '../../../app.dart';
 import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
 import '../../model_exporter.dart';
@@ -15,8 +13,8 @@ import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../../router/router.dart';
-import '../middlewares/users_middleware.dart';
 import '../sets/app_state.dart';
+import 'package:faker/faker.dart';
 
 @immutable
 class GeneralState {
@@ -28,6 +26,7 @@ class GeneralState {
   final StateValue<List<LocationItemMd>> locationItems;
   final StateValue<List<StorageItemMd>> storageItems;
   final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
+  final StateValue<List<PropertiesMd>> properties;
 
   GeneralState({
     required this.paramList,
@@ -38,6 +37,7 @@ class GeneralState {
     required this.locationItems,
     required this.storageItems,
     required this.checklistTemplates,
+    required this.properties,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -79,6 +79,10 @@ class GeneralState {
         error: ErrorModel(),
         data: ListAllMd.init(),
       ),
+      properties: StateValue(
+        error: ErrorModel(),
+        data: [],
+      ),
     );
   }
 
@@ -91,6 +95,7 @@ class GeneralState {
     StateValue<List<LocationItemMd>>? locationItems,
     StateValue<List<StorageItemMd>>? storageItems,
     StateValue<List<ChecklistTemplateMd>>? checklistTemplates,
+    StateValue<List<PropertiesMd>>? properties,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -101,6 +106,7 @@ class GeneralState {
       locationItems: locationItems ?? this.locationItems,
       storageItems: storageItems ?? this.storageItems,
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
+      properties: properties ?? this.properties,
     );
   }
 }
@@ -114,6 +120,7 @@ class UpdateGeneralStateAction {
   StateValue<List<LocationItemMd>>? locationItems;
   StateValue<List<StorageItemMd>>? storageItems;
   StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
+  StateValue<List<PropertiesMd>>? properties;
   UpdateGeneralStateAction({
     this.paramList,
     this.drawerStates,
@@ -123,6 +130,7 @@ class UpdateGeneralStateAction {
     this.locationItems,
     this.storageItems,
     this.checklistTemplates,
+    this.properties,
   });
 }
 
@@ -271,6 +279,41 @@ class GetChecklistTemplatesAction {
           state.generalState.checklistTemplates.error.retries + 1;
     }
     next(UpdateGeneralStateAction(checklistTemplates: stateValue));
+    return stateValue;
+  }
+}
+
+class GetPropertiesAction {
+  static Future<StateValue<List<PropertiesMd>>> fetch(
+      AppState state, GetPropertiesAction action, NextDispatcher next) async {
+    StateValue<List<PropertiesMd>> stateValue = StateValue(
+        data: [],
+        error:
+            ErrorModel<GetPropertiesAction>(isLoading: true, action: action));
+
+    next(UpdateGeneralStateAction(properties: stateValue));
+
+    final ApiResponse res =
+        await restClient().getProperties(0.toString()).nocodeErrorHandler();
+
+    stateValue.error.errorCode = res.resCode;
+    stateValue.error.errorMessage = res.resMessage;
+    stateValue.error.isLoading = false;
+    stateValue.error.rawError = res.rawError;
+    if (res.success) {
+      final List<PropertiesMd> list = [];
+
+      list.addAll(res.data['shifts']
+          .map<PropertiesMd>((e) => PropertiesMd.fromJson(e))
+          .toList());
+      stateValue.error.isError = false;
+      stateValue.data = list;
+      PropertiesController.to.setList(list);
+    } else {
+      stateValue.error.retries =
+          state.generalState.properties.error.retries + 1;
+    }
+    next(UpdateGeneralStateAction(properties: stateValue));
     return stateValue;
   }
 }

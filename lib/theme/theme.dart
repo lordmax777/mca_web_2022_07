@@ -50,6 +50,8 @@ export '../pages/checklist_templates/new_template_page.dart';
 export '../pages/handover_types/handover_types_page.dart';
 export '../pages/handover_types/hands_page_new_handover_popup.dart';
 
+export '../pages/properties/properties_list_page.dart';
+
 export '../comps/k_text.dart';
 export '../comps/nav_bar_widget.dart';
 export '../comps/spaced_column.dart';

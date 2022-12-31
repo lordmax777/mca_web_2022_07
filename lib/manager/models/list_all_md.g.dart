@@ -294,8 +294,8 @@ ListSpecialRate _$ListSpecialRateFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int,
       name: json['name'] as String,
       rate: (json['rate'] as num).toDouble(),
-      min_work_time: json['min_work_time'] as int,
-      paid_time: json['paid_time'] as int,
+      min_work_time: json['min_work_time'] as int?,
+      paid_time: json['paid_time'] as int?,
       split_time: json['split_time'] as bool,
       shift_id: json['shift_id'] as int,
     );

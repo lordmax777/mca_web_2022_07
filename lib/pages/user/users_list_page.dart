@@ -481,8 +481,8 @@ class _BodyState extends State<_Body> {
       return const Center(child: SizedBox());
     }
     return Padding(
-      padding: const EdgeInsets.only(
-          left: 16.0, right: 32.0, top: 16.0, bottom: 16.0),
+      padding:
+          const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
       child: SpacedRow(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

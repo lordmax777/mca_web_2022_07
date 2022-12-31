@@ -19,3 +19,4 @@ export 'models/logged_in_user_md.dart';
 export 'models/storage_item_md.dart';
 export 'models/company_md.dart';
 export 'models/checklist_template_md.dart';
+export 'models/property_md.dart';

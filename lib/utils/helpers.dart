@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/manager/models/company_md.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../manager/rest/nocode_helpers.dart';
+import 'currency_format.dart';
 
 extension DateTimeExtensions on DateTime {
   String get formattedDate => "$day/$month/$year";
@@ -107,4 +108,32 @@ class ApiHelpers {
     }
     return msg;
   }
+}
+
+extension DoubleHelper on double {
+  ModelFormatter getPriceMap([int decimalPoints = 0, bool withSymbol = true]) =>
+      ModelFormatter(
+          currencyFormatter(this,
+              decimalPoints: decimalPoints, withSymbol: withSymbol),
+          this);
+}
+
+extension NumHelper on num {
+  ModelFormatter getPriceMap([int decimalPoints = 0, bool withSymbol = true]) =>
+      ModelFormatter(
+          currencyFormatter(this,
+              decimalPoints: decimalPoints, withSymbol: withSymbol),
+          this);
+}
+
+class ModelFormatter {
+  dynamic formattedVer;
+  dynamic rawVer;
+
+  ModelFormatter(this.formattedVer, this.rawVer);
+}
+
+extension BuildContextHelper on BuildContext {
+  Size get screenSize => MediaQuery.of(this).size;
+  Orientation get orientation => MediaQuery.of(this).orientation;
 }
