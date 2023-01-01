@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/pages/properties/tabs/days_tab.dart';
 import 'package:mca_web_2022_07/pages/properties/tabs/sp_rates_tab.dart';
+import 'package:mca_web_2022_07/pages/properties/tabs/staff_requirements_tab.dart';
 import 'package:mca_web_2022_07/pages/properties/tabs/timings_tab.dart';
 import '../../manager/models/property_md.dart';
 import '../../theme/theme.dart';
@@ -170,6 +171,8 @@ class _PropertyDrawerState extends State<PropertyDrawer>
         return PropertyTimingsTab(widget.property);
       case 2:
         return PropertySpRatesTab(widget.property);
+      case 3:
+        return PropertyStaffReqTab(widget.property);
       default:
         return const SizedBox();
     }

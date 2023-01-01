@@ -34,7 +34,6 @@ class PropertySpRatesTab extends StatelessWidget {
           specialRatesList.add(spRate);
         }
       }
-      logger("Special Rates: $specialRatesList");
       return Column(
         children: [
           Padding(

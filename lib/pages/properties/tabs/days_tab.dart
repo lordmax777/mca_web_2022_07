@@ -24,7 +24,6 @@ class _PropertyDaysTabState extends State<PropertyDaysTab> {
     if (property.days != null) {
       if (property.days is List) {
         List<int> list = [...(property.days as List<dynamic>)];
-        logger(list);
         if (list.isNotEmpty) {
           if (list.length == 1) {
             days[7] = true;
