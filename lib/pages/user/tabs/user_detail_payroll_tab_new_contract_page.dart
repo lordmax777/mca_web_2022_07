@@ -172,7 +172,7 @@ class _UserDetailsPayrollTabNewContractPageState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 1),
-          DropdownWidget1(
+          DropdownWidget1<ListJobTitle>(
             hintText: "Job Title",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             dropdownOptionsWidth: dpWidth / 3 + 24.0,
@@ -187,7 +187,7 @@ class _UserDetailsPayrollTabNewContractPageState
               });
             },
           ),
-          DropdownWidget1(
+          DropdownWidget1<ContractTypes>(
             hintText: "Contract Type",
             dropdownBtnWidth: dpWidth / 3 + 24.0,
             isRequired: true,

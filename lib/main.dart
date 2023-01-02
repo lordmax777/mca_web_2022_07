@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_c
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
+import 'package:mca_web_2022_07/pages/properties/controllers/new_prop_controller.dart';
 import 'package:mca_web_2022_07/pages/properties/controllers/properties_controller.dart';
 import 'package:mca_web_2022_07/pages/properties/property_drawer.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
@@ -45,6 +46,7 @@ Future<void> main() async {
   Get.lazyPut(() => SettingsController());
   Get.lazyPut(() => PreferredShiftsController());
   Get.lazyPut(() => PropertiesController());
+  Get.lazyPut(() => NewPropController());
 
   await HiveController.initHive();
 

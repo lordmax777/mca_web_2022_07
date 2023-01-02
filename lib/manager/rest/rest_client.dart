@@ -397,6 +397,12 @@ abstract class RestClient {
   // @DELETE("/api/fe/warehouses/{storageid}")
   // Future<HttpResponse> deleteWarehouse(@Path() int storageid);
 
+  @GET("/api/fe/shifts/{id}/staff")
+  Future<HttpResponse> getPropertiesStaff(@Path() String id);
+
+  @GET("/api/fe/shifts/{id}/qualification")
+  Future<HttpResponse> getPropertiesQualification(@Path() String id);
+
   @POST("/api/fe/handovertypes")
   @FormUrlEncoded()
   Future<HttpResponse> postHandoverTypes({

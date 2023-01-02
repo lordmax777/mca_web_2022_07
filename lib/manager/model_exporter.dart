@@ -20,3 +20,5 @@ export 'models/storage_item_md.dart';
 export 'models/company_md.dart';
 export 'models/checklist_template_md.dart';
 export 'models/property_md.dart';
+export 'models/shift_staff_req_md.dart';
+export 'models/shift_qualif_req_md.dart';

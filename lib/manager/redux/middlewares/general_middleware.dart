@@ -130,8 +130,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         l.taxes.add(ListTaxes.fromJson(e));
       }
       for (var e in r['special_rates']) {
-        logger(e, hint: "SPECIAL_RATE");
         l.special_rates.add(ListSpecialRate.fromJson(e));
+      }
+      for (var e in r['clients']) {
+        l.clients.add(ListClients.fromJson(e));
       }
 
       final userColor = l.color_schemas

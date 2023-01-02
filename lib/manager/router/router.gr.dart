@@ -133,6 +133,17 @@ class _$AppRouter extends RootStackRouter {
         child: const PropertiesPage(),
       );
     },
+    NewPropertyRoute.name: (routeData) {
+      final args = routeData.argsAs<NewPropertyRouteArgs>(
+          orElse: () => const NewPropertyRouteArgs());
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: NewPropertyPage(
+          key: args.key,
+          property: args.property,
+        ),
+      );
+    },
   };
 
   @override
@@ -214,6 +225,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               PropertiesRoute.name,
               path: 'properties',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              NewPropertyRoute.name,
+              path: 'new-properties',
               parent: HomeRoute.name,
             ),
           ],
@@ -480,4 +496,38 @@ class PropertiesRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'PropertiesRoute';
+}
+
+/// generated route for
+/// [NewPropertyPage]
+class NewPropertyRoute extends PageRouteInfo<NewPropertyRouteArgs> {
+  NewPropertyRoute({
+    Key? key,
+    PropertiesMd? property,
+  }) : super(
+          NewPropertyRoute.name,
+          path: 'new-properties',
+          args: NewPropertyRouteArgs(
+            key: key,
+            property: property,
+          ),
+        );
+
+  static const String name = 'NewPropertyRoute';
+}
+
+class NewPropertyRouteArgs {
+  const NewPropertyRouteArgs({
+    this.key,
+    this.property,
+  });
+
+  final Key? key;
+
+  final PropertiesMd? property;
+
+  @override
+  String toString() {
+    return 'NewPropertyRouteArgs{key: $key, property: $property}';
+  }
 }

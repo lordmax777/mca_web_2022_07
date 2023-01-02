@@ -1,10 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/gestures.dart';
-import 'package:get/get.dart';
-import 'package:mca_web_2022_07/pages/properties/tabs/days_tab.dart';
-import 'package:mca_web_2022_07/pages/properties/tabs/sp_rates_tab.dart';
-import 'package:mca_web_2022_07/pages/properties/tabs/staff_requirements_tab.dart';
-import 'package:mca_web_2022_07/pages/properties/tabs/timings_tab.dart';
+import 'package:mca_web_2022_07/pages/properties/drawer_tabs/days_tab.dart';
+import 'package:mca_web_2022_07/pages/properties/drawer_tabs/sp_rates_tab.dart';
+import 'package:mca_web_2022_07/pages/properties/drawer_tabs/staff_requirements_tab.dart';
+import 'package:mca_web_2022_07/pages/properties/drawer_tabs/timings_tab.dart';
 import '../../manager/models/property_md.dart';
 import '../../theme/theme.dart';
 

@@ -12,6 +12,10 @@ class DpItem<T> {
 
 class DropdownWidget1<T> extends StatefulWidget {
   final ValueChanged? onChanged;
+
+  /// DpItem.name => returns the selected name from items list
+  ///
+  /// DpItem.item => returns the selected item from objItems list with type of T
   void Function(DpItem)? onChangedWithObj;
   List<T>? objItems;
 

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/router/route_guards.dart';
 import 'package:mca_web_2022_07/pages/home_page.dart';
+import 'package:mca_web_2022_07/pages/properties/new_property_page.dart';
 import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
@@ -9,6 +10,7 @@ import '../../pages/settings/settings_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
 import '../models/contract_md.dart';
+import '../models/property_md.dart';
 
 part 'router.gr.dart';
 
@@ -34,6 +36,7 @@ part 'router.gr.dart';
       AutoRoute(page: HandoverTypesPage, path: "handover-types"),
       AutoRoute(page: SettingsPage, path: "settings-page"),
       AutoRoute(page: PropertiesPage, path: "properties"),
+      AutoRoute(page: NewPropertyPage, path: "new-properties"),
     ]),
   ],
 )

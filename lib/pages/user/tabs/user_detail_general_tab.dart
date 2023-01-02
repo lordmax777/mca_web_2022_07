@@ -48,9 +48,6 @@ class GeneralWidget extends StatelessWidget {
                 ExpandedWidgetType(
                     title: _RolesDepsAndLoginOptionsWidget.title,
                     child: const _RolesDepsAndLoginOptionsWidget()),
-                // ExpandedWidgetType(
-                //     title: _UsernameAndPayrollInfoWidget.title,
-                //     child: const _UsernameAndPayrollInfoWidget()),
                 ExpandedWidgetType(
                     title: _AddressWidget.title, child: const _AddressWidget()),
                 ExpandedWidgetType(

@@ -4,8 +4,6 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
-
-import '../../manager/models/preffered_shift_md_md.dart';
 import '../../theme/theme.dart';
 
 class UserDetailsPage extends StatelessWidget {

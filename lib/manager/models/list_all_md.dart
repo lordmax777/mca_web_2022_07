@@ -32,6 +32,7 @@ class ListAllMd {
   List<HolidayCalculationTypes> holiday_calculation_types;
   List<ColorSchemas> color_schemas;
   List<ListTaxes> taxes;
+  List<ListClients> clients;
 
   static ListAllMd init() {
     return ListAllMd(
@@ -60,6 +61,7 @@ class ListAllMd {
       marital_statuses: [],
       color_schemas: [],
       taxes: [],
+      clients: [],
     );
   }
 
@@ -90,6 +92,7 @@ class ListAllMd {
     required this.contract_starts,
     required this.color_schemas,
     required this.taxes,
+    required this.clients,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -669,4 +672,37 @@ class ListTaxes {
       _$ListTaxesFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListTaxesToJson(this);
+}
+
+@JsonSerializable()
+class ListClients {
+//        {
+//             "id": 2,
+//             "name": "kashiba house owners 1",
+//             "company": "kashiba house owners",
+//             "contact": null,
+//             "notes": "",
+//             "active": true
+//         }
+  int id;
+  String name;
+  String company;
+  String? contact;
+  String notes;
+  bool active;
+
+  @override
+  ListClients({
+    required this.id,
+    required this.name,
+    required this.company,
+    required this.contact,
+    required this.notes,
+    required this.active,
+  });
+
+  factory ListClients.fromJson(Map<String, dynamic> json) =>
+      _$ListClientsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ListClientsToJson(this);
 }

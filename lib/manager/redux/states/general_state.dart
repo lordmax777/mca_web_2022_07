@@ -316,4 +316,38 @@ class GetPropertiesAction {
     next(UpdateGeneralStateAction(properties: stateValue));
     return stateValue;
   }
+
+  static Future<List<ShiftStaffReqMd>> fetchShiftStaff(int shiftId) async {
+    final List<ShiftStaffReqMd> list = [];
+
+    final ApiResponse res = await restClient()
+        .getPropertiesStaff(shiftId.toString())
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      if (res.data['staff_req'] != null) {
+        list.addAll(res.data['staff_req']
+            .map<ShiftStaffReqMd>((e) => ShiftStaffReqMd.fromJson(e))
+            .toList());
+      }
+    }
+    return list;
+  }
+
+  static Future<List<ShiftQualifReqMd>> fetchShiftQualif(int shiftId) async {
+    final List<ShiftQualifReqMd> list = [];
+
+    final ApiResponse res = await restClient()
+        .getPropertiesQualification(shiftId.toString())
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      if (res.data['qualification_requirements'] != null) {
+        list.addAll(res.data['qualification_requirements']
+            .map<ShiftQualifReqMd>((e) => ShiftQualifReqMd.fromJson(e))
+            .toList());
+      }
+    }
+    return list;
+  }
 }

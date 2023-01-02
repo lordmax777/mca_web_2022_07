@@ -1,6 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
+import 'package:mca_web_2022_07/pages/properties/new_property_page.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/models/property_md.dart';
 import '../../theme/theme.dart';
@@ -78,9 +81,7 @@ class _Body extends StatelessWidget {
                   text: "New Property",
                   icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
                   onPressed: () {
-                    showOverlayPopup(
-                        body: const WaresNewWarePopupWidget(),
-                        context: context);
+                    context.pushRoute(NewPropertyRoute());
                   },
                 ),
               ]),
