@@ -3,7 +3,7 @@ import '../theme/theme.dart';
 
 class Constants {
   static const String appName = "MCA Web";
-  static const String appVersion = "0.0.1";
+  static const String appVersion = "0.0.2";
 
   static const double defaultWidth = 2000;
 

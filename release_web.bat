@@ -6,7 +6,7 @@ del pubspec.lock
 
 call flutter build web --release
 
-rmdir /s /q website
-mkdir website
+REM rmdir /s /q website
+REM mkdir website
 
 xcopy /s /y build\web\ website\

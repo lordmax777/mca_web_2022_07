@@ -113,27 +113,27 @@ class _BodyState extends State<_Body> {
           title: "Main Location",
           field: "main_location",
           type: PlutoColumnType.text()),
-      PlutoColumn(
-          // width: 85.0,
-          title: "Payroll",
-          field: "payroll",
-          enableSorting: false,
-          type: PlutoColumnType.text(),
-          renderer: (ctx) {
-            return KText(
-              text: "View",
-              textColor: ThemeColors.MAIN_COLOR,
-              fontWeight: FWeight.regular,
-              fontSize: 14,
-              isSelectable: false,
-              onTap: () => _onUserDetailsNavigationClick(ctx, index: 1),
-              icon: HeroIcon(
-                HeroIcons.link,
-                color: ThemeColors.MAIN_COLOR,
-                size: 12,
-              ),
-            );
-          }),
+      // PlutoColumn(
+      //     // width: 85.0,
+      //     title: "Payroll",
+      //     field: "payroll",
+      //     enableSorting: false,
+      //     type: PlutoColumnType.text(),
+      //     renderer: (ctx) {
+      //       return KText(
+      //         text: "View",
+      //         textColor: ThemeColors.MAIN_COLOR,
+      //         fontWeight: FWeight.regular,
+      //         fontSize: 14,
+      //         isSelectable: false,
+      //         onTap: () => _onUserDetailsNavigationClick(ctx, index: 1),
+      //         icon: HeroIcon(
+      //           HeroIcons.link,
+      //           color: ThemeColors.MAIN_COLOR,
+      //           size: 12,
+      //         ),
+      //       );
+      //     }),
       PlutoColumn(
           // width: 85.0,
           title: "Reviews",
@@ -467,7 +467,7 @@ class _BodyState extends State<_Body> {
       "username": PlutoCell(value: e.username),
       "department": PlutoCell(value: dep),
       "main_location": PlutoCell(value: loc),
-      "payroll": PlutoCell(value: "-"),
+      // "payroll": PlutoCell(value: "-"),
       "reviews": PlutoCell(value: "-"),
       "visa": PlutoCell(value: "-"),
       "absences": PlutoCell(value: "-"),
