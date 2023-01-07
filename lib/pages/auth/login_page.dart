@@ -88,10 +88,10 @@ class Body extends GetView<LoginController> {
             width: 300,
             height: 40,
             child: ButtonLarge(
-              text: "Login",
+              text: "Login ${Constants.appVersion}",
               onPressed: controller.login,
             ),
-          )
+          ),
         ],
       ),
     );

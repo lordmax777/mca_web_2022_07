@@ -29,16 +29,6 @@ class GeneralController extends GetxController {
     if (res.success) {
       final r = res.data;
       setLoggedInUser = LoggedInUserMd.fromJson(r);
-      await Future.wait([
-        fetch(GetAllParamListAction()),
-        fetch(GetUsersListAction()),
-        fetch(GetWarehousesAction()),
-        fetch(GetAllLocationsAction()),
-        fetch(GetAllStorageItemsAction()),
-        fetch(GetChecklistTemplatesAction()),
-        fetch(GetPropertiesAction()),
-      ]);
-      await getCompanyInfo();
     }
   }
 
@@ -50,5 +40,18 @@ class GeneralController extends GetxController {
       final r = res.data;
       setCompanyInfo = CompanyMd.fromJson(r);
     }
+  }
+
+  void initAll() async {
+    await getCompanyInfo();
+    await Future.wait([
+      fetch(GetAllParamListAction()),
+      fetch(GetUsersListAction()),
+      fetch(GetWarehousesAction()),
+      fetch(GetAllLocationsAction()),
+      fetch(GetAllStorageItemsAction()),
+      fetch(GetChecklistTemplatesAction()),
+      fetch(GetPropertiesAction()),
+    ]);
   }
 }

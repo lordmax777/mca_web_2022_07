@@ -126,7 +126,7 @@ packages:
       name: checked_yaml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   clock:
     dependency: transitive
     description:
@@ -384,7 +384,7 @@ packages:
       name: google_maps_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   google_maps_flutter_android:
     dependency: transitive
     description:
@@ -512,7 +512,7 @@ packages:
       name: image_picker_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.6+3"
+    version: "0.8.6+5"
   image_picker_platform_interface:
     dependency: transitive
     description:

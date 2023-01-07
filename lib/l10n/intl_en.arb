@@ -1,3 +1,7 @@
 {
-  "@@locale": "en"
+    "@@locale": "en",
+    "seconds": "{undefined} seconds",
+    "@seconds": {
+        "description": "Shows seconds"
+    }
 }

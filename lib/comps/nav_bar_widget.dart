@@ -100,6 +100,9 @@ class _Title extends StatelessWidget {
 
   Widget _getTitle() {
     final String companyTitle = GeneralController.to.companyInfo.name ?? "MCA";
-    return KText(text: companyTitle, fontSize: 18, isSelectable: false);
+    return KText(
+        text: "$companyTitle ${Constants.appVersion}",
+        fontSize: 18,
+        isSelectable: false);
   }
 }

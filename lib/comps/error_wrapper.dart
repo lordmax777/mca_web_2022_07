@@ -105,7 +105,9 @@ class _ErrorWrapperState extends State<ErrorWrapper> {
       errorMessage = "[${firstErr.data['error']['code']}]" " - " +
           firstErr.data['error']['message'];
     }
-
+    if (errorMessage == "null") {
+      errorMessage = "Something went wrong";
+    }
     return errorMessage;
   }
 }

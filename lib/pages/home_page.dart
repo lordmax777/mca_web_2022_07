@@ -4,12 +4,25 @@ import 'package:mca_web_2022_07/comps/drawer.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
+import '../manager/general_controller.dart';
+
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    GeneralController.to.initAll();
+  }
 
   @override
   Widget build(BuildContext context) {

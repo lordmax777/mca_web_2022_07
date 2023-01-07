@@ -1,6 +1,5 @@
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
-import '../../../manager/models/property_md.dart';
 import '../../../theme/theme.dart';
 
 class PropertyStaffReqTab extends StatelessWidget {
@@ -9,6 +8,7 @@ class PropertyStaffReqTab extends StatelessWidget {
   PropertyStaffReqTab(this.property, {Key? key}) : super(key: key);
 
   final List<ShiftStaffReqMd> staff = [];
+  final List<PlutoRow> fetchedRows = [];
 
   List<PlutoColumn> columns() {
     return [
@@ -44,7 +44,6 @@ class PropertyStaffReqTab extends StatelessWidget {
         List<ShiftStaffReqMd> res =
             await GetPropertiesAction.fetchShiftStaff(shiftId);
         staff.addAll(res);
-        gridStateManager.appendNewRows(count: staff.length);
         gridStateManager.appendRows(staff.map<PlutoRow>(_buildItem).toList());
       } catch (e) {
         gridStateManager.setShowLoading(false);
@@ -52,6 +51,7 @@ class PropertyStaffReqTab extends StatelessWidget {
         gridStateManager.setShowLoading(false);
       }
     }
+    gridStateManager.notifyListeners();
   }
 
   @override

@@ -3,14 +3,14 @@ import '../theme/theme.dart';
 
 class Constants {
   static const String appName = "MCA Web";
-  static const String appVersion = "1.0.0";
+  static const String appVersion = "0.0.1";
 
   static const double defaultWidth = 2000;
 
   //REST API related data
-
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";
   static const String apiBaseUrlProd = "https://www.onlinetimeclock.co.uk";
+
   //Auth
   static const String domain = "timesheet.skillfill.co.uk";
   static const String clientId =

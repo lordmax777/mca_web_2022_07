@@ -49,6 +49,16 @@ class AppIntl {
   static AppIntl? maybeOf(BuildContext context) {
     return Localizations.of<AppIntl>(context, AppIntl);
   }
+
+  /// `{undefined} seconds`
+  String seconds(Object undefined) {
+    return Intl.message(
+      '$undefined seconds',
+      name: 'seconds',
+      desc: 'Shows seconds',
+      args: [undefined],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppIntl> {
