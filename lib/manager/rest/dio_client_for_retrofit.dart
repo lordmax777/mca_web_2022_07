@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import "package:dio/dio.dart";
-import 'package:flutter_easylogger/flutter_logger.dart';
+
+import 'package:get/get.dart' as GET;
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 import '../models/auth.dart';
 import '../redux/sets/app_state.dart';
 import '../redux/sets/state_value.dart';
 import '../redux/states/auth_state.dart';
+import '../talker_controller.dart';
 
 class TokenHandler {
   static DateTime tokenStartTime = DateTime.now();
@@ -97,22 +100,27 @@ class DioClientForRetrofit {
 
 final loggerInterceptor =
     InterceptorsWrapper(onRequest: (RequestOptions options, handler) {
+  final talker = TalkerController.to.talker;
+
   String headers = "";
   options.headers.forEach((key, value) {
     headers += "| $key: $value";
   });
-  Logger.d("| [DIO] Request: ${options.method} ${options.uri}");
-  Logger.d(
+  talker.info("| [DIO] Request: ${options.method} ${options.uri}");
+  talker.info(
       "| [DIO] Options: ${options.data != null ? options.data.toString() : ''}");
-  Logger.d("| [DIO] Headers: $headers");
+  talker.info("| [DIO] Headers: $headers");
 
   handler.next(options); //continue
 }, onResponse: (Response response, handler) async {
-  Logger.i(
+  final talker = TalkerController.to.talker;
+  talker.good(
       "| [DIO] Response [code ${response.statusCode}]: ${response.data.toString().length > 1000 ? response.data.toString().substring(0, 1000) : response.data.toString()}");
   handler.next(response);
   // return response; // continue
 }, onError: (DioError error, handler) async {
-  Logger.e("| [DIO] Error: ${error.error}: ${error.response?.toString()}");
+  final talker = TalkerController.to.talker;
+  talker
+      .critical("| [DIO] Error: ${error.error}: ${error.response?.toString()}");
   handler.next(error); //continue
 });

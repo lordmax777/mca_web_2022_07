@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/manager/talker_controller.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 import 'package:mca_web_2022_07/pages/checklist_templates/controllers/checklist_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
@@ -10,7 +8,6 @@ import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_contro
 import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
 import 'package:mca_web_2022_07/pages/properties/controllers/new_prop_controller.dart';
 import 'package:mca_web_2022_07/pages/properties/controllers/properties_controller.dart';
-import 'package:mca_web_2022_07/pages/properties/property_drawer.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 import 'package:mca_web_2022_07/pages/settings/controllers/settings_controller.dart';
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
@@ -25,10 +22,13 @@ import 'manager/hive.dart';
 import 'pages/locations/controllers/locations_controller.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  await setup();
 
-  Logger.init(kDebugMode,
-      isShowFile: false, isShowTime: false, isShowNavigation: false);
+  runApp(const McaWebApp());
+}
+
+Future<void> setup() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
   Get.lazyPut(() => DepartmentsController());
   Get.lazyPut(() => HiveController());
@@ -48,7 +48,7 @@ Future<void> main() async {
   Get.lazyPut(() => PropertiesController());
   Get.lazyPut(() => NewPropController());
 
-  await HiveController.initHive();
+  Get.put(TalkerController());
 
-  runApp(const McaWebApp());
+  await HiveController.initHive();
 }

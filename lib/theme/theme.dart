@@ -9,6 +9,7 @@ export '../utils/constants.dart';
 export '../utils/log_tester.dart';
 export '../utils/date_format.dart';
 export '../utils/helpers.dart';
+export '../manager/talker_controller.dart';
 
 export '../pages/user/tabs/user_detail_general_tab.dart';
 export '../pages/user/tabs/user_detail_payroll_tab.dart';

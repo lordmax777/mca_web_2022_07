@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
+import 'package:mca_web_2022_07/manager/hive.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
@@ -29,6 +30,7 @@ class LoginController extends GetxController {
 
       await closeLoading();
       if (isLoggedIn) {
+        await HiveController.to.setAppDbVersion();
         appRouter.popAndPushAll([
           const HomeRoute(children: [
             UsersListRoute(),

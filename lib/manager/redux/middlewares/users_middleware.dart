@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
@@ -92,14 +91,27 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
 }
 
 Future<void> showLoading({bool? barrierDismissible = false}) async {
+  final TalkerController talker = TalkerController.to;
+
   showDialog(
     barrierDismissible: barrierDismissible!,
     context: appRouter.navigatorKey.currentContext!,
     builder: (context) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: ThemeColors.MAIN_COLOR,
-        ),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            strokeWidth: 8,
+            backgroundColor: Colors.white,
+            valueColor: AlwaysStoppedAnimation<Color>(
+                ThemeColors.MAIN_COLOR.withOpacity(0.8)),
+            color: ThemeColors.MAIN_COLOR,
+          ),
+          FloatingActionButton.small(
+              onPressed: talker.goToLogs,
+              child: const Icon(Icons.developer_mode))
+        ],
       );
     },
   );

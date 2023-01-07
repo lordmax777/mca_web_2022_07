@@ -5,6 +5,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../manager/general_controller.dart';
+import '../manager/talker_controller.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -26,9 +27,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final TalkerController talker = TalkerController.to;
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (_, state) => Scaffold(
+        floatingActionButton: FloatingActionButton(
+            onPressed: talker.goToLogs,
+            child: const Icon(Icons.developer_mode)),
         drawer: DefaultDrawer(state: state),
         endDrawer: state.generalState.endDrawer,
         backgroundColor: ThemeColors.gray12,

@@ -1,4 +1,3 @@
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:redux/redux.dart';
@@ -9,6 +8,7 @@ import '../../../theme/theme.dart';
 import '../../hive.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
+import '../../talker_controller.dart';
 import '../sets/state_value.dart';
 import '../states/auth_state.dart';
 
@@ -114,6 +114,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
 
 ///Must pass the action in StateValue<T> as T type
 Future fetch(action) async {
+  final talker = TalkerController.to.talker;
   final res = await appStore.dispatch(action);
 
   final ErrorModel e = res.error;
@@ -127,7 +128,7 @@ Future fetch(action) async {
           final bool eee = m['error_description']
               .contains("The access token provided has expired.");
           if (eee) {
-            Logger.e('Token Expired');
+            talker.error('Token Expired');
             // showDialog(
             //   context: appRouter.navigatorKey.currentContext!,
             //   // barrierDismissible: false,

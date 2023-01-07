@@ -32,6 +32,7 @@ class _McaWebAppState extends State<McaWebApp> {
     return StoreProvider(
       store: appStore,
       child: GetMaterialApp.router(
+        debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
           if (kDebugMode) const HomeRoute(children: [PropertiesRoute()])
         ]),
@@ -45,8 +46,6 @@ class _McaWebAppState extends State<McaWebApp> {
         ],
         locale: const Locale('en'),
         builder: (context, child) => ResponsiveWrapper.builder(child,
-            // maxWidth: 1920,
-            // minWidth: 480,
             defaultScale: true,
             breakpoints: const [
               ResponsiveBreakpoint.resize(480, name: MOBILE),

@@ -3,8 +3,11 @@ import '../theme/theme.dart';
 
 class Constants {
   static const String appName = "MCA Web";
-  static const String appVersion = "0.0.2";
-
+  static const int mj = 0;
+  static const int mn = 0;
+  static const int up = 2;
+  static String appVersion = "$mj.$mn.$up";
+  static bool isDebug = true;
   static const double defaultWidth = 2000;
 
   //REST API related data

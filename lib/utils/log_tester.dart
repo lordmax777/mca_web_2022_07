@@ -2,15 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import '../manager/talker_controller.dart';
+
 logger(var str, {String? hint, bool json = false}) {
+  final talker = TalkerController.to.talker;
   if (kDebugMode) {
-    debugPrint(hint ?? 'LOGGER');
+    talker.log(hint ?? 'LOGGER');
     if (json) {
       JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-      debugPrint(encoder.convert(str));
+      talker.log(encoder.convert(str));
     } else {
-      debugPrint(str.toString());
+      talker.log(str.toString());
     }
-    debugPrint(hint ?? 'LOGGER');
+    talker.log(hint ?? 'LOGGER');
   }
 }

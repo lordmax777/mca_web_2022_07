@@ -46,7 +46,6 @@ dependencies:
   hive_flutter: ^1.1.0
   responsive_framework: ^0.2.0
   mix: ^0.0.6
-  flutter_easylogger: ^2.3.3
   collection: ^1.16.0
   image_picker: ^0.8.5+3
   faker: ^2.0.0
@@ -54,6 +53,7 @@ dependencies:
   get: ^4.6.5
   dart_ipify: ^1.1.1
   dotted_border: ^2.0.0+3
+  talker_flutter: ^2.2.1
 
 
 dev_dependencies:

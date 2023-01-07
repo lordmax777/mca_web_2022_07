@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 
@@ -16,14 +15,19 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    HiveController.to.deleteRefreshToken();
-    HiveController.to.deleteAccessToken();
+    HiveController.to.deleteTokens();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-        backgroundColor: Color(0xffe3e3e3), body: Center(child: Body()));
+    final TalkerController talker = TalkerController.to;
+
+    return Scaffold(
+        floatingActionButton: FloatingActionButton(
+            onPressed: talker.goToLogs,
+            child: const Icon(Icons.developer_mode)),
+        backgroundColor: const Color(0xffe3e3e3),
+        body: const Center(child: Body()));
   }
 }
 
@@ -32,12 +36,15 @@ class Body extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    return TableWrapperWidget(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            vertical: MediaQuery.of(context).size.height / 6,
-            horizontal: MediaQuery.of(context).size.height / 8),
-        child: _formLogin(),
+    final TalkerController talker = TalkerController.to;
+    return talker.talkerWrapper(
+      child: TableWrapperWidget(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height / 6,
+              horizontal: MediaQuery.of(context).size.height / 8),
+          child: _formLogin(),
+        ),
       ),
     );
   }
@@ -89,7 +96,7 @@ class Body extends GetView<LoginController> {
             height: 40,
             child: ButtonLarge(
               text: "Login ${Constants.appVersion}",
-              onPressed: controller.login,
+              onPressed: controller.login, //controller.login
             ),
           ),
         ],
