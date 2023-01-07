@@ -110581,7 +110581,7 @@ o=$.S
 s=(o==null?$.S=B.q:o).az(0,m,s).ay
 n=s.gk(s).a
 s=t.p
-return A.ik(m,A.cM(A.a([A.cM(A.a([r,B.ai0,A.ag(18,m,m,!1,B.f,m,m,!1,m,(n==null?"MCA":n)+" 0.0.2",m,m)],s),B.i,B.h,B.f),A.cM(B.a4c,B.i,B.h,B.f)],s),B.i,B.F,B.f),B.P,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,new A.bda(),m,m,m,m,m,m)}}
+return A.ik(m,A.cM(A.a([A.cM(A.a([r,B.ai0,A.ag(18,m,m,!1,B.f,m,m,!1,m,(n==null?"MCA":n)+" 0.0.3",m,m)],s),B.i,B.h,B.f),A.cM(B.a4c,B.i,B.h,B.f)],s),B.i,B.F,B.f),B.P,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,new A.bda(),m,m,m,m,m,m)}}
 A.bda.prototype={
 $0(){return $.d9().ge1().eP(0)},
 $S:0}
@@ -111403,13 +111403,13 @@ r.hc("HIVE: oldBbVersion: "+A.e(p),q,q,B.fA)
 r=$.S
 s=(r==null?$.S=B.q:r).az(0,q,s).ax
 s===$&&A.b()
-s.hc("HIVE: appDbVersion: 2",q,q,B.fA)
+s.hc("HIVE: appDbVersion: 3",q,q,B.fA)
 return p},
 Cr(){var s=0,r=A.v(t.H),q=this,p,o,n
 var $async$Cr=A.w(function(a,b){if(a===1)return A.r(b,r)
 while(true)switch(s){case 0:n=t.No.a($.tU().nE("dbBox",!1,t.S))
 s=2
-return A.o(n.Ts(A.E(["dbVersion",2],t.z,n.$ti.c)),$async$Cr)
+return A.o(n.Ts(A.E(["dbVersion",3],t.z,n.$ti.c)),$async$Cr)
 case 2:$.bi()
 p=t.Rc
 o=$.S
@@ -111419,7 +111419,7 @@ o.hc("HIVE: setAppDbVersion: "+q.Um(),null,null,B.c3)
 o=$.S
 p=(o==null?$.S=B.q:o).az(0,null,p).ax
 p===$&&A.b()
-p.hc("HIVE: setAppDbVersion: 2",null,null,B.c3)
+p.hc("HIVE: setAppDbVersion: 3",null,null,B.c3)
 return A.t(null,r)}})
 return A.u($async$Cr,r)}}
 A.I6.prototype={
@@ -113752,7 +113752,7 @@ q=t.p2
 p=$.S
 o=(p==null?$.S=B.q:p).az(0,null,q).Um()
 p=$.S;(p==null?$.S=B.q:p).az(0,null,q)
-s=2>o?2:3
+s=3>o?2:3
 break
 case 2:p=$.S
 s=4
@@ -113980,7 +113980,7 @@ q=A.aV((q==null?$.S=B.q:q).az(0,n,s).ay,n,n,!1,n,!1,!0,B.t,"Username",B.vO,1,n,n
 p=$.S
 p=A.aV((p==null?$.S=B.q:p).az(0,n,s).ch,n,n,!1,n,!0,!0,B.t,"Password",B.Wl,1,n,n,n,new A.apN(),n)
 o=$.S
-return A.f0(n,A.dE(A.a([r,B.ai4,q,B.ai5,p,B.ro,A.b_(A.hG(n,n,(o==null?$.S=B.q:o).az(0,n,s).gaPS(),!1,"Login 0.0.2"),40,300)],t.p),B.i,B.h,B.az),m)}}
+return A.f0(n,A.dE(A.a([r,B.ai4,q,B.ai5,p,B.ro,A.b_(A.hG(n,n,(o==null?$.S=B.q:o).az(0,n,s).gaPS(),!1,"Login 0.0.3"),40,300)],t.p),B.i,B.h,B.az),m)}}
 A.apM.prototype={
 $1(a){if(a==null||a.length===0)return"Username is required"
 return null},
