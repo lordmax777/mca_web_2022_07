@@ -28,18 +28,13 @@ dependencies:
   google_maps_flutter_web: ^0.4.0+3
   google_maps_widget: ^1.0.5+1
 
-#  flutter_screenutil: ^5.6.0
-
-
   cupertino_icons: ^1.0.2
 
   retrofit: ^3.0.1+1
   dio: ^4.0.6
   redux: ^5.0.0
   flutter_redux: ^0.10.0
-
   auto_route: ^4.2.1
-
   intl: ^0.17.0
   dropdown_button2: ^1.7.0
   hive: ^2.2.3
@@ -54,17 +49,11 @@ dependencies:
   dart_ipify: ^1.1.1
   dotted_border: ^2.0.0+3
   talker_flutter: ^2.2.1
-
+  public_suffix: ^3.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
   build_runner: ^2.1.2
   auto_route_generator: ^4.2.0
@@ -80,34 +69,16 @@ flutter_intl:
   main_locale: "en" # main locale, default "en"
   output_dir: "lib/intl_conf/intl" # Generated i10n files location
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
 dependency_overrides:
   retrofit: 3.0.2
 
-# The following section is specific to Flutter packages.
 flutter:
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/fonts/
     - assets/images/
 
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
   fonts:
     - family: Bold
       fonts:

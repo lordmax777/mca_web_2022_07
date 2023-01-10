@@ -119782,14 +119782,12 @@ r=a.e
 q=a.at
 if(q==null)q=j
 for(p=i.e,o=p.length,n=a.ay,m=0;m<p.length;p.length===o||(0,A.Q)(p),++m){l=p[m]
-if(q!=="-"){if(n)q="Admin"
-if(l.a===A.rP(q,null)){q=l.b
-if(n)q+=" & (Admin)"}}}k=a.ax
+if(q!=="-"){if(l.a===A.rP(q,null)){q=l.b
+if(n)q+=" - [Admin]"}}else if(n)q="[Admin]"}k=a.ax
 if(k==null)k=j
 for(i=i.r,p=i.length,o=a.ch,m=0;m<i.length;i.length===p||(0,A.Q)(i),++m){l=i[m]
-if(k!=="-"){if(o)k="Admin"
-if(l.a===A.rP(k,null)){k=l.b
-if(o)k+=" & Admin"}}}i=a.b
+if(k!=="-"){if(l.a===A.rP(k,null)){k=l.b
+if(o)k+=" - [Admin]"}}else if(o)k="[Admin]"}i=a.b
 return A.hV(A.E(["user",new A.aC(new A.aK(),a),"name",new A.aC(new A.aK(),s+" "+r),"username",new A.aC(new A.aK(),i),"department",new A.aC(new A.aK(),q),"main_location",new A.aC(new A.aK(),k),"payroll",new A.aC(new A.aK(),j),"reviews",new A.aC(new A.aK(),j),"visa",new A.aC(new A.aK(),j),"absences",new A.aC(new A.aK(),j),"preferred_shifts",new A.aC(new A.aK(),j),"qualifications",new A.aC(new A.aK(),j)],t.N,t.bp),!1)},
 aGq(a){var s,r,q=this,p=null,o=q.f
 if(o.length===0)return B.OV

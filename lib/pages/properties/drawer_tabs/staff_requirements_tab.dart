@@ -2,12 +2,18 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import '../../../theme/theme.dart';
 
-class PropertyStaffReqTab extends StatelessWidget {
+class PropertyStaffReqTab extends StatefulWidget {
   final PropertiesMd property;
 
   PropertyStaffReqTab(this.property, {Key? key}) : super(key: key);
 
+  @override
+  State<PropertyStaffReqTab> createState() => _PropertyStaffReqTabState();
+}
+
+class _PropertyStaffReqTabState extends State<PropertyStaffReqTab> {
   final List<ShiftStaffReqMd> staff = [];
+
   final List<PlutoRow> fetchedRows = [];
 
   List<PlutoColumn> columns() {
@@ -37,21 +43,17 @@ class PropertyStaffReqTab extends StatelessWidget {
 
   void setSm(PlutoGridStateManager sm) async {
     gridStateManager = sm;
-    final shiftId = property.id ?? -1;
+    final shiftId = widget.property.id ?? -1;
     if (shiftId != -1) {
       try {
-        gridStateManager.setShowLoading(true);
         List<ShiftStaffReqMd> res =
             await GetPropertiesAction.fetchShiftStaff(shiftId);
         staff.addAll(res);
         gridStateManager.appendRows(staff.map<PlutoRow>(_buildItem).toList());
       } catch (e) {
-        gridStateManager.setShowLoading(false);
-      } finally {
-        gridStateManager.setShowLoading(false);
-      }
+      } finally {}
     }
-    gridStateManager.notifyListeners();
+    setState(() {});
   }
 
   @override

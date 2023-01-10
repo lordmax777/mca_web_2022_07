@@ -436,28 +436,30 @@ class _BodyState extends State<_Body> {
     String dep = e.groupId ?? "-";
     for (var el in params.groups) {
       if (dep != "-") {
-        if (e.groupAdmin) {
-          dep = "Admin";
-        }
         if (el.id == int.tryParse(dep)) {
           dep = el.name;
           if (e.groupAdmin) {
-            dep = '$dep & (Admin)';
+            dep = '$dep - [Admin]';
           }
+        }
+      } else {
+        if (e.groupAdmin) {
+          dep = '[Admin]';
         }
       }
     }
     String loc = e.locationId ?? "-";
     for (var el in params.locations) {
       if (loc != "-") {
-        if (e.locationAdmin) {
-          loc = "Admin";
-        }
         if (el.id == int.tryParse(loc)) {
           loc = el.name;
           if (e.locationAdmin) {
-            loc = '$loc & Admin';
+            loc = '$loc - [Admin]';
           }
+        }
+      } else {
+        if (e.locationAdmin) {
+          loc = '[Admin]';
         }
       }
     }
