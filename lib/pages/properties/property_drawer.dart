@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/pages/properties/drawer_tabs/staff_requirements_
 import 'package:mca_web_2022_07/pages/properties/drawer_tabs/timings_tab.dart';
 import '../../manager/models/property_md.dart';
 import '../../theme/theme.dart';
+import 'drawer_tabs/qualif_requirements_tab.dart';
 
 class PropertyDrawer extends StatefulWidget {
   final PropertiesMd property;
@@ -172,6 +173,8 @@ class _PropertyDrawerState extends State<PropertyDrawer>
         return PropertySpRatesTab(widget.property);
       case 3:
         return PropertyStaffReqTab(widget.property);
+      case 4:
+        return PropertyQualifReqTab(widget.property);
       default:
         return const SizedBox();
     }

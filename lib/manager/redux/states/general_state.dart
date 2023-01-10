@@ -323,10 +323,10 @@ class GetPropertiesAction {
     final ApiResponse res = await restClient()
         .getPropertiesStaff(shiftId.toString())
         .nocodeErrorHandler();
-
+    final data = res.data['staff_requirements'];
     if (res.success) {
-      if (res.data['staff_req'] != null) {
-        list.addAll(res.data['staff_req']
+      if (data != null) {
+        list.addAll(data
             .map<ShiftStaffReqMd>((e) => ShiftStaffReqMd.fromJson(e))
             .toList());
       }
@@ -341,11 +341,12 @@ class GetPropertiesAction {
         .getPropertiesQualification(shiftId.toString())
         .nocodeErrorHandler();
 
+    final data = res.data['qualification_requirements'];
     if (res.success) {
-      if (res.data['qualification_requirements'] != null) {
-        list.addAll(res.data['qualification_requirements']
-            .map<ShiftQualifReqMd>((e) => ShiftQualifReqMd.fromJson(e))
-            .toList());
+      if (data != null) {
+        list.addAll(data.map<ShiftQualifReqMd>((e) {
+          return ShiftQualifReqMd.fromJson(e);
+        }).toList());
       }
     }
     return list;

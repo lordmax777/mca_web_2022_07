@@ -1,15 +1,17 @@
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
-import '../../../manager/models/property_md.dart';
 import '../../../theme/theme.dart';
 
-class PropertyQualifReqTab extends StatelessWidget {
+class PropertyQualifReqTab extends StatefulWidget {
   final PropertiesMd property;
 
   PropertyQualifReqTab(this.property, {Key? key}) : super(key: key);
 
-  final List<ShiftQualifReqMd> qualifs = [];
+  @override
+  State<PropertyQualifReqTab> createState() => _PropertyQualifReqTabState();
+}
 
+class _PropertyQualifReqTabState extends State<PropertyQualifReqTab> {
   List<PlutoColumn> columns() {
     return [
       PlutoColumn(
@@ -25,7 +27,7 @@ class PropertyQualifReqTab extends StatelessWidget {
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
-        title: "Number Of Staff",
+        title: "Number of Staff",
         field: "staff_num",
         width: 160.0,
         type: PlutoColumnType.number(),
@@ -33,39 +35,53 @@ class PropertyQualifReqTab extends StatelessWidget {
     ];
   }
 
+  final List<ShiftQualifReqMd> staff = [];
+
   late PlutoGridStateManager gridStateManager;
 
   void setSm(PlutoGridStateManager sm) async {
-    gridStateManager = sm;
-    final shiftId = property.id ?? -1;
-    if (shiftId != -1) {
-      try {
-        gridStateManager.setShowLoading(true);
-        final List<ShiftQualifReqMd> res =
+    setState(() {
+      gridStateManager = sm;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final shiftId = widget.property.id ?? -1;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (shiftId != -1) {
+        List<ShiftQualifReqMd> res =
             await GetPropertiesAction.fetchShiftQualif(shiftId);
-        qualifs.addAll(res);
-      } catch (e) {
-        gridStateManager.setShowLoading(false);
-      } finally {
-        gridStateManager.setShowLoading(false);
+        staff.addAll(res);
+        setState(() {});
       }
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (staff.isEmpty) {
+      return Center(
+        child: KText(
+            mainAxisSize: MainAxisSize.min,
+            text: "Please wait loading...",
+            textColor: ThemeColors.gray2,
+            fontSize: 24.0),
+      );
+    }
     return UsersListTable(
       onSmReady: setSm,
-      rows: qualifs.map<PlutoRow>(_buildItem).toList(),
+      rows: staff.map<PlutoRow>(_buildItem).toList(),
       cols: columns(),
     );
   }
 
   PlutoRow _buildItem(ShiftQualifReqMd e) {
     return PlutoRow(cells: {
-      'name': PlutoCell(value: e.qualificationName),
-      'min_level': PlutoCell(value: e.levelName),
-      'staff_num': PlutoCell(value: e.numberOfStaff),
+      "name": PlutoCell(value: e.qualificationName),
+      "min_level": PlutoCell(value: e.levelName),
+      "staff_num": PlutoCell(value: e.numberOfStaff),
     });
   }
 }

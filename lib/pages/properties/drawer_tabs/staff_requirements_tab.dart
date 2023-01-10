@@ -12,10 +12,6 @@ class PropertyStaffReqTab extends StatefulWidget {
 }
 
 class _PropertyStaffReqTabState extends State<PropertyStaffReqTab> {
-  final List<ShiftStaffReqMd> staff = [];
-
-  final List<PlutoRow> fetchedRows = [];
-
   List<PlutoColumn> columns() {
     return [
       PlutoColumn(
@@ -39,28 +35,44 @@ class _PropertyStaffReqTabState extends State<PropertyStaffReqTab> {
     ];
   }
 
+  final List<ShiftStaffReqMd> staff = [];
+
   late PlutoGridStateManager gridStateManager;
 
   void setSm(PlutoGridStateManager sm) async {
-    gridStateManager = sm;
+    setState(() {
+      gridStateManager = sm;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
     final shiftId = widget.property.id ?? -1;
-    if (shiftId != -1) {
-      try {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (shiftId != -1) {
         List<ShiftStaffReqMd> res =
             await GetPropertiesAction.fetchShiftStaff(shiftId);
         staff.addAll(res);
-        gridStateManager.appendRows(staff.map<PlutoRow>(_buildItem).toList());
-      } catch (e) {
-      } finally {}
-    }
-    setState(() {});
+        setState(() {});
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (staff.isEmpty) {
+      return Center(
+        child: KText(
+            mainAxisSize: MainAxisSize.min,
+            text: "Please wait loading...",
+            textColor: ThemeColors.gray2,
+            fontSize: 24.0),
+      );
+    }
     return UsersListTable(
       onSmReady: setSm,
-      rows: [],
+      rows: staff.map<PlutoRow>(_buildItem).toList(),
       cols: columns(),
     );
   }

@@ -8,8 +8,8 @@ import '../redux/sets/state_value.dart';
 
 class ShiftQualifReqMd {
   int qualificationId;
-  int numberOfStaff;
   String qualificationName;
+  int numberOfStaff;
   int levelId;
   String levelName;
   dynamic alternative;
