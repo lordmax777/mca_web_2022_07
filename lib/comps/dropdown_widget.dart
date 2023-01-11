@@ -74,7 +74,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 14),
+      margin: const EdgeInsets.only(top: 10),
       width: widget.dropdownBtnWidth,
       child: DropdownButtonFormField2(
         validator: widget.validator ??
