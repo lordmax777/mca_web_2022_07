@@ -7,13 +7,13 @@ import '../manager/talker_controller.dart';
 logger(var str, {String? hint, bool json = false}) {
   final talker = TalkerController.to.talker;
   if (kDebugMode) {
-    talker.log(hint ?? 'LOGGER');
+    talker.log(hint != null ? "-----$hint------" : '-------');
     if (json) {
       JsonEncoder encoder = const JsonEncoder.withIndent('  ');
       talker.log(encoder.convert(str));
     } else {
       talker.log(str.toString());
     }
-    talker.log(hint ?? 'LOGGER');
+    talker.log(hint != null ? "-----$hint------" : '-------');
   }
 }

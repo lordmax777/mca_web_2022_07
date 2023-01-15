@@ -12,6 +12,7 @@ class PropertyStaffReqTab extends StatefulWidget {
 }
 
 class _PropertyStaffReqTabState extends State<PropertyStaffReqTab> {
+  bool isLoading = true;
   List<PlutoColumn> columns() {
     return [
       PlutoColumn(
@@ -50,22 +51,35 @@ class _PropertyStaffReqTabState extends State<PropertyStaffReqTab> {
     super.initState();
     final shiftId = widget.property.id ?? -1;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      setState(() {
+        isLoading = true;
+      });
       if (shiftId != -1) {
         List<ShiftStaffReqMd> res =
             await GetPropertiesAction.fetchShiftStaff(shiftId);
         staff.addAll(res);
-        setState(() {});
+        setState(() {
+          isLoading = false;
+        });
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (staff.isEmpty) {
+    if (isLoading) {
       return Center(
         child: KText(
             mainAxisSize: MainAxisSize.min,
             text: "Please wait loading...",
+            textColor: ThemeColors.gray2,
+            fontSize: 24.0),
+      );
+    } else if (staff.isEmpty) {
+      return Center(
+        child: KText(
+            mainAxisSize: MainAxisSize.min,
+            text: "No staff found",
             textColor: ThemeColors.gray2,
             fontSize: 24.0),
       );

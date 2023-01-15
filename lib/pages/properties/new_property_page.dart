@@ -1,5 +1,6 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -54,7 +55,6 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   void dispose() {
     logger('dispose');
     _tabController.dispose();
-    PreferredShiftsController.to.onDispose();
     super.dispose();
   }
 
@@ -73,32 +73,37 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => NewPropController());
-    return TableWrapperWidget(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: TabBar(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
-              controller: _tabController,
-              splashFactory: NoSplash.splashFactory,
-              isScrollable: true,
-              indicatorWeight: 3.0,
-              indicatorColor: ThemeColors.MAIN_COLOR,
-              labelColor: ThemeColors.MAIN_COLOR,
-              unselectedLabelColor: ThemeColors.black,
-              labelStyle: ThemeText.tabTextStyle
-                  .copyWith(color: ThemeColors.MAIN_COLOR),
-              unselectedLabelStyle: ThemeText.tabTextStyle,
-              tabs: tabs,
+    return GBuilder<NewPropController>(
+        tag: "newProp",
+        child: (controller) {
+          controller.timingStrictBreakTime.value;
+          return TableWrapperWidget(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: TabBar(
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    controller: _tabController,
+                    splashFactory: NoSplash.splashFactory,
+                    isScrollable: true,
+                    indicatorWeight: 3.0,
+                    indicatorColor: ThemeColors.MAIN_COLOR,
+                    labelColor: ThemeColors.MAIN_COLOR,
+                    unselectedLabelColor: ThemeColors.black,
+                    labelStyle: ThemeText.tabTextStyle
+                        .copyWith(color: ThemeColors.MAIN_COLOR),
+                    unselectedLabelStyle: ThemeText.tabTextStyle,
+                    tabs: tabs,
+                  ),
+                ),
+                const Divider(height: 0, color: ThemeColors.gray11),
+                _getTabChild(),
+              ],
             ),
-          ),
-          const Divider(height: 0, color: ThemeColors.gray11),
-          _getTabChild(),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   Widget _getTabChild() {

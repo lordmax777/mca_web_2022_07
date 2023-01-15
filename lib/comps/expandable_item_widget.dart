@@ -4,10 +4,12 @@ class ExpandedWidgetType {
   final String title;
   final Widget child;
   final bool initExpanded;
+  final EdgeInsetsGeometry? padding;
 
   ExpandedWidgetType({
     required this.title,
     required this.child,
+    this.padding,
     this.initExpanded = false,
   });
 }
@@ -37,6 +39,7 @@ class _CustomExpandableTabBarState extends State<CustomExpandableTabBar> {
     for (var element in widget.expandedWidgetList) {
       _generalItems.add(ExpandableItemWidget(
           title: element.title,
+          padding: element.padding,
           isExpanded: element.initExpanded,
           child: element.child));
     }
@@ -70,11 +73,13 @@ class ExpandableItemWidget extends StatefulWidget {
   final bool isExpanded;
   final ValueChanged<LabeledGlobalKey<ExpandableItemWidgetState>>? onEditName;
   final ValueChanged<LabeledGlobalKey<ExpandableItemWidgetState>>? onDelete;
+  final EdgeInsetsGeometry? padding;
   const ExpandableItemWidget(
       {Key? key,
       required this.title,
       required this.child,
       this.onDelete,
+      this.padding,
       this.onEditName,
       this.isExpanded = false})
       : super(key: key);
@@ -102,7 +107,7 @@ class ExpandableItemWidgetState extends State<ExpandableItemWidget> {
     return ExpansionTile(
       maintainState: true,
       initiallyExpanded: widget.isExpanded,
-      childrenPadding:
+      childrenPadding: widget.padding ??
           const EdgeInsets.only(left: 48.0, bottom: 24.0, top: 24.0),
       tilePadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
       trailing: _getTrailing(),

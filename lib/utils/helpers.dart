@@ -137,3 +137,8 @@ extension BuildContextHelper on BuildContext {
   Size get screenSize => MediaQuery.of(this).size;
   Orientation get orientation => MediaQuery.of(this).orientation;
 }
+
+extension NumHelpers on num {
+  SizedBox get hs => SizedBox(height: toDouble());
+  SizedBox get ws => SizedBox(width: toDouble());
+}

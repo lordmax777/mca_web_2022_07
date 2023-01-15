@@ -21,6 +21,7 @@ class TextInputWidget extends StatefulWidget {
   final String? Function(String?)? validator;
   final VoidCallback? onRightIconClick;
   final String? Function(String?)? customValidator;
+  final bool? isReadOnly;
   TextInputWidget(
       {Key? key,
       this.defaultBorderColor,
@@ -29,6 +30,7 @@ class TextInputWidget extends StatefulWidget {
       this.validator,
       this.maxLines = 1,
       this.disableAll = false,
+      this.isReadOnly,
       this.onChanged,
       this.controller,
       this.rightIcon,
@@ -42,7 +44,7 @@ class TextInputWidget extends StatefulWidget {
       this.width,
       this.hintText})
       : super(key: key) {
-    defaultBorderColor ??= ThemeColors.gray11;
+    defaultBorderColor ??= ThemeColors.gray10;
     hintText ??= 'Enter your text';
     width ??= 300;
     heigth ??= 80;
@@ -91,16 +93,20 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             ? SystemMouseCursors.forbidden
             : SystemMouseCursors.text,
         controller: widget.controller,
-        readOnly: widget.disableAll,
+        readOnly: widget.isReadOnly ?? widget.disableAll,
         cursorColor: ThemeColors.MAIN_COLOR,
         style: widget.disableAll
             ? ThemeText.md.copyWith(color: ThemeColors.gray8)
             : ThemeText.bold14.copyWith(color: ThemeColors.gray2),
         decoration: InputDecoration(
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: ThemeColors.red3, width: 2.0),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
               borderSide:
-                  BorderSide(width: 1.0, color: widget.defaultBorderColor!)),
+                  BorderSide(width: 2.0, color: widget.defaultBorderColor!)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
               borderSide: BorderSide(

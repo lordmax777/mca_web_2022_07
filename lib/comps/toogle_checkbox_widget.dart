@@ -487,7 +487,7 @@ class CheckboxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.scale(
-      scale: 1.2,
+      scale: 1.3,
       child: Checkbox(
         value: value,
         onChanged: onChanged,
@@ -499,7 +499,7 @@ class CheckboxWidget extends StatelessWidget {
           return ThemeColors.MAIN_COLOR;
         }),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(7.0),
         ),
         side: const BorderSide(color: Color(0xFFA4B1D1), width: 2.0),
         tristate: false,
