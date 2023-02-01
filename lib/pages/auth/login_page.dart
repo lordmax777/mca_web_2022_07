@@ -23,9 +23,7 @@ class _LoginPageState extends State<LoginPage> {
     final TalkerController talker = TalkerController.to;
 
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-            onPressed: talker.goToLogs,
-            child: const Icon(Icons.developer_mode)),
+        floatingActionButton: talker.fab(),
         backgroundColor: const Color(0xffe3e3e3),
         body: const Center(child: Body()));
   }

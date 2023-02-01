@@ -19,7 +19,7 @@ class ShiftDetailsTab extends StatelessWidget {
         ExpandedWidgetType(
             title: _ShiftDetails.title,
             child: const _ShiftDetails(),
-            initExpanded: kReleaseMode),
+            initExpanded: true),
         ExpandedWidgetType(title: _Timings.title, child: const _Timings()),
         ExpandedWidgetType(
             title: _Rates.title,
@@ -70,6 +70,7 @@ class _ShiftDetails extends StatelessWidget {
           DropdownWidget1<ListLocation>(
             hintText: "Location",
             dropdownBtnWidth: dpWidth,
+            isRequired: true,
             dropdownOptionsWidth: dpWidth,
             hasSearchBox: true,
             value: controller.shiftLocation.name,
@@ -85,6 +86,7 @@ class _ShiftDetails extends StatelessWidget {
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
             hasSearchBox: true,
+            isRequired: true,
             value: controller.shiftClient.name,
             objItems: appStore.state.generalState.paramList.data?.clients ?? [],
             onChangedWithObj: controller.updateShiftClient,
@@ -97,6 +99,7 @@ class _ShiftDetails extends StatelessWidget {
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
             hasSearchBox: true,
+            isRequired: true,
             value: controller.shiftWarehouse.name,
             objItems: appStore.state.generalState.warehouses.data ?? [],
             onChangedWithObj: controller.updateShiftWarehouse,
@@ -167,23 +170,6 @@ class _ShiftDetails extends StatelessWidget {
                 .toList(),
           ),
         ]);
-  }
-
-  Widget _chbx(bool value, ValueChanged<bool> onChanged, String text) {
-    return SpacedRow(
-      horizontalSpace: 8.0,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),
-        KText(
-          text: text,
-          textColor: ThemeColors.gray2,
-          fontSize: 14,
-          fontWeight: FWeight.bold,
-          isSelectable: false,
-        )
-      ],
-    );
   }
 }
 
@@ -318,23 +304,6 @@ class _Timings extends StatelessWidget {
           ),
         ]);
   }
-
-  Widget _chbx(bool value, ValueChanged<bool> onChanged, String text) {
-    return SpacedRow(
-      horizontalSpace: 8.0,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),
-        KText(
-          text: text,
-          textColor: ThemeColors.gray2,
-          fontSize: 14,
-          fontWeight: FWeight.bold,
-          isSelectable: false,
-        )
-      ],
-    );
-  }
 }
 
 class _Rates extends StatelessWidget {
@@ -355,22 +324,29 @@ class _Rates extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 48.0),
                 child: _buildTop(controller, context),
               ),
-              const Divider(height: 1, thickness: 1, color: ThemeColors.gray11),
-              32.hs,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 48.0),
-                child: KText(
-                  text: 'Custom Rates',
-                  fontWeight: FWeight.bold,
-                  fontSize: 18.0,
-                  textColor: ThemeColors.gray2,
-                ),
-              ),
-              32.hs,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 48.0),
-                child: _buildCustomRates(controller, context),
-              ),
+              if (!controller.isNew)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Divider(
+                        height: 1, thickness: 1, color: ThemeColors.gray11),
+                    32.hs,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48.0),
+                      child: KText(
+                        text: 'Custom Rates',
+                        fontWeight: FWeight.bold,
+                        fontSize: 18.0,
+                        textColor: ThemeColors.gray2,
+                      ),
+                    ),
+                    32.hs,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48.0),
+                      child: _buildCustomRates(controller, context),
+                    ),
+                  ],
+                )
             ],
           ),
         );
@@ -473,7 +449,7 @@ class _Rates extends StatelessWidget {
                   isRequired: true,
                   controller: rate.minTime,
                   keyboardType: TextInputType.number,
-                  labelText: "Minumum Working Time (Minutes)",
+                  labelText: "Minimum Working Time (Minutes)",
                 ),
                 SpacedColumn(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,7 +515,7 @@ class _Rates extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: SizedBox(
-          height: 480,
+          height: 460,
           width: 400,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -560,21 +536,21 @@ class _Rates extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _chbx(bool value, ValueChanged<bool> onChanged, String text) {
-    return SpacedRow(
-      horizontalSpace: 8.0,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),
-        KText(
-          text: text,
-          textColor: ThemeColors.gray2,
-          fontSize: 14,
-          fontWeight: FWeight.bold,
-          isSelectable: false,
-        )
-      ],
-    );
-  }
+Widget _chbx(bool value, ValueChanged<bool> onChanged, String text) {
+  return SpacedRow(
+    horizontalSpace: 8.0,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),
+      KText(
+        text: text,
+        textColor: ThemeColors.gray2,
+        fontSize: 14,
+        fontWeight: FWeight.bold,
+        isSelectable: false,
+      )
+    ],
+  );
 }

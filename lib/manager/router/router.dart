@@ -36,7 +36,7 @@ part 'router.gr.dart';
       AutoRoute(page: HandoverTypesPage, path: "handover-types"),
       AutoRoute(page: SettingsPage, path: "settings-page"),
       AutoRoute(page: PropertiesPage, path: "properties"),
-      AutoRoute(page: NewPropertyPage, path: "new-properties"),
+      AutoRoute(page: NewPropertyPage, path: "property"),
     ]),
   ],
 )

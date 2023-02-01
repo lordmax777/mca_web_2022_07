@@ -229,7 +229,7 @@ class _$AppRouter extends RootStackRouter {
             ),
             RouteConfig(
               NewPropertyRoute.name,
-              path: 'new-properties',
+              path: 'property',
               parent: HomeRoute.name,
             ),
           ],
@@ -506,7 +506,7 @@ class NewPropertyRoute extends PageRouteInfo<NewPropertyRouteArgs> {
     PropertiesMd? property,
   }) : super(
           NewPropertyRoute.name,
-          path: 'new-properties',
+          path: 'property',
           args: NewPropertyRouteArgs(
             key: key,
             property: property,

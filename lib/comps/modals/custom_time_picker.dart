@@ -2,11 +2,11 @@ import '../../theme/theme.dart';
 
 Future<TimeOfDay?> showCustomTimePicker(
   BuildContext context, {
-  TimeOfDay initialTime = const TimeOfDay(hour: 0, minute: 0),
+  TimeOfDay? initialTime,
 }) {
   return showTimePicker(
     context: context,
-    initialTime: initialTime,
+    initialTime: initialTime ?? const TimeOfDay(hour: 0, minute: 0),
     cancelText: "Clear/Close".toUpperCase(),
     builder: (context, child) {
       return Theme(

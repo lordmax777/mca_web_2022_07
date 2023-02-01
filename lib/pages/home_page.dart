@@ -31,9 +31,7 @@ class _HomePageState extends State<HomePage> {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (_, state) => Scaffold(
-        floatingActionButton: FloatingActionButton(
-            onPressed: talker.goToLogs,
-            child: const Icon(Icons.developer_mode)),
+        floatingActionButton: talker.fab(),
         drawer: DefaultDrawer(state: state),
         endDrawer: state.generalState.endDrawer,
         backgroundColor: ThemeColors.gray12,

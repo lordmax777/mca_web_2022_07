@@ -99,7 +99,7 @@ class WarehouseController extends GetxController {
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
     inactiveRows.addAll(gridStateManager.refRows.where(
-        (element) => !(element.cells["action"]!.value as WarehouseMd).active!));
+        (element) => !(element.cells["action"]!.value as WarehouseMd).active));
     if (!isShowInactive) {
       gridStateManager.removeRows(inactiveRows);
     }

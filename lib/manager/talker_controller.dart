@@ -21,6 +21,12 @@ class TalkerController extends GetxController {
     );
   }
 
+  Widget? fab() {
+    if (!isTalkerReady) return null;
+    return FloatingActionButton(
+        onPressed: goToLogs, child: const Icon(Icons.developer_mode));
+  }
+
   void goToLogs() {
     appRouter.pushWidget(TalkerScreen(talker: talker));
   }
@@ -30,8 +36,8 @@ class TalkerController extends GetxController {
     super.onInit();
     final t = TalkerFlutter.init();
     talker = t;
-    isTalkerReady = true;
-    if (!Constants.isDebug) {
+    isTalkerReady = Constants.enableTalker;
+    if (!Constants.enableTalker) {
       talker.disable();
     }
   }

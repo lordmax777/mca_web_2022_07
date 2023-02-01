@@ -10,6 +10,18 @@ extension DateTimeExtensions on DateTime {
   String get formattedDate => "$day/$month/$year";
 }
 
+extension TimeExtensions on TextEditingController {
+  List<int>? get formattedTime {
+    dynamic time = text.split(" ");
+    time.removeLast();
+    time = time.join(" ");
+    time = time.split(":");
+    time = time.map((e) => int.tryParse(e)).toList();
+    if (time.any((element) => element == null)) return null;
+    return time.cast<int>();
+  }
+}
+
 int? toIntOrNull(String? value) {
   if (value == null) return null;
   return int.tryParse(value);

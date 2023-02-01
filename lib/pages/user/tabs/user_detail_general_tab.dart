@@ -895,14 +895,16 @@ class _NextOfKinInfoWidget extends StatelessWidget {
 }
 
 class SaveAndCancelButtonsWidget extends StatelessWidget {
-  final List<GlobalKey<FormState>> formKeys;
+  final List<GlobalKey<FormState>>? formKeys;
   final VoidCallback? onSave;
   final bool isDisabled;
   final String? saveText;
   final VoidCallback? onCancel;
+  final EdgeInsets? padding;
   const SaveAndCancelButtonsWidget(
       {Key? key,
-      required this.formKeys,
+      this.formKeys,
+      this.padding,
       this.onSave,
       this.isDisabled = false,
       this.saveText,
@@ -912,7 +914,7 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: padding ?? EdgeInsets.all(16.0),
       child: SpacedRow(
         mainAxisAlignment: MainAxisAlignment.end,
         horizontalSpace: 14.0,
@@ -933,7 +935,7 @@ class SaveAndCancelButtonsWidget extends StatelessWidget {
                 ? null
                 : (onSave ??
                     () async {
-                      if (formKeys.every(
+                      if ((formKeys ?? []).every(
                           (element) => element.currentState!.validate())) {
                         logger('Valid');
                         await fetch(GetSaveGeneralDetailsAction());

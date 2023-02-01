@@ -1,6 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import '../../../comps/show_overlay_popup.dart';
 import '../../../manager/model_exporter.dart';
 import '../../../manager/redux/sets/app_state.dart';
@@ -180,9 +182,8 @@ class PropertiesController extends GetxController {
   }
 
   void _onEditClick(BuildContext context, PlutoColumnRendererContext ctx) {
-    showOverlayPopup(
-        body: WaresNewWarePopupWidget(qualif: ctx.cell.value),
-        context: context);
+    context
+        .pushRoute(NewPropertyRoute(property: ctx.row.cells['action']?.value));
   }
 
   @override

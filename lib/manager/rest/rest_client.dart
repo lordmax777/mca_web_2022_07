@@ -383,19 +383,41 @@ abstract class RestClient {
   @GET("/api/fe/shifts/{id}/details")
   Future<HttpResponse> getProperties(@Path() String id);
 
-  // @POST("/api/fe/warehouses/{id}")
-  // @FormUrlEncoded()
-  // Future<HttpResponse> postWarehouse({
-  //   @Path() int? id,
-  //   @Field() String? contactEmail,
-  //   @Field() required String name,
-  //   @Field() required String contactName,
-  //   @Field() required bool active,
-  //   @Field() required bool sendReport,
-  // });
-  //
-  // @DELETE("/api/fe/warehouses/{storageid}")
-  // Future<HttpResponse> deleteWarehouse(@Path() int storageid);
+  @POST("/api/fe/shifts/{id}/details")
+  @FormUrlEncoded()
+  Future<HttpResponse> postPropertie({
+    ///to create a new property pass 0
+    @Path() int? id,
+    @Field() required String title,
+    @Field() required int locationId,
+    @Field() required int clientId,
+    @Field() required int storageId,
+    @Field() required int templateId,
+    @Field() required String startTime,
+    @Field() required String finishTime,
+    @Field() String? startBreak,
+    @Field() String? finishBreak,
+    @Field() String? fpStartTime,
+    @Field() String? fpFinishTime,
+    @Field() String? fpStartBreak,
+    @Field() String? fpFinishBreak,
+    @Field() required bool strictBreak,
+    @Field() int? minWorkTime,
+    @Field() int? minPaidTime,
+    @Field() bool? splitTime,
+    @Field() required bool checklist,
+    @Field() required bool dayMon,
+    @Field() required bool dayTue,
+    @Field() required bool dayWed,
+    @Field() required bool dayThu,
+    @Field() required bool dayFri,
+    @Field() required bool daySat,
+    @Field() required bool daySun,
+    @Field() required bool active,
+  });
+
+  @DELETE("/api/fe/shifts/{id}/details")
+  Future<HttpResponse> deleteProperty(@Path() int id);
 
   @GET("/api/fe/shifts/{id}/staff")
   Future<HttpResponse> getPropertiesStaff(@Path() String id);
@@ -440,6 +462,25 @@ abstract class RestClient {
 
   @DELETE("/api/fe/storageitems/{id}")
   Future<HttpResponse> deleteStorageItems(@Path() int id);
+
+  @GET("/api/fe/shifts/{id}/specialrate")
+  Future<HttpResponse> getShiftSpecialRate(@Path() int id);
+
+  @POST("/api/fe/shifts/{shiftId}/specialrate")
+  @FormUrlEncoded()
+  Future<HttpResponse> postShiftSpecialRate({
+    ///Shift ID, 0 to create new
+    @Path() int? shiftId,
+    @Field() required String name,
+    @Field() required double rate,
+    @Field() required int minWorkTime,
+    @Field() required int minPaidTime,
+    @Field() required bool splitTime,
+  });
+
+  @DELETE("/api/fe/shifts/{id}/specialrate")
+  Future<HttpResponse> deleteShiftSpecialRate(
+      @Path() int shiftId, @Query("specialRateId") int specialRateId);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

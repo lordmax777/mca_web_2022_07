@@ -151,8 +151,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                         ? ThemeColors.MAIN_COLOR
                         : (widget.dropdownBtnColor ?? ThemeColors.gray10),
                 width: isOpen
-                    ? 2.0
-                    : (widget.dropdownBtnColor == null ? 2.0 : 0.0),
+                    ? 1.0
+                    : (widget.dropdownBtnColor == null ? 1.0 : 0.0),
               ),
               borderRadius: BorderRadius.circular(18.0),
               color: (widget.disableAll

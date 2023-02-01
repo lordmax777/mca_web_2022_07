@@ -108,9 +108,7 @@ Future<void> showLoading({bool? barrierDismissible = false}) async {
                 ThemeColors.MAIN_COLOR.withOpacity(0.8)),
             color: ThemeColors.MAIN_COLOR,
           ),
-          FloatingActionButton.small(
-              onPressed: talker.goToLogs,
-              child: const Icon(Icons.developer_mode))
+          talker.fab() ?? const SizedBox(),
         ],
       );
     },

@@ -100,17 +100,17 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             : ThemeText.bold14.copyWith(color: ThemeColors.gray2),
         decoration: InputDecoration(
           errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: ThemeColors.red3, width: 2.0),
+            borderSide: const BorderSide(color: ThemeColors.red3, width: 1.0),
             borderRadius: BorderRadius.circular(16.0),
           ),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
               borderSide:
-                  BorderSide(width: 2.0, color: widget.defaultBorderColor!)),
+                  BorderSide(width: 1.0, color: widget.defaultBorderColor!)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
               borderSide: BorderSide(
-                  width: 2.0,
+                  width: 1.0,
                   color: widget.disableAll
                       ? ThemeColors.gray8
                       : ThemeColors.MAIN_COLOR)),

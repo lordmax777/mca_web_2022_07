@@ -1687,6 +1687,112 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<HttpResponse<dynamic>> postPropertie({
+    id,
+    required title,
+    required locationId,
+    required clientId,
+    required storageId,
+    required templateId,
+    required startTime,
+    required finishTime,
+    startBreak,
+    finishBreak,
+    fpStartTime,
+    fpFinishTime,
+    fpStartBreak,
+    fpFinishBreak,
+    required strictBreak,
+    minWorkTime,
+    minPaidTime,
+    splitTime,
+    required checklist,
+    required dayMon,
+    required dayTue,
+    required dayWed,
+    required dayThu,
+    required dayFri,
+    required daySat,
+    required daySun,
+    required active,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'title': title,
+      'locationId': locationId,
+      'clientId': clientId,
+      'storageId': storageId,
+      'templateId': templateId,
+      'startTime': startTime,
+      'finishTime': finishTime,
+      'startBreak': startBreak,
+      'finishBreak': finishBreak,
+      'fpStartTime': fpStartTime,
+      'fpFinishTime': fpFinishTime,
+      'fpStartBreak': fpStartBreak,
+      'fpFinishBreak': fpFinishBreak,
+      'strictBreak': strictBreak,
+      'minWorkTime': minWorkTime,
+      'minPaidTime': minPaidTime,
+      'splitTime': splitTime,
+      'checklist': checklist,
+      'dayMon': dayMon,
+      'dayTue': dayTue,
+      'dayWed': dayWed,
+      'dayThu': dayThu,
+      'dayFri': dayFri,
+      'daySat': daySat,
+      'daySun': daySun,
+      'active': active,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/shifts/${id}/details',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteProperty(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/shifts/${id}/details',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
   Future<HttpResponse<dynamic>> getPropertiesStaff(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1905,6 +2011,96 @@ class _RestClient implements RestClient {
             .compose(
               _dio.options,
               '/api/fe/storageitems/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getShiftSpecialRate(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/shifts/${id}/specialrate',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> postShiftSpecialRate({
+    shiftId,
+    required name,
+    required rate,
+    required minWorkTime,
+    required minPaidTime,
+    required splitTime,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'name': name,
+      'rate': rate,
+      'minWorkTime': minWorkTime,
+      'minPaidTime': minPaidTime,
+      'splitTime': splitTime,
+    };
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/shifts/${shiftId}/specialrate',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteShiftSpecialRate(
+    shiftId,
+    specialRateId,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'specialRateId': specialRateId};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/shifts/{id}/specialrate',
               queryParameters: queryParameters,
               data: _data,
             )

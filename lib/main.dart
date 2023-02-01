@@ -46,7 +46,6 @@ Future<void> setup() async {
   Get.lazyPut(() => SettingsController());
   Get.lazyPut(() => PreferredShiftsController());
   Get.lazyPut(() => PropertiesController());
-  Get.lazyPut(() => NewPropController());
 
   Get.put(TalkerController());
 
