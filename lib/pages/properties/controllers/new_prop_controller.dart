@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/models/property_md.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
@@ -100,6 +101,7 @@ class NewPropController extends GetxController {
 
   void updateTimeController(
       BuildContext context, TextEditingController tec) async {
+    // logger(tec.formattedTime);
     TimeOfDay? val = await showCustomTimePicker(context,
         initialTime: tec.text.isNotEmpty
             ? TimeOfDay(
@@ -288,14 +290,9 @@ class NewPropController extends GetxController {
     timingFormKey.currentState!.reset();
     // ratesFormKey.currentState!.reset();
     if (!shiftDetailsFormKey.currentState!.validate()) return;
-
-    logger("Shift Details Validated");
     if (!timingFormKey.currentState!.validate()) return;
-
-    logger("Timing Validated");
     if (!ratesFormKey.currentState!.validate()) return;
-
-    logger("Rates Validated");
+    showLoading();
     final bool neShift = await createProperty();
     if (neShift) {
       await appStore.dispatch(GetPropertiesAction());
@@ -323,6 +320,27 @@ class NewPropController extends GetxController {
     }
     if (createdCustomRates > 0) {
       await fetchShiftSpecialRates();
+    }
+    await closeLoading();
+    if (neShift) {
+      showDialog(
+        context: Get.context!,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Success"),
+            content: const Text("Shift has been saved"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  Get.back();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 

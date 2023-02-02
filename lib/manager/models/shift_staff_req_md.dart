@@ -9,11 +9,11 @@ import '../redux/sets/state_value.dart';
 class ShiftStaffReqMd {
   int groupId;
   int min;
-  int max;
+  int? max;
   String group;
   ShiftStaffReqMd({
     required this.min,
-    required this.max,
+    this.max,
     required this.group,
     required this.groupId,
   });
@@ -21,7 +21,7 @@ class ShiftStaffReqMd {
   factory ShiftStaffReqMd.fromJson(Map<String, dynamic> json) {
     return ShiftStaffReqMd(
       min: json['min'] as int,
-      max: json['max'] as int,
+      max: json['max'] as int?,
       group: json['group'] as String,
       groupId: json['groupId'] as int,
     );

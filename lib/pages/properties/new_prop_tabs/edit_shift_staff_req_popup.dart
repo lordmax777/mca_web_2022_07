@@ -147,11 +147,12 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: isNew ? "Add New" : "Save Changes",
             onPressed: () {
+              if (!formKey.currentState!.validate()) return;
               context.popRoute(ShiftStaffReqMd(
                 groupId: department.code ?? -1,
                 group: department.name ?? "",
                 min: int.parse(numberOfStaff.text),
-                max: int.parse(maxStaff.text),
+                max: int.tryParse(maxStaff.text),
               ));
             },
           ),

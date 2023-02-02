@@ -13,6 +13,11 @@ extension DateTimeExtensions on DateTime {
 extension TimeExtensions on TextEditingController {
   List<int>? get formattedTime {
     dynamic time = text.split(" ");
+    if (time.length == 1) {
+      time = text.split(":").map((e) => int.tryParse(e)).toList();
+      if (time.any((element) => element == null)) return null;
+      return time.cast<int>();
+    }
     time.removeLast();
     time = time.join(" ");
     time = time.split(":");
@@ -93,10 +98,11 @@ class GridTableHelpers {
   static Widget getActionRenderer(PlutoColumnRendererContext ctx,
       {dynamic title = "Edit",
       ValueChanged<PlutoColumnRendererContext>? onTap,
-      HeroIcons? icon}) {
+      HeroIcons? icon,
+      Color? color}) {
     return KText(
       text: title,
-      textColor: ThemeColors.MAIN_COLOR,
+      textColor: color ?? ThemeColors.MAIN_COLOR,
       fontWeight: FWeight.regular,
       fontSize: 14,
       mainAxisSize: MainAxisSize.min,
@@ -104,7 +110,7 @@ class GridTableHelpers {
       onTap: onTap != null ? () => onTap(ctx) : null,
       icon: HeroIcon(
         icon ?? HeroIcons.edit,
-        color: ThemeColors.MAIN_COLOR,
+        color: color ?? ThemeColors.MAIN_COLOR,
         size: 12,
       ),
     );
@@ -154,3 +160,5 @@ extension NumHelpers on num {
   SizedBox get hs => SizedBox(height: toDouble());
   SizedBox get ws => SizedBox(width: toDouble());
 }
+
+enum RowState { created, updated, idle, deleted }

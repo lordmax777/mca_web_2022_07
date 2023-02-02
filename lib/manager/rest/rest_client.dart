@@ -422,6 +422,19 @@ abstract class RestClient {
   @GET("/api/fe/shifts/{id}/staff")
   Future<HttpResponse> getPropertiesStaff(@Path() String id);
 
+  @POST("/api/fe/shifts/{id}/staff")
+  @FormUrlEncoded()
+  Future<HttpResponse> postPropertiesStaff({
+    @Path() int? id,
+    @Field() required int groupId,
+    @Field() required int numberOfStaff,
+    @Field() int? maxOfStaff,
+  });
+
+  @DELETE("/api/fe/shifts/{id}/staff")
+  Future<HttpResponse> deletePropertiesStaff(
+      @Path('id') int shiftId, @Query("groupId") int groupId);
+
   @GET("/api/fe/shifts/{id}/qualification")
   Future<HttpResponse> getPropertiesQualification(@Path() String id);
 

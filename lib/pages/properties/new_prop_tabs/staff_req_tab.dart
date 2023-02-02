@@ -29,7 +29,7 @@ class StaffReqTable extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _header(context),
+            _header(context, controller),
             _body(context, controller),
             const Divider(),
             _footer(context, controller),
@@ -39,7 +39,7 @@ class StaffReqTable extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context) {
+  Widget _header(BuildContext context, StaffReqController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
       child: Row(
@@ -60,11 +60,7 @@ class StaffReqTable extends StatelessWidget {
                     HeroIcons.plusCircle,
                     size: 20,
                   ),
-                  onPressed: () {
-                    // showOverlayPopup(
-                    //     body: const DepartmentsNewDepPopupWidget(),
-                    //     context: context);
-                  },
+                  onPressed: () => controller.onEditClick(context),
                 ),
               ]),
         ],
@@ -84,7 +80,7 @@ class StaffReqTable extends StatelessWidget {
     return SaveAndCancelButtonsWidget(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
       saveText: "Save",
-      onSave: () {},
+      onSave: () => controller.onSave(context),
     );
   }
 }
