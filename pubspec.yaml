@@ -24,6 +24,9 @@ dependencies:
     git:
       url: https://github.com/YakivGalkin/google_maps_webservice
 
+  draggable_grid:
+    path: ./draggable_grid
+
   google_maps_flutter: ^2.2.1
   google_maps_flutter_web: ^0.4.0+3
   google_maps_widget: ^1.0.5+1
@@ -50,6 +53,7 @@ dependencies:
   dotted_border: ^2.0.0+3
   talker_flutter: ^2.2.1
   public_suffix: ^3.0.0
+
 
 dev_dependencies:
   flutter_test:

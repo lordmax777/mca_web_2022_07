@@ -28,7 +28,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.2"
+    version: "2.4.0"
   async:
     dependency: transitive
     description:
@@ -168,7 +168,7 @@ packages:
       name: cross_file
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.3+2"
+    version: "0.3.3+4"
   crypto:
     dependency: transitive
     description:
@@ -218,6 +218,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0+3"
+  draggable_grid:
+    dependency: "direct main"
+    description:
+      path: draggable_grid
+      relative: true
+    source: path
+    version: "0.0.1"
   dropdown_button2:
     dependency: "direct main"
     description:
@@ -398,7 +405,7 @@ packages:
       name: google_maps_flutter_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.3"
+    version: "2.4.5"
   google_maps_flutter_ios:
     dependency: transitive
     description:
@@ -512,7 +519,7 @@ packages:
       name: image_picker_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.5+5"
+    version: "0.8.5+6"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -526,7 +533,7 @@ packages:
       name: image_picker_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.6+6"
+    version: "0.8.6+7"
   image_picker_platform_interface:
     dependency: transitive
     description:
@@ -576,6 +583,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.3.1"
+  linked_scroll_controller:
+    dependency: transitive
+    description:
+      name: linked_scroll_controller
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   lints:
     dependency: transitive
     description:
@@ -680,7 +694,7 @@ packages:
       name: path_provider_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.7"
+    version: "2.1.8"
   path_provider_platform_interface:
     dependency: transitive
     description:
@@ -813,7 +827,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.3.0"
+    version: "6.3.1"
   share_plus_platform_interface:
     dependency: transitive
     description:
@@ -902,21 +916,21 @@ packages:
       name: talker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.1"
+    version: "2.4.0"
   talker_dio_logger:
     dependency: transitive
     description:
       name: talker_dio_logger
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.2.2"
   talker_flutter:
     dependency: "direct main"
     description:
       name: talker_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.1"
+    version: "2.4.0"
   talker_logger:
     dependency: transitive
     description:
@@ -972,7 +986,7 @@ packages:
       name: universal_io
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4"
+    version: "2.1.0"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -1042,7 +1056,7 @@ packages:
       name: xdg_directories
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0+3"
+    version: "1.0.0"
   xml:
     dependency: transitive
     description:
@@ -1058,5 +1072,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
+  dart: ">=2.18.6 <3.0.0"
   flutter: ">=3.0.0"

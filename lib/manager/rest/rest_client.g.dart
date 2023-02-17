@@ -1832,6 +1832,7 @@ class _RestClient implements RestClient {
       'numberOfStaff': numberOfStaff,
       'maxOfStaff': maxOfStaff,
     };
+    _data.removeWhere((k, v) => v == null);
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
       method: 'POST',

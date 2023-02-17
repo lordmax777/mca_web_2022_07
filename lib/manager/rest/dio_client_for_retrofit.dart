@@ -112,7 +112,7 @@ final loggerInterceptor =
 }, onResponse: (Response response, handler) async {
   final talker = TalkerController.to.talker;
   Logger.i(
-      "| [DIO] Response [code ${response.statusCode}]: ${response.data.toString().length > 1000 ? response.data.toString().substring(0, 1000) : response.data.toString()}");
+      "| [DIO] Response [code ${response.statusCode}]: ${response.data.toString()}");
   handler.next(response);
   // return response; // continue
 }, onError: (DioError error, handler) async {

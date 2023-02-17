@@ -1,12 +1,11 @@
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
-import 'package:mca_web_2022_07/manager/talker_controller.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 import 'package:mca_web_2022_07/pages/checklist_templates/controllers/checklist_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/new_location_controller.dart';
-import 'package:mca_web_2022_07/pages/properties/controllers/new_prop_controller.dart';
 import 'package:mca_web_2022_07/pages/properties/controllers/properties_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 import 'package:mca_web_2022_07/pages/settings/controllers/settings_controller.dart';
@@ -30,6 +29,12 @@ Future<void> main() async {
 Future<void> setup() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  Logger.init(
+    true,
+    isShowFile: false,
+    isShowNavigation: false,
+    isShowTime: false,
+  );
   Get.lazyPut(() => DepartmentsController());
   Get.lazyPut(() => HiveController());
   Get.lazyPut(() => LoginController());
