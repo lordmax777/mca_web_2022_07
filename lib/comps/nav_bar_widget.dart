@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import '../app.dart';
 import '../manager/general_controller.dart';
-import '../pages/home_page.dart';
+import '../pages/adminstration.dart';
 import '../theme/theme.dart';
 
 class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
@@ -20,7 +20,7 @@ class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
         width: Constants.defaultWidth,
         child: Row(
           children: [
-            _LeadinBtn(scaffoldKey: scaffoldKey),
+            _LeadinBtn(scaffoldKey: Constants.scaffoldKey),
             const SizedBox(width: 20),
             const Expanded(
               child: _Title(),

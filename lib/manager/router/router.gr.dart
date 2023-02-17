@@ -28,10 +28,10 @@ class _$AppRouter extends RootStackRouter {
         child: const LoginPage(),
       );
     },
-    HomeRoute.name: (routeData) {
+    AdministrationRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const HomePage(),
+        child: const Adminstration(),
       );
     },
     UsersListRoute.name: (routeData) {
@@ -144,6 +144,12 @@ class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    SchedulingRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const SchedulingPage(),
+      );
+    },
   };
 
   @override
@@ -153,84 +159,89 @@ class _$AppRouter extends RootStackRouter {
           path: '/login-page',
         ),
         RouteConfig(
-          HomeRoute.name,
+          AdministrationRoute.name,
           path: '/',
           guards: [authGuard],
           children: [
             RouteConfig(
               UsersListRoute.name,
               path: '',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               UserDetailsRoute.name,
               path: 'user-detail',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               UserDetailsPayrollTabNewContractRoute.name,
               path: 'new-contract',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               DepartmentsListRoute.name,
               path: 'departments',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               QualificationsRoute.name,
               path: 'qualifications',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               LocationsListRoute.name,
               path: 'locations',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               NewLocationRoute.name,
               path: 'new-location',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               WarehousesListRoute.name,
               path: 'warehouses',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               StockItemsListRoute.name,
               path: 'stock-items',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               ChecklistTemplatesRoute.name,
               path: 'checklist-templates',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               NewChecklistTemplateRoute.name,
               path: 'new-checklist-template',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               HandoverTypesRoute.name,
               path: 'handover-types',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               SettingsRoute.name,
               path: 'settings-page',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               PropertiesRoute.name,
               path: 'properties',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
             ),
             RouteConfig(
               NewPropertyRoute.name,
               path: 'property',
-              parent: HomeRoute.name,
+              parent: AdministrationRoute.name,
+            ),
+            RouteConfig(
+              SchedulingRoute.name,
+              path: 'schedule',
+              parent: AdministrationRoute.name,
             ),
           ],
         ),
@@ -250,16 +261,16 @@ class LoginRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [HomePage]
-class HomeRoute extends PageRouteInfo<void> {
-  const HomeRoute({List<PageRouteInfo>? children})
+/// [Adminstration]
+class AdministrationRoute extends PageRouteInfo<void> {
+  const AdministrationRoute({List<PageRouteInfo>? children})
       : super(
-          HomeRoute.name,
+          AdministrationRoute.name,
           path: '/',
           initialChildren: children,
         );
 
-  static const String name = 'HomeRoute';
+  static const String name = 'AdministrationRoute';
 }
 
 /// generated route for
@@ -530,4 +541,16 @@ class NewPropertyRouteArgs {
   String toString() {
     return 'NewPropertyRouteArgs{key: $key, property: $property}';
   }
+}
+
+/// generated route for
+/// [SchedulingPage]
+class SchedulingRoute extends PageRouteInfo<void> {
+  const SchedulingRoute()
+      : super(
+          SchedulingRoute.name,
+          path: 'schedule',
+        );
+
+  static const String name = 'SchedulingRoute';
 }

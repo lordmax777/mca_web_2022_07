@@ -6,7 +6,7 @@ import '../../../manager/model_exporter.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../theme/theme.dart';
-import '../../home_page.dart';
+import '../../adminstration.dart';
 
 class DepartmentsController extends GetxController {
   //Etc
@@ -106,9 +106,9 @@ class DepartmentsController extends GetxController {
     appStore.dispatch(
         UpdateGeneralStateAction(endDrawer: DepGroupDrawer(group: group)));
     await Future.delayed(const Duration(milliseconds: 100));
-    if (scaffoldKey.currentState != null) {
-      if (!scaffoldKey.currentState!.isDrawerOpen) {
-        scaffoldKey.currentState!.openEndDrawer();
+    if (Constants.scaffoldKey.currentState != null) {
+      if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+        Constants.scaffoldKey.currentState!.openEndDrawer();
       }
     }
   }

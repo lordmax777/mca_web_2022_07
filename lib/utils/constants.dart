@@ -35,6 +35,8 @@ class Constants {
       "AIzaSyAJppOsTzcnks6yfcR9WmJk-Cjqfw3zIww";
 
   //Drawer
+  static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   static List<Map<String, dynamic>> drawerItems = [
     {
       "icon": HeroIcons.clipboard,
@@ -43,7 +45,7 @@ class Constants {
       "children": [
         {
           "title": "Scheduling",
-          "name": const UsersListRoute(),
+          "name": const SchedulingRoute(),
         }
       ]
     },

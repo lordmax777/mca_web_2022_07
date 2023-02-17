@@ -8,7 +8,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/router/router.dart';
 import '../../../theme/theme.dart';
-import '../../home_page.dart';
+import '../../adminstration.dart';
 import '../checklist_drawer.dart';
 
 class ChecklistController extends GetxController {
@@ -106,9 +106,9 @@ class ChecklistController extends GetxController {
     appStore.dispatch(
         UpdateGeneralStateAction(endDrawer: ChecklistDrawer(checklist: group)));
     await Future.delayed(const Duration(milliseconds: 100));
-    if (scaffoldKey.currentState != null) {
-      if (!scaffoldKey.currentState!.isDrawerOpen) {
-        scaffoldKey.currentState!.openEndDrawer();
+    if (Constants.scaffoldKey.currentState != null) {
+      if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+        Constants.scaffoldKey.currentState!.openEndDrawer();
       }
     }
   }

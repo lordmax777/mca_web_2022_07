@@ -28,17 +28,16 @@ Future<void> main() async {
 
 Future<void> setup() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   Logger.init(
     true,
     isShowFile: false,
     isShowNavigation: false,
     isShowTime: false,
   );
+  Get.put(GeneralController());
+  Get.lazyPut(() => LoginController());
   Get.lazyPut(() => DepartmentsController());
   Get.lazyPut(() => HiveController());
-  Get.lazyPut(() => LoginController());
-  Get.lazyPut(() => GeneralController());
   Get.lazyPut(() => GroupsController());
   Get.lazyPut(() => QualifsController());
   Get.lazyPut(() => WarehouseController());

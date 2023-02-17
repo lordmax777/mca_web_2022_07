@@ -11,7 +11,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/sets/state_value.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../theme/theme.dart';
-import '../../home_page.dart';
+import '../../adminstration.dart';
 import '../new_prop_tabs/edit_shift_staff_req_popup.dart';
 
 class StaffReqController extends GetxController {

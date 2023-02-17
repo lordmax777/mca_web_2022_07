@@ -12,7 +12,7 @@ import '../redux/states/auth_state.dart';
 
 class TokenHandler {
   static DateTime tokenStartTime = DateTime.now();
-  static int tokenExpireTime = 9;
+  static int tokenExpireTime = 6; // in minutes
 
   static Future<void> handleOnExpire(RequestOptions options) async {
     final DateTime now = DateTime.now();
@@ -23,6 +23,7 @@ class TokenHandler {
         final StateValue<AuthRes> res =
             await appStore.dispatch(GetRefreshTokenAction(doInitFunc: false));
         options.headers["Authorization"] = "Bearer ${res.data!.access_token}";
+        tokenExpireTime = res.data!.expires_in ~/ 100;
         logger("Token Expired and Renewed at ${now.toIso8601String()}");
       }
     }
@@ -33,8 +34,11 @@ class TokenHandler {
 
     if (response.requestOptions.path == '/oauth/v2/token') {
       if (response.statusCode == 200) {
-        logger("Token Set at ${tokenRequestTime.toIso8601String()}");
         tokenStartTime = DateTime.now();
+        tokenExpireTime = response.data["expires_in"] ~/ 100;
+        logger("Token Set at ${tokenRequestTime.toIso8601String()}");
+        logger("Token Start Time $tokenStartTime");
+        logger("Token Expire Time $tokenExpireTime");
       }
     }
   }

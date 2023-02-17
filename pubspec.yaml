@@ -14,19 +14,20 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  #Local packages
   pluto_grid:
     path: ./pluto_grid
-
   simpleicons:
     path: ./simpleicons
+  draggable_grid:
+    path: ./draggable_grid
 
+  #External packages
   google_maps_webservice:
     git:
       url: https://github.com/YakivGalkin/google_maps_webservice
 
-  draggable_grid:
-    path: ./draggable_grid
-
+  #pub.dev packages
   google_maps_flutter: ^2.2.1
   google_maps_flutter_web: ^0.4.0+3
   google_maps_widget: ^1.0.5+1

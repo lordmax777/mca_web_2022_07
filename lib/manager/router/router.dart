@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/router/route_guards.dart';
-import 'package:mca_web_2022_07/pages/home_page.dart';
+import 'package:mca_web_2022_07/pages/adminstration.dart';
 import 'package:mca_web_2022_07/pages/properties/new_property_page.dart';
+import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
@@ -17,30 +18,41 @@ part 'router.gr.dart';
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
+    // Auth
     AutoRoute(page: LoginPage),
-    AutoRoute(page: HomePage, initial: true, guards: [
-      AuthGuard
-    ], children: [
-      AutoRoute(page: UsersListPage, path: ""),
-      AutoRoute(page: UserDetailsPage, path: "user-detail"),
-      AutoRoute(
-          page: UserDetailsPayrollTabNewContractPage, path: "new-contract"),
-      AutoRoute(page: DepartmentsListPage, path: "departments"),
-      AutoRoute(page: QualificationsPage, path: "qualifications"),
-      AutoRoute(page: LocationsListPage, path: "locations"),
-      AutoRoute(page: NewLocationPage, path: "new-location"),
-      AutoRoute(page: WarehousesListPage, path: "warehouses"),
-      AutoRoute(page: StockItemsListPage, path: "stock-items"),
-      AutoRoute(page: ChecklistTemplatesPage, path: "checklist-templates"),
-      AutoRoute(page: NewChecklistTemplatePage, path: "new-checklist-template"),
-      AutoRoute(page: HandoverTypesPage, path: "handover-types"),
-      AutoRoute(page: SettingsPage, path: "settings-page"),
-      AutoRoute(page: PropertiesPage, path: "properties"),
-      AutoRoute(page: NewPropertyPage, path: "property"),
-    ]),
+
+    AutoRoute(
+        page: Adminstration,
+        name: "AdministrationRoute",
+        initial: true,
+        guards: [
+          AuthGuard
+        ],
+        children: [
+          AutoRoute(page: UsersListPage, path: ""),
+          AutoRoute(page: UserDetailsPage, path: "user-detail"),
+          AutoRoute(
+              page: UserDetailsPayrollTabNewContractPage, path: "new-contract"),
+          AutoRoute(page: DepartmentsListPage, path: "departments"),
+          AutoRoute(page: QualificationsPage, path: "qualifications"),
+          AutoRoute(page: LocationsListPage, path: "locations"),
+          AutoRoute(page: NewLocationPage, path: "new-location"),
+          AutoRoute(page: WarehousesListPage, path: "warehouses"),
+          AutoRoute(page: StockItemsListPage, path: "stock-items"),
+          AutoRoute(page: ChecklistTemplatesPage, path: "checklist-templates"),
+          AutoRoute(
+              page: NewChecklistTemplatePage, path: "new-checklist-template"),
+          AutoRoute(page: HandoverTypesPage, path: "handover-types"),
+          AutoRoute(page: SettingsPage, path: "settings-page"),
+          AutoRoute(page: PropertiesPage, path: "properties"),
+          AutoRoute(page: NewPropertyPage, path: "property"),
+          AutoRoute(page: SchedulingPage, path: "schedule"),
+        ]),
   ],
 )
 // extend the generated private router
 class AppRouter extends _$AppRouter {
   AppRouter({required AuthGuard authGuard}) : super(authGuard: authGuard);
 }
+
+const appInitRoute = AdministrationRoute(children: [UsersListRoute()]);

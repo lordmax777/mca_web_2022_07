@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/intl_conf/intl/l10n.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 
+import 'manager/general_controller.dart';
 import 'manager/router/route_guards.dart';
 
 final appRouter = AppRouter(authGuard: AuthGuard());
@@ -34,7 +35,7 @@ class _McaWebAppState extends State<McaWebApp> {
       child: GetMaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [PropertiesRoute()])
+          // if (kDebugMode) const HomeRoute(children: [PropertiesRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

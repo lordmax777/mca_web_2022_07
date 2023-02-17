@@ -5,6 +5,7 @@ import 'package:mca_web_2022_07/manager/hive.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
+import 'package:mca_web_2022_07/pages/adminstration.dart';
 
 import '../../../manager/general_controller.dart';
 import '../../../manager/redux/states/auth_state.dart';
@@ -28,14 +29,10 @@ class LoginController extends GetxController {
 
       final isLoggedIn = GeneralController.to.isLoggedIn;
 
-      await closeLoading();
       if (isLoggedIn) {
         await HiveController.to.setAppDbVersion();
-        appRouter.popAndPushAll([
-          const HomeRoute(children: [
-            UsersListRoute(),
-          ])
-        ]);
+        appRouter.popAndPushAll([appInitRoute]);
+        await closeLoading();
       } else {
         showError("Login Failed: ${res.rawError!.data['error_description']}");
       }

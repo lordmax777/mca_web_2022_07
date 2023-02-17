@@ -42,6 +42,16 @@ class GeneralController extends GetxController {
     }
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    loggedInUser.listen((_) {
+      if (isLoggedIn) {
+        initAll();
+      }
+    });
+  }
+
   void initAll() async {
     await getCompanyInfo();
     await Future.wait([

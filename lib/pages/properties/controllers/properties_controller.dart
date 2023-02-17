@@ -8,7 +8,7 @@ import '../../../manager/model_exporter.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../theme/theme.dart';
-import '../../home_page.dart';
+import '../../adminstration.dart';
 import '../property_drawer.dart';
 
 class PropertiesController extends GetxController {
@@ -174,9 +174,9 @@ class PropertiesController extends GetxController {
       property: ctx.row.cells['action']?.value,
     )));
     await Future.delayed(const Duration(milliseconds: 100));
-    if (scaffoldKey.currentState != null) {
-      if (!scaffoldKey.currentState!.isDrawerOpen) {
-        scaffoldKey.currentState!.openEndDrawer();
+    if (Constants.scaffoldKey.currentState != null) {
+      if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+        Constants.scaffoldKey.currentState!.openEndDrawer();
       }
     }
   }
