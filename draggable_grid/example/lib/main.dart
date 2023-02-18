@@ -93,15 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < 10; i++) {
       sidebar.add(SidebarMd(id: i));
     }
-
-    gridWidgets.init();
   }
-
-  final gridWidgets = GridWidgets();
 
   @override
   void dispose() {
-    gridWidgets.dispose();
     super.dispose();
   }
 
@@ -112,7 +107,11 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0,
         title: const Text("Schedule Example Test"),
       ),
-      body: gridWidgets.getFullGrid(sidebar, cells),
+      body: CustomGridWidget(
+        sidebar: sidebar,
+        cells: cells,
+        config: Configs(),
+      ),
     );
   }
 }

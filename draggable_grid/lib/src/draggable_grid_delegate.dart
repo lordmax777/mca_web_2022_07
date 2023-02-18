@@ -39,7 +39,6 @@ class DraggableGridDelegate extends MultiChildLayoutDelegate {
       final childHeight = cell.rowSpan * cellHeight - spacing * 2;
       final childWidth = cell.columnSpan * cellWidth - spacing * 2;
       cell.height = childHeight;
-      print(childHeight);
       layoutChild(
           cell.id,
           BoxConstraints(

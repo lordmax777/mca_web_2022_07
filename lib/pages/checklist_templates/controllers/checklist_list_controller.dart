@@ -8,7 +8,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/router/router.dart';
 import '../../../theme/theme.dart';
-import '../../adminstration.dart';
+import '../../home.dart';
 import '../checklist_drawer.dart';
 
 class ChecklistController extends GetxController {

@@ -72,7 +72,6 @@ class DraggableGridCellView extends StatelessWidget {
           );
         }
         result = Draggable<DraggableGridCellData>(
-          child: result,
           maxSimultaneousDrags: 1,
           feedback: SizedBox(
             width: size.width,
@@ -91,6 +90,7 @@ class DraggableGridCellView extends StatelessWidget {
               onExitEditing();
             }
           },
+          child: result,
         );
       }
     } else {
@@ -109,7 +109,6 @@ class DraggableGridCellView extends StatelessWidget {
             child: result,
           );
           result = Draggable<DraggableGridCellData>(
-            child: result,
             maxSimultaneousDrags: 1,
             feedback: SizedBox(
               width: size.width,
@@ -118,6 +117,7 @@ class DraggableGridCellView extends StatelessWidget {
             ),
             childWhenDragging: const SizedBox.shrink(),
             data: data,
+            child: result,
           );
         }
       }

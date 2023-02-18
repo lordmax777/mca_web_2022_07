@@ -1,6 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:draggable_grid/draggable_grid.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
+
+void logger(dynamic msg, [String? hint]) {
+  final h = hint ?? "LOGGER";
+  log("[$h] - ${msg.toString()} - [$h]");
+}
 
 class TimeMd {
   int hour;
@@ -23,7 +30,7 @@ class SidebarMd {
 
 class Configs {
   final List<TimeMd> times = [
-    for (int i = 0; i < 24 * 2; i++) TimeMd(i ~/ 2, minute: i % 2 * 30)
+    for (int i = 0; i < 24; i++) TimeMd(i) //TimeMd(i ~/ 2, minute: i % 2 * 30)
   ];
 
   //Grid Data
@@ -41,16 +48,70 @@ class Configs {
   }
 
   double get gridHeaderWidth => cellWidth / times.length;
-  final double gridFullWidth = 800;
-  final double gridFullHeight = 400;
+  final double gridHeight = 700;
+  final double gridFullWidth = 1656;
+  double get gridFullHeight => gridHeight - sidebarHeaderHeight;
 
   //Sidebar Data
   final double sidebarHeaderHeight = 32;
   final double sidebarWidth = 200;
 }
 
-class GridWidgets {
-  final Configs _config = Configs();
+class CustomGridWidget extends StatefulWidget {
+  final List<SidebarMd> sidebar;
+  final List<DraggableGridCellData> cells;
+  final Configs config;
+  const CustomGridWidget(
+      {Key? key,
+      required this.cells,
+      required this.sidebar,
+      required this.config})
+      : super(key: key);
+
+  @override
+  State<CustomGridWidget> createState() => _CustomGridWidgetState();
+}
+
+class _CustomGridWidgetState extends State<CustomGridWidget> {
+  bool initFinish = false;
+
+  Configs get config => widget.config;
+  List<SidebarMd> get sidebar => widget.sidebar;
+  List<DraggableGridCellData> get cells => widget.cells;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logger('CustomGridWidgets.init() START');
+      _horizontalControllersGroup = LinkedScrollControllerGroup();
+      _horizontalController1 = _horizontalControllersGroup.addAndGet();
+      _horizontalController2 = _horizontalControllersGroup.addAndGet();
+
+      _verticalControllersGroup = LinkedScrollControllerGroup();
+      _verticalController1 = _verticalControllersGroup.addAndGet();
+      _verticalController2 = _verticalControllersGroup.addAndGet();
+      logger('CustomGridWidgets.init() END');
+      setState(() {
+        initFinish = true;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _horizontalController1.dispose();
+    _horizontalController2.dispose();
+    _verticalController1.dispose();
+    _verticalController2.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!initFinish) return const SizedBox();
+    return getFullGrid();
+  }
 
   late LinkedScrollControllerGroup _horizontalControllersGroup;
   late ScrollController _horizontalController1;
@@ -61,27 +122,12 @@ class GridWidgets {
   late ScrollController _verticalController2;
 
   ///Must run this function before using any other function
-  void init() {
-    _horizontalControllersGroup = LinkedScrollControllerGroup();
-    _horizontalController1 = _horizontalControllersGroup.addAndGet();
-    _horizontalController2 = _horizontalControllersGroup.addAndGet();
-
-    _verticalControllersGroup = LinkedScrollControllerGroup();
-    _verticalController1 = _verticalControllersGroup.addAndGet();
-    _verticalController2 = _verticalControllersGroup.addAndGet();
-  }
-
-  void dispose() {
-    _horizontalController1.dispose();
-    _horizontalController2.dispose();
-    _verticalController1.dispose();
-    _verticalController2.dispose();
-  }
+  void init() {}
 
   Widget _getSidebarHeader() {
     return Container(
-      height: _config.sidebarHeaderHeight,
-      width: _config.sidebarWidth,
+      height: config.sidebarHeaderHeight,
+      width: config.sidebarWidth,
       decoration: BoxDecoration(
         color: Colors.grey[300]!,
         border: Border(
@@ -99,23 +145,23 @@ class GridWidgets {
 
   Widget _getGridHeader() {
     return SizedBox(
-      height: _config.sidebarHeaderHeight,
-      width: _config.gridFullWidth,
+      height: config.sidebarHeaderHeight,
+      width: config.gridFullWidth,
       child: ListView.builder(
         controller: _horizontalController2,
         scrollDirection: Axis.horizontal,
-        itemCount: _config.times.length,
+        itemCount: config.times.length,
         itemBuilder: (context, index) {
           return Container(
-            height: _config.sidebarWidth,
-            width: _config.gridHeaderWidth,
+            height: config.sidebarWidth,
+            width: config.gridHeaderWidth,
             decoration: BoxDecoration(
               color: Colors.grey[300],
               border: Border(right: BorderSide(color: Colors.grey[400]!)),
             ),
             child: Center(
               child: Text(
-                "${_config.times[index].hour}:${_config.times[index].minute <= 0 ? "0" : ""}${_config.times[index].minute}",
+                "${config.times[index].hour}:${config.times[index].minute <= 0 ? "0" : ""}${config.times[index].minute}",
               ),
             ),
           );
@@ -126,19 +172,19 @@ class GridWidgets {
 
   Widget _getSidebarItems(List<SidebarMd> sidebar) {
     return Container(
-      height: _config.gridFullHeight,
-      width: _config.sidebarWidth,
+      width: config.sidebarWidth,
       color: Colors.grey[300],
       child: SingleChildScrollView(
         controller: _verticalController1,
         child: SizedBox(
+          height: config.getRowCount(sidebar) * config.cellHeight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               for (int i = 0; i < sidebar.length; i++)
                 Container(
                   height:
-                      (sidebar[i].groupCount * _config.cellHeight).toDouble(),
+                      (sidebar[i].groupCount * config.cellHeight).toDouble(),
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     border: Border(
@@ -161,52 +207,48 @@ class GridWidgets {
   Widget _getGridItems(
       List<SidebarMd> sidebar, List<DraggableGridCellData> cells) {
     return Scrollbar(
-      trackVisibility: true,
-      thumbVisibility: true,
       controller: _horizontalController1,
       child: SizedBox(
-        height: _config.gridFullHeight,
+        height: config.gridFullHeight,
         child: SingleChildScrollView(
           controller: _verticalController2,
           child: Container(
             color: Colors.grey[400],
-            width: _config.gridFullWidth,
-            height: _config.getRowCount(sidebar) * _config.cellHeight,
+            width: config.gridFullWidth,
+            height: config.getRowCount(sidebar) * config.cellHeight,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               controller: _horizontalController1,
               child: SizedBox(
-                width: _config.cellWidth,
-                child: SizedBox(
-                  child: DraggableGrid(
-                    style: DraggableGridStyle(
-                      cellHeight: _config.cellHeight,
-                      emptyCellDecoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: Colors.black, width: .2),
-                      ),
-                      backgroundColor: Colors.grey[500]!,
-                      spacing: _config.cellSpacing,
-                      selectedCellDecoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
+                width: config.cellWidth,
+                child: DraggableGrid(
+                  style: DraggableGridStyle(
+                    cellHeight: config.cellHeight,
+                    emptyCellDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.black, width: .2),
                     ),
-                    editingStrategy: const DraggableGridEditingStrategy(
-                      exitOnTap: true,
-                      immediate: true,
-                      enterOnLongTap: false,
-                      moveOnlyToNearby: true,
+                    backgroundColor: Colors.grey[500]!,
+                    spacing: config.cellSpacing,
+                    selectedCellDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    showGrid: true,
-                    emptyCellView: (rowIdx, colIdx, draggingData) =>
-                        EmptyWidget(rowIdx, colIdx, draggingData: draggingData),
-                    columns: _config.times.length,
-                    rows: _config.getRowCount(sidebar),
-                    cells: cells,
-                    onCellChanged: (cell) {
-                      print('Cell ${cell?.id} changed');
-                    },
                   ),
+                  editingStrategy: const DraggableGridEditingStrategy(
+                    exitOnTap: true,
+                    immediate: true,
+                    enterOnLongTap: false,
+                    moveOnlyToNearby: true,
+                  ),
+                  showGrid: true,
+                  emptyCellView: (rowIdx, colIdx, draggingData) =>
+                      EmptyWidget(rowIdx, colIdx, draggingData: draggingData),
+                  columns: config.times.length,
+                  rows: config.getRowCount(sidebar),
+                  cells: cells,
+                  onCellChanged: (cell) {
+                    print('Cell ${cell?.id} changed');
+                  },
                 ),
               ),
             ),
@@ -216,12 +258,12 @@ class GridWidgets {
     );
   }
 
-  Widget getFullGrid(
-      List<SidebarMd> sidebar, List<DraggableGridCellData> cells) {
+  Widget getFullGrid() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Sidebar Header (only 1 item)
             _getSidebarHeader(),
@@ -230,6 +272,7 @@ class GridWidgets {
           ],
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Sidebar (list)
             _getSidebarItems(sidebar),

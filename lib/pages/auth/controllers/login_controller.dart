@@ -5,7 +5,7 @@ import 'package:mca_web_2022_07/manager/hive.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
-import 'package:mca_web_2022_07/pages/adminstration.dart';
+import 'package:mca_web_2022_07/pages/home.dart';
 
 import '../../../manager/general_controller.dart';
 import '../../../manager/redux/states/auth_state.dart';

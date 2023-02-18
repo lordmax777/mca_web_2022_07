@@ -28,10 +28,10 @@ class _$AppRouter extends RootStackRouter {
         child: const LoginPage(),
       );
     },
-    AdministrationRoute.name: (routeData) {
+    HomeRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const Adminstration(),
+        child: const Home(),
       );
     },
     UsersListRoute.name: (routeData) {
@@ -159,89 +159,89 @@ class _$AppRouter extends RootStackRouter {
           path: '/login-page',
         ),
         RouteConfig(
-          AdministrationRoute.name,
+          HomeRoute.name,
           path: '/',
           guards: [authGuard],
           children: [
             RouteConfig(
               UsersListRoute.name,
               path: '',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               UserDetailsRoute.name,
               path: 'user-detail',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               UserDetailsPayrollTabNewContractRoute.name,
               path: 'new-contract',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               DepartmentsListRoute.name,
               path: 'departments',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               QualificationsRoute.name,
               path: 'qualifications',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               LocationsListRoute.name,
               path: 'locations',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               NewLocationRoute.name,
               path: 'new-location',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               WarehousesListRoute.name,
               path: 'warehouses',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               StockItemsListRoute.name,
               path: 'stock-items',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               ChecklistTemplatesRoute.name,
               path: 'checklist-templates',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               NewChecklistTemplateRoute.name,
               path: 'new-checklist-template',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               HandoverTypesRoute.name,
               path: 'handover-types',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               SettingsRoute.name,
               path: 'settings-page',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               PropertiesRoute.name,
               path: 'properties',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               NewPropertyRoute.name,
               path: 'property',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
             RouteConfig(
               SchedulingRoute.name,
               path: 'schedule',
-              parent: AdministrationRoute.name,
+              parent: HomeRoute.name,
             ),
           ],
         ),
@@ -262,15 +262,15 @@ class LoginRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [Adminstration]
-class AdministrationRoute extends PageRouteInfo<void> {
-  const AdministrationRoute({List<PageRouteInfo>? children})
+class HomeRoute extends PageRouteInfo<void> {
+  const HomeRoute({List<PageRouteInfo>? children})
       : super(
-          AdministrationRoute.name,
+          HomeRoute.name,
           path: '/',
           initialChildren: children,
         );
 
-  static const String name = 'AdministrationRoute';
+  static const String name = 'HomeRoute';
 }
 
 /// generated route for

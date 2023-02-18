@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,14 @@ import 'manager/general_controller.dart';
 import 'manager/router/route_guards.dart';
 
 final appRouter = AppRouter(authGuard: AuthGuard());
+
+class CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}
 
 class McaWebApp extends StatefulWidget {
   const McaWebApp({Key? key}) : super(key: key);
@@ -33,9 +42,10 @@ class _McaWebAppState extends State<McaWebApp> {
     return StoreProvider(
       store: appStore,
       child: GetMaterialApp.router(
+        scrollBehavior: CustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
-          // if (kDebugMode) const HomeRoute(children: [PropertiesRoute()])
+          if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

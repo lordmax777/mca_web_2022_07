@@ -8,7 +8,7 @@ import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
-import '../../adminstration.dart';
+import '../../home.dart';
 
 class SettingsController extends GetxController {
   static SettingsController get to => Get.find();

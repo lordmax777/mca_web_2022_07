@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import '../app.dart';
 import '../manager/general_controller.dart';
-import '../pages/adminstration.dart';
+import '../pages/home.dart';
 import '../theme/theme.dart';
 
 class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
