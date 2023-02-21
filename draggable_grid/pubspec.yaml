@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   linked_scroll_controller: ^0.2.0
+  simpleicons:
+    path: ../simpleicons
 
 dev_dependencies:
   flutter_test:

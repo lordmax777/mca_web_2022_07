@@ -115,6 +115,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
 ///Must pass the action in StateValue<T> as T type
 Future fetch(action) async {
   final talker = TalkerController.to.talker;
+  if (action == null) return;
   final res = await appStore.dispatch(action);
 
   final ErrorModel e = res.error;

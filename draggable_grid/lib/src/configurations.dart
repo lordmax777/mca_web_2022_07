@@ -3,42 +3,106 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:draggable_grid/draggable_grid.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
+import 'package:simpleicons/heroicons.dart';
+
+enum CellBorders {
+  all,
+  top,
+  bottom,
+  left,
+  right,
+  none,
+}
 
 void logger(dynamic msg, [String? hint]) {
   final h = hint ?? "LOGGER";
   log("[$h] - ${msg.toString()} - [$h]");
 }
 
-class TimeMd {
-  int hour;
-  final int minute;
-  final bool is24Format;
-  bool get isAM => hour < 12;
-  TimeMd(this.hour, {this.minute = 0, this.is24Format = true}) {
-    if (!is24Format && hour > 12) {
-      hour -= 12;
-    }
-  }
+class GridTitle {
+  final String title;
+
+  const GridTitle({required this.title});
+  // int hour;
+  // final int minute;
+  // final bool is24Format;
+  // final DateTime? date;
+  // bool get isAM => hour < 12;
+  // GridTitle({this.hour = 0, this.minute = 0, this.is24Format = true, this.date}) {
+  //   if (!is24Format && hour > 12) {
+  //     hour -= 12;
+  //   }
+  // }
 }
 
 class SidebarMd {
   final int id;
   final int groupCount;
+  final Widget child;
 
-  SidebarMd({required this.id, this.groupCount = 1});
+  SidebarMd({required this.id, this.groupCount = 1, required this.child});
+}
+
+class GridDecoration {
+  final Color gridHeaderColor;
+  final TextStyle gridHeaderTextStyle;
+  final Color gridCellColor;
+  final Color gridCellBorderColor;
+
+  const GridDecoration(
+      {this.gridHeaderColor = const Color(0xFFF9F9F9),
+      this.gridHeaderTextStyle =
+          const TextStyle(color: Colors.black, fontSize: 14),
+      this.gridCellColor = Colors.white,
+      this.gridCellBorderColor = const Color(0xFFE8E8EA)});
+
+  //implement copyWith
+  GridDecoration copyWith({
+    Color? gridHeaderColor,
+    TextStyle? gridHeaderTextStyle,
+    Color? gridCellColor,
+    Color? gridCellBorderColor,
+  }) {
+    return GridDecoration(
+      gridHeaderColor: gridHeaderColor ?? this.gridHeaderColor,
+      gridHeaderTextStyle: gridHeaderTextStyle ?? this.gridHeaderTextStyle,
+      gridCellColor: gridCellColor ?? this.gridCellColor,
+      gridCellBorderColor: gridCellBorderColor ?? this.gridCellBorderColor,
+    );
+  }
 }
 
 class Configs {
-  final List<TimeMd> times = [
-    for (int i = 0; i < 24; i++) TimeMd(i) //TimeMd(i ~/ 2, minute: i % 2 * 30)
-  ];
-
+  /// Variables
   //Grid Data
-  final double cellHeight = 56; // in Pixels
+  final double cellHeight; // in Pixels
   /// [cellWidth] has some calculation,
   /// so try with preferred values
-  final double cellWidth = 24 * 100;
-  final double cellSpacing = 2;
+  double? cellWidth;
+  final double cellSpacing;
+  final double gridHeight;
+  final double gridFullWidth;
+  //Sidebar Data
+  final double sidebarHeaderHeight;
+  final double sidebarWidth;
+
+  final List<GridTitle> times;
+
+  final GridDecoration gridDecoration;
+
+  Configs(
+      {this.gridHeight = 600,
+      this.gridFullWidth = 1650,
+      this.cellSpacing = 0,
+      this.cellWidth,
+      this.cellHeight = 56,
+      this.sidebarHeaderHeight = 32,
+      this.sidebarWidth = 200,
+      this.gridDecoration = const GridDecoration(),
+      required this.times}) {
+    cellWidth = times.length * (cellWidth ?? 60);
+  }
+
   int getRowCount(List<SidebarMd> sidebar) {
     int rowsCount = 0;
     for (int i = 0; i < sidebar.length; i++) {
@@ -47,14 +111,33 @@ class Configs {
     return rowsCount;
   }
 
-  double get gridHeaderWidth => cellWidth / times.length;
-  final double gridHeight = 700;
-  final double gridFullWidth = 1656;
+  double get gridHeaderWidth => cellWidth! / times.length;
   double get gridFullHeight => gridHeight - sidebarHeaderHeight;
 
-  //Sidebar Data
-  final double sidebarHeaderHeight = 32;
-  final double sidebarWidth = 200;
+  // implement copyWith
+  Configs copyWith({
+    double? cellHeight,
+    double? cellWidth,
+    double? cellSpacing,
+    double? gridHeight,
+    double? gridFullWidth,
+    double? sidebarHeaderHeight,
+    double? sidebarWidth,
+    List<GridTitle>? times,
+    GridDecoration? gridDecoration,
+  }) {
+    return Configs(
+      cellHeight: cellHeight ?? this.cellHeight,
+      cellWidth: cellWidth ?? this.cellWidth,
+      cellSpacing: cellSpacing ?? this.cellSpacing,
+      gridHeight: gridHeight ?? this.gridHeight,
+      gridFullWidth: gridFullWidth ?? this.gridFullWidth,
+      sidebarHeaderHeight: sidebarHeaderHeight ?? this.sidebarHeaderHeight,
+      sidebarWidth: sidebarWidth ?? this.sidebarWidth,
+      times: times ?? this.times,
+      gridDecoration: gridDecoration ?? this.gridDecoration,
+    );
+  }
 }
 
 class CustomGridWidget extends StatefulWidget {
@@ -78,6 +161,7 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
   Configs get config => widget.config;
   List<SidebarMd> get sidebar => widget.sidebar;
   List<DraggableGridCellData> get cells => widget.cells;
+  GridDecoration get gridDecoration => config.gridDecoration;
 
   @override
   void initState() {
@@ -121,23 +205,21 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
   late ScrollController _verticalController1;
   late ScrollController _verticalController2;
 
-  ///Must run this function before using any other function
-  void init() {}
-
   Widget _getSidebarHeader() {
     return Container(
       height: config.sidebarHeaderHeight,
       width: config.sidebarWidth,
       decoration: BoxDecoration(
-        color: Colors.grey[300]!,
+        color: gridDecoration.gridHeaderColor,
         border: Border(
-          right: BorderSide(color: Colors.grey[400]!),
-          bottom: BorderSide(color: Colors.grey[400]!),
+          right: BorderSide(color: gridDecoration.gridCellBorderColor),
+          bottom: BorderSide(color: gridDecoration.gridCellBorderColor),
         ),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
           "Users",
+          style: gridDecoration.gridHeaderTextStyle,
         ),
       ),
     );
@@ -156,12 +238,15 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
             height: config.sidebarWidth,
             width: config.gridHeaderWidth,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              border: Border(right: BorderSide(color: Colors.grey[400]!)),
+              color: gridDecoration.gridHeaderColor,
+              border: Border(
+                  bottom: BorderSide(color: gridDecoration.gridCellBorderColor),
+                  right: BorderSide(color: gridDecoration.gridCellBorderColor)),
             ),
             child: Center(
               child: Text(
-                "${config.times[index].hour}:${config.times[index].minute <= 0 ? "0" : ""}${config.times[index].minute}",
+                config.times[index].title,
+                style: gridDecoration.gridHeaderTextStyle,
               ),
             ),
           );
@@ -173,7 +258,10 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
   Widget _getSidebarItems(List<SidebarMd> sidebar) {
     return Container(
       width: config.sidebarWidth,
-      color: Colors.grey[300],
+      height: config.gridFullHeight,
+      decoration: BoxDecoration(
+        color: gridDecoration.gridCellColor,
+      ),
       child: SingleChildScrollView(
         controller: _verticalController1,
         child: SizedBox(
@@ -183,19 +271,20 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
             children: [
               for (int i = 0; i < sidebar.length; i++)
                 Container(
+                  width: config.sidebarWidth,
                   height:
                       (sidebar[i].groupCount * config.cellHeight).toDouble(),
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: gridDecoration.gridCellColor,
                     border: Border(
-                        bottom: BorderSide(color: Colors.grey[400]!),
-                        right: BorderSide(color: Colors.grey[400]!)),
+                        bottom: BorderSide(
+                            color: gridDecoration.gridCellBorderColor,
+                            width: 1),
+                        right: BorderSide(
+                            color: gridDecoration.gridCellBorderColor,
+                            width: 1)),
                   ),
-                  child: Center(
-                    child: Text(
-                      sidebar[i].id.toString(),
-                    ),
-                  ),
+                  child: sidebar[i].child,
                 ),
             ],
           ),
@@ -213,7 +302,7 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
         child: SingleChildScrollView(
           controller: _verticalController2,
           child: Container(
-            color: Colors.grey[400],
+            color: gridDecoration.gridCellColor,
             width: config.gridFullWidth,
             height: config.getRowCount(sidebar) * config.cellHeight,
             child: SingleChildScrollView(
@@ -225,10 +314,13 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
                   style: DraggableGridStyle(
                     cellHeight: config.cellHeight,
                     emptyCellDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: Colors.black, width: .2),
+                      // borderRadius: BorderRadius.circular(4),
+                      border: Border(
+                          bottom: BorderSide(
+                              color: gridDecoration.gridCellBorderColor,
+                              width: 1)),
                     ),
-                    backgroundColor: Colors.grey[500]!,
+                    backgroundColor: gridDecoration.gridCellColor,
                     spacing: config.cellSpacing,
                     selectedCellDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
@@ -241,8 +333,9 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
                     moveOnlyToNearby: true,
                   ),
                   showGrid: true,
-                  emptyCellView: (rowIdx, colIdx, draggingData) =>
-                      EmptyWidget(rowIdx, colIdx, draggingData: draggingData),
+                  emptyCellView: (rowIdx, colIdx, draggingData) => EmptyWidget(
+                      rowIdx, colIdx,
+                      draggingData: draggingData, config: config),
                   columns: config.times.length,
                   rows: config.getRowCount(sidebar),
                   cells: cells,
@@ -267,7 +360,7 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
           children: [
             // Sidebar Header (only 1 item)
             _getSidebarHeader(),
-            // Grid Header (list)
+            // Grid Header (only 1 item)
             _getGridHeader(),
           ],
         ),
@@ -289,7 +382,9 @@ class EmptyWidget extends StatefulWidget {
   final int rowIdx;
   final int colIdx;
   final DraggableGridCellData? draggingData;
-  const EmptyWidget(this.rowIdx, this.colIdx, {Key? key, this.draggingData})
+  final Configs config;
+  const EmptyWidget(this.rowIdx, this.colIdx,
+      {Key? key, this.draggingData, required this.config})
       : super(key: key);
 
   @override
@@ -298,6 +393,8 @@ class EmptyWidget extends StatefulWidget {
 
 class _EmptyWidgetState extends State<EmptyWidget> {
   bool _isHovering = false;
+
+  Configs get config => widget.config;
 
   void _onHover(bool isHovering) {
     setState(() {
@@ -316,12 +413,49 @@ class _EmptyWidgetState extends State<EmptyWidget> {
         child: _isHovering
             ? Container(
                 decoration: BoxDecoration(
-                    color: Colors.lime[400]!,
-                    borderRadius: BorderRadius.circular(4)))
+                    border: Border(
+                  bottom: BorderSide(
+                      color: config.gridDecoration.gridCellBorderColor,
+                      width: 1),
+                )),
+                child: Center(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () {
+                        print(
+                            "EmptyWidget: rowIdx = ${widget.rowIdx}, colIdx = ${widget.colIdx}");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              width: 1,
+                              color: const Color(0xFFE8E8EA),
+                            )),
+                        child: const HeroIcon(
+                          HeroIcons.add,
+                          color: Color(0xFF003CFF),
+                          size: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
             : DecoratedBox(
                 decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.black, width: .2),
-              )));
+                    // borderRadius: BorderRadius.circular(4),
+                    border: Border(
+                  // right: BorderSide(
+                  //     color: config.gridDecoration.gridCellBorderColor,
+                  //     width: .3),
+                  bottom: BorderSide(
+                      color: config.gridDecoration.gridCellBorderColor,
+                      width: 1),
+                )),
+              ));
   }
 }

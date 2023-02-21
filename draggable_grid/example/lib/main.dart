@@ -91,7 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ));
     for (int i = 0; i < 10; i++) {
-      sidebar.add(SidebarMd(id: i));
+      sidebar.add(SidebarMd(
+          id: i,
+          child: Container(
+            color: Colors.red.withOpacity(.2),
+            child: const Text('2'),
+          )));
     }
   }
 
@@ -110,7 +115,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: CustomGridWidget(
         sidebar: sidebar,
         cells: cells,
-        config: Configs(),
+        config: Configs(
+          times: [
+            for (int i = 0; i < 24; i++) TimeMd(i),
+          ],
+        ),
       ),
     );
   }
