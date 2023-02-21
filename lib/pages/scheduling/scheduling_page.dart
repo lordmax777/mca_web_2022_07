@@ -1,4 +1,6 @@
 import 'package:draggable_grid/draggable_grid.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
@@ -12,30 +14,44 @@ class SchedulingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => SchedulingController());
-    return GBuilder<SchedulingController>(
-      tag: 'SchedulingPage',
-      child: (controller) {
+    return GetBuilder<SchedulingController>(
+      id: 'SchedulingPage',
+      builder: (controller) {
         controller.i.value;
         return PageWrapper(
           child: SpacedColumn(verticalSpace: 16.0, children: [
-            PagesTitleWidget(
+            const PagesTitleWidget(
               title: 'Schedule',
-              btnText: controller.scheduleType.name,
-              onRightBtnClick: controller.setScheduleType,
             ),
             TableWrapperWidget(
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      DropdownWidget(
-                        items: const ["user", "location"],
-                        value: controller.sidebarType.name,
-                        onChanged: (value) {
-                          controller.setSidebarType();
-                        },
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        ButtonLargeSecondary(
+                          text: controller.sidebarType.name.capitalize!,
+                          leftIcon: const HeroIcon(HeroIcons.loop),
+                          onPressed: () {
+                            controller.setSidebarType();
+                          },
+                        ),
+                        const Spacer(),
+                        DropdownWidget1(
+                          dropdownOptionsWidth: 150,
+                          dropdownBtnWidth: 150,
+                          hintText: "Time View",
+                          items: [
+                            ScheduleType.day.name,
+                            ScheduleType.week.name,
+                            ScheduleType.month.name,
+                          ],
+                          value: controller.scheduleType.name,
+                          onChanged: controller.setScheduleType,
+                        ),
+                      ],
+                    ),
                   ),
                   CustomGridWidget(
                       config: controller.config,

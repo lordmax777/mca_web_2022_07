@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -41,27 +42,32 @@ class _McaWebAppState extends State<McaWebApp> {
   Widget build(BuildContext context) {
     return StoreProvider(
       store: appStore,
-      child: GetMaterialApp.router(
-        scrollBehavior: CustomScrollBehavior(),
-        debugShowCheckedModeBanner: false,
-        routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])
-        ]),
-        routeInformationParser: appRouter.defaultRouteParser(),
-        localizationsDelegates: const [
-          AppIntl
-              .delegate, // Add this line. The name comes from class_name in pubspec.yaml
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        locale: const Locale('en'),
-        builder: (context, child) => ResponsiveWrapper.builder(child,
-            defaultScale: true,
-            breakpoints: const [
-              ResponsiveBreakpoint.resize(480, name: MOBILE),
-              ResponsiveBreakpoint.resize(1920, name: DESKTOP),
-            ]),
+      child: ScreenUtilInit(
+        designSize: const Size(1512, 982),
+        minTextAdapt: true,
+        builder: (BuildContext context, Widget? child) => GetMaterialApp.router(
+          scrollBehavior: CustomScrollBehavior(),
+          debugShowCheckedModeBanner: false,
+          routerDelegate: appRouter.delegate(initialRoutes: [
+            if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])
+          ]),
+          routeInformationParser: appRouter.defaultRouteParser(),
+          localizationsDelegates: const [
+            AppIntl
+                .delegate, // Add this line. The name comes from class_name in pubspec.yaml
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          locale: const Locale('en'),
+          builder: (context, child) => ResponsiveWrapper.builder(child,
+              defaultScale: true,
+              breakpoints: const [
+                ResponsiveBreakpoint.resize(480, name: MOBILE),
+                ResponsiveBreakpoint.resize(800, name: TABLET),
+                ResponsiveBreakpoint.resize(1920, name: DESKTOP),
+              ]),
+        ),
       ),
     );
   }

@@ -54,6 +54,7 @@ dependencies:
   dotted_border: ^2.0.0+3
   talker_flutter: ^2.2.1
   public_suffix: ^3.0.0
+  flutter_screenutil: ^5.6.1
 
 
 dev_dependencies:

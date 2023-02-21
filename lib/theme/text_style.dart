@@ -1,65 +1,66 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 class ThemeText {
   static const String _fontFamilyR = "Regular";
   static const String _fontFamilyM = "Medium";
   static const String _fontFamilyB = "Bold";
-  static const regular = TextStyle(
+  static TextStyle regular = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
-    fontSize: 12.0,
+    fontSize: 12.sp,
   );
 
-  static const md = TextStyle(
+  static TextStyle md = TextStyle(
     fontWeight: FontWeight.w700,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyM,
-    fontSize: 14.0,
+    fontSize: 14.sp,
   );
 
-  static const md2 = TextStyle(
+  static TextStyle md2 = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
-    fontSize: 14.0,
+    fontSize: 14.sp,
   );
 
-  static const md1 = TextStyle(
+  static TextStyle md1 = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
-    fontSize: 16.0,
+    fontSize: 16.sp,
   );
 
-  static const lg = TextStyle(
+  static TextStyle lg = TextStyle(
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyM,
-    fontSize: 24.0,
+    fontSize: 24.sp,
   );
 
-  static const tableColumnTextStyle = TextStyle(
+  static TextStyle tableColumnTextStyle = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
     color: ThemeColors.gray2,
-    fontSize: 14.0,
+    fontSize: 14.sp,
   );
 
-  static const tabTextStyle = TextStyle(
+  static TextStyle tabTextStyle = TextStyle(
     fontWeight: FontWeight.w800,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyB,
     color: ThemeColors.black,
-    fontSize: 16.0,
+    fontSize: 16.sp,
   );
 
-  static const bold14 = TextStyle(
+  static TextStyle bold14 = TextStyle(
     fontWeight: FontWeight.w800,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyB,
     color: ThemeColors.black,
-    fontSize: 14.0,
+    fontSize: 14.sp,
   );
 }

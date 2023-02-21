@@ -5,15 +5,6 @@ import 'package:draggable_grid/draggable_grid.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import 'package:simpleicons/heroicons.dart';
 
-enum CellBorders {
-  all,
-  top,
-  bottom,
-  left,
-  right,
-  none,
-}
-
 void logger(dynamic msg, [String? hint]) {
   final h = hint ?? "LOGGER";
   log("[$h] - ${msg.toString()} - [$h]");
@@ -48,13 +39,20 @@ class GridDecoration {
   final TextStyle gridHeaderTextStyle;
   final Color gridCellColor;
   final Color gridCellBorderColor;
+  BoxDecoration? cellDecoration;
 
-  const GridDecoration(
-      {this.gridHeaderColor = const Color(0xFFF9F9F9),
-      this.gridHeaderTextStyle =
-          const TextStyle(color: Colors.black, fontSize: 14),
-      this.gridCellColor = Colors.white,
-      this.gridCellBorderColor = const Color(0xFFE8E8EA)});
+  GridDecoration({
+    this.gridHeaderColor = const Color(0xFFF9F9F9),
+    this.gridHeaderTextStyle =
+        const TextStyle(color: Colors.black, fontSize: 14),
+    this.gridCellColor = Colors.white,
+    this.gridCellBorderColor = const Color(0xFFE8E8EA),
+    this.cellDecoration,
+  }) {
+    cellDecoration ??= BoxDecoration(
+        border:
+            Border(bottom: BorderSide(color: gridCellBorderColor, width: 1)));
+  }
 
   //implement copyWith
   GridDecoration copyWith({
@@ -88,7 +86,7 @@ class Configs {
 
   final List<GridTitle> times;
 
-  final GridDecoration gridDecoration;
+  GridDecoration? gridDecoration;
 
   Configs(
       {this.gridHeight = 600,
@@ -98,9 +96,10 @@ class Configs {
       this.cellHeight = 56,
       this.sidebarHeaderHeight = 32,
       this.sidebarWidth = 200,
-      this.gridDecoration = const GridDecoration(),
+      this.gridDecoration,
       required this.times}) {
     cellWidth = times.length * (cellWidth ?? 60);
+    gridDecoration ??= GridDecoration();
   }
 
   int getRowCount(List<SidebarMd> sidebar) {
@@ -161,7 +160,7 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
   Configs get config => widget.config;
   List<SidebarMd> get sidebar => widget.sidebar;
   List<DraggableGridCellData> get cells => widget.cells;
-  GridDecoration get gridDecoration => config.gridDecoration;
+  GridDecoration get gridDecoration => config.gridDecoration!;
 
   @override
   void initState() {
@@ -313,18 +312,9 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
                 child: DraggableGrid(
                   style: DraggableGridStyle(
                     cellHeight: config.cellHeight,
-                    emptyCellDecoration: BoxDecoration(
-                      // borderRadius: BorderRadius.circular(4),
-                      border: Border(
-                          bottom: BorderSide(
-                              color: gridDecoration.gridCellBorderColor,
-                              width: 1)),
-                    ),
+                    emptyCellDecoration: gridDecoration.cellDecoration,
                     backgroundColor: gridDecoration.gridCellColor,
                     spacing: config.cellSpacing,
-                    selectedCellDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
                   ),
                   editingStrategy: const DraggableGridEditingStrategy(
                     exitOnTap: true,
@@ -395,6 +385,7 @@ class _EmptyWidgetState extends State<EmptyWidget> {
   bool _isHovering = false;
 
   Configs get config => widget.config;
+  GridDecoration get gridDecoration => config.gridDecoration!;
 
   void _onHover(bool isHovering) {
     setState(() {
@@ -412,12 +403,7 @@ class _EmptyWidgetState extends State<EmptyWidget> {
         },
         child: _isHovering
             ? Container(
-                decoration: BoxDecoration(
-                    border: Border(
-                  bottom: BorderSide(
-                      color: config.gridDecoration.gridCellBorderColor,
-                      width: 1),
-                )),
+                decoration: gridDecoration.cellDecoration,
                 child: Center(
                   child: Material(
                     color: Colors.transparent,
@@ -446,16 +432,7 @@ class _EmptyWidgetState extends State<EmptyWidget> {
                 ),
               )
             : DecoratedBox(
-                decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(4),
-                    border: Border(
-                  // right: BorderSide(
-                  //     color: config.gridDecoration.gridCellBorderColor,
-                  //     width: .3),
-                  bottom: BorderSide(
-                      color: config.gridDecoration.gridCellBorderColor,
-                      width: 1),
-                )),
+                decoration: gridDecoration.cellDecoration!,
               ));
   }
 }

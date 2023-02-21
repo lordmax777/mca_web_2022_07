@@ -32,14 +32,18 @@ class SchedulingController extends GetxController {
   SidebarType get sidebarType => _sidebarType.value;
   set sidebarType(SidebarType value) => _sidebarType.value = value;
 
-  void setScheduleType() {
-    if (scheduleType == ScheduleType.day) {
-      scheduleType = ScheduleType.week;
-    } else if (scheduleType == ScheduleType.week) {
-      scheduleType = ScheduleType.month;
-    } else {
-      scheduleType = ScheduleType.day;
-    }
+  void setScheduleType(value) {
+    // if (scheduleType == ScheduleType.day) {
+    //   scheduleType = ScheduleType.week;
+    // } else if (scheduleType == ScheduleType.week) {
+    //   scheduleType = ScheduleType.month;
+    // } else {
+    //   scheduleType = ScheduleType.day;
+    // }
+    scheduleType = ScheduleType.values.firstWhere(
+      (element) => element.name == value,
+    );
+    update(['SchedulingPage']);
   }
 
   void setSidebarType() {
@@ -48,6 +52,7 @@ class SchedulingController extends GetxController {
     } else {
       sidebarType = SidebarType.user;
     }
+    update(['SchedulingPage']);
   }
 
   Configs get config => Configs(
@@ -55,7 +60,30 @@ class SchedulingController extends GetxController {
       gridDecoration: gridDecoration,
       cellWidth: cellWidths[scheduleType]!);
 
-  GridDecoration gridDecoration = const GridDecoration();
+  Color get cellBorderColor => const Color(0xFFE8E8EA);
+  GridDecoration get gridDecoration => GridDecoration(
+      cellDecoration: cellDecoration, gridCellBorderColor: cellBorderColor);
+
+  BoxDecoration? get cellDecoration {
+    switch (scheduleType) {
+      case ScheduleType.day:
+        return null;
+      case ScheduleType.week:
+      case ScheduleType.month:
+        return BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: cellBorderColor,
+              width: 1,
+            ),
+            right: BorderSide(
+              color: cellBorderColor,
+              width: 1,
+            ),
+          ),
+        );
+    }
+  }
 
   List<GridTitle> get times {
     switch (scheduleType) {
