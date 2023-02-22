@@ -47,7 +47,7 @@ class GeneralController extends GetxController {
     super.onReady();
     loggedInUser.listen((_) {
       if (isLoggedIn) {
-        // initAll();
+        initAll();
       }
     });
   }

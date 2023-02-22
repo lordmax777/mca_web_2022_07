@@ -34,6 +34,7 @@ class DropdownWidget1<T> extends StatefulWidget {
   final bool disableAll;
   final bool hasSearchBox;
   final String? Function(String?)? validator;
+  final Map<int, HeroIcons>? customItemIcons;
 
   /// Dropdown-button-width, Dropdown-Options-Width
   ///  are changeable.
@@ -43,6 +44,7 @@ class DropdownWidget1<T> extends StatefulWidget {
       required this.items,
       this.onChanged,
       this.objItems,
+      this.customItemIcons,
       this.onChangedWithObj,
       this.validator,
       this.isRequired = false,
@@ -117,7 +119,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
         },
         searchInnerWidget: widget.hasSearchBox
             ? Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8.0, right: 8.0, left: 8.0),
                 child: TextInputWidget(
                   width: MediaQuery.of(context).size.width,
                   hintText: 'Search',
@@ -326,13 +328,25 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             width: double.infinity,
             height: double.infinity,
-            child: KText(
-              text: listValues[i].toString(),
-              textColor: widget.value == listValues[i]
-                  ? ThemeColors.white
-                  : ThemeColors.black,
-              isSelectable: false,
-              fontSize: 16.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                KText(
+                  text: listValues[i].toString(),
+                  textColor: widget.value == listValues[i]
+                      ? ThemeColors.white
+                      : ThemeColors.black,
+                  isSelectable: false,
+                  fontSize: 16.0,
+                ),
+                if (widget.customItemIcons?[i] != null)
+                  HeroIcon(
+                    widget.customItemIcons![i]!,
+                    color: widget.value == listValues[i]
+                        ? ThemeColors.white
+                        : ThemeColors.black,
+                  )
+              ],
             ),
           ),
         ),
