@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   draggable_grid:
     path: ../
+  pluto_grid: ^5.4.9
 
 
 dev_dependencies:

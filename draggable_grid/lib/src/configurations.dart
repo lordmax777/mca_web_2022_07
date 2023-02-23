@@ -90,7 +90,7 @@ class Configs {
 
   Configs(
       {this.gridHeight = 700,
-      this.gridFullWidth = 1448,
+      this.gridFullWidth = 1000,
       this.cellSpacing = 0,
       this.cellWidth,
       this.cellHeight = 70,
@@ -227,7 +227,7 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
   Widget _getGridHeader() {
     return SizedBox(
       height: config.sidebarHeaderHeight,
-      width: config.gridFullWidth,
+      width: config.gridFullWidth - config.sidebarWidth,
       child: ListView.builder(
         controller: _horizontalController2,
         scrollDirection: Axis.horizontal,
@@ -290,11 +290,12 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
       controller: _horizontalController1,
       child: SizedBox(
         height: config.gridFullHeight,
+        width: config.gridFullWidth - config.sidebarWidth,
         child: SingleChildScrollView(
           controller: _verticalController2,
           child: Container(
             color: gridDecoration.gridCellColor,
-            width: config.gridFullWidth,
+            width: config.gridFullWidth - config.sidebarWidth,
             height: config.getRowCount(sidebar) * config.cellHeight,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
