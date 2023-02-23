@@ -203,23 +203,40 @@ class SchedulingController extends GetxController {
     }
   }
 
-  List<DraggableGridCellData> cells = [];
+  List<DraggableGridCellData> get cells => setCells();
 
-  void setCells() {
-    cells = [
+  final CellWidgets cellWidgets = CellWidgets();
+
+  List<DraggableGridCellData> setCells() {
+    return [
       DraggableGridCellData(
         id: "1",
         column: 1,
-        row: 2,
-        columnSpan: 1,
+        row: 1,
+        columnSpan: 3,
         rowSpan: 1,
-        child: Container(
-          // height: config.cellHeight * 2,
-          // width: config.cellWidth,
-          color: Colors.red.withOpacity(.5),
-          child: const Text('1'),
+        child: cellWidgets.dayWidget(
+          fromTime: TimeOfDay(hour: 0, minute: 0),
+          toTime: TimeOfDay(hour: 3, minute: 0),
+          username: "John Doe",
         ),
-      )
+      ),
+      // DraggableGridCellData(
+      //   id: "2",
+      //   column: 1,
+      //   row: 2,
+      //   columnSpan: 1,
+      //   rowSpan: 1,
+      //   child: cellWidgets.dayWidget(),
+      // ),
+      // DraggableGridCellData(
+      //   id: "3",
+      //   column: 1,
+      //   row: 3,
+      //   columnSpan: 1,
+      //   rowSpan: 1,
+      //   child: cellWidgets.dayWidget(),
+      // )
     ];
   }
 
@@ -303,5 +320,54 @@ class SchedulingController extends GetxController {
             ),
           ],
         ));
+  }
+}
+
+class CellWidgets {
+  Widget dayWidget(
+      {required TimeOfDay fromTime,
+      required TimeOfDay toTime,
+      required String username}) {
+    return Container(
+      margin: const EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: ThemeColors.blue5,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              KText(
+                isSelectable: false,
+                text:
+                    "${fromTime.hourOfPeriod}${fromTime.period.name} - ${toTime.hourOfPeriod}${toTime.period.name}",
+                fontSize: 13,
+                fontWeight: FWeight.bold,
+              ),
+              KText(
+                isSelectable: false,
+                text: username,
+                fontSize: 13,
+                fontWeight: FWeight.bold,
+              ),
+            ],
+          ),
+          IconButton(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.all(0.0),
+              onPressed: () {},
+              icon: const HeroIcon(
+                HeroIcons.moreVertical,
+                size: 24.0,
+                color: Colors.white,
+              )),
+        ],
+      ),
+    );
   }
 }
