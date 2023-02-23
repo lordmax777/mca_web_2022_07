@@ -88,11 +88,14 @@ class Configs {
 
   GridDecoration? gridDecoration;
 
+  final bool draggable;
+
   Configs(
       {this.gridHeight = 700,
       this.gridFullWidth = 1600,
       this.cellSpacing = 0,
       this.cellWidth,
+      this.draggable = true,
       this.cellHeight = 70,
       this.sidebarHeaderHeight = 32,
       this.sidebarWidth = 200,
@@ -309,11 +312,12 @@ class _CustomGridWidgetState extends State<CustomGridWidget> {
                     backgroundColor: gridDecoration.gridCellColor,
                     spacing: config.cellSpacing,
                   ),
-                  editingStrategy: const DraggableGridEditingStrategy(
+                  editingStrategy: DraggableGridEditingStrategy(
                     exitOnTap: true,
                     immediate: true,
                     enterOnLongTap: false,
                     moveOnlyToNearby: true,
+                    allowed: config.draggable,
                   ),
                   showGrid: true,
                   emptyCellView: (rowIdx, colIdx, draggingData) => EmptyWidget(

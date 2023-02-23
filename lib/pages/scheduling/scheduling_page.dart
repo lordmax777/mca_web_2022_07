@@ -23,6 +23,7 @@ class SchedulingPage extends StatelessWidget {
       builder: (context, state) {
         final u = state.usersState.usersList.data ?? [];
         final l = state.generalState.locationItems.data ?? [];
+        final sh = state.generalState.paramList.data?.shifts ?? [];
         return GetBuilder<SchedulingController>(
           id: 'SchedulingPage',
           builder: (controller) {
@@ -42,7 +43,7 @@ class SchedulingPage extends StatelessWidget {
             ];
 
             final locations = [LocationItemMd(name: "All"), ...l];
-
+            final shifts = [...sh];
             return PageWrapper(
               child: SpacedColumn(verticalSpace: 16.0, children: [
                 const PagesTitleWidget(
@@ -117,13 +118,15 @@ class SchedulingPage extends StatelessWidget {
                             const Spacer(),
                             Row(
                               children: [
-                                ButtonLargeSecondary(
-                                  text: controller.sidebarType.name.capitalize!,
-                                  leftIcon: const HeroIcon(HeroIcons.loop),
-                                  onPressed: () {
-                                    controller.setSidebarType();
-                                  },
-                                ),
+                                if (controller.scheduleType != ScheduleType.day)
+                                  ButtonLargeSecondary(
+                                    text:
+                                        controller.sidebarType.name.capitalize!,
+                                    leftIcon: const HeroIcon(HeroIcons.loop),
+                                    onPressed: () {
+                                      controller.setSidebarType();
+                                    },
+                                  ),
                               ],
                             ),
                           ],

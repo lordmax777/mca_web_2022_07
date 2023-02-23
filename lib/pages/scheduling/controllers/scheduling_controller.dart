@@ -14,7 +14,13 @@ enum SidebarType { user, location }
 const Map<ScheduleType, double> cellWidths = {
   ScheduleType.day: 70,
   ScheduleType.week: 240,
-  ScheduleType.month: 200,
+  ScheduleType.month: 265,
+};
+
+const Map<ScheduleType, double> cellHeight = {
+  ScheduleType.day: 64,
+  ScheduleType.week: 64,
+  ScheduleType.month: 136,
 };
 
 extension ScheduleTypeExt on ScheduleType {
@@ -28,13 +34,11 @@ extension SidebarTypeExt on SidebarType {
 class SchedulingController extends GetxController {
   static SchedulingController get to => Get.find();
 
-  // @override
-  // void onReady() {
-  //   super.onReady();
-  //   StoreProvider.of<AppState>(Get.context!).onChange.listen((event) {
-  //     update(['SchedulingPage']);
-  //   });
-  // }
+  @override
+  void onReady() {
+    super.onReady();
+    setCells();
+  }
 
   final Rx<ScheduleType> _scheduleType = ScheduleType.day.obs;
   ScheduleType get scheduleType => _scheduleType.value;
@@ -82,6 +86,10 @@ class SchedulingController extends GetxController {
     scheduleType = ScheduleType.values.firstWhere(
       (element) => element.name == value,
     );
+    if (scheduleType == ScheduleType.day &&
+        sidebarType == SidebarType.location) {
+      sidebarType = SidebarType.user;
+    }
     _reset();
     update(['SchedulingPage']);
   }
@@ -97,10 +105,12 @@ class SchedulingController extends GetxController {
   }
 
   Configs get config => Configs(
+      draggable: scheduleType != ScheduleType.day,
       times: times,
-      sidebarWidth: 360,
+      sidebarWidth: scheduleType == ScheduleType.month ? 1 : 360,
       gridFullWidth: Get.width - Constants.pagePaddingHorizontal * 2,
       gridDecoration: gridDecoration,
+      cellHeight: cellHeight[scheduleType]!,
       cellWidth: cellWidths[scheduleType]!);
 
   Color get cellBorderColor => const Color(0xFFE8E8EA);
@@ -155,10 +165,15 @@ class SchedulingController extends GetxController {
   }
 
   AppState get appState => StoreProvider.of<AppState>(Get.context!).state;
+  List<ListShift> get shifts =>
+      appState.generalState.paramList.data?.shifts ?? [];
+  List<UserRes> get usersList => appState.usersState.usersList.data ?? [];
+  List<LocationItemMd> get locations =>
+      appState.generalState.locationItems.data ?? [];
 
   List<SidebarMd> get sidebar {
-    final users = [...(appState.usersState.usersList.data ?? [])];
-    final locs = [...(appState.generalState.locationItems.data ?? [])];
+    final users = [...(usersList)];
+    final locs = [...(locations)];
     if (filteredUsers.isNotEmpty) {
       users.clear();
       users.addAll(filteredUsers.values.toList());
@@ -167,18 +182,24 @@ class SchedulingController extends GetxController {
       locs.clear();
       locs.addAll(filteredLocations.values.toList());
     }
-    switch (sidebarType) {
-      case SidebarType.user:
-        return [
-          for (int i = 0; i < users.length; i++)
-            SidebarMd(id: users[i].id, child: _sidebarWidget(user: users[i])),
-        ];
-      case SidebarType.location:
-        return [
-          for (int i = 0; i < locs.length; i++)
-            SidebarMd(
-                id: locs[i].id!, child: _sidebarWidget(location: locs[i])),
-        ];
+    if (scheduleType != ScheduleType.month) {
+      switch (sidebarType) {
+        case SidebarType.user:
+          return [
+            for (int i = 0; i < users.length; i++)
+              SidebarMd(id: users[i].id, child: _sidebarWidget(user: users[i])),
+          ];
+        case SidebarType.location:
+          return [
+            for (int i = 0; i < locs.length; i++)
+              SidebarMd(
+                  id: locs[i].id!, child: _sidebarWidget(location: locs[i])),
+          ];
+      }
+    } else {
+      return [
+        for (int i = 0; i < 5; i++) SidebarMd(id: i, child: const SizedBox()),
+      ];
     }
   }
 
