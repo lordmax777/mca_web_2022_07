@@ -37,6 +37,8 @@ class Constants {
   //Drawer
   static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  static const double pagePaddingHorizontal = 32.0;
+
   static List<Map<String, dynamic>> drawerItems = [
     {
       "icon": HeroIcons.clipboard,

@@ -1,7 +1,3 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../theme/theme.dart';
 
 enum FWeight { regular, medium, bold, light }
@@ -59,11 +55,12 @@ class KText extends StatelessWidget {
         break;
     }
     if (style == null) {
-      style = ThemeText.regular.apply(color: textColor!).copyWith(
-          fontSize: fontSize?.sp, fontWeight: fontW, fontFamily: fontF);
+      style = ThemeText.regular
+          .apply(color: textColor!)
+          .copyWith(fontSize: fontSize, fontWeight: fontW, fontFamily: fontF);
     } else {
-      style = style!.copyWith(
-          fontSize: fontSize?.sp, fontWeight: fontW, fontFamily: fontF);
+      style = style!
+          .copyWith(fontSize: fontSize, fontWeight: fontW, fontFamily: fontF);
     }
   }
 

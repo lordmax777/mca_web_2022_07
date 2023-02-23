@@ -12,8 +12,8 @@ enum ScheduleType { day, week, month }
 enum SidebarType { user, location }
 
 const Map<ScheduleType, double> cellWidths = {
-  ScheduleType.day: 50,
-  ScheduleType.week: 200,
+  ScheduleType.day: 70,
+  ScheduleType.week: 240,
   ScheduleType.month: 200,
 };
 
@@ -99,6 +99,7 @@ class SchedulingController extends GetxController {
   Configs get config => Configs(
       times: times,
       sidebarWidth: 360,
+      gridFullWidth: Get.width - Constants.pagePaddingHorizontal * 2,
       gridDecoration: gridDecoration,
       cellWidth: cellWidths[scheduleType]!);
 
@@ -156,10 +157,15 @@ class SchedulingController extends GetxController {
   AppState get appState => StoreProvider.of<AppState>(Get.context!).state;
 
   List<SidebarMd> get sidebar {
-    final users = appState.usersState.usersList.data ?? [];
+    final users = [...(appState.usersState.usersList.data ?? [])];
+    final locs = [...(appState.generalState.locationItems.data ?? [])];
     if (filteredUsers.isNotEmpty) {
       users.clear();
       users.addAll(filteredUsers.values.toList());
+    }
+    if (filteredLocations.isNotEmpty) {
+      locs.clear();
+      locs.addAll(filteredLocations.values.toList());
     }
     switch (sidebarType) {
       case SidebarType.user:
@@ -169,13 +175,9 @@ class SchedulingController extends GetxController {
         ];
       case SidebarType.location:
         return [
-          for (int i = 0;
-              i < appState.generalState.locationItems.data!.length;
-              i++)
+          for (int i = 0; i < locs.length; i++)
             SidebarMd(
-                id: appState.generalState.locationItems.data![i].id!,
-                child: _sidebarWidget(
-                    location: appState.generalState.locationItems.data![i])),
+                id: locs[i].id!, child: _sidebarWidget(location: locs[i])),
         ];
     }
   }

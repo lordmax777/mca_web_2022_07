@@ -5,62 +5,62 @@ class ThemeText {
   static const String _fontFamilyR = "Regular";
   static const String _fontFamilyM = "Medium";
   static const String _fontFamilyB = "Bold";
-  static TextStyle regular = TextStyle(
+  static const TextStyle regular = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
-    fontSize: 12.sp,
+    fontSize: 12,
   );
 
-  static TextStyle md = TextStyle(
+  static const TextStyle md = TextStyle(
     fontWeight: FontWeight.w700,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyM,
-    fontSize: 14.sp,
+    fontSize: 14,
   );
 
-  static TextStyle md2 = TextStyle(
+  static const TextStyle md2 = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
-    fontSize: 14.sp,
+    fontSize: 14,
   );
 
-  static TextStyle md1 = TextStyle(
+  static const TextStyle md1 = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
-    fontSize: 16.sp,
+    fontSize: 16,
   );
 
-  static TextStyle lg = TextStyle(
+  static const TextStyle lg = TextStyle(
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyM,
-    fontSize: 24.sp,
+    fontSize: 24,
   );
 
-  static TextStyle tableColumnTextStyle = TextStyle(
+  static const TextStyle tableColumnTextStyle = TextStyle(
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyR,
     color: ThemeColors.gray2,
-    fontSize: 14.sp,
+    fontSize: 14,
   );
 
-  static TextStyle tabTextStyle = TextStyle(
+  static const TextStyle tabTextStyle = TextStyle(
     fontWeight: FontWeight.w800,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyB,
     color: ThemeColors.black,
-    fontSize: 16.sp,
+    fontSize: 16,
   );
 
-  static TextStyle bold14 = TextStyle(
+  static const TextStyle bold14 = TextStyle(
     fontWeight: FontWeight.w800,
     fontStyle: FontStyle.normal,
     fontFamily: _fontFamilyB,
     color: ThemeColors.black,
-    fontSize: 14.sp,
+    fontSize: 14,
   );
 }

@@ -11,7 +11,7 @@ class PageWrapper extends StatelessWidget {
       child: SizedBox(
         width: Constants.defaultWidth,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(Constants.pagePaddingHorizontal),
           child: child,
         ),
       ),

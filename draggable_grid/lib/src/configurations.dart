@@ -90,7 +90,7 @@ class Configs {
 
   Configs(
       {this.gridHeight = 700,
-      this.gridFullWidth = 1000,
+      this.gridFullWidth = 1600,
       this.cellSpacing = 0,
       this.cellWidth,
       this.cellHeight = 70,

@@ -7,6 +7,7 @@ import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 
+import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 import 'controllers/scheduling_controller.dart';
@@ -20,11 +21,28 @@ class SchedulingPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
-        final users = state.usersState.usersList.data ?? [];
-        final locations = state.generalState.locationItems.data ?? [];
+        final u = state.usersState.usersList.data ?? [];
+        final l = state.generalState.locationItems.data ?? [];
         return GetBuilder<SchedulingController>(
           id: 'SchedulingPage',
           builder: (controller) {
+            final users = [
+              UserRes(
+                  username: "All",
+                  loginRequired: false,
+                  locationAdmin: false,
+                  lastStatus: "",
+                  lastName: "All",
+                  groupAdmin: false,
+                  fullname: "All",
+                  firstName: "All",
+                  id: -1,
+                  title: ""),
+              ...u
+            ];
+
+            final locations = [LocationItemMd(name: "All"), ...l];
+
             return PageWrapper(
               child: SpacedColumn(verticalSpace: 16.0, children: [
                 const PagesTitleWidget(
@@ -45,8 +63,8 @@ class SchedulingPage extends StatelessWidget {
                                     dropdownOptionsWidth: 250,
                                     dropdownBtnWidth: 250,
                                     hintText: "User",
-                                    items: users.map((e) => e.fullname).toList()
-                                      ..insert(0, "All"),
+                                    items:
+                                        users.map((e) => e.fullname).toList(),
                                     objItems: users,
                                     customItemIcons: controller.filteredUsers
                                         .map((key, value) =>
@@ -66,16 +84,13 @@ class SchedulingPage extends StatelessWidget {
                                     dropdownOptionsWidth: 400,
                                     dropdownBtnWidth: 250,
                                     hintText: "Location",
+                                    items:
+                                        locations.map((e) => e.name).toList(),
+                                    objItems: locations,
                                     customItemIcons: controller
                                         .filteredLocations
                                         .map((key, value) =>
                                             MapEntry(key, HeroIcons.check)),
-                                    items: locations
-                                        .map((e) => e.name ?? "")
-                                        .toList()
-                                      ..insert(0, "All"),
-                                    objItems: locations,
-                                    hasSearchBox: true,
                                     value: controller.filteredLocations.isEmpty
                                         ? "All"
                                         : controller.filteredLocations.values
