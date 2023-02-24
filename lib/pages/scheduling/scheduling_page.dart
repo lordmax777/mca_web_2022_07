@@ -1,4 +1,5 @@
 import 'package:draggable_grid/draggable_grid.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -125,6 +126,15 @@ class SchedulingPage extends StatelessWidget {
                                     leftIcon: const HeroIcon(HeroIcons.loop),
                                     onPressed: () {
                                       controller.setSidebarType();
+                                    },
+                                  ),
+                                if (kDebugMode)
+                                  ButtonLargeSecondary(
+                                    text: 'Add monthly Cell',
+                                    leftIcon: const HeroIcon(HeroIcons.add),
+                                    onPressed: () {
+                                      controller.addMonthlyCell(
+                                          controller.monthlyCells.length + 1);
                                     },
                                   ),
                               ],

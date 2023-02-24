@@ -90,11 +90,14 @@ class Configs {
 
   final bool draggable;
 
+  final Function(int, int, dynamic data)? onDragEnd;
+
   Configs(
       {this.gridHeight = 700,
       this.gridFullWidth = 1600,
       this.cellSpacing = 0,
       this.cellWidth,
+      this.onDragEnd,
       this.draggable = true,
       this.cellHeight = 70,
       this.sidebarHeaderHeight = 32,
@@ -397,6 +400,15 @@ class _EmptyWidgetState extends State<EmptyWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (config.onDragEnd != null) {
+      return DragTarget(
+        onAccept: (data) {
+          config.onDragEnd!(widget.rowIdx, widget.colIdx, data);
+        },
+        builder: (context, candidateData, rejectedData) =>
+            DecoratedBox(decoration: gridDecoration.cellDecoration!),
+      );
+    }
     return InkWell(
         onHover: _onHover,
         onTap: () {

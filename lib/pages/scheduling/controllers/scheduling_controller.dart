@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:draggable_grid/draggable_grid.dart';
@@ -40,7 +42,7 @@ class SchedulingController extends GetxController {
     setCells();
   }
 
-  final Rx<ScheduleType> _scheduleType = ScheduleType.day.obs;
+  final Rx<ScheduleType> _scheduleType = ScheduleType.month.obs;
   ScheduleType get scheduleType => _scheduleType.value;
   set scheduleType(ScheduleType value) => _scheduleType.value = value;
 
@@ -105,13 +107,75 @@ class SchedulingController extends GetxController {
   }
 
   Configs get config => Configs(
-      draggable: scheduleType != ScheduleType.day,
+      onDragEnd: onDragEnd,
+      draggable: scheduleType == ScheduleType.week,
       times: times,
       sidebarWidth: scheduleType == ScheduleType.month ? 1 : 360,
       gridFullWidth: Get.width - Constants.pagePaddingHorizontal * 2,
       gridDecoration: gridDecoration,
       cellHeight: cellHeight[scheduleType]!,
       cellWidth: cellWidths[scheduleType]!);
+
+  List<DraggableGridCellData> monthlyCells = [];
+
+  void addMonthlyCell(int colIdx) {
+    DraggableGridCellData? cellData;
+    final id = Random().nextInt(1000);
+    cellData = DraggableGridCellData(
+      id: id,
+      column: colIdx,
+      row: 1,
+      columnSpan: 1,
+      rowSpan: 1,
+      child: cellWidgets.monthWidget([
+        CellItem(
+          id: id,
+          fromTime: TimeOfDay(hour: 0, minute: 0),
+          toTime: TimeOfDay(hour: 3, minute: 0),
+          username: "John Doe ${colIdx}",
+        ),
+      ]),
+    );
+
+    monthlyCells.add(cellData);
+
+    update(['SchedulingPage']);
+  }
+
+  void onDragEnd(int rowIdx, int colIdx, dynamic c) {
+    final comingCell = c as CellItem;
+    print("rowIdx: $rowIdx, colIdx: $colIdx, cell: ${comingCell.id}");
+    final oldCell =
+        monthlyCells.firstWhere((element) => element.id == comingCell.id);
+    final newCell = DraggableGridCellData(
+      id: oldCell.id,
+      column: colIdx + 1,
+      row: rowIdx + 1,
+      columnSpan: oldCell.columnSpan,
+      rowSpan: oldCell.rowSpan,
+      child: oldCell.child,
+    );
+    monthlyCells.removeWhere((element) => element.id == comingCell.id);
+    monthlyCells.add(newCell);
+    update(['SchedulingPage']);
+  }
+
+  List<DraggableGridCellData> get cells => setCells();
+
+  final CellWidgets cellWidgets = CellWidgets();
+
+  List<DraggableGridCellData> setCells() {
+    switch (scheduleType) {
+      case ScheduleType.day:
+        // TODO: Handle this case.
+        return [];
+      case ScheduleType.week:
+        // TODO: Handle this case.
+        return [];
+      case ScheduleType.month:
+        return monthlyCells;
+    }
+  }
 
   Color get cellBorderColor => const Color(0xFFE8E8EA);
   GridDecoration get gridDecoration => GridDecoration(
@@ -203,43 +267,6 @@ class SchedulingController extends GetxController {
     }
   }
 
-  List<DraggableGridCellData> get cells => setCells();
-
-  final CellWidgets cellWidgets = CellWidgets();
-
-  List<DraggableGridCellData> setCells() {
-    return [
-      DraggableGridCellData(
-        id: "1",
-        column: 1,
-        row: 1,
-        columnSpan: 3,
-        rowSpan: 1,
-        child: cellWidgets.dayWidget(
-          fromTime: TimeOfDay(hour: 0, minute: 0),
-          toTime: TimeOfDay(hour: 3, minute: 0),
-          username: "John Doe",
-        ),
-      ),
-      // DraggableGridCellData(
-      //   id: "2",
-      //   column: 1,
-      //   row: 2,
-      //   columnSpan: 1,
-      //   rowSpan: 1,
-      //   child: cellWidgets.dayWidget(),
-      // ),
-      // DraggableGridCellData(
-      //   id: "3",
-      //   column: 1,
-      //   row: 3,
-      //   columnSpan: 1,
-      //   rowSpan: 1,
-      //   child: cellWidgets.dayWidget(),
-      // )
-    ];
-  }
-
   Widget _sidebarWidget({UserRes? user, LocationItemMd? location}) {
     if (location == null && user == null) return const Text("No data");
     if (location != null) {
@@ -323,11 +350,22 @@ class SchedulingController extends GetxController {
   }
 }
 
+class CellItem {
+  final int id;
+  final TimeOfDay fromTime;
+  final TimeOfDay toTime;
+  final String username;
+
+  CellItem({
+    required this.fromTime,
+    required this.toTime,
+    required this.username,
+    required this.id,
+  });
+}
+
 class CellWidgets {
-  Widget dayWidget(
-      {required TimeOfDay fromTime,
-      required TimeOfDay toTime,
-      required String username}) {
+  Widget dayWidget(CellItem cell) {
     return Container(
       margin: const EdgeInsets.all(4.0),
       decoration: BoxDecoration(
@@ -345,13 +383,13 @@ class CellWidgets {
               KText(
                 isSelectable: false,
                 text:
-                    "${fromTime.hourOfPeriod}${fromTime.period.name} - ${toTime.hourOfPeriod}${toTime.period.name}",
+                    "${cell.fromTime.hourOfPeriod}${cell.fromTime.period.name} - ${cell.toTime.hourOfPeriod}${cell.toTime.period.name}",
                 fontSize: 13,
                 fontWeight: FWeight.bold,
               ),
               KText(
                 isSelectable: false,
-                text: username,
+                text: cell.username,
                 fontSize: 13,
                 fontWeight: FWeight.bold,
               ),
@@ -368,6 +406,67 @@ class CellWidgets {
               )),
         ],
       ),
+    );
+  }
+
+  Widget monthWidget(List<CellItem> cells) {
+    return Column(
+      children: [
+        for (var cell in cells)
+          LongPressDraggable(
+            feedback: Container(
+              height: 25.0,
+              color: ThemeColors.blue5,
+              width: 100,
+            ),
+            data: cell,
+            onDragStarted: () {
+              print("Drag started");
+            },
+            onDragEnd: (details) {},
+            child: Container(
+              height: 25.0,
+              margin: const EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.0),
+                color: ThemeColors.blue5,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SpacedRow(
+                    horizontalSpace: 8.0,
+                    children: [
+                      KText(
+                        isSelectable: false,
+                        text:
+                            "${cell.fromTime.hourOfPeriod}${cell.fromTime.period.name} - ${cell.toTime.hourOfPeriod}${cell.toTime.period.name}",
+                        fontSize: 12,
+                        fontWeight: FWeight.bold,
+                      ),
+                      KText(
+                        isSelectable: false,
+                        text: cell.username,
+                        fontSize: 12,
+                        fontWeight: FWeight.medium,
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.all(0.0),
+                      onPressed: () {},
+                      icon: const HeroIcon(
+                        HeroIcons.moreVertical,
+                        size: 18.0,
+                        color: Colors.white,
+                      )),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
