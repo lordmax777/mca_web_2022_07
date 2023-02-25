@@ -25,82 +25,150 @@ class SchedulingPage extends StatelessWidget {
         builder: (_, state) {
           final scheduleState = state.scheduleState;
 
-          return DailyViewCalendar();
+          return PageWrapper(
+              child: TableWrapperWidget(
+                  child: SizedBox(
+            width: double.infinity,
+            height: 800,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      DropdownWidget1(
+                        dropdownOptionsWidth: 400,
+                        dropdownBtnWidth: 250,
+                        hintText: "Location",
+                        items: [],
+                        objItems: [],
+                        onChangedWithObj: (p0) {},
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 700, child: DailyViewCalendar()),
+              ],
+            ),
+          )));
         });
   }
 }
 
 class DailyViewCalendar extends StatelessWidget {
-  const DailyViewCalendar({Key? key}) : super(key: key);
+  DailyViewCalendar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (_, state) {
+          final users = [...(state.usersState.usersList.data ?? [])];
           final scheduleState = state.scheduleState;
           final interval = scheduleState.interval;
           return SfCalendar(
             view: CalendarView.timelineDay,
             resourceViewHeaderBuilder: (context, details) {
-              return Container(
-                height: 50,
-                width: 50,
-                color: Colors.red,
-                child: Column(
-                  children: [
-                    Text(details.resource.displayName),
-                    if (details.resource.image != null)
-                      Image(
-                        image: details.resource.image!,
-                        width: 50,
-                        height: 50,
-                      )
-                  ],
-                ),
-              );
+              if (users.isNotEmpty) {
+                return _userWidget(users.first);
+              }
+              return Container();
             },
-            resourceViewSettings: ResourceViewSettings(
-              displayNameTextStyle: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-              ),
-              size: 330,
-              visibleResourceCount: 10,
+            resourceViewSettings: const ResourceViewSettings(
+              size: 300,
+              visibleResourceCount: 12,
+              showAvatar: false,
             ),
             dataSource: getDataSource(scheduleState),
             timeSlotViewSettings: TimeSlotViewSettings(
-              timeIntervalHeight: 50,
               timeIntervalWidth: 80,
               timeInterval: Duration(minutes: interval),
-              timeFormat: "H:mm a",
-              timeTextStyle: TextStyle(
+              timeFormat: "h:mm a",
+              timeTextStyle: const TextStyle(
                 color: Colors.black,
-                fontSize: 12,
+                fontSize: 14,
+                fontFamily: ThemeText.fontFamilyR,
               ),
             ),
             headerHeight: 0,
             viewHeaderHeight: 0,
             viewNavigationMode: ViewNavigationMode.none,
-            viewHeaderStyle: const ViewHeaderStyle(
-              backgroundColor: Color(0xFFE8E8EA),
-            ),
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: true,
-              allowNavigation: true,
+              allowNavigation: false,
             ),
             onSelectionChanged: (calendarSelectionDetails) {
               logger(calendarSelectionDetails.date, hint: 'Date');
               logger(calendarSelectionDetails.resource, hint: 'RESOURCE');
             },
             onDragEnd: _onDragEnd,
-            todayHighlightColor: Colors.blueAccent,
-            todayTextStyle: TextStyle(
-              color: Colors.white,
-            ),
-            allowDragAndDrop: true,
+            todayHighlightColor: Colors.transparent,
+            allowDragAndDrop: false,
           );
         });
+  }
+
+  Widget _userWidget(UserRes user) {
+    return Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            right: BorderSide(
+              color: ThemeColors.gray11,
+              width: 1,
+            ),
+            bottom: BorderSide(
+              color: ThemeColors.gray11,
+              width: 1,
+            ),
+          ),
+        ),
+        padding: const EdgeInsets.only(left: 24.0),
+        child: SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              backgroundColor: user.userRandomBgColor,
+              maxRadius: 24.0,
+              child: KText(
+                fontSize: 16.0,
+                isSelectable: false,
+                textColor: ThemeColors.black,
+                fontWeight: FWeight.bold,
+                text:
+                    "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"
+                        .toUpperCase(),
+              ),
+            ),
+            const SizedBox(width: 16.0),
+            SpacedColumn(
+              verticalSpace: 4.0,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                    width: 200,
+                    child: KText(
+                      isSelectable: false,
+                      maxLines: 2,
+                      text: user.fullname,
+                      fontSize: 14.0,
+                      textColor: ThemeColors.gray2,
+                      fontWeight: FWeight.bold,
+                    )),
+                SizedBox(
+                    width: 200,
+                    child: KText(
+                      isSelectable: false,
+                      maxLines: 2,
+                      text: user.username,
+                      fontSize: 14.0,
+                      textColor: ThemeColors.black,
+                      fontWeight: FWeight.regular,
+                    )),
+              ],
+            ),
+          ],
+        ));
   }
 
   void _onDragEnd(AppointmentDragEndDetails appointmentDragEndDetails) {

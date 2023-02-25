@@ -35,20 +35,95 @@ class ScheduleState {
           color: Colors.green,
           resourceIds: ["1"],
         ),
+        Appointment(
+          startTime: DateTime.now(),
+          endTime: DateTime.now().add(const Duration(hours: 1)),
+          subject: "Test3",
+          color: Colors.green,
+          resourceIds: ["1"],
+        ),
       ],
       users: [
         CalendarResource(
           displayName: "User 1",
           id: "1",
           color: Colors.red,
-          image: NetworkImage(
-              "https://cdn.pixabay.com/photo/2015/03/04/22/35/head-659651_960_720.png"),
         ),
         CalendarResource(
           displayName: "User 2",
           id: "2",
-          image: NetworkImage(
-              "https://cdn.pixabay.com/photo/2015/03/04/22/35/head-659651_960_720.png"),
+        ),
+        CalendarResource(
+          displayName: "User 3",
+          id: "3",
+        ),
+        CalendarResource(
+          displayName: "User 4",
+          id: "4",
+        ),
+        CalendarResource(
+          displayName: "User 5",
+          id: "5",
+        ),
+        CalendarResource(
+          displayName: "User 6",
+          id: "6",
+        ),
+        CalendarResource(
+          displayName: "User 7",
+          id: "7",
+        ),
+        CalendarResource(
+          displayName: "User 8",
+          id: "8",
+        ),
+        CalendarResource(
+          displayName: "User 9",
+          id: "9",
+        ),
+        CalendarResource(
+          displayName: "User 10",
+          id: "10",
+        ),
+        CalendarResource(
+          displayName: "User 11",
+          id: "11",
+        ),
+        CalendarResource(
+          displayName: "User 12",
+          id: "12",
+        ),
+        CalendarResource(
+          displayName: "User 13",
+          id: "13",
+        ),
+        CalendarResource(
+          displayName: "User 14",
+          id: "14",
+        ),
+        CalendarResource(
+          displayName: "User 15",
+          id: "15",
+        ),
+        CalendarResource(
+          displayName: "User 16",
+          id: "16",
+        ),
+        CalendarResource(
+          displayName: "User 17",
+          id: "17",
+        ),
+        CalendarResource(
+          displayName: "User 18",
+          id: "18",
+        ),
+        CalendarResource(
+          displayName: "User 19",
+          id: "19",
+        ),
+        CalendarResource(
+          displayName: "User 20",
+          id: "20",
         ),
       ],
     );
