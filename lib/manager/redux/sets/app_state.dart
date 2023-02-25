@@ -6,7 +6,9 @@ import 'package:mca_web_2022_07/manager/redux/sets/reducer.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
 import '../middlewares/auth_middleware.dart';
 import '../middlewares/general_middleware.dart';
+import '../middlewares/schedule_middleware.dart';
 import '../states/general_state.dart';
+import '../states/schedule_state.dart';
 import '../states/users_state/saved_user_state.dart';
 
 final appStore = Store<AppState>(
@@ -16,6 +18,7 @@ final appStore = Store<AppState>(
     AuthMiddleware(),
     UsersMiddleware(),
     GeneralMiddleware(),
+    ScheduleMiddleware(),
   ],
 );
 
@@ -25,12 +28,14 @@ class AppState {
   final UsersState usersState;
   final SavedUserState savedUserState;
   final GeneralState generalState;
+  final ScheduleState scheduleState;
 
   const AppState({
     required this.authState,
     required this.usersState,
     required this.savedUserState,
     required this.generalState,
+    required this.scheduleState,
   });
 
   factory AppState.initial() {
@@ -39,6 +44,7 @@ class AppState {
       usersState: UsersState.initial(),
       generalState: GeneralState.initial(),
       savedUserState: SavedUserState.initial(),
+      scheduleState: ScheduleState.initial(),
     );
   }
   AppState copyWith({
@@ -46,12 +52,14 @@ class AppState {
     UsersState? usersState,
     SavedUserState? savedUserState,
     GeneralState? generalState,
+    ScheduleState? scheduleState,
   }) {
     return AppState(
       authState: authState ?? this.authState,
       usersState: usersState ?? this.usersState,
       savedUserState: savedUserState ?? this.savedUserState,
       generalState: generalState ?? this.generalState,
+      scheduleState: scheduleState ?? this.scheduleState,
     );
   }
 }

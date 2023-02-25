@@ -1,9 +1,4 @@
 import 'dart:convert';
-
-import 'package:faker/faker.dart';
-import 'package:flutter/material.dart';
-
-import '../../utils/log_tester.dart';
 import '../redux/sets/state_value.dart';
 
 class ChecklistTemplateMd {

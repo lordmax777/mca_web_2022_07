@@ -1,4 +1,3 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 class ThemeText {

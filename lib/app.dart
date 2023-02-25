@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -43,7 +42,7 @@ class _McaWebAppState extends State<McaWebApp> {
     return StoreProvider(
       store: appStore,
       child: GetMaterialApp.router(
-        scrollBehavior: CustomScrollBehavior(),
+        // scrollBehavior: CustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
           if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])

@@ -1,8 +1,6 @@
-import 'package:faker/faker.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'users_list.dart';
 part 'warehouse_md.g.dart';
 
 @JsonSerializable(anyMap: true)
@@ -39,10 +37,7 @@ class PropertyMd {
 
   @JsonKey(ignore: true)
   Color userRandomBgColor = Color.fromRGBO(
-      faker.randomGenerator.integer(255),
-      faker.randomGenerator.integer(255),
-      faker.randomGenerator.integer(255),
-      0.3);
+      Random().nextInt(255), Random().nextInt(255), Random().nextInt(255), 0.3);
 
   @override
   PropertyMd({

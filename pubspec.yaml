@@ -32,7 +32,6 @@ dependencies:
   google_maps_flutter_web: ^0.4.0+3
   google_maps_widget: ^1.0.5+1
 
-  cupertino_icons: ^1.0.2
   flutter_easylogger: ^2.3.3
   retrofit: ^3.0.1+1
   dio: ^4.0.6
@@ -47,15 +46,14 @@ dependencies:
   mix: ^0.0.6
   collection: ^1.16.0
   image_picker: ^0.8.5+3
-  faker: ^2.0.0
   geolocator: ^9.0.2
   get: ^4.6.5
   dart_ipify: ^1.1.1
   dotted_border: ^2.0.0+3
   talker_flutter: ^2.2.1
   public_suffix: ^3.0.0
-  flutter_screenutil: ^5.6.1
-
+  syncfusion_flutter_calendar: ^20.4.48
+  syncfusion_flutter_datepicker: ^20.4.48
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +75,8 @@ flutter_intl:
 
 dependency_overrides:
   retrofit: 3.0.2
+  syncfusion_flutter_calendar: "20.2.43"
+  syncfusion_flutter_datepicker: "20.2.43"
 
 flutter:
   uses-material-design: true
