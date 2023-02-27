@@ -30,15 +30,9 @@ final _scheduleReducer = combineReducers<ScheduleState>(
 
 ScheduleState _updateScheduleState(
     ScheduleState state, UpdateScheduleState action) {
-  final view = action.calendarView ?? state.calendarView;
-  SidebarType sidebarType = action.sidebarType ?? state.sidebarType;
-  if (view == CalendarView.timelineDay) {
-    sidebarType = SidebarType.user;
-  }
-
   return state.copyWith(
-    calendarView: view,
-    sidebarType: sidebarType,
+    calendarView: action.calendarView ?? state.calendarView,
+    sidebarType: action.sidebarType ?? state.sidebarType,
     interval: action.interval ?? state.interval,
     shifts: action.shifts ?? state.shifts,
     users: action.users ?? state.users,

@@ -1,24 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
-import 'package:mca_web_2022_07/manager/general_controller.dart';
-import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
-import '../../../app.dart';
 import '../../../theme/theme.dart';
-import '../../hive.dart';
 import '../../models/location_item_md.dart';
 import '../../models/property_md.dart';
 import '../../models/shift_md.dart';
 import '../../models/users_list.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
-import '../../talker_controller.dart';
-import '../sets/state_value.dart';
-import '../states/auth_state.dart';
 
 class ScheduleMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -30,6 +22,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onFetchShifts(store.state, action, next);
       case SCAddFilterUser:
         return _onAddFilterUser(store.state, action, next);
+      case SCChangeCalendarView:
+        return _onChangeCalendarView(store.state, action, next);
       default:
         return next(action);
     }
@@ -165,5 +159,15 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
     next(UpdateScheduleState(
         filteredUsers: filter, users: users, shifts: shifts));
+  }
+
+  void _onChangeCalendarView(
+      AppState state, SCChangeCalendarView action, NextDispatcher next) async {
+    final view = action.view;
+    SidebarType sidebarType = state.scheduleState.sidebarType;
+    if (view == CalendarView.timelineDay) {
+      sidebarType = SidebarType.user;
+    }
+    next(UpdateScheduleState(calendarView: view, sidebarType: sidebarType));
   }
 }

@@ -1,17 +1,12 @@
-import 'package:draggable_grid/draggable_grid.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
-import 'controllers/scheduling_controller.dart';
 
 final date = DateTime.now().subtract(Duration(days: 28));
 
@@ -20,8 +15,6 @@ class SchedulingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get.lazyPut(() => SchedulingController());
-
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (_, state) {
@@ -61,7 +54,8 @@ class SchedulingPage extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
+                  child: SpacedRow(
+                    horizontalSpace: 16.0,
                     children: [
                       if (scheduleState.sidebarType == SidebarType.user &&
                           u.isNotEmpty)
@@ -82,9 +76,31 @@ class SchedulingPage extends StatelessWidget {
                           value: scheduleState.filteredUsers.isEmpty
                               ? "All"
                               : scheduleState.filteredUsers.first.fullname,
-                          onChangedWithObj: (p0) {
-                            appStore.dispatch(SCAddFilterUser(p0.item));
-                          },
+                          onChangedWithObj: (p0) =>
+                              appStore.dispatch(SCAddFilterUser(p0.item)),
+                        ),
+                      if (u.isNotEmpty)
+                        DropdownWidget1(
+                          dropdownOptionsWidth: 150,
+                          dropdownBtnWidth: 150,
+                          hintText: "Time View",
+                          items: [
+                            CalendarView.timelineDay.name
+                                .replaceAll("timeline", ""),
+                            CalendarView.timelineWeek.name
+                                .replaceAll("timeline", ""),
+                            CalendarView.timelineMonth.name
+                                .replaceAll("timeline", ""),
+                          ],
+                          objItems: const [
+                            CalendarView.timelineDay,
+                            CalendarView.timelineWeek,
+                            CalendarView.timelineMonth,
+                          ],
+                          value: scheduleState.calendarView.name
+                              .replaceAll("timeline", ""),
+                          onChangedWithObj: (p0) =>
+                              appStore.dispatch(SCChangeCalendarView(p0.item)),
                         ),
                     ],
                   ),
@@ -231,6 +247,14 @@ class DailyViewCalendar extends StatelessWidget {
                         )),
                   ],
                 ),
+              );
+            },
+            timeRegionBuilder: (context, timeRegionDetails) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: ThemeColors.gray11,
+                ),
+                child: const SizedBox(),
               );
             },
           );

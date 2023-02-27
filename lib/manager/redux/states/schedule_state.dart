@@ -7,6 +7,10 @@ import '../../models/shift_md.dart';
 
 enum SidebarType { user, location }
 
+extension SidebarTypeExt on SidebarType {
+  String get name => toString().split('.').last;
+}
+
 @immutable
 class ScheduleState {
   final int interval;
@@ -131,4 +135,9 @@ class SCFetchShiftsAction {
 class SCAddFilterUser {
   final UserRes user;
   SCAddFilterUser(this.user);
+}
+
+class SCChangeCalendarView {
+  final CalendarView view;
+  SCChangeCalendarView(this.view);
 }

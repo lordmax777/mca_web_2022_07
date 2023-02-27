@@ -12,6 +12,10 @@ import '../../../theme/theme.dart';
 
 enum ScheduleType { day, week, month }
 
+extension ScheduleTypeExt on ScheduleType {
+  String get name => toString().split('.').last;
+}
+
 // enum SidebarType { user, location }
 
 const Map<ScheduleType, double> cellWidths = {
@@ -25,14 +29,6 @@ const Map<ScheduleType, double> cellHeight = {
   ScheduleType.week: 64,
   ScheduleType.month: 136,
 };
-
-extension ScheduleTypeExt on ScheduleType {
-  String get name => toString().split('.').last;
-}
-
-extension SidebarTypeExt on SidebarType {
-  String get name => toString().split('.').last;
-}
 
 class SchedulingController extends GetxController {
   static SchedulingController get to => Get.find();
