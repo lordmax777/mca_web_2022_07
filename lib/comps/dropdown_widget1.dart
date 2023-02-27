@@ -129,6 +129,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
                 ),
               )
             : null,
+        searchInnerWidgetHeight: 56,
         searchController: searchcontroller,
         itemPadding: EdgeInsets.zero,
         decoration: const InputDecoration(
@@ -315,6 +316,9 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
     for (int i = 0; i < len; i++) {
       _menuItems.add(
         DropdownMenuItem<String>(
+          onTap: () {
+            searchcontroller.clear();
+          },
           value: listValues[i].toString(),
           child: Container(
             decoration: BoxDecoration(

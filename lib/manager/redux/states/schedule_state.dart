@@ -5,28 +5,42 @@ import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 import '../../models/shift_md.dart';
 
+enum SidebarType { user, location }
+
 @immutable
 class ScheduleState {
   final int interval;
   final List<Appointment> shifts;
+  final List<Appointment> backupShifts;
   final List<CalendarResource> users;
   final CalendarView calendarView;
   final List<ShiftMd> fetchedShifts;
+  final SidebarType sidebarType;
+  final List<UserRes> filteredUsers;
+  final List<LocationItemMd> filteredLocations;
   ScheduleState({
     required this.interval,
+    required this.sidebarType,
     required this.shifts,
+    required this.backupShifts,
     required this.users,
     required this.calendarView,
     required this.fetchedShifts,
+    required this.filteredUsers,
+    required this.filteredLocations,
   });
 
   factory ScheduleState.initial() {
     return ScheduleState(
       calendarView: CalendarView.timelineDay,
-      interval: 15,
+      interval: 60,
       shifts: [],
+      backupShifts: [],
       users: [],
       fetchedShifts: [],
+      sidebarType: SidebarType.user,
+      filteredLocations: [],
+      filteredUsers: [],
     );
   }
 
@@ -36,15 +50,45 @@ class ScheduleState {
     List<Appointment>? shifts,
     List<CalendarResource>? users,
     List<ShiftMd>? fetchedShifts,
+    SidebarType? sidebarType,
+    List<UserRes>? filteredUsers,
+    List<LocationItemMd>? filteredLocations,
+    List<Appointment>? backupShifts,
   }) {
     return ScheduleState(
-      calendarView: calendarView ?? this.calendarView,
-      users: users ?? this.users,
-      shifts: shifts ?? this.shifts,
-      interval: interval ?? this.interval,
-      fetchedShifts: fetchedShifts ?? this.fetchedShifts,
-    );
+        calendarView: calendarView ?? this.calendarView,
+        users: users ?? this.users,
+        shifts: shifts ?? this.shifts,
+        interval: interval ?? this.interval,
+        fetchedShifts: fetchedShifts ?? this.fetchedShifts,
+        sidebarType: sidebarType ?? this.sidebarType,
+        filteredUsers: filteredUsers ?? this.filteredUsers,
+        filteredLocations: filteredLocations ?? this.filteredLocations,
+        backupShifts: backupShifts ?? this.backupShifts);
   }
+}
+
+class UpdateScheduleState {
+  final CalendarView? calendarView;
+  final int? interval;
+  final List<Appointment>? shifts;
+  final List<CalendarResource>? users;
+  final List<ShiftMd>? fetchedShifts;
+  final SidebarType? sidebarType;
+  final List<UserRes>? filteredUsers;
+  final List<LocationItemMd>? filteredLocations;
+  final List<Appointment>? backupShifts;
+  UpdateScheduleState({
+    this.calendarView,
+    this.interval,
+    this.shifts,
+    this.users,
+    this.fetchedShifts,
+    this.sidebarType,
+    this.filteredLocations,
+    this.filteredUsers,
+    this.backupShifts,
+  });
 }
 
 class AppointmentIdMd {
@@ -58,21 +102,6 @@ class AppointmentIdMd {
     required this.user,
     required this.location,
     required this.allocation,
-  });
-}
-
-class UpdateScheduleState {
-  final CalendarView? calendarView;
-  final int? interval;
-  final List<Appointment>? shifts;
-  final List<CalendarResource>? users;
-  final List<ShiftMd>? fetchedShifts;
-  UpdateScheduleState({
-    this.calendarView,
-    this.interval,
-    this.shifts,
-    this.users,
-    this.fetchedShifts,
   });
 }
 
@@ -97,4 +126,9 @@ class SCFetchShiftsAction {
     this.shiftId,
     required this.date,
   });
+}
+
+class SCAddFilterUser {
+  final UserRes user;
+  SCAddFilterUser(this.user);
 }

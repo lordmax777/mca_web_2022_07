@@ -24,41 +24,72 @@ class SchedulingPage extends StatelessWidget {
 
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
-        onInit: (store) {
-          appStore.dispatch(SCFetchShiftsAction(date: date));
-        },
         builder: (_, state) {
           final scheduleState = state.scheduleState;
-
+          final u = [...(state.usersState.usersList.data ?? [])];
+          final users = [
+            UserRes(
+                username: "All",
+                loginRequired: false,
+                locationAdmin: false,
+                lastStatus: "",
+                lastName: "All",
+                groupAdmin: false,
+                fullname: "All",
+                firstName: "All",
+                id: -1,
+                title: ""),
+            ...u
+          ];
           return PageWrapper(
               child: TableWrapperWidget(
                   child: SizedBox(
             width: double.infinity,
             height: 800,
-            child: Column(
+            child: SpacedColumn(
+              verticalSpace: 16.0,
               children: [
-                PagesTitleWidget(
-                    title: "Scheduling",
-                    btnText: "Refresh ${DateFormat('MM/dd/yyyy').format(date)}",
-                    onRightBtnClick: () {
-                      appStore.dispatch(SCFetchShiftsAction(date: date));
-                    }),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
+                  child: PagesTitleWidget(
+                      title: "Scheduling",
+                      btnText:
+                          "Refresh ${DateFormat('MM/dd/yyyy').format(date)}",
+                      onRightBtnClick: () {
+                        appStore.dispatch(SCFetchShiftsAction(date: date));
+                      }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
-                      DropdownWidget1(
-                        dropdownOptionsWidth: 400,
-                        dropdownBtnWidth: 250,
-                        hintText: "Location",
-                        items: [],
-                        objItems: [],
-                        onChangedWithObj: (p0) {},
-                      ),
+                      if (scheduleState.sidebarType == SidebarType.user &&
+                          u.isNotEmpty)
+                        DropdownWidget1(
+                          hasSearchBox: true,
+                          dropdownOptionsWidth: 250,
+                          dropdownBtnWidth: 250,
+                          hintText: "User",
+                          items: users.map((e) => e.fullname).toList(),
+                          objItems: users,
+                          customItemIcons: {
+                            for (var i = 0;
+                                i < scheduleState.filteredUsers.length;
+                                i++)
+                              users.indexOf(scheduleState.filteredUsers[i]):
+                                  HeroIcons.check
+                          },
+                          value: scheduleState.filteredUsers.isEmpty
+                              ? "All"
+                              : scheduleState.filteredUsers.first.fullname,
+                          onChangedWithObj: (p0) {
+                            appStore.dispatch(SCAddFilterUser(p0.item));
+                          },
+                        ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 650, child: DailyViewCalendar()),
+                const SizedBox(height: 640, child: DailyViewCalendar()),
               ],
             ),
           )));
@@ -73,22 +104,21 @@ class DailyViewCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
+        onInit: (store) {
+          appStore.dispatch(SCFetchShiftsAction(date: date));
+        },
         builder: (_, state) {
-          final users = [...(state.usersState.usersList.data ?? [])];
           final scheduleState = state.scheduleState;
           final interval = scheduleState.interval;
           return SfCalendar(
             view: CalendarView.timelineDay,
             resourceViewHeaderBuilder: (context, details) {
-              if (users.isNotEmpty) {
-                final user = details.resource.id as UserRes;
-                return _userWidget(user);
-              }
-              return Container();
+              final user = details.resource.id as UserRes;
+              return _userWidget(user);
             },
-            resourceViewSettings: const ResourceViewSettings(
+            resourceViewSettings: ResourceViewSettings(
               size: 300,
-              visibleResourceCount: 9,
+              visibleResourceCount: visibleResourceCount(scheduleState),
               showAvatar: false,
             ),
             dataSource: getDataSource(scheduleState),
@@ -113,7 +143,7 @@ class DailyViewCalendar extends StatelessWidget {
               logger(calendarSelectionDetails.date, hint: 'Date');
               logger(calendarSelectionDetails.resource, hint: 'RESOURCE');
             },
-            // initialSelectedDate: date,
+            initialSelectedDate: date,
             initialDisplayDate: date,
             todayHighlightColor: Colors.transparent,
             allowDragAndDrop: false,
@@ -127,64 +157,103 @@ class DailyViewCalendar extends StatelessWidget {
               }
               final user = ap.user;
               final location = ap.location;
-              return Tooltip(
-                padding: const EdgeInsets.all(0),
+              //TODO: To enable tooltip, comment the below code and use Tooltip widget
+              // padding: const EdgeInsets.all(4),
+              // decoration: BoxDecoration(
+              //   color: Colors.white,
+              // border: Border.all(
+              //   width: 1,
+              //   color: ThemeColors.gray10,
+              // ),
+              // ),
+              // richMessage: TextSpan(children: [
+              //   WidgetSpan(
+              //       child: SizedBox(
+              //     width: 300,
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         KText(
+              //           isSelectable: false,
+              //           text:
+              //               "${DateFormat('ha').format(appointment!.startTime)} - ${DateFormat('ha').format(appointment.endTime)}",
+              //           fontSize: 12,
+              //           fontWeight: FWeight.bold,
+              //         ),
+              //         KText(
+              //           isSelectable: false,
+              //           text: location.name ?? "-",
+              //           fontSize: 12,
+              //           fontWeight: FWeight.bold,
+              //         ),
+              //       ],
+              //     ),
+              //   )),
+              // ]),
+              return Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    width: 1,
-                    color: ThemeColors.gray2,
-                  ),
+                  borderRadius: BorderRadius.circular(4.0),
+                  color: user.userRandomBgColor,
                 ),
-                richMessage: TextSpan(children: [
-                  WidgetSpan(
-                      child: SizedBox(width: 300, child: _userWidget(user))),
-                ]),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.0),
-                    color: user.userRandomBgColor,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          KText(
-                            isSelectable: false,
-                            text:
-                                "${DateFormat('ha').format(appointment!.startTime)} - ${DateFormat('ha').format(appointment.endTime)}",
-                            fontSize: 12,
-                            fontWeight: FWeight.bold,
-                          ),
-                          KText(
-                            isSelectable: false,
-                            text: location.name ?? "-",
-                            fontSize: 12,
-                            fontWeight: FWeight.bold,
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.all(0.0),
-                          onPressed: () async {},
-                          icon: const HeroIcon(
-                            HeroIcons.moreVertical,
-                            size: 24.0,
-                            color: Colors.white,
-                          )),
-                    ],
-                  ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        KText(
+                          isSelectable: false,
+                          text:
+                              "${DateFormat('h:m a').format(appointment!.startTime)} - ${DateFormat('h:m a').format(appointment.endTime)}",
+                          fontSize: 12,
+                          fontWeight: FWeight.bold,
+                        ),
+                        KText(
+                          isSelectable: false,
+                          text: location.name ?? "-",
+                          fontSize: 12,
+                          fontWeight: FWeight.bold,
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.all(0.0),
+                        onPressed: () async {},
+                        icon: const HeroIcon(
+                          HeroIcons.moreVertical,
+                          size: 24.0,
+                          color: Colors.white,
+                        )),
+                  ],
                 ),
               );
             },
           );
         });
+  }
+
+  int visibleResourceCount(ScheduleState scheduleState) {
+    final len = scheduleState.users.length;
+    switch (len) {
+      case 0:
+        return 0;
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+        return len;
+      default:
+        return 9;
+    }
   }
 
   Widget _userWidget(UserRes user) {

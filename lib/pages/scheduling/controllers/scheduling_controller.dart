@@ -7,11 +7,12 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import '../../../comps/dropdown_widget1.dart';
 import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 
 enum ScheduleType { day, week, month }
 
-enum SidebarType { user, location }
+// enum SidebarType { user, location }
 
 const Map<ScheduleType, double> cellWidths = {
   ScheduleType.day: 70,

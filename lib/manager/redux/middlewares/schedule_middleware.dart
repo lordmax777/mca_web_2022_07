@@ -28,6 +28,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onDragEnd(store.state.scheduleState, action, next);
       case SCFetchShiftsAction:
         return _onFetchShifts(store.state, action, next);
+      case SCAddFilterUser:
+        return _onAddFilterUser(store.state, action, next);
       default:
         return next(action);
     }
@@ -120,9 +122,48 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         ));
       }
 
-      next(UpdateScheduleState(fetchedShifts: list, shifts: appointments));
+      next(UpdateScheduleState(
+          fetchedShifts: list,
+          shifts: appointments,
+          backupShifts: appointments));
     } else {
       next(UpdateScheduleState(fetchedShifts: [], shifts: []));
     }
+  }
+
+  void _onAddFilterUser(
+      AppState state, SCAddFilterUser action, NextDispatcher next) async {
+    final user = action.user;
+    final filter = state.scheduleState.filteredUsers;
+    if (user.username == "All") {
+      filter.clear();
+    } else {
+      if (filter.contains(user)) {
+        filter.remove(user);
+      } else {
+        filter.add(user);
+      }
+    }
+    //Handle user filtering
+    final users = state.scheduleState.users;
+    final shifts = state.scheduleState.shifts;
+    if (filter.isNotEmpty) {
+      users.clear();
+      for (int i = 0; i < filter.length; i++) {
+        users.add(CalendarResource(id: filter[i]));
+        users.sort((a, b) =>
+            (a.id as UserRes).firstName.compareTo((b.id as UserRes).firstName));
+        shifts.removeWhere((element) =>
+            (element.id as AppointmentIdMd).user.id != filter[i].id);
+      }
+    } else {
+      users.clear();
+      shifts.clear();
+      users.addAll((appStore.state.usersState.usersList.data ?? [])
+          .map((e) => CalendarResource(id: e)));
+      shifts.addAll(state.scheduleState.backupShifts);
+    }
+    next(UpdateScheduleState(
+        filteredUsers: filter, users: users, shifts: shifts));
   }
 }
