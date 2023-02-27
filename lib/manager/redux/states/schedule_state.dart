@@ -14,9 +14,12 @@ extension SidebarTypeExt on SidebarType {
 @immutable
 class ScheduleState {
   final int interval;
-  final StateValue<List<Appointment>> shifts;
-  List<Appointment> get getShifts => shifts.data ?? [];
+  final StateValue<Map<CalendarView, List<Appointment>>> shifts;
+  List<Appointment> get getShifts =>
+      shifts.data?[CalendarView.timelineDay] ?? [];
+  List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
   final List<Appointment> backupShifts;
+  final List<Appointment> backupShiftsWeek;
   final List<CalendarResource> users;
   final CalendarView calendarView;
   final SidebarType sidebarType;
@@ -27,6 +30,7 @@ class ScheduleState {
     required this.sidebarType,
     required this.shifts,
     required this.backupShifts,
+    required this.backupShiftsWeek,
     required this.users,
     required this.calendarView,
     required this.filteredUsers,
@@ -35,10 +39,12 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.timelineDay,
+      calendarView: CalendarView.week,
       interval: 60,
-      shifts: StateValue<List<Appointment>>(data: [], error: ErrorModel()),
+      shifts: StateValue<Map<CalendarView, List<Appointment>>>(
+          data: {}, error: ErrorModel()),
       backupShifts: [],
+      backupShiftsWeek: [],
       users: [],
       sidebarType: SidebarType.user,
       filteredLocations: [],
@@ -49,34 +55,39 @@ class ScheduleState {
   ScheduleState copyWith({
     CalendarView? calendarView,
     int? interval,
-    StateValue<List<Appointment>>? shifts,
+    StateValue<Map<CalendarView, List<Appointment>>>? shifts,
     List<CalendarResource>? users,
     SidebarType? sidebarType,
     List<UserRes>? filteredUsers,
     List<LocationItemMd>? filteredLocations,
     List<Appointment>? backupShifts,
+    List<Appointment>? backupShiftsWeek,
   }) {
     return ScheduleState(
-        calendarView: calendarView ?? this.calendarView,
-        users: users ?? this.users,
-        shifts: shifts ?? this.shifts,
-        interval: interval ?? this.interval,
-        sidebarType: sidebarType ?? this.sidebarType,
-        filteredUsers: filteredUsers ?? this.filteredUsers,
-        filteredLocations: filteredLocations ?? this.filteredLocations,
-        backupShifts: backupShifts ?? this.backupShifts);
+      calendarView: calendarView ?? this.calendarView,
+      users: users ?? this.users,
+      shifts: shifts ?? this.shifts,
+      interval: interval ?? this.interval,
+      sidebarType: sidebarType ?? this.sidebarType,
+      filteredUsers: filteredUsers ?? this.filteredUsers,
+      filteredLocations: filteredLocations ?? this.filteredLocations,
+      backupShifts: backupShifts ?? this.backupShifts,
+      backupShiftsWeek: backupShiftsWeek ?? this.backupShiftsWeek,
+    );
   }
 }
 
 class UpdateScheduleState {
   final CalendarView? calendarView;
   final int? interval;
-  final StateValue<List<Appointment>>? shifts;
+  final StateValue<Map<CalendarView, List<Appointment>>>? shifts;
   final List<CalendarResource>? users;
   final SidebarType? sidebarType;
   final List<UserRes>? filteredUsers;
   final List<LocationItemMd>? filteredLocations;
   final List<Appointment>? backupShifts;
+  final List<Appointment>? backupShiftsWeek;
+
   UpdateScheduleState({
     this.calendarView,
     this.interval,
@@ -86,6 +97,7 @@ class UpdateScheduleState {
     this.filteredLocations,
     this.filteredUsers,
     this.backupShifts,
+    this.backupShiftsWeek,
   });
 }
 

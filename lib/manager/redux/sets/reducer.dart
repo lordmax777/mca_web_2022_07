@@ -39,6 +39,7 @@ ScheduleState _updateScheduleState(
     filteredUsers: action.filteredUsers ?? state.filteredUsers,
     filteredLocations: action.filteredLocations ?? state.filteredLocations,
     backupShifts: action.backupShifts ?? state.backupShifts,
+    backupShiftsWeek: action.backupShiftsWeek ?? state.backupShiftsWeek,
   );
 }
 

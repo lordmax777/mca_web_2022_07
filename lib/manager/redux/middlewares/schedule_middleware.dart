@@ -33,19 +33,29 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   void _onDragEnd(
       ScheduleState state, SCDragEndAction action, NextDispatcher next) {
     final appointmentDragEndDetails = action.details;
-    final appointments = state.getShifts;
+    List<Appointment> appointments = state.getShifts;
     final interval = state.interval;
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
     if (appointment.startTime.minute % interval != 0) {
-      final found = appointments.firstWhereOrNull((element) =>
-          element.id ==
-          (appointmentDragEndDetails.appointment as Appointment).id);
+      if (CalendarView.week == state.calendarView) {
+        appointments = state.getWeekShifts;
+      }
+      Appointment? found = appointments
+          .firstWhereOrNull((element) => element.id == appointment.id);
       if (found == null) return;
-      found.startTime = appointment.startTime
-          .subtract(Duration(minutes: appointment.startTime.minute % interval));
-      found.endTime = appointment.endTime
-          .subtract(Duration(minutes: appointment.endTime.minute % interval));
+      if (state.calendarView == CalendarView.timelineDay) {
+        found.startTime = appointment.startTime.subtract(
+            Duration(minutes: appointment.startTime.minute % interval));
+        found.endTime = appointment.endTime
+            .subtract(Duration(minutes: appointment.endTime.minute % interval));
+      } else if (CalendarView.week == state.calendarView) {
+        //Always start at 00:00 and end at 01:00
+        found.startTime = DateTime(appointment.startTime.year,
+            appointment.startTime.month, appointment.startTime.day, 0, 0);
+        found.endTime = DateTime(appointment.endTime.year,
+            appointment.endTime.month, appointment.endTime.day, 1, 0);
+      }
       next(UpdateScheduleState());
     }
   }
@@ -69,6 +79,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     if (res.success) {
       final list = <ShiftMd>[];
       final appointments = <Appointment>[];
+      final appointmentsWeek = <Appointment>[];
       final properties = <PropertiesMd>[
         ...(state.generalState.properties.data ?? <PropertiesMd>[])
       ];
@@ -101,13 +112,16 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
         final st = DateTime(
             date.year, date.month, date.day, startTime.hour, startTime.minute);
+        final stWeek = DateTime(date.year, date.month, date.day, 00, 00);
         DateTime? et;
+        DateTime? etWeek;
         if (pr.finishTime != null) {
           final endTime = TimeOfDay(
               hour: int.parse(pr.finishTime!.substring(0, 2)),
               minute: int.parse(pr.finishTime!.substring(3, 5)));
           et = DateTime(
               date.year, date.month, date.day, endTime.hour, endTime.minute);
+          etWeek = DateTime(date.year, date.month, date.day, 01, 00);
         }
 
         appointments.add(Appointment(
@@ -119,16 +133,30 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           id: id,
           resourceIds: [us],
         ));
+        appointmentsWeek.add(Appointment(
+          startTime: stWeek,
+          endTime: etWeek ?? DateTime.now(),
+          isAllDay: et == null,
+          color: Colors.white,
+          subject: pr.title ?? "-",
+          id: id,
+          resourceIds: [us],
+        ));
       }
       stateVal.error.isLoading = false;
-      stateVal.data = appointments;
+      stateVal.data?[CalendarView.timelineDay] = appointments;
+      stateVal.data?[CalendarView.week] = appointmentsWeek;
       stateVal.error.action = action;
       stateVal.error.isError = false;
 
-      next(UpdateScheduleState(shifts: stateVal, backupShifts: appointments));
+      next(UpdateScheduleState(
+          shifts: stateVal,
+          backupShifts: appointments,
+          backupShiftsWeek: appointmentsWeek));
     } else {
       stateVal.error.isLoading = false;
-      stateVal.data = [];
+      stateVal.data?[CalendarView.timelineDay] = [];
+      stateVal.data?[CalendarView.week] = [];
       stateVal.error.action = action;
       stateVal.error.isError = false;
       if (res.resCode != 404) {
@@ -158,6 +186,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     //Handle user filtering
     final users = state.scheduleState.users;
     final shifts = state.scheduleState.getShifts;
+    final shiftsWeek = state.scheduleState.getWeekShifts;
     if (filter.isNotEmpty) {
       users.clear();
       for (int i = 0; i < filter.length; i++) {
@@ -166,6 +195,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             (a.id as UserRes).firstName.compareTo((b.id as UserRes).firstName));
         shifts.removeWhere((element) =>
             (element.id as AppointmentIdMd).user.id != filter[i].id);
+        shiftsWeek.removeWhere((element) =>
+            (element.id as AppointmentIdMd).user.id != filter[i].id);
       }
     } else {
       users.clear();
@@ -173,9 +204,11 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       users.addAll((appStore.state.usersState.usersList.data ?? [])
           .map((e) => CalendarResource(id: e)));
       shifts.addAll(state.scheduleState.backupShifts);
+      shiftsWeek.addAll(state.scheduleState.backupShiftsWeek);
     }
     final stateVal = state.scheduleState.shifts;
-    stateVal.data = shifts;
+    stateVal.data?[CalendarView.timelineDay] = shifts;
+    stateVal.data?[CalendarView.week] = shiftsWeek;
     next(UpdateScheduleState(
         filteredUsers: filter, users: users, shifts: stateVal));
   }
@@ -184,9 +217,16 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       AppState state, SCChangeCalendarView action, NextDispatcher next) async {
     final view = action.view;
     SidebarType sidebarType = state.scheduleState.sidebarType;
+    int interval = state.scheduleState.interval;
     if (view == CalendarView.timelineDay) {
       sidebarType = SidebarType.user;
+      interval = 60;
     }
-    next(UpdateScheduleState(calendarView: view, sidebarType: sidebarType));
+    if (view == CalendarView.week) {
+      sidebarType = SidebarType.user;
+      interval = 60;
+    }
+    next(UpdateScheduleState(
+        calendarView: view, sidebarType: sidebarType, interval: interval));
   }
 }
