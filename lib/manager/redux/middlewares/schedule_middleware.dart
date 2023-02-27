@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -32,7 +33,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   void _onDragEnd(
       ScheduleState state, SCDragEndAction action, NextDispatcher next) {
     final appointmentDragEndDetails = action.details;
-    final appointments = state.shifts;
+    final appointments = state.getShifts;
     final interval = state.interval;
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
@@ -55,6 +56,10 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final userId = action.userId ?? 0;
     final shiftId = action.shiftId ?? 0;
     final date = action.date;
+    final stateVal = state.scheduleState.shifts;
+
+    stateVal.error.isLoading = true;
+    next(UpdateScheduleState(shifts: stateVal));
 
     final ApiResponse res = await restClient()
         .getShifts(
@@ -115,13 +120,25 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           resourceIds: [us],
         ));
       }
+      stateVal.error.isLoading = false;
+      stateVal.data = appointments;
+      stateVal.error.action = action;
+      stateVal.error.isError = false;
 
-      next(UpdateScheduleState(
-          fetchedShifts: list,
-          shifts: appointments,
-          backupShifts: appointments));
+      next(UpdateScheduleState(shifts: stateVal, backupShifts: appointments));
     } else {
-      next(UpdateScheduleState(fetchedShifts: [], shifts: []));
+      stateVal.error.isLoading = false;
+      stateVal.data = [];
+      stateVal.error.action = action;
+      stateVal.error.isError = false;
+      if (res.resCode != 404) {
+        stateVal.error.isError = true;
+        stateVal.error.errorCode = res.resCode;
+        stateVal.error.errorMessage = res.resMessage;
+        stateVal.error.rawError = res.rawError;
+        stateVal.error.retries = stateVal.error.retries + 1;
+      }
+      next(UpdateScheduleState(shifts: stateVal, backupShifts: []));
     }
   }
 
@@ -140,7 +157,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
     //Handle user filtering
     final users = state.scheduleState.users;
-    final shifts = state.scheduleState.shifts;
+    final shifts = state.scheduleState.getShifts;
     if (filter.isNotEmpty) {
       users.clear();
       for (int i = 0; i < filter.length; i++) {
@@ -157,8 +174,10 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           .map((e) => CalendarResource(id: e)));
       shifts.addAll(state.scheduleState.backupShifts);
     }
+    final stateVal = state.scheduleState.shifts;
+    stateVal.data = shifts;
     next(UpdateScheduleState(
-        filteredUsers: filter, users: users, shifts: shifts));
+        filteredUsers: filter, users: users, shifts: stateVal));
   }
 
   void _onChangeCalendarView(

@@ -14,11 +14,11 @@ extension SidebarTypeExt on SidebarType {
 @immutable
 class ScheduleState {
   final int interval;
-  final List<Appointment> shifts;
+  final StateValue<List<Appointment>> shifts;
+  List<Appointment> get getShifts => shifts.data ?? [];
   final List<Appointment> backupShifts;
   final List<CalendarResource> users;
   final CalendarView calendarView;
-  final List<ShiftMd> fetchedShifts;
   final SidebarType sidebarType;
   final List<UserRes> filteredUsers;
   final List<LocationItemMd> filteredLocations;
@@ -29,7 +29,6 @@ class ScheduleState {
     required this.backupShifts,
     required this.users,
     required this.calendarView,
-    required this.fetchedShifts,
     required this.filteredUsers,
     required this.filteredLocations,
   });
@@ -38,10 +37,9 @@ class ScheduleState {
     return ScheduleState(
       calendarView: CalendarView.timelineDay,
       interval: 60,
-      shifts: [],
+      shifts: StateValue<List<Appointment>>(data: [], error: ErrorModel()),
       backupShifts: [],
       users: [],
-      fetchedShifts: [],
       sidebarType: SidebarType.user,
       filteredLocations: [],
       filteredUsers: [],
@@ -51,9 +49,8 @@ class ScheduleState {
   ScheduleState copyWith({
     CalendarView? calendarView,
     int? interval,
-    List<Appointment>? shifts,
+    StateValue<List<Appointment>>? shifts,
     List<CalendarResource>? users,
-    List<ShiftMd>? fetchedShifts,
     SidebarType? sidebarType,
     List<UserRes>? filteredUsers,
     List<LocationItemMd>? filteredLocations,
@@ -64,7 +61,6 @@ class ScheduleState {
         users: users ?? this.users,
         shifts: shifts ?? this.shifts,
         interval: interval ?? this.interval,
-        fetchedShifts: fetchedShifts ?? this.fetchedShifts,
         sidebarType: sidebarType ?? this.sidebarType,
         filteredUsers: filteredUsers ?? this.filteredUsers,
         filteredLocations: filteredLocations ?? this.filteredLocations,
@@ -75,9 +71,8 @@ class ScheduleState {
 class UpdateScheduleState {
   final CalendarView? calendarView;
   final int? interval;
-  final List<Appointment>? shifts;
+  final StateValue<List<Appointment>>? shifts;
   final List<CalendarResource>? users;
-  final List<ShiftMd>? fetchedShifts;
   final SidebarType? sidebarType;
   final List<UserRes>? filteredUsers;
   final List<LocationItemMd>? filteredLocations;
@@ -87,7 +82,6 @@ class UpdateScheduleState {
     this.interval,
     this.shifts,
     this.users,
-    this.fetchedShifts,
     this.sidebarType,
     this.filteredLocations,
     this.filteredUsers,

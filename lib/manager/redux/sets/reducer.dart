@@ -37,7 +37,6 @@ ScheduleState _updateScheduleState(
     shifts: action.shifts ?? state.shifts,
     users: action.users ?? state.users,
     filteredUsers: action.filteredUsers ?? state.filteredUsers,
-    fetchedShifts: action.fetchedShifts ?? state.fetchedShifts,
     filteredLocations: action.filteredLocations ?? state.filteredLocations,
     backupShifts: action.backupShifts ?? state.backupShifts,
   );

@@ -8,15 +8,19 @@ import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
-final date = DateTime.now().subtract(Duration(days: 28));
-
 class SchedulingPage extends StatelessWidget {
-  const SchedulingPage({Key? key}) : super(key: key);
+  SchedulingPage({Key? key}) : super(key: key);
+
+  DateTime date = DateTime.now().subtract(const Duration(days: 28));
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
+        onInit: (store) async {
+          await appStore.dispatch(SCFetchShiftsAction(date: date));
+          print("SchedulingPage onInitialBuild");
+        },
         builder: (_, state) {
           final scheduleState = state.scheduleState;
           final u = [...(state.usersState.usersList.data ?? [])];
@@ -42,15 +46,9 @@ class SchedulingPage extends StatelessWidget {
             child: SpacedColumn(
               verticalSpace: 16.0,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
-                  child: PagesTitleWidget(
-                      title: "Scheduling",
-                      btnText:
-                          "Refresh ${DateFormat('MM/dd/yyyy').format(date)}",
-                      onRightBtnClick: () {
-                        appStore.dispatch(SCFetchShiftsAction(date: date));
-                      }),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16, right: 16, left: 16),
+                  child: PagesTitleWidget(title: "Scheduling"),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -102,10 +100,62 @@ class SchedulingPage extends StatelessWidget {
                           onChangedWithObj: (p0) =>
                               appStore.dispatch(SCChangeCalendarView(p0.item)),
                         ),
+                      if (scheduleState.calendarView ==
+                          CalendarView.timelineDay)
+                        Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: ThemeColors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: ThemeColors.gray10,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  date = date.subtract(const Duration(days: 1));
+                                  appStore.dispatch(
+                                      SCFetchShiftsAction(date: date));
+                                },
+                                icon: const HeroIcon(
+                                  HeroIcons.leftSmall,
+                                  color: ThemeColors.gray2,
+                                  size: 18,
+                                ),
+                              ),
+                              KText(
+                                textAlign: TextAlign.center,
+                                text: DateFormat.yMMMMd("en_US").format(date),
+                                fontSize: 16,
+                                textColor: ThemeColors.gray2,
+                                fontWeight: FWeight.medium,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  date = date.add(const Duration(days: 1));
+                                  appStore.dispatch(
+                                      SCFetchShiftsAction(date: date));
+                                },
+                                icon: const HeroIcon(
+                                  HeroIcons.rightSmall,
+                                  color: ThemeColors.gray2,
+                                  size: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                     ],
                   ),
                 ),
-                const SizedBox(height: 640, child: DailyViewCalendar()),
+                ErrorWrapper(
+                    height: 650,
+                    errors: [scheduleState.shifts.error],
+                    child: SizedBox(height: 650, child: DailyViewCalendar())),
               ],
             ),
           )));
@@ -114,15 +164,14 @@ class SchedulingPage extends StatelessWidget {
 }
 
 class DailyViewCalendar extends StatelessWidget {
-  const DailyViewCalendar({Key? key}) : super(key: key);
+  DailyViewCalendar({Key? key}) : super(key: key);
+
+  final date = DateTime.now().subtract(const Duration(days: 28));
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
-        onInit: (store) {
-          appStore.dispatch(SCFetchShiftsAction(date: date));
-        },
         builder: (_, state) {
           final scheduleState = state.scheduleState;
           final interval = scheduleState.interval;
@@ -249,14 +298,6 @@ class DailyViewCalendar extends StatelessWidget {
                 ),
               );
             },
-            timeRegionBuilder: (context, timeRegionDetails) {
-              return Container(
-                decoration: const BoxDecoration(
-                  color: ThemeColors.gray11,
-                ),
-                child: const SizedBox(),
-              );
-            },
           );
         });
   }
@@ -343,7 +384,7 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    return _ShiftDataSource(state.shifts, state.users);
+    return _ShiftDataSource(state.getShifts, state.users);
   }
 }
 

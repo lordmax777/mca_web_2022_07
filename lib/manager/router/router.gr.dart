@@ -147,7 +147,7 @@ class _$AppRouter extends RootStackRouter {
     SchedulingRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const SchedulingPage(),
+        child: SchedulingPage(),
       );
     },
   };
