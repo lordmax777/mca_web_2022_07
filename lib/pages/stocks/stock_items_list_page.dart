@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import '../../comps/show_overlay_popup.dart';
+import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 import 'controllers/stock_items_controller.dart';
 
@@ -14,6 +15,9 @@ class StockItemsListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
+      onInit: (store) {
+        store.dispatch(GetAllStorageItemsAction());
+      },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           const PagesTitleWidget(

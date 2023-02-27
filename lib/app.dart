@@ -42,7 +42,7 @@ class _McaWebAppState extends State<McaWebApp> {
     return StoreProvider(
       store: appStore,
       child: GetMaterialApp.router(
-        // scrollBehavior: CustomScrollBehavior(),
+        scrollBehavior: CustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
           if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])

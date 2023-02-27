@@ -494,6 +494,11 @@ abstract class RestClient {
   @DELETE("/api/fe/shifts/{id}/specialrate")
   Future<HttpResponse> deleteShiftSpecialRate(
       @Path() int shiftId, @Query("specialRateId") int specialRateId);
+
+  @GET(
+      "/api/fe/allocations/location/{locationId}/user/{userId}/shift/{shiftId}/date/{date}")
+  Future<HttpResponse> getShifts(@Path() int locationId, @Path() int userId,
+      @Path() int shiftId, @Path() String date);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

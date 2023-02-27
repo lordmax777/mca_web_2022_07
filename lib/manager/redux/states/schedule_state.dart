@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../model_exporter.dart';
+import '../../models/location_item_md.dart';
+import '../../models/shift_md.dart';
 
 @immutable
 class ScheduleState {
@@ -9,123 +11,22 @@ class ScheduleState {
   final List<Appointment> shifts;
   final List<CalendarResource> users;
   final CalendarView calendarView;
+  final List<ShiftMd> fetchedShifts;
   ScheduleState({
     required this.interval,
     required this.shifts,
     required this.users,
     required this.calendarView,
+    required this.fetchedShifts,
   });
 
   factory ScheduleState.initial() {
     return ScheduleState(
       calendarView: CalendarView.timelineDay,
-      interval: 30,
-      shifts: [
-        Appointment(
-          startTime: DateTime.now(),
-          endTime: DateTime.now().add(const Duration(hours: 1)),
-          subject: "Test",
-          color: Colors.blueAccent,
-          resourceIds: ["1"],
-        ),
-        Appointment(
-          startTime: DateTime.now(),
-          endTime: DateTime.now().add(const Duration(hours: 1)),
-          subject: "Test2",
-          color: Colors.green,
-          resourceIds: ["1"],
-        ),
-        Appointment(
-          startTime: DateTime.now(),
-          endTime: DateTime.now().add(const Duration(hours: 1)),
-          subject: "Test3",
-          color: Colors.green,
-          resourceIds: ["1"],
-        ),
-      ],
-      users: [
-        CalendarResource(
-          displayName: "User 1",
-          id: "1",
-          color: Colors.red,
-        ),
-        CalendarResource(
-          displayName: "User 2",
-          id: "2",
-        ),
-        CalendarResource(
-          displayName: "User 3",
-          id: "3",
-        ),
-        CalendarResource(
-          displayName: "User 4",
-          id: "4",
-        ),
-        CalendarResource(
-          displayName: "User 5",
-          id: "5",
-        ),
-        CalendarResource(
-          displayName: "User 6",
-          id: "6",
-        ),
-        CalendarResource(
-          displayName: "User 7",
-          id: "7",
-        ),
-        CalendarResource(
-          displayName: "User 8",
-          id: "8",
-        ),
-        CalendarResource(
-          displayName: "User 9",
-          id: "9",
-        ),
-        CalendarResource(
-          displayName: "User 10",
-          id: "10",
-        ),
-        CalendarResource(
-          displayName: "User 11",
-          id: "11",
-        ),
-        CalendarResource(
-          displayName: "User 12",
-          id: "12",
-        ),
-        CalendarResource(
-          displayName: "User 13",
-          id: "13",
-        ),
-        CalendarResource(
-          displayName: "User 14",
-          id: "14",
-        ),
-        CalendarResource(
-          displayName: "User 15",
-          id: "15",
-        ),
-        CalendarResource(
-          displayName: "User 16",
-          id: "16",
-        ),
-        CalendarResource(
-          displayName: "User 17",
-          id: "17",
-        ),
-        CalendarResource(
-          displayName: "User 18",
-          id: "18",
-        ),
-        CalendarResource(
-          displayName: "User 19",
-          id: "19",
-        ),
-        CalendarResource(
-          displayName: "User 20",
-          id: "20",
-        ),
-      ],
+      interval: 15,
+      shifts: [],
+      users: [],
+      fetchedShifts: [],
     );
   }
 
@@ -134,14 +35,30 @@ class ScheduleState {
     int? interval,
     List<Appointment>? shifts,
     List<CalendarResource>? users,
+    List<ShiftMd>? fetchedShifts,
   }) {
     return ScheduleState(
       calendarView: calendarView ?? this.calendarView,
       users: users ?? this.users,
       shifts: shifts ?? this.shifts,
       interval: interval ?? this.interval,
+      fetchedShifts: fetchedShifts ?? this.fetchedShifts,
     );
   }
+}
+
+class AppointmentIdMd {
+  final PropertiesMd property;
+  final UserRes user;
+  final ShiftMd allocation;
+  final LocationItemMd location;
+
+  AppointmentIdMd({
+    required this.property,
+    required this.user,
+    required this.location,
+    required this.allocation,
+  });
 }
 
 class UpdateScheduleState {
@@ -149,15 +66,35 @@ class UpdateScheduleState {
   final int? interval;
   final List<Appointment>? shifts;
   final List<CalendarResource>? users;
+  final List<ShiftMd>? fetchedShifts;
   UpdateScheduleState({
     this.calendarView,
     this.interval,
     this.shifts,
     this.users,
+    this.fetchedShifts,
   });
 }
 
 class SCDragEndAction {
   AppointmentDragEndDetails details;
   SCDragEndAction(this.details);
+}
+
+class SCFetchShiftsAction {
+  //Location id. If not specified user 0
+  final int? locationId;
+  //User id. If not specified user 0
+  final int? userId;
+  //Shift id. If not specified user 0
+  final int? shiftId;
+  //Date in Y-m-d format
+  final DateTime date;
+
+  SCFetchShiftsAction({
+    this.locationId,
+    this.userId,
+    this.shiftId,
+    required this.date,
+  });
 }

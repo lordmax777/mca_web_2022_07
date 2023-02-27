@@ -33,6 +33,7 @@ ScheduleState _updateScheduleState(
     shifts: action.shifts ?? state.shifts,
     users: action.users ?? state.users,
     calendarView: action.calendarView ?? state.calendarView,
+    fetchedShifts: action.fetchedShifts ?? state.fetchedShifts,
   );
 }
 

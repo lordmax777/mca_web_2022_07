@@ -13,15 +13,20 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 import 'controllers/scheduling_controller.dart';
 
+final date = DateTime.now().subtract(Duration(days: 28));
+
 class SchedulingPage extends StatelessWidget {
   const SchedulingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => SchedulingController());
+    // Get.lazyPut(() => SchedulingController());
 
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
+        onInit: (store) {
+          appStore.dispatch(SCFetchShiftsAction(date: date));
+        },
         builder: (_, state) {
           final scheduleState = state.scheduleState;
 
@@ -32,6 +37,12 @@ class SchedulingPage extends StatelessWidget {
             height: 800,
             child: Column(
               children: [
+                PagesTitleWidget(
+                    title: "Scheduling",
+                    btnText: "Refresh ${DateFormat('MM/dd/yyyy').format(date)}",
+                    onRightBtnClick: () {
+                      appStore.dispatch(SCFetchShiftsAction(date: date));
+                    }),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -47,7 +58,7 @@ class SchedulingPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 700, child: DailyViewCalendar()),
+                const SizedBox(height: 650, child: DailyViewCalendar()),
               ],
             ),
           )));
@@ -56,7 +67,7 @@ class SchedulingPage extends StatelessWidget {
 }
 
 class DailyViewCalendar extends StatelessWidget {
-  DailyViewCalendar({Key? key}) : super(key: key);
+  const DailyViewCalendar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +81,14 @@ class DailyViewCalendar extends StatelessWidget {
             view: CalendarView.timelineDay,
             resourceViewHeaderBuilder: (context, details) {
               if (users.isNotEmpty) {
-                return _userWidget(users.first);
+                final user = details.resource.id as UserRes;
+                return _userWidget(user);
               }
               return Container();
             },
             resourceViewSettings: const ResourceViewSettings(
               size: 300,
-              visibleResourceCount: 12,
+              visibleResourceCount: 9,
               showAvatar: false,
             ),
             dataSource: getDataSource(scheduleState),
@@ -91,7 +103,7 @@ class DailyViewCalendar extends StatelessWidget {
               ),
             ),
             headerHeight: 0,
-            viewHeaderHeight: 0,
+            viewHeaderHeight: 0, //0
             viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: true,
@@ -101,9 +113,76 @@ class DailyViewCalendar extends StatelessWidget {
               logger(calendarSelectionDetails.date, hint: 'Date');
               logger(calendarSelectionDetails.resource, hint: 'RESOURCE');
             },
-            onDragEnd: _onDragEnd,
+            // initialSelectedDate: date,
+            initialDisplayDate: date,
             todayHighlightColor: Colors.transparent,
             allowDragAndDrop: false,
+            appointmentBuilder: (_, calendarAppointmentDetails) {
+              final appointment = calendarAppointmentDetails.appointments
+                  .toList()
+                  .first as Appointment?;
+              final ap = appointment?.id as AppointmentIdMd?;
+              if (ap == null) {
+                return const SizedBox();
+              }
+              final user = ap.user;
+              final location = ap.location;
+              return Tooltip(
+                padding: const EdgeInsets.all(0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    width: 1,
+                    color: ThemeColors.gray2,
+                  ),
+                ),
+                richMessage: TextSpan(children: [
+                  WidgetSpan(
+                      child: SizedBox(width: 300, child: _userWidget(user))),
+                ]),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4.0),
+                    color: user.userRandomBgColor,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          KText(
+                            isSelectable: false,
+                            text:
+                                "${DateFormat('ha').format(appointment!.startTime)} - ${DateFormat('ha').format(appointment.endTime)}",
+                            fontSize: 12,
+                            fontWeight: FWeight.bold,
+                          ),
+                          KText(
+                            isSelectable: false,
+                            text: location.name ?? "-",
+                            fontSize: 12,
+                            fontWeight: FWeight.bold,
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.all(0.0),
+                          onPressed: () async {},
+                          icon: const HeroIcon(
+                            HeroIcons.moreVertical,
+                            size: 24.0,
+                            color: Colors.white,
+                          )),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         });
   }
@@ -132,7 +211,6 @@ class DailyViewCalendar extends StatelessWidget {
               child: KText(
                 fontSize: 16.0,
                 isSelectable: false,
-                textColor: ThemeColors.black,
                 fontWeight: FWeight.bold,
                 text:
                     "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"
@@ -141,7 +219,7 @@ class DailyViewCalendar extends StatelessWidget {
             ),
             const SizedBox(width: 16.0),
             SpacedColumn(
-              verticalSpace: 4.0,
+              verticalSpace: 4,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -169,10 +247,6 @@ class DailyViewCalendar extends StatelessWidget {
             ),
           ],
         ));
-  }
-
-  void _onDragEnd(AppointmentDragEndDetails appointmentDragEndDetails) {
-    appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {

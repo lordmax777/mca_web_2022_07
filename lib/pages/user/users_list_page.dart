@@ -448,7 +448,7 @@ class _BodyState extends State<_Body> {
         }
       }
     }
-    String loc = e.locationId ?? "-";
+    String loc = e.locationId?.toString() ?? "-";
     for (var el in params.locations) {
       if (loc != "-") {
         if (el.id == int.tryParse(loc)) {

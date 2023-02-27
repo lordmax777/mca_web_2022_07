@@ -5,6 +5,7 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 
+import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 import 'controllers/checklist_list_controller.dart';
 
@@ -15,6 +16,9 @@ class ChecklistTemplatesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
+      onInit: (store) {
+        store.dispatch(GetChecklistTemplatesAction());
+      },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           const PagesTitleWidget(

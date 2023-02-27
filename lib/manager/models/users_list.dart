@@ -19,7 +19,7 @@ class UserRes {
   String? payrollCode;
   String? lastComment;
   String? groupId;
-  dynamic locationId;
+  String? locationId;
   bool groupAdmin;
   bool locationAdmin;
   bool loginRequired;
@@ -28,7 +28,7 @@ class UserRes {
 
   @JsonKey(ignore: true)
   Color userRandomBgColor = Color.fromRGBO(
-      Random().nextInt(255), Random().nextInt(255), Random().nextInt(255), 0.3);
+      Random().nextInt(255), Random().nextInt(255), Random().nextInt(255), 1.0);
 
   @override
   UserRes({

@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
@@ -9,6 +10,10 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../app.dart';
 import '../../../theme/theme.dart';
 import '../../hive.dart';
+import '../../models/location_item_md.dart';
+import '../../models/property_md.dart';
+import '../../models/shift_md.dart';
+import '../../models/users_list.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../../talker_controller.dart';
@@ -21,6 +26,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     switch (action.runtimeType) {
       case SCDragEndAction:
         return _onDragEnd(store.state.scheduleState, action, next);
+      case SCFetchShiftsAction:
+        return _onFetchShifts(store.state, action, next);
       default:
         return next(action);
     }
@@ -43,6 +50,79 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       found.endTime = appointment.endTime
           .subtract(Duration(minutes: appointment.endTime.minute % interval));
       next(UpdateScheduleState());
+    }
+  }
+
+  void _onFetchShifts(
+      AppState state, SCFetchShiftsAction action, NextDispatcher next) async {
+    final locId = action.locationId ?? 0;
+    final userId = action.userId ?? 0;
+    final shiftId = action.shiftId ?? 0;
+    final date = action.date;
+
+    final ApiResponse res = await restClient()
+        .getShifts(
+            locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(date))
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      final list = <ShiftMd>[];
+      final appointments = <Appointment>[];
+      final properties = <PropertiesMd>[
+        ...(state.generalState.properties.data ?? <PropertiesMd>[])
+      ];
+      final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
+      final locs = <LocationItemMd>[
+        ...(state.generalState.locationItems.data ?? [])
+      ];
+      for (var item in res.data['allocations']) {
+        final ShiftMd shift = ShiftMd.fromJson(item);
+        list.add(shift);
+        final pr = properties
+            .firstWhereOrNull((element) => element.id == shift.shiftId);
+        if (pr == null) continue;
+        final us =
+            users.firstWhereOrNull((element) => element.id == shift.userId);
+        if (us == null) continue;
+        final loc =
+            locs.firstWhereOrNull((element) => element.id == pr.locationId);
+        if (loc == null) continue;
+        final AppointmentIdMd id = AppointmentIdMd(
+          user: us,
+          allocation: shift,
+          property: pr,
+          location: loc,
+        );
+
+        final startTime = TimeOfDay(
+            hour: int.parse(pr.startTime!.substring(0, 2)),
+            minute: int.parse(pr.startTime!.substring(3, 5)));
+
+        final st = DateTime(
+            date.year, date.month, date.day, startTime.hour, startTime.minute);
+        DateTime? et;
+        if (pr.finishTime != null) {
+          final endTime = TimeOfDay(
+              hour: int.parse(pr.finishTime!.substring(0, 2)),
+              minute: int.parse(pr.finishTime!.substring(3, 5)));
+          et = DateTime(
+              date.year, date.month, date.day, endTime.hour, endTime.minute);
+        }
+
+        appointments.add(Appointment(
+          startTime: st,
+          endTime: et ?? DateTime.now(),
+          isAllDay: et == null,
+          color: Colors.white,
+          subject: pr.title ?? "-",
+          id: id,
+          resourceIds: [us],
+        ));
+      }
+
+      next(UpdateScheduleState(fetchedShifts: list, shifts: appointments));
+    } else {
+      next(UpdateScheduleState(fetchedShifts: [], shifts: []));
     }
   }
 }
