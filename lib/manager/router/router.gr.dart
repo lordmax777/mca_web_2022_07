@@ -147,7 +147,7 @@ class _$AppRouter extends RootStackRouter {
     SchedulingRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const SchedulingPage(),
+        child: SchedulingPage(),
       );
     },
   };
@@ -261,7 +261,7 @@ class LoginRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [Adminstration]
+/// [Home]
 class HomeRoute extends PageRouteInfo<void> {
   const HomeRoute({List<PageRouteInfo>? children})
       : super(

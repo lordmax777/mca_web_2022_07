@@ -6,10 +6,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/saved_user_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../../app.dart';
 import '../../../../comps/show_overlay_popup.dart';
 import '../../../model_exporter.dart';
@@ -170,7 +172,11 @@ class GetUsersListAction {
 
       stateValue.error.isError = false;
       stateValue.data = users;
-
+      next(UpdateScheduleState(
+        users: [
+          for (int i = 0; i < users.length; i++) CalendarResource(id: users[i])
+        ],
+      ));
       next(UpdateUsersStateAction(usersList: stateValue));
     } else {
       stateValue.error.retries = state.usersState.usersList.error.retries + 1;

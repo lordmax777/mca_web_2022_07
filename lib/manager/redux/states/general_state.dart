@@ -14,7 +14,6 @@ import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../../router/router.dart';
 import '../sets/app_state.dart';
-import 'package:faker/faker.dart';
 
 @immutable
 class GeneralState {

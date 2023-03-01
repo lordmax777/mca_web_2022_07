@@ -1,7 +1,8 @@
 import 'dart:developer';
+import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class CustomScrollBehavior extends MaterialScrollBehavior {
   @override
@@ -43,82 +44,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<PlutoRow> rows = [];
-  final List<PlutoColumn> columns = [];
-  PlutoGridStateManager? sm;
-  bool isHovering = false;
-  @override
-  void initState() {
-    super.initState();
-    for (int i = 0; i < 24; i++) {
-      columns.add(PlutoColumn(
-        title: "Column $i",
-        field: "column$i",
-        type: PlutoColumnType.text(),
-        renderer: (rendererContext) {
-          return StatefulBuilder(builder: (context, ss) {
-            return InkWell(
-              onHover: (value) {
-                print(value);
-                print("Hovering");
-                ss(() {
-                  isHovering = !isHovering;
-                });
-              },
-              child: DragTarget(
-                builder: (context, candidateData, rejectedData) {
-                  return LongPressDraggable(
-                    feedback: Material(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        color: Colors.red.withOpacity(.4),
-                        child: Text(rendererContext.cell.value.toString()),
-                      ),
-                    ),
-                    data: {
-                      "rowIdx": rendererContext.rowIdx,
-                      "columnField": rendererContext.column.field
-                    },
-                    child: isHovering
-                        ? const Icon(
-                            Icons.add,
-                            color: Colors.red,
-                            size: 50,
-                          )
-                        : Container(
-                            child: Text(rendererContext.cell.value.toString()),
-                          ),
-                  );
-                },
-                onWillAccept: (data) {
-                  return true;
-                },
-                onAccept: (data) {
-                  logger(data);
-                  logger(rendererContext.rowIdx);
-                  final s = rendererContext.stateManager;
-                  s.moveCurrentCell(PlutoMoveDirection.down);
-                },
-              ),
-            );
-          });
-        },
-      ));
-    }
-
-    for (int i = 0; i < 80; i++) {
-      rows.add(PlutoRow(cells: {
-        for (int j = 0; j < 24; j++) "column$j": PlutoCell(value: "Name $i"),
-      }));
-    }
-  }
-
-  //TODO: Implement on move function
-  //TODO: Implement Grouped Sidebar
-
-  void onMoveCell() {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,151 +52,86 @@ class _MyHomePageState extends State<MyHomePage> {
           title: const Text("Schedule Example Test"),
         ),
         body: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Row(
-            children: [],
-          ),
-        ));
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: DailyViewCalendar()));
   }
 }
 
-class Conf {
-  final cellHeight = 100;
-  final cellWidth = 100;
-
-  final headerHeight = 50;
-  final sidebarWidth = 50;
-}
-
-class CellWidget extends StatelessWidget {
-  final Conf config;
-  final List<CellMd> cells;
-  const CellWidget({Key? key, required this.config, required this.cells})
-      : super(key: key);
+class DailyViewCalendar extends StatefulWidget {
+  DailyViewCalendar({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 500,
-      height: 500,
-      child: ListView.builder(
-          itemBuilder: (context, index) {
-            return Container(
-              height: config.cellHeight.toDouble(),
-              width: config.cellWidth.toDouble(),
-              color: Colors.red,
-              child: cells[index].child,
-            );
-          },
-          itemCount: cells.length),
-    );
-  }
+  State<DailyViewCalendar> createState() => _DailyViewCalendarState();
 }
 
-class CellMd {
-  final Widget child;
-
-  const CellMd({required this.child});
-}
-
-//Sidebar Widget
-class SidebarWidget extends StatelessWidget {
-  final Conf config;
-  final List<SBMd> sidebarList;
-  const SidebarWidget(
-      {Key? key, required this.config, required this.sidebarList})
-      : super(key: key);
-
+class _DailyViewCalendarState extends State<DailyViewCalendar> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 500,
-      height: 500,
-      child: ListView.builder(
-          itemBuilder: (context, index) {
-            return Container(
-              height: config.cellHeight.toDouble(),
-              width: config.sidebarWidth.toDouble(),
-              color: Colors.red,
-              child: sidebarList[index].child,
-            );
-          },
-          itemCount: sidebarList.length),
-    );
-  }
-}
-
-//Sidebar Item Model
-class SBMd {
-  final Widget child;
-  const SBMd({required this.child});
-}
-
-//Header Widget
-class HeaderWidget extends StatelessWidget {
-  final Conf config;
-  final List<HeaderMd> headerList;
-  const HeaderWidget({Key? key, required this.config, required this.headerList})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 500,
-      height: 500,
-      child: ListView.builder(itemBuilder: (context, index) {
+    return SfCalendar(
+      view: CalendarView.timelineDay,
+      resourceViewHeaderBuilder: (context, details) {
         return Container(
-          height: config.headerHeight.toDouble(),
-          width: config.sidebarWidth.toDouble(),
+          height: 50,
+          width: 50,
           color: Colors.red,
-          child: Text(headerList[index].title),
+          child: Column(
+            children: [
+              Text(details.resource.displayName),
+              if (details.resource.image != null)
+                Image(
+                  image: details.resource.image!,
+                  width: 50,
+                  height: 50,
+                )
+            ],
+          ),
         );
-      }),
+      },
+      resourceViewSettings: ResourceViewSettings(
+        displayNameTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 12,
+        ),
+        size: 330,
+        visibleResourceCount: 10,
+      ),
+      timeSlotViewSettings: TimeSlotViewSettings(
+        timeIntervalHeight: 50,
+        timeIntervalWidth: 80,
+        timeFormat: "H:mm a",
+        timeTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 12,
+        ),
+      ),
+      headerHeight: 0,
+      viewHeaderHeight: 0,
+      viewNavigationMode: ViewNavigationMode.none,
+      viewHeaderStyle: const ViewHeaderStyle(
+        backgroundColor: Color(0xFFE8E8EA),
+      ),
+      dragAndDropSettings: const DragAndDropSettings(
+        allowScroll: true,
+        allowNavigation: true,
+      ),
+      onSelectionChanged: (calendarSelectionDetails) {
+        logger(calendarSelectionDetails.date, 'Date');
+        logger(calendarSelectionDetails.resource, 'RESOURCE');
+      },
+      todayHighlightColor: Colors.blueAccent,
+      todayTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+      allowDragAndDrop: true,
     );
   }
 }
 
-//Header Item Model
-class HeaderMd {
-  final String title;
-  final String field;
-  const HeaderMd({required this.title, required this.field});
-}
-
-//TODO: Create a full canvas
-class GridWidget extends StatelessWidget {
-  final Conf config;
-  final CellWidget cellWidget;
-  final SidebarWidget sidebar;
-
-  const GridWidget(
-      {Key? key,
-      required this.config,
-      required this.cellWidget,
-      required this.sidebar})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        //Sidebar
-        HeaderWidget(
-            config: config,
-            headerList: const [HeaderMd(title: "Users", field: "users")]),
-        //Grid
-        ListView.builder(
-            itemBuilder: (context, index) {
-              return Container(
-                height: config.cellHeight.toDouble(),
-                width: config.cellWidth.toDouble(),
-                color: Colors.red,
-                child: cellWidget.cells[index].child,
-              );
-            },
-            itemCount: cellWidget.cells.length),
-      ],
-    );
+class _ShiftDataSource extends CalendarDataSource {
+  _ShiftDataSource(
+      List<Appointment> source, List<CalendarResource> resourceColl) {
+    appointments = source;
+    resources = resourceColl;
   }
 }

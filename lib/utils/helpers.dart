@@ -3,6 +3,8 @@ import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/company_md.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
+import '../manager/redux/sets/app_state.dart';
+import '../manager/redux/states/general_state.dart';
 import '../manager/rest/nocode_helpers.dart';
 import 'currency_format.dart';
 
@@ -162,3 +164,13 @@ extension NumHelpers on num {
 }
 
 enum RowState { created, updated, idle, deleted }
+
+Future<void> openEndDrawer(Widget drawer) async {
+  appStore.dispatch(UpdateGeneralStateAction(endDrawer: drawer));
+  await Future.delayed(const Duration(milliseconds: 100));
+  if (Constants.scaffoldKey.currentState != null) {
+    if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+      Constants.scaffoldKey.currentState!.openEndDrawer();
+    }
+  }
+}

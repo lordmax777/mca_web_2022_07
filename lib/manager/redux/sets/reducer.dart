@@ -3,7 +3,10 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/auth_state.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../models/users_list.dart';
+import '../states/schedule_state.dart';
 import '../states/users_state/saved_user_state.dart';
 import '../states/users_state/users_state.dart';
 
@@ -13,9 +16,31 @@ AppState appReducer(AppState state, dynamic action) {
     usersState: _usersReducer(state.usersState, action),
     generalState: _generalReducer(state.generalState, action),
     savedUserState: _savedUserReducer(state.savedUserState, action),
+    scheduleState: _scheduleReducer(state.scheduleState, action),
   );
 
   return newState;
+}
+
+///
+/// Schedule Reducer
+///
+final _scheduleReducer = combineReducers<ScheduleState>(
+    [TypedReducer<ScheduleState, UpdateScheduleState>(_updateScheduleState)]);
+
+ScheduleState _updateScheduleState(
+    ScheduleState state, UpdateScheduleState action) {
+  return state.copyWith(
+    calendarView: action.calendarView ?? state.calendarView,
+    sidebarType: action.sidebarType ?? state.sidebarType,
+    interval: action.interval ?? state.interval,
+    shifts: action.shifts ?? state.shifts,
+    users: action.users ?? state.users,
+    filteredUsers: action.filteredUsers ?? state.filteredUsers,
+    filteredLocations: action.filteredLocations ?? state.filteredLocations,
+    backupShifts: action.backupShifts ?? state.backupShifts,
+    backupShiftsWeek: action.backupShiftsWeek ?? state.backupShiftsWeek,
+  );
 }
 
 ///

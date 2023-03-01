@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "383e225839c6cf93829b59dda7f9c487",
+  "assets/AssetManifest.json": "1646e5638338406fa73527f44cc28f68",
 "assets/assets/fonts/NunitoSans-Bold.ttf": "ac72fe0f27dd514aa3215e8424842062",
 "assets/assets/fonts/NunitoSans-Light.ttf": "3b696c5e8c55321863bfbf03ef0c0ff3",
 "assets/assets/fonts/NunitoSans-Regular.ttf": "4dac705158fb1ca226d583b3829f82a0",
@@ -12,10 +12,9 @@ const RESOURCES = {
 "assets/assets/images/illustration-2.png": "9f8a806312ecfe03313dabe5cf70a63f",
 "assets/assets/images/mca-logo.png": "15bd29ed2c77624a7827e415ca7baaf8",
 "assets/assets/images/widget_temp_mca.jpg": "ee2bd344257350c21f9d9c4fac2c37a5",
-"assets/FontManifest.json": "28c1a93a236112aea6e033c5616086a2",
+"assets/FontManifest.json": "e76b3893245a91cd148e7093dd0282f0",
 "assets/fonts/MaterialIcons-Regular.otf": "95db9098c58fd6db106f1116bae85a0b",
-"assets/NOTICES": "5288baec3b163c26fc775b47e149386e",
-"assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "6d342eb68f170c97609e9da345464e5e",
+"assets/NOTICES": "7aefac7963d1a4193ca82fb4c57cf824",
 "assets/packages/simpleicons/assets/icons/add-small.svg": "6dc1ca923b5b6a9c1ba58e7dbdcee798",
 "assets/packages/simpleicons/assets/icons/add.svg": "51b782dc35448aa6e081d1b62099c1af",
 "assets/packages/simpleicons/assets/icons/address-book.svg": "731d21086b1855f844218c0ce1eb4d28",
@@ -513,6 +512,7 @@ const RESOURCES = {
 "assets/packages/simpleicons/assets/icons/zip.svg": "d53fed4d68476ae9cf5d6ea52d2020fd",
 "assets/packages/simpleicons/assets/icons/zoom-in.svg": "81063db3f75934ef371b48ac8c2b28ea",
 "assets/packages/simpleicons/assets/icons/zoom-out.svg": "00720bc89309afbabddeee95cacfb7a5",
+"assets/packages/timezone/data/2020a.tzf": "84285f1f81b999f1de349a723574b3e5",
 "assets/shaders/ink_sparkle.frag": "06c291077e90cfcaad24d1c17056f53d",
 "canvaskit/canvaskit.js": "2bc454a691c631b07a9307ac4ca47797",
 "canvaskit/canvaskit.wasm": "bf50631470eb967688cca13ee181af62",
@@ -524,9 +524,9 @@ const RESOURCES = {
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "c70f5d3846172b69376e449754116d77",
-"/": "c70f5d3846172b69376e449754116d77",
-"main.dart.js": "de4d7fca10e8407f31926bac8125f7b5",
+"index.html": "525a972ab8257fb9c894bb31c1e9f265",
+"/": "525a972ab8257fb9c894bb31c1e9f265",
+"main.dart.js": "5426c792ff9a5c454ef73a5c93eb9123",
 "manifest.json": "ae6b44f605b9c04a6e90180a8ad956b0",
 "styles.css": "37387c589b05828439fb1417dc7a02bb",
 "version.json": "7fab6da096fd3c24cb62b70511fa7519"

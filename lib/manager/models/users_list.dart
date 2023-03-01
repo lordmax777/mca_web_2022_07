@@ -1,6 +1,5 @@
-import 'package:faker/faker.dart';
+import 'dart:math';
 import 'package:json_annotation/json_annotation.dart';
-
 import '../../theme/theme.dart';
 part 'users_list.g.dart';
 
@@ -20,7 +19,7 @@ class UserRes {
   String? payrollCode;
   String? lastComment;
   String? groupId;
-  dynamic locationId;
+  String? locationId;
   bool groupAdmin;
   bool locationAdmin;
   bool loginRequired;
@@ -29,10 +28,7 @@ class UserRes {
 
   @JsonKey(ignore: true)
   Color userRandomBgColor = Color.fromRGBO(
-      faker.randomGenerator.integer(255),
-      faker.randomGenerator.integer(255),
-      faker.randomGenerator.integer(255),
-      0.3);
+      Random().nextInt(255), Random().nextInt(255), Random().nextInt(255), 1.0);
 
   @override
   UserRes({

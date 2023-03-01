@@ -7,11 +7,16 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import '../../../comps/dropdown_widget1.dart';
 import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 
 enum ScheduleType { day, week, month }
 
-enum SidebarType { user, location }
+extension ScheduleTypeExt on ScheduleType {
+  String get name => toString().split('.').last;
+}
+
+// enum SidebarType { user, location }
 
 const Map<ScheduleType, double> cellWidths = {
   ScheduleType.day: 70,
@@ -24,14 +29,6 @@ const Map<ScheduleType, double> cellHeight = {
   ScheduleType.week: 64,
   ScheduleType.month: 136,
 };
-
-extension ScheduleTypeExt on ScheduleType {
-  String get name => toString().split('.').last;
-}
-
-extension SidebarTypeExt on SidebarType {
-  String get name => toString().split('.').last;
-}
 
 class SchedulingController extends GetxController {
   static SchedulingController get to => Get.find();
@@ -52,6 +49,18 @@ class SchedulingController extends GetxController {
 
   Map<int, UserRes> filteredUsers = {};
   Map<int, LocationItemMd> filteredLocations = {};
+
+  DateTime selectedDate = DateTime.now();
+
+  void incrementMonth() {
+    selectedDate = selectedDate.add(const Duration(days: 30));
+    update(['SchedulingPage']);
+  }
+
+  void decrementMonth() {
+    selectedDate = selectedDate.subtract(const Duration(days: 30));
+    update(['SchedulingPage']);
+  }
 
   void addFilteredUser(int index, DpItem user) {
     if (user.name == "All") {
@@ -82,6 +91,7 @@ class SchedulingController extends GetxController {
   void _reset() {
     filteredUsers = {};
     filteredLocations = {};
+    selectedDate = DateTime.now();
   }
 
   void setScheduleType(value) {
@@ -130,8 +140,8 @@ class SchedulingController extends GetxController {
       child: cellWidgets.monthWidget([
         CellItem(
           id: id,
-          fromTime: TimeOfDay(hour: 0, minute: 0),
-          toTime: TimeOfDay(hour: 3, minute: 0),
+          fromTime: const TimeOfDay(hour: 0, minute: 0),
+          toTime: const TimeOfDay(hour: 3, minute: 0),
           username: "John Doe ${colIdx}",
         ),
       ]),
@@ -142,8 +152,15 @@ class SchedulingController extends GetxController {
     update(['SchedulingPage']);
   }
 
+  void addToCellChild() {}
+
   void onDragEnd(int rowIdx, int colIdx, dynamic c) {
     final comingCell = c as CellItem;
+    final bool isEmptyCell =
+        monthlyCells.any((element) => element.id != comingCell.id);
+    print("isEmptyCell: $isEmptyCell");
+    if (isEmptyCell) return;
+    return;
     print("rowIdx: $rowIdx, colIdx: $colIdx, cell: ${comingCell.id}");
     final oldCell =
         monthlyCells.firstWhere((element) => element.id == comingCell.id);

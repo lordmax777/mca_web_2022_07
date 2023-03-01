@@ -29,7 +29,7 @@ UserRes _$UserResFromJson(Map json) => UserRes(
       groupId: json['groupId'] as String?,
       groupAdmin: json['groupAdmin'] as bool,
       locationAdmin: json['locationAdmin'] as bool,
-      locationId: json['locationId'],
+      locationId: json['locationId'] as String?,
     );
 
 Map<String, dynamic> _$UserResToJson(UserRes instance) => <String, dynamic>{
