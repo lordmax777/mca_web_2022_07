@@ -136,7 +136,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         appointmentsWeek.add(Appointment(
           startTime: stWeek,
           endTime: etWeek ?? DateTime.now(),
-          isAllDay: et == null,
+          isAllDay: etWeek == null,
           color: Colors.white,
           subject: pr.title ?? "-",
           id: id,
@@ -193,24 +193,27 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         users.add(CalendarResource(id: filter[i]));
         users.sort((a, b) =>
             (a.id as UserRes).firstName.compareTo((b.id as UserRes).firstName));
-        shifts.removeWhere((element) =>
-            (element.id as AppointmentIdMd).user.id != filter[i].id);
-        shiftsWeek.removeWhere((element) =>
-            (element.id as AppointmentIdMd).user.id != filter[i].id);
+        // shifts.removeWhere((element) =>
+        //     (element.id as AppointmentIdMd).user.id != filter[i].id);
+        // shiftsWeek.removeWhere((element) =>
+        //     (element.id as AppointmentIdMd).user.id != filter[i].id);
       }
     } else {
       users.clear();
-      shifts.clear();
+      // shifts.clear();
+      // shiftsWeek.clear();
       users.addAll((appStore.state.usersState.usersList.data ?? [])
           .map((e) => CalendarResource(id: e)));
-      shifts.addAll(state.scheduleState.backupShifts);
-      shiftsWeek.addAll(state.scheduleState.backupShiftsWeek);
+      // shifts.addAll(state.scheduleState.backupShifts);
+      // shiftsWeek.addAll(state.scheduleState.backupShiftsWeek);
     }
-    final stateVal = state.scheduleState.shifts;
-    stateVal.data?[CalendarView.timelineDay] = shifts;
-    stateVal.data?[CalendarView.week] = shiftsWeek;
+    // final stateVal = state.scheduleState.shifts;
+    // stateVal.data?[CalendarView.timelineDay] = shifts;
+    // stateVal.data?[CalendarView.week] = shiftsWeek;
     next(UpdateScheduleState(
-        filteredUsers: filter, users: users, shifts: stateVal));
+      filteredUsers: filter, users: users,
+      // shifts: stateVal
+    ));
   }
 
   void _onChangeCalendarView(
