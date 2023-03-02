@@ -21,3 +21,4 @@ xcopy /s /y build\web\ website\
 
 call git add .
 call git commit -m "update website %datestr%"
+call git push
