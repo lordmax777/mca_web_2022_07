@@ -112,7 +112,7 @@ class SchedulingPage extends StatelessWidget {
                         Container(
                           height: 56,
                           decoration: BoxDecoration(
-                            color: ThemeColors.white,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: ThemeColors.gray10,
