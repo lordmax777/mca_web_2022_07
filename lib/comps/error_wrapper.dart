@@ -52,13 +52,17 @@ class _ErrorWrapperState extends State<ErrorWrapper> {
                 verticalSpace: 28.0,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  KText(
-                    text: _gerError(),
-                    fontSize: 24,
-                    textColor: ThemeColors.black,
-                    rowCenter: true,
-                    fontWeight: FWeight.medium,
-                    isSelectable: false,
+                  SizedBox(
+                    // width: 150,
+                    child: KText(
+                      text: _gerError(),
+                      fontSize: 24,
+                      maxLines: 5,
+                      textColor: ThemeColors.black,
+                      rowCenter: true,
+                      fontWeight: FWeight.medium,
+                      isSelectable: false,
+                    ),
                   ),
                   SizedBox(
                     width: 150,

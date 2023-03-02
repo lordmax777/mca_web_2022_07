@@ -29,7 +29,6 @@ class DailyViewCalendar extends StatelessWidget {
             resourceViewSettings: ResourceViewSettings(
               size: 300,
               visibleResourceCount: visibleResourceCount(scheduleState),
-              showAvatar: false,
             ),
             dataSource: getDataSource(scheduleState),
             timeSlotViewSettings: TimeSlotViewSettings(
@@ -43,14 +42,26 @@ class DailyViewCalendar extends StatelessWidget {
               ),
             ),
             headerHeight: 0,
-            viewHeaderHeight: 0, //0
+            viewHeaderHeight: 0,
             viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: true,
               allowNavigation: false,
             ),
             onSelectionChanged: (calendarSelectionDetails) async {
-              openEndDrawer(const Drawer());
+              // openEndDrawer(const Drawer());
+            },
+            onTap: (calendarTapDetails) {
+              // int userCountPerShift = 1;
+              // for (int i = 0;
+              //     i < scheduleState.shifts.data![CalendarView.day]!.length;
+              //     i++) {
+              //   if (scheduleState.shifts.data![CalendarView.day]![i].id ==
+              //       calendarTapDetails.appointments!.first.id) {
+              //     userCountPerShift += 1;
+              //   }
+              // }
+              // logger("userCountPerShift: $userCountPerShift");
             },
             initialSelectedDate: day,
             initialDisplayDate: day,
@@ -100,24 +111,27 @@ class DailyViewCalendar extends StatelessWidget {
               //     ),
               //   )),
               // ]),
-              return Container(
+              return Tooltip(
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4.0),
                   color: user.userRandomBgColor,
+                  border: Border.all(
+                    width: 1,
+                    color: ThemeColors.gray10,
+                  ),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
+                richMessage: TextSpan(children: [
+                  WidgetSpan(
+                      child: SizedBox(
+                    width: 300,
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         KText(
                           isSelectable: false,
                           text:
-                              "${DateFormat('h:m a').format(appointment!.startTime)} - ${DateFormat('h:m a').format(appointment.endTime)}",
+                              "${DateFormat('h:mm a').format(appointment!.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
                           fontSize: 12,
                           fontWeight: FWeight.bold,
                         ),
@@ -129,16 +143,48 @@ class DailyViewCalendar extends StatelessWidget {
                         ),
                       ],
                     ),
-                    IconButton(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.all(0.0),
-                        onPressed: () async {},
-                        icon: const HeroIcon(
-                          HeroIcons.moreVertical,
-                          size: 24.0,
-                          color: Colors.white,
-                        )),
-                  ],
+                  )),
+                ]),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4.0),
+                    color: user.userRandomBgColor,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          KText(
+                            isSelectable: false,
+                            text:
+                                "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
+                            fontSize: 12,
+                            fontWeight: FWeight.bold,
+                          ),
+                          KText(
+                            isSelectable: false,
+                            text: location.name ?? "-",
+                            fontSize: 12,
+                            fontWeight: FWeight.bold,
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.all(0.0),
+                          onPressed: () async {},
+                          icon: const HeroIcon(
+                            HeroIcons.moreVertical,
+                            size: 24.0,
+                            color: Colors.white,
+                          )),
+                    ],
+                  ),
                 ),
               );
             },

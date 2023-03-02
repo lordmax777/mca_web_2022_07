@@ -21,6 +21,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onDragEnd(store.state.scheduleState, action, next);
       case SCFetchShiftsAction:
         return _onFetchShifts(store.state, action, next);
+      case SCFetchShiftsWeekAction:
+        return _onFetchShiftsWeek(store.state, action, next);
       case SCAddFilterUser:
         return _onAddFilterUser(store.state, action, next);
       case SCChangeCalendarView:
@@ -79,7 +81,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     if (res.success) {
       final list = <ShiftMd>[];
       final appointments = <Appointment>[];
-      final appointmentsWeek = <Appointment>[];
       final properties = <PropertiesMd>[
         ...(state.generalState.properties.data ?? <PropertiesMd>[])
       ];
@@ -99,12 +100,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         final loc =
             locs.firstWhereOrNull((element) => element.id == pr.locationId);
         if (loc == null) continue;
-        final AppointmentIdMd id = AppointmentIdMd(
-          user: us,
-          allocation: shift,
-          property: pr,
-          location: loc,
-        );
 
         final startTime = TimeOfDay(
             hour: int.parse(pr.startTime!.substring(0, 2)),
@@ -112,18 +107,20 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
         final st = DateTime(
             date.year, date.month, date.day, startTime.hour, startTime.minute);
-        final stWeek = DateTime(date.year, date.month, date.day, 00, 00);
         DateTime? et;
-        DateTime? etWeek;
         if (pr.finishTime != null) {
           final endTime = TimeOfDay(
               hour: int.parse(pr.finishTime!.substring(0, 2)),
               minute: int.parse(pr.finishTime!.substring(3, 5)));
           et = DateTime(
               date.year, date.month, date.day, endTime.hour, endTime.minute);
-          etWeek = DateTime(date.year, date.month, date.day, 01, 00);
         }
-
+        final AppointmentIdMd id = AppointmentIdMd(
+          user: us,
+          allocation: shift,
+          property: pr,
+          location: loc,
+        );
         appointments.add(Appointment(
           startTime: st,
           endTime: et ?? DateTime.now(),
@@ -133,30 +130,28 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           id: id,
           resourceIds: [us],
         ));
-        appointmentsWeek.add(Appointment(
-          startTime: stWeek,
-          endTime: etWeek ?? DateTime.now(),
-          isAllDay: etWeek == null,
-          color: Colors.white,
-          subject: pr.title ?? "-",
-          id: id,
-          resourceIds: [us],
-        ));
       }
+      // for (int i = 0; i < appointments.length; i++) {
+      //   final prev = appointments[i];
+      //   for (int j = 0; j < appointments.length; j++) {
+      //     final next = appointments[j];
+      //     if (prev.resourceIds!.contains(next.resourceIds)) {
+      //       prev.resourceIds = [...prev.resourceIds!, ...next.resourceIds!];
+      //     }
+      //   }
+      // }
       stateVal.error.isLoading = false;
-      stateVal.data?[CalendarView.timelineDay] = appointments;
-      stateVal.data?[CalendarView.week] = appointmentsWeek;
+      stateVal.data?[CalendarView.day] = appointments;
       stateVal.error.action = action;
       stateVal.error.isError = false;
 
       next(UpdateScheduleState(
-          shifts: stateVal,
-          backupShifts: appointments,
-          backupShiftsWeek: appointmentsWeek));
+        shifts: stateVal,
+        backupShifts: appointments,
+      ));
     } else {
       stateVal.error.isLoading = false;
-      stateVal.data?[CalendarView.timelineDay] = [];
-      stateVal.data?[CalendarView.week] = [];
+      stateVal.data?[CalendarView.day] = [];
       stateVal.error.action = action;
       stateVal.error.isError = false;
       if (res.resCode != 404) {
@@ -168,6 +163,89 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       }
       next(UpdateScheduleState(shifts: stateVal, backupShifts: []));
     }
+  }
+
+  void _onFetchShiftsWeek(AppState state, SCFetchShiftsWeekAction action,
+      NextDispatcher next) async {
+    final locId = action.locationId ?? 0;
+    final userId = action.userId ?? 0;
+    final shiftId = action.shiftId ?? 0;
+    final startDate = action.startDate;
+    final endDate = action.endDate;
+    final stateVal = state.scheduleState.shifts;
+    stateVal.data?[CalendarView.week] = [];
+
+    stateVal.error.isLoading = true;
+    next(UpdateScheduleState(shifts: stateVal));
+    final appointmentsWeek = <Appointment>[];
+
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      final date = startDate.add(Duration(days: i));
+      final ApiResponse res = await restClient()
+          .getShifts(
+              locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(date))
+          .nocodeErrorHandler();
+      if (res.success) {
+        final list = <ShiftMd>[];
+        final properties = <PropertiesMd>[
+          ...(state.generalState.properties.data ?? <PropertiesMd>[])
+        ];
+        final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
+        final locs = <LocationItemMd>[
+          ...(state.generalState.locationItems.data ?? [])
+        ];
+        for (var item in res.data['allocations']) {
+          final ShiftMd shift = ShiftMd.fromJson(item);
+          list.add(shift);
+          final pr = properties
+              .firstWhereOrNull((element) => element.id == shift.shiftId);
+          if (pr == null) continue;
+          final us =
+              users.firstWhereOrNull((element) => element.id == shift.userId);
+          if (us == null) continue;
+          final loc =
+              locs.firstWhereOrNull((element) => element.id == pr.locationId);
+          if (loc == null) continue;
+          final AppointmentIdMd id = AppointmentIdMd(
+            user: us,
+            allocation: shift,
+            property: pr,
+            location: loc,
+          );
+
+          final stWeek = DateTime(date.year, date.month, date.day, 00, 00);
+          DateTime? etWeek = DateTime(date.year, date.month, date.day, 01, 00);
+
+          int count = 1;
+
+          for (int i = 0; i < appointmentsWeek.length; i++) {
+            final prev = appointmentsWeek[i];
+            if (prev.resourceIds!.contains(us)) {
+              count++;
+            }
+          }
+
+          appointmentsWeek.add(Appointment(
+            startTime: stWeek,
+            endTime: etWeek,
+            color: Colors.white,
+            subject: pr.title ?? "-",
+            id: id,
+            notes: count.toString(),
+            resourceIds: [us],
+          ));
+        }
+      }
+    }
+    stateVal.error.isLoading = false;
+    stateVal.data?[CalendarView.week] = [
+      ...(stateVal.data?[CalendarView.week] ?? []),
+      ...appointmentsWeek
+    ];
+    stateVal.error.action = action;
+    stateVal.error.isError = false;
+    next(UpdateScheduleState(
+        shifts: stateVal, backupShiftsWeek: appointmentsWeek));
   }
 
   void _onAddFilterUser(

@@ -1,6 +1,8 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../../manager/models/location_item_md.dart';
+import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
@@ -10,11 +12,13 @@ import '../models/data_source.dart';
 class WeeklyViewCalendar extends StatelessWidget {
   final DateTime firstDayOfWeek;
   final DateTime lastDayOfWeek;
+
   const WeeklyViewCalendar(
       {Key? key, required this.lastDayOfWeek, required this.firstDayOfWeek})
       : super(key: key);
 
   DateTime get from => firstDayOfWeek;
+
   DateTime get to => lastDayOfWeek;
 
   @override
@@ -22,7 +26,6 @@ class WeeklyViewCalendar extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (_, state) {
-          logger("BUILD WEEKLY VIEW");
           final scheduleState = state.scheduleState;
           return SfCalendar(
             view: CalendarView.timelineWeek,
@@ -52,7 +55,7 @@ class WeeklyViewCalendar extends StatelessWidget {
             ),
             headerHeight: 0,
             viewHeaderHeight: 0,
-            minDate: from,
+            minDate: from.subtract(const Duration(days: 1)),
             maxDate: to,
             viewNavigationMode: ViewNavigationMode.snap,
             dragAndDropSettings: const DragAndDropSettings(
@@ -62,8 +65,10 @@ class WeeklyViewCalendar extends StatelessWidget {
             onDragEnd: (appointmentDragEndDetails) {
               appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
             },
+            firstDayOfWeek: 1,
             todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: true,
+            cellEndPadding: 0,
             appointmentBuilder: (_, calendarAppointmentDetails) {
               final appointment = calendarAppointmentDetails.appointments
                   .toList()
@@ -72,76 +77,83 @@ class WeeklyViewCalendar extends StatelessWidget {
               if (ap == null) {
                 return const SizedBox();
               }
+              logger(appointment?.notes);
               final location = ap.location;
               final alloc = ap.property;
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SpacedRow(
-                          mainAxisSize: MainAxisSize.min,
-                          horizontalSpace: 4,
-                          children: [
-                            const HeroIcon(HeroIcons.pin, size: 16),
-                            SizedBox(
-                              width: 150,
-                              child: KText(
-                                isSelectable: false,
-                                text: location.name ?? "-",
-                                fontSize: 14,
-                                maxLines: 1,
-                                textColor: ThemeColors.gray2,
-                                fontWeight: FWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SpacedRow(
-                          mainAxisSize: MainAxisSize.min,
-                          horizontalSpace: 4,
-                          children: [
-                            const HeroIcon(HeroIcons.house, size: 16),
-                            SizedBox(
-                              width: 150,
-                              child: KText(
-                                maxLines: 1,
-                                isSelectable: false,
-                                text: alloc.title ?? "-",
-                                fontSize: 14,
-                                textColor: ThemeColors.gray2,
-                                fontWeight: FWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.all(0.0),
-                        iconSize: 24,
-                        onPressed: () async {},
-                        icon: const HeroIcon(
-                          HeroIcons.moreVertical,
-                          size: 24.0,
-                          color: ThemeColors.gray2,
-                        )),
-                  ],
-                ),
-              );
+              return _appWidget(location, alloc);
             },
           );
         });
+  }
+
+  Widget _appWidget(LocationItemMd location, PropertiesMd alloc) {
+    return Tooltip(
+      message: location.name ?? "-",
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SpacedRow(
+                  mainAxisSize: MainAxisSize.min,
+                  horizontalSpace: 4,
+                  children: [
+                    const HeroIcon(HeroIcons.pin, size: 16),
+                    SizedBox(
+                      width: 150,
+                      child: KText(
+                        isSelectable: false,
+                        text: location.name ?? "-",
+                        fontSize: 14,
+                        maxLines: 1,
+                        textColor: ThemeColors.gray2,
+                        fontWeight: FWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SpacedRow(
+                  mainAxisSize: MainAxisSize.min,
+                  horizontalSpace: 4,
+                  children: [
+                    const HeroIcon(HeroIcons.house, size: 16),
+                    SizedBox(
+                      width: 150,
+                      child: KText(
+                        maxLines: 1,
+                        isSelectable: false,
+                        text: alloc.title ?? "-",
+                        fontSize: 14,
+                        textColor: ThemeColors.gray2,
+                        fontWeight: FWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            IconButton(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.all(0.0),
+                iconSize: 24,
+                onPressed: () async {},
+                icon: const HeroIcon(
+                  HeroIcons.moreVertical,
+                  size: 24.0,
+                  color: ThemeColors.gray2,
+                )),
+          ],
+        ),
+      ),
+    );
   }
 
   int visibleResourceCount(ScheduleState scheduleState) {

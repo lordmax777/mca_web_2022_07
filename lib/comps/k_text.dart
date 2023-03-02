@@ -85,7 +85,10 @@ class KText extends StatelessWidget {
           onTap: onTap,
           child: icon == null
               ? Text(text.toString(),
-                  maxLines: 2, style: style, textAlign: textAlign)
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: style,
+                  textAlign: textAlign)
               : SpacedRow(
                   mainAxisSize: mainAxisSize,
                   mainAxisAlignment: rowCenter
@@ -96,6 +99,7 @@ class KText extends StatelessWidget {
                   children: [
                     Text(text.toString(),
                         maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         style: style,
                         textAlign: textAlign),

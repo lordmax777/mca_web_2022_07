@@ -8,7 +8,7 @@ class ShiftMd {
   final String? special_start_time;
   final String? special_finish_time;
   final num? special_rate;
-  final int user_order;
+  final int? user_order;
 
   ShiftMd({
     required this.id,
@@ -19,7 +19,7 @@ class ShiftMd {
     this.special_start_time,
     this.special_finish_time,
     this.special_rate,
-    required this.user_order,
+    this.user_order,
   });
 
   factory ShiftMd.fromJson(Map<String, dynamic> json) {

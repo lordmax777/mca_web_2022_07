@@ -15,8 +15,7 @@ extension SidebarTypeExt on SidebarType {
 class ScheduleState {
   final int interval;
   final StateValue<Map<CalendarView, List<Appointment>>> shifts;
-  List<Appointment> get getShifts =>
-      shifts.data?[CalendarView.timelineDay] ?? [];
+  List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
   final List<Appointment> backupShifts;
   final List<Appointment> backupShiftsWeek;
@@ -39,7 +38,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.week,
+      calendarView: CalendarView.day,
       interval: 60,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
@@ -113,6 +112,39 @@ class AppointmentIdMd {
     required this.location,
     required this.allocation,
   });
+
+  // @override
+  // int get hashCode =>
+  //     property.hashCode ^
+  //     user.hashCode ^
+  //     allocation.hashCode ^
+  //     location.hashCode;
+  //
+  // @override
+  // bool operator ==(Object other) =>
+  //     identical(this, other) ||
+  //     other is AppointmentIdMd &&
+  //         runtimeType == other.runtimeType &&
+  //         property == other.property &&
+  //         user == other.user &&
+  //         allocation == other.allocation &&
+  //         location == other.location;
+
+  //copyWith
+  AppointmentIdMd copyWith({
+    PropertiesMd? property,
+    UserRes? user,
+    ShiftMd? allocation,
+    LocationItemMd? location,
+    int? userCount,
+  }) {
+    return AppointmentIdMd(
+      property: property ?? this.property,
+      user: user ?? this.user,
+      allocation: allocation ?? this.allocation,
+      location: location ?? this.location,
+    );
+  }
 }
 
 class SCDragEndAction {
@@ -135,6 +167,26 @@ class SCFetchShiftsAction {
     this.userId,
     this.shiftId,
     required this.date,
+  });
+}
+
+class SCFetchShiftsWeekAction {
+  //Location id. If not specified user 0
+  final int? locationId;
+  //User id. If not specified user 0
+  final int? userId;
+  //Shift id. If not specified user 0
+  final int? shiftId;
+  //Date in Y-m-d format
+  final DateTime startDate;
+  final DateTime endDate;
+
+  SCFetchShiftsWeekAction({
+    this.locationId,
+    this.userId,
+    this.shiftId,
+    required this.startDate,
+    required this.endDate,
   });
 }
 
