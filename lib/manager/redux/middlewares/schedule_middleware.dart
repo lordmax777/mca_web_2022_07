@@ -37,6 +37,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final appointmentDragEndDetails = action.details;
     List<Appointment> appointments = state.getShifts;
     final interval = state.interval;
+    final fromUser = (action.details.sourceResource?.id as UserRes);
+    final toUser = (action.details.targetResource?.id as UserRes);
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
     if (appointment.startTime.minute % interval != 0) {
@@ -57,6 +59,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             appointment.startTime.month, appointment.startTime.day, 0, 0);
         found.endTime = DateTime(appointment.endTime.year,
             appointment.endTime.month, appointment.endTime.day, 1, 0);
+      }
+      if (!action.isLocationView) {
+        found.resourceIds = [toUser];
+        found.id = (found.id as AppointmentIdMd).copyWith(user: toUser);
+      } else {
+        //TODO: Change location
       }
       next(UpdateScheduleState());
     }
@@ -216,22 +224,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           final stWeek = DateTime(date.year, date.month, date.day, 00, 00);
           DateTime? etWeek = DateTime(date.year, date.month, date.day, 01, 00);
 
-          int count = 1;
-
-          for (int i = 0; i < appointmentsWeek.length; i++) {
-            final prev = appointmentsWeek[i];
-            if (prev.resourceIds!.contains(us)) {
-              count++;
-            }
-          }
-
           appointmentsWeek.add(Appointment(
             startTime: stWeek,
             endTime: etWeek,
             color: Colors.white,
             subject: pr.title ?? "-",
             id: id,
-            notes: count.toString(),
             resourceIds: [us],
           ));
         }

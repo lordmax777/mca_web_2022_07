@@ -17,6 +17,19 @@ class ScheduleState {
   final StateValue<Map<CalendarView, List<Appointment>>> shifts;
   List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
+
+  int countSameShiftStartDateCount(Appointment ap, {bool isWeek = true}) {
+    final AppointmentIdMd id = ap.id as AppointmentIdMd;
+    int count = 0;
+    for (final shift in (isWeek ? getWeekShifts : getShifts)) {
+      if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
+          ap.startTime == shift.startTime) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   final List<Appointment> backupShifts;
   final List<Appointment> backupShiftsWeek;
   final List<CalendarResource> users;
@@ -136,7 +149,6 @@ class AppointmentIdMd {
     UserRes? user,
     ShiftMd? allocation,
     LocationItemMd? location,
-    int? userCount,
   }) {
     return AppointmentIdMd(
       property: property ?? this.property,
@@ -148,8 +160,9 @@ class AppointmentIdMd {
 }
 
 class SCDragEndAction {
-  AppointmentDragEndDetails details;
-  SCDragEndAction(this.details);
+  final AppointmentDragEndDetails details;
+  final bool isLocationView;
+  SCDragEndAction(this.details, {this.isLocationView = false});
 }
 
 class SCFetchShiftsAction {
