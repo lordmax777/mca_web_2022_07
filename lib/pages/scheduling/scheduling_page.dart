@@ -12,10 +12,14 @@ import 'table_views/week_view.dart';
 
 class SchedulingPage extends StatelessWidget {
   SchedulingPage({Key? key}) : super(key: key);
+  DateTime get today => DateTime.now();
+  //Day
+  DateTime day = DateTime.now();
 
-  DateTime day = DateTime.now().subtract(const Duration(days: 30));
-  DateTime beforeWeek = DateTime.now().subtract(const Duration(days: 30));
-  DateTime get afterWeek => day.add(const Duration(days: 7));
+  //Week
+  DateTime firstDayOfWeek =
+      DateTime.now().subtract(Duration(days: DateTime.now().weekday));
+  DateTime get lastDayOfWeek => firstDayOfWeek.add(const Duration(days: 6));
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +29,7 @@ class SchedulingPage extends StatelessWidget {
           await appStore.dispatch(SCFetchShiftsAction(date: day));
         },
         builder: (_, state) {
+          logger("BUILD SchedulingPage");
           final scheduleState = state.scheduleState;
           final u = [...(state.usersState.usersList.data ?? [])];
           final users = [
@@ -167,9 +172,10 @@ class SchedulingPage extends StatelessWidget {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  // day = day.subtract(const Duration(days: 1));
-                                  // appStore
-                                  //     .dispatch(SCFetchShiftsAction(date: day));
+                                  firstDayOfWeek = firstDayOfWeek
+                                      .subtract(const Duration(days: 7));
+                                  appStore.dispatch(SCFetchShiftsAction(
+                                      date: firstDayOfWeek));
                                 },
                                 icon: const HeroIcon(
                                   HeroIcons.leftSmall,
@@ -180,18 +186,17 @@ class SchedulingPage extends StatelessWidget {
                               KText(
                                 textAlign: TextAlign.center,
                                 text:
-                                    "${DateFormat("d ").format(beforeWeek)} - ${DateFormat("d MMM").format(afterWeek)}",
+                                    "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
                                 fontSize: 16,
                                 textColor: ThemeColors.gray2,
                                 fontWeight: FWeight.medium,
                               ),
                               IconButton(
                                 onPressed: () {
-                                  // day = day.add(const Duration(days: 1));
-                                  // appStore
-                                  //     .dispatch(SCFetchShiftsAction(date: day));
-                                  appStore.dispatch(
-                                      SCFetchShiftsAction(date: beforeWeek));
+                                  firstDayOfWeek = firstDayOfWeek
+                                      .add(const Duration(days: 7));
+                                  appStore.dispatch(SCFetchShiftsAction(
+                                      date: firstDayOfWeek));
                                 },
                                 icon: const HeroIcon(
                                   HeroIcons.rightSmall,
@@ -222,7 +227,8 @@ class SchedulingPage extends StatelessWidget {
       case CalendarView.timelineDay:
         return DailyViewCalendar(day: day);
       case CalendarView.week:
-        return WeeklyViewCalendar(afterWeek: afterWeek, beforeWeek: beforeWeek);
+        return WeeklyViewCalendar(
+            lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
       default:
         return DailyViewCalendar(day: day);
       // return MonthlyViewCalendar();

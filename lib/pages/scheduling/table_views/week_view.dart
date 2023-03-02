@@ -8,21 +8,26 @@ import '../../../theme/theme.dart';
 import '../models/data_source.dart';
 
 class WeeklyViewCalendar extends StatelessWidget {
-  final DateTime beforeWeek;
-  final DateTime afterWeek;
+  final DateTime firstDayOfWeek;
+  final DateTime lastDayOfWeek;
   const WeeklyViewCalendar(
-      {Key? key, required this.afterWeek, required this.beforeWeek})
+      {Key? key, required this.lastDayOfWeek, required this.firstDayOfWeek})
       : super(key: key);
+
+  DateTime get from => firstDayOfWeek;
+  DateTime get to => lastDayOfWeek;
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (_, state) {
+          logger("BUILD WEEKLY VIEW");
           final scheduleState = state.scheduleState;
           return SfCalendar(
             view: CalendarView.timelineWeek,
-            initialSelectedDate: beforeWeek,
-            initialDisplayDate: beforeWeek,
+            initialSelectedDate: from,
+            initialDisplayDate: from,
             dataSource: getDataSource(scheduleState),
             resourceViewHeaderBuilder: (context, details) {
               final user = details.resource.id as UserRes;
@@ -31,10 +36,9 @@ class WeeklyViewCalendar extends StatelessWidget {
             resourceViewSettings: ResourceViewSettings(
               size: 300,
               visibleResourceCount: visibleResourceCount(scheduleState),
-              showAvatar: false,
             ),
             timeSlotViewSettings: const TimeSlotViewSettings(
-              timeIntervalWidth: 200,
+              timeIntervalWidth: 250,
               timeFormat: "EEE d MMM",
               timeTextStyle: TextStyle(
                 color: Colors.black,
@@ -48,16 +52,17 @@ class WeeklyViewCalendar extends StatelessWidget {
             ),
             headerHeight: 0,
             viewHeaderHeight: 0,
-            viewNavigationMode: ViewNavigationMode.none,
+            minDate: from,
+            maxDate: to,
+            viewNavigationMode: ViewNavigationMode.snap,
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: true,
-              allowNavigation: false,
+              allowNavigation: true,
             ),
             onDragEnd: (appointmentDragEndDetails) {
               appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
             },
-            todayHighlightColor: Colors.transparent,
-            showDatePickerButton: false,
+            todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: true,
             appointmentBuilder: (_, calendarAppointmentDetails) {
               final appointment = calendarAppointmentDetails.appointments
@@ -74,12 +79,13 @@ class WeeklyViewCalendar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SpacedRow(
@@ -87,12 +93,16 @@ class WeeklyViewCalendar extends StatelessWidget {
                           horizontalSpace: 4,
                           children: [
                             const HeroIcon(HeroIcons.pin, size: 16),
-                            KText(
-                              isSelectable: false,
-                              text: location.name ?? "-",
-                              fontSize: 14,
-                              textColor: ThemeColors.gray2,
-                              fontWeight: FWeight.bold,
+                            SizedBox(
+                              width: 150,
+                              child: KText(
+                                isSelectable: false,
+                                text: location.name ?? "-",
+                                fontSize: 14,
+                                maxLines: 1,
+                                textColor: ThemeColors.gray2,
+                                fontWeight: FWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -101,12 +111,16 @@ class WeeklyViewCalendar extends StatelessWidget {
                           horizontalSpace: 4,
                           children: [
                             const HeroIcon(HeroIcons.house, size: 16),
-                            KText(
-                              isSelectable: false,
-                              text: alloc.title ?? "-",
-                              fontSize: 14,
-                              textColor: ThemeColors.gray2,
-                              fontWeight: FWeight.bold,
+                            SizedBox(
+                              width: 150,
+                              child: KText(
+                                maxLines: 1,
+                                isSelectable: false,
+                                text: alloc.title ?? "-",
+                                fontSize: 14,
+                                textColor: ThemeColors.gray2,
+                                fontWeight: FWeight.bold,
+                              ),
                             ),
                           ],
                         ),

@@ -124,6 +124,10 @@ class KText extends StatelessWidget {
       );
     }
     return Text(text.toString(),
-        maxLines: maxLines, softWrap: true, style: style, textAlign: textAlign);
+        overflow: TextOverflow.ellipsis,
+        maxLines: maxLines,
+        softWrap: true,
+        style: style,
+        textAlign: textAlign);
   }
 }
