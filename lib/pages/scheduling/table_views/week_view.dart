@@ -18,7 +18,6 @@ class WeeklyViewCalendar extends StatelessWidget {
       : super(key: key);
 
   DateTime get from => firstDayOfWeek;
-
   DateTime get to => lastDayOfWeek;
 
   @override
@@ -65,10 +64,7 @@ class WeeklyViewCalendar extends StatelessWidget {
               allowScroll: true,
               allowNavigation: true,
             ),
-            onTap: (calendarTapDetails) {
-              // logger((calendarTapDetails.resource?.id as UserRes).id,
-              //     hint: 'source');
-            },
+            onTap: (calendarTapDetails) {},
             onDragEnd: (appointmentDragEndDetails) {
               appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
             },
@@ -76,26 +72,24 @@ class WeeklyViewCalendar extends StatelessWidget {
             todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: true,
             cellEndPadding: 0,
-            // appointmentBuilder: (_, calendarAppointmentDetails) {
-            //   final appointment = calendarAppointmentDetails.appointments
-            //       .toList()
-            //       .first as Appointment?;
-            //   final ap = appointment?.id as AppointmentIdMd?;
-            //   if (ap == null) {
-            //     return const SizedBox();
-            //   }
-            //   final count =
-            //       scheduleState.countSameShiftStartDateCount(appointment!);
-            //   final isUserView =
-            //       state.scheduleState.sidebarType == SidebarType.user;
-            //
-            //   return _appWidget(ap, count);
-            // },
+            appointmentBuilder: (_, calendarAppointmentDetails) {
+              final appointment = calendarAppointmentDetails.appointments
+                  .toList()
+                  .first as Appointment?;
+              final ap = appointment?.id as AppointmentIdMd?;
+              if (ap == null) {
+                return const SizedBox();
+              }
+              final isUserView =
+                  state.scheduleState.sidebarType == SidebarType.user;
+              final count = scheduleState.countSameShiftStartDate(appointment!);
+              return _appWidget(ap, count, isUserView);
+            },
           );
         });
   }
 
-  Widget _appWidget(AppointmentIdMd ap, int count) {
+  Widget _appWidget(AppointmentIdMd ap, int count, bool isUserView) {
     final location = ap.location;
     final alloc = ap.property;
     final bool isLarge = count == 1;
@@ -116,48 +110,68 @@ class WeeklyViewCalendar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SpacedRow(
-                  mainAxisSize: MainAxisSize.min,
-                  horizontalSpace: 4,
-                  children: [
-                    HeroIcon(HeroIcons.pin, size: 16 / count),
-                    SizedBox(
-                      width: 150,
-                      child: KText(
-                        isSelectable: false,
-                        text: location.name ?? "-",
-                        fontSize: 14 / count,
-                        maxLines: 1,
-                        textColor: ThemeColors.gray2,
-                        fontWeight: FWeight.bold,
-                      ),
+            if (!isUserView)
+              SpacedRow(
+                mainAxisSize: MainAxisSize.min,
+                horizontalSpace: 4,
+                children: [
+                  HeroIcon(HeroIcons.user, size: 16 / count),
+                  SizedBox(
+                    width: 150,
+                    child: KText(
+                      isSelectable: false,
+                      text: ap.user.fullname,
+                      fontSize: 20 / count,
+                      maxLines: 1,
+                      textColor: ThemeColors.gray2,
+                      fontWeight: FWeight.bold,
                     ),
-                  ],
-                ),
-                SpacedRow(
-                  mainAxisSize: MainAxisSize.min,
-                  horizontalSpace: 4,
-                  children: [
-                    HeroIcon(HeroIcons.house, size: 16 / count),
-                    SizedBox(
-                      width: 150,
-                      child: KText(
-                        maxLines: 1,
-                        isSelectable: false,
-                        text: alloc.title ?? "-",
-                        fontSize: 14 / count,
-                        textColor: ThemeColors.gray2,
-                        fontWeight: FWeight.bold,
+                  ),
+                ],
+              ),
+            if (isUserView)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SpacedRow(
+                    mainAxisSize: MainAxisSize.min,
+                    horizontalSpace: 4,
+                    children: [
+                      HeroIcon(HeroIcons.pin, size: 16 / count),
+                      SizedBox(
+                        width: 150,
+                        child: KText(
+                          isSelectable: false,
+                          text: location.name ?? "-",
+                          fontSize: 14 / count,
+                          maxLines: 1,
+                          textColor: ThemeColors.gray2,
+                          fontWeight: FWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                  ),
+                  SpacedRow(
+                    mainAxisSize: MainAxisSize.min,
+                    horizontalSpace: 4,
+                    children: [
+                      HeroIcon(HeroIcons.house, size: 16 / count),
+                      SizedBox(
+                        width: 150,
+                        child: KText(
+                          maxLines: 1,
+                          isSelectable: false,
+                          text: alloc.title ?? "-",
+                          fontSize: 14 / count,
+                          textColor: ThemeColors.gray2,
+                          fontWeight: FWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             IconButton(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.all(0.0),

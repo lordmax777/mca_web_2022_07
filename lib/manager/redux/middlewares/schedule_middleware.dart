@@ -35,10 +35,16 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
   void _onDragEnd(
       ScheduleState state, SCDragEndAction action, NextDispatcher next) {
+    final isUserView = state.sidebarType == SidebarType.user;
     final appointmentDragEndDetails = action.details;
     List<Appointment> appointments = state.getShifts;
     final interval = state.interval;
-    final toUser = (action.details.targetResource?.id as UserRes);
+    dynamic toUser = (action.details.targetResource?.id);
+    if (isUserView) {
+      toUser = toUser as UserRes;
+    } else {
+      toUser = toUser as LocationItemMd;
+    }
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
     if (appointment.startTime.minute % interval != 0) {
@@ -60,11 +66,11 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         found.endTime = DateTime(appointment.endTime.year,
             appointment.endTime.month, appointment.endTime.day, 1, 0);
       }
-      if (!action.isLocationView) {
-        found.resourceIds = [toUser];
+      found.resourceIds = [toUser];
+      if (isUserView) {
         found.id = (found.id as AppointmentIdMd).copyWith(user: toUser);
       } else {
-        //TODO: Change location
+        found.id = (found.id as AppointmentIdMd).copyWith(location: toUser);
       }
       next(UpdateScheduleState());
     }
@@ -230,7 +236,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             color: Colors.white,
             subject: pr.title ?? "-",
             id: id,
-            resourceIds: [us],
+            resourceIds: [us, loc],
           ));
         }
       }

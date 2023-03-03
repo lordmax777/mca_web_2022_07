@@ -36,8 +36,9 @@ class ScheduleState {
   List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
 
-  int countSameShiftStartDateCount(Appointment ap, {bool isWeek = true}) {
+  int countSameShiftStartDate(Appointment ap, {bool isWeek = true}) {
     final AppointmentIdMd id = ap.id as AppointmentIdMd;
+
     int count = 0;
     DateTime? largestStartDate;
     DateTime? largestEndDate;
@@ -57,9 +58,17 @@ class ScheduleState {
       }
 
       if (isWeek) {
-        if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
-            ap.startTime == shift.startTime) {
-          count++;
+        final isUserView = getSidebarType == SidebarType.user;
+        if (isUserView) {
+          if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
+              ap.startTime == shift.startTime) {
+            count++;
+          }
+        } else {
+          if (id.location.id == (shift.id as AppointmentIdMd).location.id &&
+              ap.startTime == shift.startTime) {
+            count++;
+          }
         }
       }
     }
@@ -75,13 +84,16 @@ class ScheduleState {
         }
       }
     }
-
-    if (getFilteredUsers.isNotEmpty &&
-        getFilteredUsers.length < (isWeek ? 6 : 4)) {
-      count = 1;
+    if (!isWeek) {
+      if (getFilteredUsers.isNotEmpty && getFilteredUsers.length < 4) {
+        count = 1;
+      }
+    } else {
+      if (getFilteredLocations.isNotEmpty && getFilteredLocations.length < 6) {
+        count = 1;
+      }
     }
-    //TODO: Handle location also
-    // print(count);
+    print(count);
     return count;
   }
 
@@ -91,6 +103,7 @@ class ScheduleState {
   final List<CalendarResource> locationResources;
   final CalendarView calendarView;
   final SidebarType sidebarType;
+  SidebarType get getSidebarType => sidebarType;
   final List<UserRes> filteredUsers;
   List<UserRes> get getFilteredUsers => filteredUsers;
   final List<LocationItemMd> filteredLocations;
@@ -226,8 +239,7 @@ class AppointmentIdMd {
 
 class SCDragEndAction {
   final AppointmentDragEndDetails details;
-  final bool isLocationView;
-  SCDragEndAction(this.details, {this.isLocationView = false});
+  SCDragEndAction(this.details);
 }
 
 class SCFetchShiftsAction {

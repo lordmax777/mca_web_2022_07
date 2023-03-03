@@ -66,8 +66,8 @@ class DailyViewCalendar extends StatelessWidget {
               if (ap == null) {
                 return const SizedBox();
               }
-              final count = scheduleState
-                  .countSameShiftStartDateCount(appointment!, isWeek: false);
+              final count = scheduleState.countSameShiftStartDate(appointment!,
+                  isWeek: false);
 
               return _appWidget(appointment, count);
             },
