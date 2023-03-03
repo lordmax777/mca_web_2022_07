@@ -58,7 +58,12 @@ class ScheduleState {
       }
     }
 
-    print(count);
+    if (getFilteredUsers.isNotEmpty &&
+        getFilteredUsers.length < (isWeek ? 6 : 4)) {
+      count = 1;
+    }
+    //TODO: Handle location also
+    // print(count);
     return count;
   }
 
@@ -68,7 +73,9 @@ class ScheduleState {
   final CalendarView calendarView;
   final SidebarType sidebarType;
   final List<UserRes> filteredUsers;
+  List<UserRes> get getFilteredUsers => filteredUsers;
   final List<LocationItemMd> filteredLocations;
+  List<LocationItemMd> get getFilteredLocations => filteredLocations;
   ScheduleState({
     required this.interval,
     required this.sidebarType,
