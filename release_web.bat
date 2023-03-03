@@ -7,7 +7,7 @@ set hour=%TIME:~0,2%
 set minute=%TIME:~3,2%
 set second=%TIME:~6,2%
 set version=%0.0.7%
-set date=%year%-%month%-%day% %hour%:%minute%:%second% %ver_%version%
+set date=%year%-%month%-%day% %hour%:%minute%:%second% %ver_%   %version%
 
 call flutter clean
 call flutter pub get

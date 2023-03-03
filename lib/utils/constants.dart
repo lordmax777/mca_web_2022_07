@@ -47,7 +47,7 @@ class Constants {
       "children": [
         {
           "title": "Scheduling",
-          "name": const SchedulingRoute(),
+          "name": SchedulingRoute(),
         }
       ]
     },

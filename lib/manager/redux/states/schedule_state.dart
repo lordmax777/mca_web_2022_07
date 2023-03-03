@@ -93,7 +93,6 @@ class ScheduleState {
         count = 1;
       }
     }
-    print(count);
     return count;
   }
 

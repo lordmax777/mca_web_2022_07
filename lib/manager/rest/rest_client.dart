@@ -499,6 +499,19 @@ abstract class RestClient {
       "/api/fe/allocations/location/{locationId}/user/{userId}/shift/{shiftId}/date/{date}")
   Future<HttpResponse> getShifts(@Path() int locationId, @Path() int userId,
       @Path() int shiftId, @Path() String date);
+
+  @POST(
+      "/api/fe/allocations/location/{locationId}/user/{userId}/shift/{shiftId}/date/{date}")
+  @FormUrlEncoded()
+  Future<HttpResponse> postShifts(
+    @Path() int locationId,
+    @Path() int userId,
+    @Path() int shiftId,
+    @Path() String date,
+
+    ///Action. Available: add,remove,publish,unpublish,more,less
+    @Field() String action,
+  );
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

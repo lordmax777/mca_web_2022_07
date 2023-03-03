@@ -195,3 +195,12 @@ String getDayOfMonthSuffix(int dayNum) {
       return 'th';
   }
 }
+
+enum AllocationActions {
+  add,
+  remove,
+  publish,
+  unpublish,
+  more,
+  less,
+}

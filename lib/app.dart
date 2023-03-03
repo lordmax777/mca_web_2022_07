@@ -10,7 +10,6 @@ import 'package:mca_web_2022_07/intl_conf/intl/l10n.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 
-import 'manager/general_controller.dart';
 import 'manager/router/route_guards.dart';
 
 final appRouter = AppRouter(authGuard: AuthGuard());
@@ -45,7 +44,7 @@ class _McaWebAppState extends State<McaWebApp> {
         scrollBehavior: CustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])
+          if (kDebugMode) HomeRoute(children: [SchedulingRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

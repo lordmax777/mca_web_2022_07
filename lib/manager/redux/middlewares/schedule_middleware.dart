@@ -34,7 +34,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   }
 
   void _onDragEnd(
-      ScheduleState state, SCDragEndAction action, NextDispatcher next) {
+      ScheduleState state, SCDragEndAction action, NextDispatcher next) async {
     final isUserView = state.sidebarType == SidebarType.user;
     final appointmentDragEndDetails = action.details;
     List<Appointment> appointments = state.getShifts;
@@ -73,6 +73,17 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         found.id = (found.id as AppointmentIdMd).copyWith(location: toUser);
       }
       next(UpdateScheduleState());
+      // final ApiResponse res = await restClient()
+      //     .postShifts(
+      //       (found.id as AppointmentIdMd).location.id!,
+      //       (found.id as AppointmentIdMd).user.id,
+      //       (found.id as AppointmentIdMd).allocation.shiftId,
+      //       DateFormat('yyyy-MM-dd').format(found.startTime),
+      //       "",
+      //       true,
+      //       true,
+      //     )
+      //     .nocodeErrorHandler();
     }
   }
 

@@ -113,6 +113,7 @@ class WeeklyViewCalendar extends StatelessWidget {
             if (!isUserView)
               SpacedRow(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 horizontalSpace: 4,
                 children: [
                   HeroIcon(HeroIcons.user, size: 16 / count),
