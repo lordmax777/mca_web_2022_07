@@ -83,71 +83,75 @@ class WeeklyViewCalendar extends StatelessWidget {
               }
               final count =
                   scheduleState.countSameShiftStartDateCount(appointment!);
-              final location = ap.location;
-              final alloc = ap.property;
-              return _appWidget(location, alloc, count == 1);
+              return _appWidget(ap, count);
             },
           );
         });
   }
 
-  Widget _appWidget(LocationItemMd location, PropertiesMd alloc, bool isLarge) {
+  Widget _appWidget(AppointmentIdMd ap, int count) {
+    final location = ap.location;
+    final alloc = ap.property;
+    final bool isLarge = count == 1;
     return Tooltip(
       message: location.name ?? "-",
       child: Container(
         decoration: BoxDecoration(
-          color: !isLarge ? ThemeColors.MAIN_COLOR : ThemeColors.transparent,
+          color: ThemeColors.transparent,
+          border: Border.all(
+            color: ThemeColors.gray10,
+            width: 1,
+          ),
           borderRadius: BorderRadius.circular(4.0),
         ),
         padding: EdgeInsets.symmetric(
-            horizontal: 16.0, vertical: !isLarge ? 3.0 : 6.0),
+            horizontal: 16.0, vertical: !isLarge ? 2.0 : 6.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (isLarge)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SpacedRow(
-                    mainAxisSize: MainAxisSize.min,
-                    horizontalSpace: 4,
-                    children: [
-                      const HeroIcon(HeroIcons.pin, size: 16),
-                      SizedBox(
-                        width: 150,
-                        child: KText(
-                          isSelectable: false,
-                          text: location.name ?? "-",
-                          fontSize: 14,
-                          maxLines: 1,
-                          textColor: ThemeColors.gray2,
-                          fontWeight: FWeight.bold,
-                        ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SpacedRow(
+                  mainAxisSize: MainAxisSize.min,
+                  horizontalSpace: 4,
+                  children: [
+                    HeroIcon(HeroIcons.pin, size: 16 / count),
+                    SizedBox(
+                      width: 150,
+                      child: KText(
+                        isSelectable: false,
+                        text: location.name ?? "-",
+                        fontSize: 14 / count,
+                        maxLines: 1,
+                        textColor: ThemeColors.gray2,
+                        fontWeight: FWeight.bold,
                       ),
-                    ],
-                  ),
-                  SpacedRow(
-                    mainAxisSize: MainAxisSize.min,
-                    horizontalSpace: 4,
-                    children: [
-                      const HeroIcon(HeroIcons.house, size: 16),
-                      SizedBox(
-                        width: 150,
-                        child: KText(
-                          maxLines: 1,
-                          isSelectable: false,
-                          text: alloc.title ?? "-",
-                          fontSize: 14,
-                          textColor: ThemeColors.gray2,
-                          fontWeight: FWeight.bold,
-                        ),
+                    ),
+                  ],
+                ),
+                SpacedRow(
+                  mainAxisSize: MainAxisSize.min,
+                  horizontalSpace: 4,
+                  children: [
+                    HeroIcon(HeroIcons.house, size: 16 / count),
+                    SizedBox(
+                      width: 150,
+                      child: KText(
+                        maxLines: 1,
+                        isSelectable: false,
+                        text: alloc.title ?? "-",
+                        fontSize: 14 / count,
+                        textColor: ThemeColors.gray2,
+                        fontWeight: FWeight.bold,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
             IconButton(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.all(0.0),

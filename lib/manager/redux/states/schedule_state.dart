@@ -21,12 +21,44 @@ class ScheduleState {
   int countSameShiftStartDateCount(Appointment ap, {bool isWeek = true}) {
     final AppointmentIdMd id = ap.id as AppointmentIdMd;
     int count = 0;
+    DateTime? largestStartDate;
+    DateTime? largestEndDate;
     for (final shift in (isWeek ? getWeekShifts : getShifts)) {
-      if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
-          ap.startTime == shift.startTime) {
-        count++;
+      //Find the largest date and compare all if they are included in the largest date
+
+      if (!isWeek) {
+        if (largestStartDate == null) {
+          largestStartDate = shift.startTime;
+          largestEndDate = shift.endTime;
+        } else {
+          if (largestStartDate.isAfter(shift.startTime)) {
+            largestStartDate = shift.startTime;
+            largestEndDate = shift.endTime;
+          }
+        }
+      }
+
+      if (isWeek) {
+        if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
+            ap.startTime == shift.startTime) {
+          count++;
+        }
       }
     }
+
+    //compare all if they are included in the largest date and increase count
+    if (!isWeek) {
+      count = 1;
+      for (final shift in getShifts) {
+        if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
+            shift.startTime.isAfter(largestStartDate!) &&
+            shift.endTime.isBefore(largestEndDate!)) {
+          count += 1;
+        }
+      }
+    }
+
+    print(count);
     return count;
   }
 

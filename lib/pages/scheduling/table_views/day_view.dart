@@ -2,6 +2,8 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../../manager/models/location_item_md.dart';
+import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
@@ -51,18 +53,7 @@ class DailyViewCalendar extends StatelessWidget {
             onSelectionChanged: (calendarSelectionDetails) async {
               // openEndDrawer(const Drawer());
             },
-            onTap: (calendarTapDetails) {
-              // int userCountPerShift = 1;
-              // for (int i = 0;
-              //     i < scheduleState.shifts.data![CalendarView.day]!.length;
-              //     i++) {
-              //   if (scheduleState.shifts.data![CalendarView.day]![i].id ==
-              //       calendarTapDetails.appointments!.first.id) {
-              //     userCountPerShift += 1;
-              //   }
-              // }
-              // logger("userCountPerShift: $userCountPerShift");
-            },
+            onTap: (calendarTapDetails) {},
             initialSelectedDate: day,
             initialDisplayDate: day,
             todayHighlightColor: Colors.transparent,
@@ -75,121 +66,119 @@ class DailyViewCalendar extends StatelessWidget {
               if (ap == null) {
                 return const SizedBox();
               }
-              final user = ap.user;
-              final location = ap.location;
-              //TODO: To enable tooltip, comment the below code and use Tooltip widget
-              // padding: const EdgeInsets.all(4),
-              // decoration: BoxDecoration(
-              //   color: Colors.white,
-              // border: Border.all(
-              //   width: 1,
-              //   color: ThemeColors.gray10,
-              // ),
-              // ),
-              // richMessage: TextSpan(children: [
-              //   WidgetSpan(
-              //       child: SizedBox(
-              //     width: 300,
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         KText(
-              //           isSelectable: false,
-              //           text:
-              //               "${DateFormat('ha').format(appointment!.startTime)} - ${DateFormat('ha').format(appointment.endTime)}",
-              //           fontSize: 12,
-              //           fontWeight: FWeight.bold,
-              //         ),
-              //         KText(
-              //           isSelectable: false,
-              //           text: location.name ?? "-",
-              //           fontSize: 12,
-              //           fontWeight: FWeight.bold,
-              //         ),
-              //       ],
-              //     ),
-              //   )),
-              // ]),
-              return Tooltip(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: user.userRandomBgColor,
-                  border: Border.all(
-                    width: 1,
-                    color: ThemeColors.gray10,
-                  ),
-                ),
-                richMessage: TextSpan(children: [
-                  WidgetSpan(
-                      child: SizedBox(
-                    width: 300,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        KText(
-                          isSelectable: false,
-                          text:
-                              "${DateFormat('h:mm a').format(appointment!.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
-                          fontSize: 12,
-                          fontWeight: FWeight.bold,
-                        ),
-                        KText(
-                          isSelectable: false,
-                          text: location.name ?? "-",
-                          fontSize: 12,
-                          fontWeight: FWeight.bold,
-                        ),
-                      ],
-                    ),
-                  )),
-                ]),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.0),
-                    color: user.userRandomBgColor,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          KText(
-                            isSelectable: false,
-                            text:
-                                "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
-                            fontSize: 12,
-                            fontWeight: FWeight.bold,
-                          ),
-                          KText(
-                            isSelectable: false,
-                            text: location.name ?? "-",
-                            fontSize: 12,
-                            fontWeight: FWeight.bold,
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.all(0.0),
-                          onPressed: () async {},
-                          icon: const HeroIcon(
-                            HeroIcons.moreVertical,
-                            size: 24.0,
-                            color: Colors.white,
-                          )),
-                    ],
-                  ),
-                ),
-              );
+              final count = scheduleState
+                  .countSameShiftStartDateCount(appointment!, isWeek: false);
+
+              return _appWidget(appointment, count);
             },
           );
         });
+  }
+
+  Widget _appWidget(Appointment appointment, int count) {
+    final ap = appointment.id as AppointmentIdMd;
+    final location = ap.location;
+    final user = ap.user;
+    final bool isLarge = count == 1;
+
+    return Tooltip(
+      // padding: const EdgeInsets.all(4),
+      // decoration: BoxDecoration(
+      //   color: user.userRandomBgColor,
+      //   border: Border.all(
+      //     width: 1,
+      //     color: ThemeColors.gray10,
+      //   ),
+      // ),
+      // richMessage: TextSpan(children: [
+      //   WidgetSpan(
+      //       child: SizedBox(
+      //     width: 300,
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //       children: [
+      //         KText(
+      //           isSelectable: false,
+      //           text:
+      //               "${DateFormat('h:mm a').format(appointment!.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
+      //           fontSize: 12,
+      //           fontWeight: FWeight.bold,
+      //         ),
+      //         KText(
+      //           isSelectable: false,
+      //           text: location.name ?? "-",
+      //           fontSize: 12,
+      //           fontWeight: FWeight.bold,
+      //         ),
+      //       ],
+      //     ),
+      //   )),
+      // ]),
+      message:
+          "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.0),
+          color: user.userRandomBgColor,
+        ),
+        padding: EdgeInsets.symmetric(
+            horizontal: 16.0, vertical: isLarge ? 8.0 : 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (isLarge)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  KText(
+                    isSelectable: false,
+                    text:
+                        "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
+                    fontSize: 14,
+                    fontWeight: FWeight.bold,
+                  ),
+                  KText(
+                    isSelectable: false,
+                    text: location.name ?? "-",
+                    fontSize: 14,
+                    fontWeight: FWeight.bold,
+                  ),
+                ],
+              )
+            else
+              SpacedRow(
+                horizontalSpace: 16.0,
+                children: [
+                  KText(
+                    isSelectable: false,
+                    text:
+                        "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
+                    fontSize: 14 / count * 2,
+                    fontWeight: FWeight.bold,
+                  ),
+                  KText(
+                    isSelectable: false,
+                    text: location.name ?? "-",
+                    fontSize: 14 / count * 2,
+                    fontWeight: FWeight.bold,
+                  ),
+                ],
+              ),
+            IconButton(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.all(0.0),
+                onPressed: () async {},
+                icon: HeroIcon(
+                  HeroIcons.moreVertical,
+                  size: 24.0 / count,
+                  color: Colors.white,
+                )),
+          ],
+        ),
+      ),
+    );
   }
 
   int visibleResourceCount(ScheduleState scheduleState) {

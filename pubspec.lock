@@ -169,13 +169,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.3+4"
-  cross_scroll:
-    dependency: transitive
-    description:
-      name: cross_scroll
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.75"
   crypto:
     dependency: transitive
     description:
@@ -218,13 +211,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0+3"
-  draggable_grid:
-    dependency: "direct main"
-    description:
-      path: draggable_grid
-      relative: true
-    source: path
-    version: "0.0.1"
   dropdown_button2:
     dependency: "direct main"
     description:
@@ -290,7 +276,7 @@ packages:
       name: flutter_plugin_android_lifecycle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   flutter_redux:
     dependency: "direct main"
     description:
@@ -391,21 +377,21 @@ packages:
       name: google_maps_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.4"
+    version: "2.2.5"
   google_maps_flutter_android:
     dependency: transitive
     description:
       name: google_maps_flutter_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.6"
+    version: "2.4.7"
   google_maps_flutter_ios:
     dependency: transitive
     description:
       name: google_maps_flutter_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.14"
+    version: "2.2.0"
   google_maps_flutter_platform_interface:
     dependency: transitive
     description:
@@ -477,7 +463,7 @@ packages:
       name: html
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.15.1"
+    version: "0.15.2"
   http:
     dependency: transitive
     description:
@@ -576,20 +562,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.3.1"
-  lazy_data_table:
-    dependency: transitive
-    description:
-      name: lazy_data_table
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.1"
-  linked_scroll_controller:
-    dependency: transitive
-    description:
-      name: linked_scroll_controller
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.0"
   lints:
     dependency: transitive
     description:
@@ -1100,5 +1072,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.6 <3.0.0"
+  dart: ">=2.18.0 <3.0.0"
   flutter: ">=3.3.0"

@@ -19,8 +19,6 @@ dependencies:
     path: ./pluto_grid
   simpleicons:
     path: ./simpleicons
-  draggable_grid:
-    path: ./draggable_grid
 
   #External packages
   google_maps_webservice:
