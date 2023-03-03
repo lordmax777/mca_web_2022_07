@@ -65,6 +65,10 @@ class LocationItemMd {
     }
     return data;
   }
+
+  factory LocationItemMd.all() {
+    return LocationItemMd(name: "All");
+  }
 }
 
 class Address {

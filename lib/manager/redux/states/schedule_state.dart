@@ -11,6 +11,24 @@ extension SidebarTypeExt on SidebarType {
   String get name => toString().split('.').last;
 }
 
+class ResourceIdMd {
+  final UserRes? user;
+  final LocationItemMd? location;
+
+  ResourceIdMd({this.user, this.location});
+
+  // implement copyWith
+  ResourceIdMd copyWith({
+    UserRes? user,
+    LocationItemMd? location,
+  }) {
+    return ResourceIdMd(
+      user: user ?? this.user,
+      location: location ?? this.location,
+    );
+  }
+}
+
 @immutable
 class ScheduleState {
   final int interval;
@@ -69,20 +87,23 @@ class ScheduleState {
 
   final List<Appointment> backupShifts;
   final List<Appointment> backupShiftsWeek;
-  final List<CalendarResource> users;
+  final List<CalendarResource> userResources;
+  final List<CalendarResource> locationResources;
   final CalendarView calendarView;
   final SidebarType sidebarType;
   final List<UserRes> filteredUsers;
   List<UserRes> get getFilteredUsers => filteredUsers;
   final List<LocationItemMd> filteredLocations;
   List<LocationItemMd> get getFilteredLocations => filteredLocations;
-  ScheduleState({
+
+  const ScheduleState({
     required this.interval,
     required this.sidebarType,
     required this.shifts,
     required this.backupShifts,
     required this.backupShiftsWeek,
-    required this.users,
+    required this.userResources,
+    required this.locationResources,
     required this.calendarView,
     required this.filteredUsers,
     required this.filteredLocations,
@@ -96,7 +117,8 @@ class ScheduleState {
           data: {}, error: ErrorModel()),
       backupShifts: [],
       backupShiftsWeek: [],
-      users: [],
+      userResources: [],
+      locationResources: [],
       sidebarType: SidebarType.user,
       filteredLocations: [],
       filteredUsers: [],
@@ -107,7 +129,8 @@ class ScheduleState {
     CalendarView? calendarView,
     int? interval,
     StateValue<Map<CalendarView, List<Appointment>>>? shifts,
-    List<CalendarResource>? users,
+    List<CalendarResource>? userResources,
+    List<CalendarResource>? locationResources,
     SidebarType? sidebarType,
     List<UserRes>? filteredUsers,
     List<LocationItemMd>? filteredLocations,
@@ -116,7 +139,7 @@ class ScheduleState {
   }) {
     return ScheduleState(
       calendarView: calendarView ?? this.calendarView,
-      users: users ?? this.users,
+      userResources: userResources ?? this.userResources,
       shifts: shifts ?? this.shifts,
       interval: interval ?? this.interval,
       sidebarType: sidebarType ?? this.sidebarType,
@@ -124,6 +147,7 @@ class ScheduleState {
       filteredLocations: filteredLocations ?? this.filteredLocations,
       backupShifts: backupShifts ?? this.backupShifts,
       backupShiftsWeek: backupShiftsWeek ?? this.backupShiftsWeek,
+      locationResources: locationResources ?? this.locationResources,
     );
   }
 }
@@ -132,23 +156,25 @@ class UpdateScheduleState {
   final CalendarView? calendarView;
   final int? interval;
   final StateValue<Map<CalendarView, List<Appointment>>>? shifts;
-  final List<CalendarResource>? users;
+  final List<CalendarResource>? userResources;
   final SidebarType? sidebarType;
   final List<UserRes>? filteredUsers;
   final List<LocationItemMd>? filteredLocations;
   final List<Appointment>? backupShifts;
   final List<Appointment>? backupShiftsWeek;
+  final List<CalendarResource>? locationResources;
 
   UpdateScheduleState({
     this.calendarView,
     this.interval,
     this.shifts,
-    this.users,
+    this.userResources,
     this.sidebarType,
     this.filteredLocations,
     this.filteredUsers,
     this.backupShifts,
     this.backupShiftsWeek,
+    this.locationResources,
   });
 }
 
@@ -242,12 +268,18 @@ class SCFetchShiftsWeekAction {
   });
 }
 
-class SCAddFilterUser {
-  final UserRes user;
-  SCAddFilterUser(this.user);
+class SCAddFilter {
+  final UserRes? user;
+  final LocationItemMd? location;
+  SCAddFilter({
+    this.user,
+    this.location,
+  });
 }
 
 class SCChangeCalendarView {
   final CalendarView view;
   SCChangeCalendarView(this.view);
 }
+
+class SCChangeSidebarType {}

@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
-import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -23,10 +22,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onFetchShifts(store.state, action, next);
       case SCFetchShiftsWeekAction:
         return _onFetchShiftsWeek(store.state, action, next);
-      case SCAddFilterUser:
-        return _onAddFilterUser(store.state, action, next);
+      case SCAddFilter:
+        return _onAddFilter(store.state, action, next);
       case SCChangeCalendarView:
         return _onChangeCalendarView(store.state, action, next);
+      case SCChangeSidebarType:
+        return _onChangeSidebarType(store.state, action, next);
       default:
         return next(action);
     }
@@ -37,7 +38,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final appointmentDragEndDetails = action.details;
     List<Appointment> appointments = state.getShifts;
     final interval = state.interval;
-    final fromUser = (action.details.sourceResource?.id as UserRes);
     final toUser = (action.details.targetResource?.id as UserRes);
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
@@ -48,7 +48,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       Appointment? found = appointments
           .firstWhereOrNull((element) => element.id == appointment.id);
       if (found == null) return;
-      if (state.calendarView == CalendarView.timelineDay) {
+      if (state.calendarView == CalendarView.day) {
         found.startTime = appointment.startTime.subtract(
             Duration(minutes: appointment.startTime.minute % interval));
         found.endTime = appointment.endTime
@@ -246,50 +246,67 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         shifts: stateVal, backupShiftsWeek: appointmentsWeek));
   }
 
-  void _onAddFilterUser(
-      AppState state, SCAddFilterUser action, NextDispatcher next) async {
+  void _onAddFilter(
+      AppState state, SCAddFilter action, NextDispatcher next) async {
     final user = action.user;
+    final loc = action.location;
     final filter = state.scheduleState.filteredUsers;
-    if (user.username == "All") {
-      filter.clear();
-    } else {
-      if (filter.contains(user)) {
-        filter.remove(user);
+    final filterLocs = state.scheduleState.filteredLocations;
+    if (user != null) {
+      if (user.username == "All") {
+        filter.clear();
       } else {
-        filter.add(user);
+        if (filter.contains(user)) {
+          filter.remove(user);
+        } else {
+          filter.add(user);
+        }
       }
-    }
-    //Handle user filtering
-    final users = state.scheduleState.users;
-    final shifts = state.scheduleState.getShifts;
-    final shiftsWeek = state.scheduleState.getWeekShifts;
-    if (filter.isNotEmpty) {
-      users.clear();
-      for (int i = 0; i < filter.length; i++) {
-        users.add(CalendarResource(id: filter[i]));
-        users.sort((a, b) =>
-            (a.id as UserRes).firstName.compareTo((b.id as UserRes).firstName));
-        // shifts.removeWhere((element) =>
-        //     (element.id as AppointmentIdMd).user.id != filter[i].id);
-        // shiftsWeek.removeWhere((element) =>
-        //     (element.id as AppointmentIdMd).user.id != filter[i].id);
+      //Handle user filtering
+      final users = state.scheduleState.userResources;
+      if (filter.isNotEmpty) {
+        users.clear();
+        for (int i = 0; i < filter.length; i++) {
+          users.add(CalendarResource(id: filter[i]));
+          users.sort((a, b) => (a.id as UserRes)
+              .firstName
+              .compareTo((b.id as UserRes).firstName));
+        }
+      } else {
+        users.clear();
+
+        users.addAll((appStore.state.usersState.usersList.data ?? [])
+            .map((e) => CalendarResource(id: e)));
       }
-    } else {
-      users.clear();
-      // shifts.clear();
-      // shiftsWeek.clear();
-      users.addAll((appStore.state.usersState.usersList.data ?? [])
-          .map((e) => CalendarResource(id: e)));
-      // shifts.addAll(state.scheduleState.backupShifts);
-      // shiftsWeek.addAll(state.scheduleState.backupShiftsWeek);
+      next(UpdateScheduleState(filteredUsers: filter, userResources: users));
+    } else if (loc != null) {
+      if (loc.name == "All") {
+        filterLocs.clear();
+      } else {
+        if (filterLocs.contains(loc)) {
+          filterLocs.remove(loc);
+        } else {
+          filterLocs.add(loc);
+        }
+      }
+      //Handle loc filtering
+      final locs = state.scheduleState.locationResources;
+      if (filterLocs.isNotEmpty) {
+        locs.clear();
+        for (int i = 0; i < filterLocs.length; i++) {
+          locs.add(CalendarResource(id: filterLocs[i]));
+          locs.sort((a, b) => (a.id as LocationItemMd)
+              .name!
+              .compareTo((b.id as LocationItemMd).name!));
+        }
+      } else {
+        locs.clear();
+
+        locs.addAll((appStore.state.generalState.locationItems.data ?? [])
+            .map((e) => CalendarResource(id: e)));
+      }
+      next(UpdateScheduleState(filteredUsers: filter, locationResources: locs));
     }
-    // final stateVal = state.scheduleState.shifts;
-    // stateVal.data?[CalendarView.timelineDay] = shifts;
-    // stateVal.data?[CalendarView.week] = shiftsWeek;
-    next(UpdateScheduleState(
-      filteredUsers: filter, users: users,
-      // shifts: stateVal
-    ));
   }
 
   void _onChangeCalendarView(
@@ -297,15 +314,32 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final view = action.view;
     SidebarType sidebarType = state.scheduleState.sidebarType;
     int interval = state.scheduleState.interval;
-    if (view == CalendarView.timelineDay) {
+    if (view == CalendarView.day) {
       sidebarType = SidebarType.user;
       interval = 60;
     }
     if (view == CalendarView.week) {
-      sidebarType = SidebarType.user;
       interval = 60;
     }
     next(UpdateScheduleState(
-        calendarView: view, sidebarType: sidebarType, interval: interval));
+      calendarView: view,
+      sidebarType: sidebarType,
+      interval: interval,
+    ));
+  }
+
+  void _onChangeSidebarType(
+      AppState state, SCChangeSidebarType action, NextDispatcher next) async {
+    SidebarType sidebarType = state.scheduleState.sidebarType;
+    if (sidebarType == SidebarType.user) {
+      sidebarType = SidebarType.location;
+      appStore.dispatch(SCAddFilter(location: LocationItemMd.all()));
+    } else {
+      sidebarType = SidebarType.user;
+      appStore.dispatch(SCAddFilter(user: UserRes.all()));
+    }
+    next(UpdateScheduleState(
+      sidebarType: sidebarType,
+    ));
   }
 }

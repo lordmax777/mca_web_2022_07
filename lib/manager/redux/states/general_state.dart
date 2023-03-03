@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/properties/controllers/properties_controller.dart';
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
 import 'package:mca_web_2022_07/pages/warehouses/controllers/warehouse_controller.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
 import '../../model_exporter.dart';
@@ -201,6 +203,11 @@ class GetAllLocationsAction {
       stateValue.error.isError = false;
       stateValue.data = list;
       LocationsController.to.setList(list);
+      next(UpdateScheduleState(
+        locationResources: [
+          for (int i = 0; i < list.length; i++) CalendarResource(id: list[i])
+        ],
+      ));
     } else {
       stateValue.error.retries =
           state.generalState.locationItems.error.retries + 1;

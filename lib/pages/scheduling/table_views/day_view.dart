@@ -182,7 +182,7 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   int visibleResourceCount(ScheduleState scheduleState) {
-    final len = scheduleState.users.length;
+    final len = scheduleState.userResources.length;
     switch (len) {
       case 0:
         return 0;
@@ -263,6 +263,6 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    return ShiftDataSource(state.getShifts, state.users);
+    return ShiftDataSource(state.getShifts, state.userResources);
   }
 }

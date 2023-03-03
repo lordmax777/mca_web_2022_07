@@ -33,8 +33,11 @@ class WeeklyViewCalendar extends StatelessWidget {
             initialDisplayDate: from,
             dataSource: getDataSource(scheduleState),
             resourceViewHeaderBuilder: (context, details) {
-              final user = details.resource.id as UserRes;
-              return _userWidget(user);
+              final res = details.resource.id;
+              if (res is UserRes) {
+                return _userWidget(res);
+              }
+              return _locWidget(res as LocationItemMd);
             },
             resourceViewSettings: ResourceViewSettings(
               size: 300,
@@ -63,8 +66,8 @@ class WeeklyViewCalendar extends StatelessWidget {
               allowNavigation: true,
             ),
             onTap: (calendarTapDetails) {
-              logger((calendarTapDetails.resource?.id as UserRes).id,
-                  hint: 'source');
+              // logger((calendarTapDetails.resource?.id as UserRes).id,
+              //     hint: 'source');
             },
             onDragEnd: (appointmentDragEndDetails) {
               appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
@@ -73,18 +76,21 @@ class WeeklyViewCalendar extends StatelessWidget {
             todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: true,
             cellEndPadding: 0,
-            appointmentBuilder: (_, calendarAppointmentDetails) {
-              final appointment = calendarAppointmentDetails.appointments
-                  .toList()
-                  .first as Appointment?;
-              final ap = appointment?.id as AppointmentIdMd?;
-              if (ap == null) {
-                return const SizedBox();
-              }
-              final count =
-                  scheduleState.countSameShiftStartDateCount(appointment!);
-              return _appWidget(ap, count);
-            },
+            // appointmentBuilder: (_, calendarAppointmentDetails) {
+            //   final appointment = calendarAppointmentDetails.appointments
+            //       .toList()
+            //       .first as Appointment?;
+            //   final ap = appointment?.id as AppointmentIdMd?;
+            //   if (ap == null) {
+            //     return const SizedBox();
+            //   }
+            //   final count =
+            //       scheduleState.countSameShiftStartDateCount(appointment!);
+            //   final isUserView =
+            //       state.scheduleState.sidebarType == SidebarType.user;
+            //
+            //   return _appWidget(ap, count);
+            // },
           );
         });
   }
@@ -169,7 +175,11 @@ class WeeklyViewCalendar extends StatelessWidget {
   }
 
   int visibleResourceCount(ScheduleState scheduleState) {
-    final len = scheduleState.users.length;
+    final isUserView = scheduleState.sidebarType == SidebarType.user;
+    final len = (isUserView
+            ? scheduleState.userResources
+            : scheduleState.locationResources)
+        .length;
     switch (len) {
       case 0:
         return 0;
@@ -249,7 +259,56 @@ class WeeklyViewCalendar extends StatelessWidget {
         ));
   }
 
+  Widget _locWidget(LocationItemMd location) {
+    return Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            right: BorderSide(
+              color: ThemeColors.gray11,
+              width: 1,
+            ),
+            bottom: BorderSide(
+              color: ThemeColors.gray11,
+              width: 1,
+            ),
+          ),
+        ),
+        padding: const EdgeInsets.only(left: 24.0),
+        child: SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              backgroundColor: ThemeColors.blue7,
+              maxRadius: 24.0,
+              child: HeroIcon(
+                HeroIcons.pin,
+                size: 24.0,
+                color: ThemeColors.white,
+              ),
+            ),
+            const SizedBox(width: 16.0),
+            SizedBox(
+              width: 200,
+              child: KText(
+                isSelectable: false,
+                maxLines: 2,
+                text: location.name,
+                fontSize: 14.0,
+                textColor: ThemeColors.gray2,
+                fontWeight: FWeight.bold,
+              ),
+            ),
+          ],
+        ));
+  }
+
   CalendarDataSource getDataSource(ScheduleState state) {
-    return ShiftDataSource(state.getWeekShifts, state.users);
+    final isUserView = state.sidebarType == SidebarType.user;
+    var users = state.userResources;
+    if (!isUserView) {
+      users = state.locationResources;
+    }
+    logger(users.length);
+    return ShiftDataSource(state.getWeekShifts, users);
   }
 }

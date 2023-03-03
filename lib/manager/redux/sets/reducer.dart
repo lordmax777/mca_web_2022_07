@@ -35,11 +35,12 @@ ScheduleState _updateScheduleState(
     sidebarType: action.sidebarType ?? state.sidebarType,
     interval: action.interval ?? state.interval,
     shifts: action.shifts ?? state.shifts,
-    users: action.users ?? state.users,
+    userResources: action.userResources ?? state.userResources,
     filteredUsers: action.filteredUsers ?? state.filteredUsers,
     filteredLocations: action.filteredLocations ?? state.filteredLocations,
     backupShifts: action.backupShifts ?? state.backupShifts,
     backupShiftsWeek: action.backupShiftsWeek ?? state.backupShiftsWeek,
+    locationResources: action.locationResources ?? state.locationResources,
   );
 }
 

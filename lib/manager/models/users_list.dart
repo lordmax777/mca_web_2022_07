@@ -54,6 +54,20 @@ class UserRes {
     this.locationId,
   });
 
+  factory UserRes.all() {
+    return UserRes(
+        username: "All",
+        loginRequired: false,
+        locationAdmin: false,
+        lastStatus: "",
+        lastName: "All",
+        groupAdmin: false,
+        fullname: "All",
+        firstName: "All",
+        id: -1,
+        title: "");
+  }
+
   factory UserRes.fromJson(Map<String, dynamic> json) =>
       _$UserResFromJson(json);
 
