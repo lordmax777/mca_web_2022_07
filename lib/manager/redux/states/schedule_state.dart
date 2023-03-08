@@ -35,6 +35,8 @@ class ScheduleState {
   final StateValue<Map<CalendarView, List<Appointment>>> shifts;
   List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
+  List<Appointment> get getMonthShifts =>
+      shifts.data?[CalendarView.month] ?? [];
 
   int countSameShiftStartDate(Appointment ap, {bool isWeek = true}) {
     final AppointmentIdMd id = ap.id as AppointmentIdMd;
@@ -98,6 +100,7 @@ class ScheduleState {
 
   final List<Appointment> backupShifts;
   final List<Appointment> backupShiftsWeek;
+  final List<Appointment> backupShiftsMonth;
   final List<CalendarResource> userResources;
   final List<CalendarResource> locationResources;
   final CalendarView calendarView;
@@ -114,6 +117,7 @@ class ScheduleState {
     required this.shifts,
     required this.backupShifts,
     required this.backupShiftsWeek,
+    required this.backupShiftsMonth,
     required this.userResources,
     required this.locationResources,
     required this.calendarView,
@@ -129,6 +133,7 @@ class ScheduleState {
           data: {}, error: ErrorModel()),
       backupShifts: [],
       backupShiftsWeek: [],
+      backupShiftsMonth: [],
       userResources: [],
       locationResources: [],
       sidebarType: SidebarType.user,
@@ -148,6 +153,7 @@ class ScheduleState {
     List<LocationItemMd>? filteredLocations,
     List<Appointment>? backupShifts,
     List<Appointment>? backupShiftsWeek,
+    List<Appointment>? backupShiftsMonth,
   }) {
     return ScheduleState(
       calendarView: calendarView ?? this.calendarView,
@@ -160,6 +166,7 @@ class ScheduleState {
       backupShifts: backupShifts ?? this.backupShifts,
       backupShiftsWeek: backupShiftsWeek ?? this.backupShiftsWeek,
       locationResources: locationResources ?? this.locationResources,
+      backupShiftsMonth: backupShiftsMonth ?? this.backupShiftsMonth,
     );
   }
 }
@@ -174,6 +181,7 @@ class UpdateScheduleState {
   final List<LocationItemMd>? filteredLocations;
   final List<Appointment>? backupShifts;
   final List<Appointment>? backupShiftsWeek;
+  final List<Appointment>? backupShiftsMonth;
   final List<CalendarResource>? locationResources;
 
   UpdateScheduleState({
@@ -187,6 +195,7 @@ class UpdateScheduleState {
     this.backupShifts,
     this.backupShiftsWeek,
     this.locationResources,
+    this.backupShiftsMonth,
   });
 }
 
@@ -294,3 +303,23 @@ class SCChangeCalendarView {
 }
 
 class SCChangeSidebarType {}
+
+class SCFetchShiftMonthAction {
+  //Location id. If not specified user 0
+  final int? locationId;
+  //User id. If not specified user 0
+  final int? userId;
+  //Shift id. If not specified user 0
+  final int? shiftId;
+  //Date in Y-m-d format
+  final DateTime startDate;
+  final DateTime endDate;
+
+  SCFetchShiftMonthAction({
+    this.locationId,
+    this.userId,
+    this.shiftId,
+    required this.startDate,
+    required this.endDate,
+  });
+}

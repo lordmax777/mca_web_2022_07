@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../manager/models/location_item_md.dart';
-import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
@@ -61,8 +62,8 @@ class WeeklyViewCalendar extends StatelessWidget {
             maxDate: to,
             viewNavigationMode: ViewNavigationMode.snap,
             dragAndDropSettings: const DragAndDropSettings(
-              allowScroll: true,
-              allowNavigation: true,
+              allowScroll: !kDebugMode,
+              allowNavigation: !kDebugMode,
             ),
             onTap: (calendarTapDetails) {},
             onDragEnd: (appointmentDragEndDetails) {

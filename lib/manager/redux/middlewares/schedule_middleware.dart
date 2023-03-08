@@ -28,6 +28,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onChangeCalendarView(store.state, action, next);
       case SCChangeSidebarType:
         return _onChangeSidebarType(store.state, action, next);
+      case SCFetchShiftMonthAction:
+        return _onFetchShiftMonth(store.state, action, next);
       default:
         return next(action);
     }
@@ -37,54 +39,110 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       ScheduleState state, SCDragEndAction action, NextDispatcher next) async {
     final isUserView = state.sidebarType == SidebarType.user;
     final appointmentDragEndDetails = action.details;
+    final stateVal = state.shifts;
     List<Appointment> appointments = state.getShifts;
     final interval = state.interval;
     dynamic toUser = (action.details.targetResource?.id);
-    if (isUserView) {
-      toUser = toUser as UserRes;
-    } else {
-      toUser = toUser as LocationItemMd;
-    }
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
-    if (appointment.startTime.minute % interval != 0) {
-      if (CalendarView.week == state.calendarView) {
-        appointments = state.getWeekShifts;
-      }
-      Appointment? found = appointments
-          .firstWhereOrNull((element) => element.id == appointment.id);
-      if (found == null) return;
-      if (state.calendarView == CalendarView.day) {
-        found.startTime = appointment.startTime.subtract(
-            Duration(minutes: appointment.startTime.minute % interval));
-        found.endTime = appointment.endTime
-            .subtract(Duration(minutes: appointment.endTime.minute % interval));
-      } else if (CalendarView.week == state.calendarView) {
-        //Always start at 00:00 and end at 01:00
-        found.startTime = DateTime(appointment.startTime.year,
-            appointment.startTime.month, appointment.startTime.day, 0, 0);
-        found.endTime = DateTime(appointment.endTime.year,
-            appointment.endTime.month, appointment.endTime.day, 1, 0);
-      }
-      found.resourceIds = [toUser];
-      if (isUserView) {
-        found.id = (found.id as AppointmentIdMd).copyWith(user: toUser);
-      } else {
-        found.id = (found.id as AppointmentIdMd).copyWith(location: toUser);
-      }
-      next(UpdateScheduleState());
-      // final ApiResponse res = await restClient()
-      //     .postShifts(
-      //       (found.id as AppointmentIdMd).location.id!,
-      //       (found.id as AppointmentIdMd).user.id,
-      //       (found.id as AppointmentIdMd).allocation.shiftId,
-      //       DateFormat('yyyy-MM-dd').format(found.startTime),
-      //       "",
-      //       true,
-      //       true,
-      //     )
-      //     .nocodeErrorHandler();
+    // if (appointment.startTime.minute % interval != 0) {
+    if (CalendarView.week == state.calendarView) {
+      appointments = state.getWeekShifts;
+    } else if (CalendarView.month == state.calendarView) {
+      appointments = state.getMonthShifts;
     }
+    Appointment? found = appointments
+        .firstWhereOrNull((element) => element.id == appointment.id);
+    if (found == null) return;
+    final itemId = found.id as AppointmentIdMd;
+    final oldAppointment = Appointment(
+      startTime: found.startTime,
+      endTime: found.endTime,
+      id: found.id,
+      color: found.color,
+      resourceIds: found.resourceIds,
+      notes: found.notes,
+      subject: found.subject,
+      location: found.location,
+      isAllDay: found.isAllDay,
+      recurrenceRule: found.recurrenceRule,
+      recurrenceExceptionDates: found.recurrenceExceptionDates,
+      recurrenceId: found.recurrenceId,
+      startTimeZone: found.startTimeZone,
+      endTimeZone: found.endTimeZone,
+    );
+
+    ///TODO: @DEPRECATED()
+    if (state.calendarView == CalendarView.day) {
+      // found.startTime = appointment.startTime
+      //     .subtract(Duration(minutes: appointment.startTime.minute % interval));
+      // found.endTime = appointment.endTime
+      //     .subtract(Duration(minutes: appointment.endTime.minute % interval));
+    } else if (state.calendarView == CalendarView.week) {
+      //Always start at 00:00 and end at 01:00
+      final DateTime oldDate = DateTime.parse(itemId.allocation.date);
+      oldAppointment.startTime =
+          DateTime(oldDate.year, oldDate.month, oldDate.day, 0, 0);
+      oldAppointment.endTime =
+          DateTime(oldDate.year, oldDate.month, oldDate.day, 1, 0);
+      found.startTime = DateTime(appointment.startTime.year,
+          appointment.startTime.month, appointment.startTime.day, 0, 0);
+      found.endTime = DateTime(appointment.endTime.year,
+          appointment.endTime.month, appointment.endTime.day, 1, 0);
+      appointments.removeWhere((element) => element.id == found.id);
+      stateVal.data?[CalendarView.week] = [
+        ...appointments,
+        found,
+        oldAppointment
+      ];
+    }
+    found.resourceIds = [toUser];
+    oldAppointment.resourceIds = [toUser];
+    if (isUserView) {
+      found.id = (found.id as AppointmentIdMd).copyWith(user: toUser);
+      oldAppointment.id =
+          (oldAppointment.id as AppointmentIdMd).copyWith(user: toUser);
+    } else {
+      found.id = (found.id as AppointmentIdMd).copyWith(location: toUser);
+      oldAppointment.id =
+          (oldAppointment.id as AppointmentIdMd).copyWith(location: toUser);
+    }
+    next(UpdateScheduleState(shifts: stateVal));
+    // final ApiResponse res = await restClient()
+    //     .postShifts(
+    //         itemId.location.id!,
+    //         itemId.user.id,
+    //         itemId.allocation.shiftId,
+    //         DateFormat('yyyy-MM-dd').format(found.startTime),
+    //         "add")
+    //     .nocodeErrorHandler();
+    // if (res.success) {
+    //   if (state.calendarView == CalendarView.day) {
+    //     found.startTime = appointment.startTime.subtract(
+    //         Duration(minutes: appointment.startTime.minute % interval));
+    //     found.endTime = appointment.endTime
+    //         .subtract(Duration(minutes: appointment.endTime.minute % interval));
+    //   } else if (CalendarView.week == state.calendarView) {
+    //     //Always start at 00:00 and end at 01:00
+    //     // final dateTime = DateTime.parse(itemId.allocation.date);
+    //     found.startTime = DateTime(appointment.startTime.year,
+    //         appointment.startTime.month, appointment.startTime.day, 0, 0);
+    //     found.endTime = DateTime(appointment.endTime.year,
+    //         appointment.endTime.month, appointment.endTime.day, 1, 0);
+    //     stateVal.data?[CalendarView.week] = [...appointments, found];
+    //   }
+    //   found.resourceIds = [toUser];
+    //   if (isUserView) {
+    //     found.id = (found.id as AppointmentIdMd).copyWith(user: toUser);
+    //   } else {
+    //     found.id = (found.id as AppointmentIdMd).copyWith(location: toUser);
+    //   }
+    //   next(UpdateScheduleState(shifts: stateVal));
+    // } else {
+    //   found.startTime = appointment.startTime;
+    //   found.endTime = appointment.endTime;
+    // }
+    // }
   }
 
   void _onFetchShifts(
@@ -261,6 +319,84 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     stateVal.error.isError = false;
     next(UpdateScheduleState(
         shifts: stateVal, backupShiftsWeek: appointmentsWeek));
+  }
+
+  Future<List<Appointment>> _onFetchShiftMonth(AppState state,
+      SCFetchShiftMonthAction action, NextDispatcher next) async {
+    final locId = action.locationId ?? 0;
+    final userId = action.userId ?? 0;
+    final shiftId = action.shiftId ?? 0;
+    final startDate = action.startDate;
+    final endDate = action.endDate;
+    final stateVal = state.scheduleState.shifts;
+    stateVal.data?[CalendarView.month] = [];
+
+    stateVal.error.isLoading = true;
+    // next(UpdateScheduleState(shifts: stateVal));
+    final appointmentsMonth = <Appointment>[];
+    final ApiResponse res = await restClient()
+        .getShifts(
+            locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
+            until: DateFormat('yyyy-MM-dd').format(endDate))
+        .nocodeErrorHandler();
+
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      final date = startDate.add(Duration(days: i));
+      if (res.success) {
+        final list = <ShiftMd>[];
+        final properties = <PropertiesMd>[
+          ...(state.generalState.properties.data ?? <PropertiesMd>[])
+        ];
+        final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
+        final locs = <LocationItemMd>[
+          ...(state.generalState.locationItems.data ?? [])
+        ];
+        for (var item in res.data['allocations']) {
+          final ShiftMd shift = ShiftMd.fromJson(item);
+          list.add(shift);
+          final pr = properties
+              .firstWhereOrNull((element) => element.id == shift.shiftId);
+          if (pr == null) continue;
+          final us =
+              users.firstWhereOrNull((element) => element.id == shift.userId);
+          if (us == null) continue;
+          final loc =
+              locs.firstWhereOrNull((element) => element.id == pr.locationId);
+          if (loc == null) continue;
+          final AppointmentIdMd id = AppointmentIdMd(
+            user: us,
+            allocation: shift,
+            property: pr,
+            location: loc,
+          );
+
+          final stMonth = DateTime(date.year, date.month, date.day, 00, 00);
+          DateTime? etMonth = DateTime(date.year, date.month, date.day, 01, 00);
+
+          appointmentsMonth.add(Appointment(
+            startTime: stMonth,
+            endTime: etMonth,
+            color: Colors.white,
+            subject: pr.title ?? "-",
+            id: id,
+            resourceIds: [us, loc],
+          ));
+        }
+      }
+    }
+    stateVal.error.isLoading = false;
+
+    stateVal.data?[CalendarView.month] = [
+      ...(stateVal.data?[CalendarView.month] ?? []),
+      ...appointmentsMonth
+    ];
+
+    stateVal.error.action = action;
+    stateVal.error.isError = false;
+
+    return appointmentsMonth;
+    // next(UpdateScheduleState(
+    //     shifts: stateVal, backupShiftsMonth: appointmentsMonth));
   }
 
   void _onAddFilter(

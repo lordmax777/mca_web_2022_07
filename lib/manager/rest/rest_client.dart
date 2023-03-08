@@ -498,7 +498,8 @@ abstract class RestClient {
   @GET(
       "/api/fe/allocations/location/{locationId}/user/{userId}/shift/{shiftId}/date/{date}")
   Future<HttpResponse> getShifts(@Path() int locationId, @Path() int userId,
-      @Path() int shiftId, @Path() String date);
+      @Path() int shiftId, @Path() String date,
+      {@Query("until") String? until});
 
   @POST(
       "/api/fe/allocations/location/{locationId}/user/{userId}/shift/{shiftId}/date/{date}")

@@ -1,8 +1,21 @@
 class ShiftMd {
   //{id: 43984, locationId: 86, userId: 891, shiftId: 207, published: true, special_start_time: null, special_finish_time: null, special_rate: null, user_order: 1}
+  //NEW: {
+  //             "id": 43979,
+  //             "date": "2023-02-04",
+  //             "locationId": 86,
+  //             "userId": 805,
+  //             "shiftId": 207,
+  //             "published": true,
+  //             "special_start_time": null,
+  //             "special_finish_time": null,
+  //             "special_rate": null,
+  //             "user_order": 1
+  //         }
   final int id;
+  final String date;
   final int locationId;
-  final int userId;
+  final int? userId;
   final int shiftId;
   final bool published;
   final String? special_start_time;
@@ -13,7 +26,8 @@ class ShiftMd {
   ShiftMd({
     required this.id,
     required this.locationId,
-    required this.userId,
+    required this.date,
+    this.userId,
     required this.shiftId,
     required this.published,
     this.special_start_time,
@@ -33,6 +47,7 @@ class ShiftMd {
       special_finish_time: json['special_finish_time'],
       special_rate: json['special_rate'],
       user_order: json['user_order'],
+      date: json['date'],
     );
   }
 
@@ -47,6 +62,7 @@ class ShiftMd {
       'special_finish_time': special_finish_time,
       'special_rate': special_rate,
       'user_order': user_order,
+      'date': date,
     };
   }
 }

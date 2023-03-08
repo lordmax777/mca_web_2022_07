@@ -9,6 +9,7 @@ import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 import 'table_views/day_view.dart';
+import 'table_views/month_view.dart';
 import 'table_views/week_view.dart';
 
 class SchedulingPage extends StatelessWidget {
@@ -22,18 +23,21 @@ class SchedulingPage extends StatelessWidget {
       DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
   DateTime get lastDayOfWeek => firstDayOfWeek.add(const Duration(days: 6));
 
+  // Month
+  // DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  // DateTime get endDate => DateTime(startDate.year, startDate.month + 1, 0);
+//DateTime(date.year, date.month + 1, 0).day
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          await appStore.dispatch(SCFetchShiftsAction(date: day));
-          // await appStore.dispatch(SCFetchShiftsWeekAction(
-          //     startDate: firstDayOfWeek, endDate: lastDayOfWeek));
+          // await appStore.dispatch(SCFetchShiftsAction(date: day));
+          await appStore.dispatch(SCFetchShiftsWeekAction(
+              startDate: firstDayOfWeek, endDate: lastDayOfWeek));
         },
         builder: (_, state) {
           final scheduleState = state.scheduleState;
-          logger("BUILD SchedulingPage ${scheduleState.sidebarType}");
           final u = [...(state.usersState.usersList.data ?? [])];
           final l = [...(state.generalState.locationItems.data ?? [])];
           final users = [UserRes.all(), ...u];
@@ -182,6 +186,9 @@ class SchedulingPage extends StatelessWidget {
                                       size: 18,
                                     ),
                                   ),
+                                  // Text(
+                                  //   scheduleState.
+                                  // )
                                 ],
                               ),
                             ),
@@ -243,9 +250,67 @@ class SchedulingPage extends StatelessWidget {
                                 ],
                               ),
                             ),
+                          if (scheduleState.calendarView == CalendarView.month)
+                            Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: ThemeColors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: ThemeColors.gray10,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    onPressed: () async {
+                                      // firstDayOfWeek = firstDayOfWeek
+                                      //     .subtract(const Duration(days: 7));
+                                      // await appStore
+                                      //     .dispatch(SCFetchShiftsWeekAction(
+                                      //   startDate: firstDayOfWeek,
+                                      //   endDate: lastDayOfWeek,
+                                      // ));
+                                    },
+                                    icon: const HeroIcon(
+                                      HeroIcons.leftSmall,
+                                      color: ThemeColors.gray2,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  KText(
+                                    textAlign: TextAlign.center,
+                                    text:
+                                        "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
+                                    fontSize: 16,
+                                    textColor: ThemeColors.gray2,
+                                    fontWeight: FWeight.medium,
+                                  ),
+                                  IconButton(
+                                    onPressed: () async {
+                                      // firstDayOfWeek = firstDayOfWeek
+                                      //     .add(const Duration(days: 7));
+                                      // await appStore
+                                      //     .dispatch(SCFetchShiftsWeekAction(
+                                      //   startDate: firstDayOfWeek,
+                                      //   endDate: lastDayOfWeek,
+                                      // ));
+                                    },
+                                    icon: const HeroIcon(
+                                      HeroIcons.rightSmall,
+                                      color: ThemeColors.gray2,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
-                      if (scheduleState.calendarView != CalendarView.day)
+                      if (scheduleState.calendarView == CalendarView.week)
                         ButtonLargeSecondary(
                           text: scheduleState.sidebarType == SidebarType.user
                               ? "User"
@@ -260,7 +325,9 @@ class SchedulingPage extends StatelessWidget {
                 ),
                 ErrorWrapper(
                     height: 650,
-                    errors: [scheduleState.shifts.error],
+                    errors: [
+                      // scheduleState.shifts.error,
+                    ],
                     child: SizedBox(
                         height: 650,
                         child: _getCalendar(scheduleState.calendarView))),
@@ -277,8 +344,12 @@ class SchedulingPage extends StatelessWidget {
       case CalendarView.week:
         return WeeklyViewCalendar(
             lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
+      case CalendarView.month:
+        return const MonthlyViewCalendar();
       default:
-        return DailyViewCalendar(day: day);
+        return const Center(
+          child: Text("No calendar view selected"),
+        );
       // return MonthlyViewCalendar();
     }
   }
