@@ -326,7 +326,7 @@ class SchedulingPage extends StatelessWidget {
                 ErrorWrapper(
                     height: 650,
                     errors: [
-                      // scheduleState.shifts.error,
+                      scheduleState.shifts.error,
                     ],
                     child: SizedBox(
                         height: 650,
@@ -344,8 +344,8 @@ class SchedulingPage extends StatelessWidget {
       case CalendarView.week:
         return WeeklyViewCalendar(
             lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
-      case CalendarView.month:
-        return const MonthlyViewCalendar();
+      // case CalendarView.month:
+      //   return const MonthlyViewCalendar();
       default:
         return const Center(
           child: Text("No calendar view selected"),

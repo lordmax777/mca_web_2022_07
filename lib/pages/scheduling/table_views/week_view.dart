@@ -71,7 +71,7 @@ class WeeklyViewCalendar extends StatelessWidget {
             },
             firstDayOfWeek: 1,
             todayHighlightColor: ThemeColors.transparent,
-            allowDragAndDrop: true,
+            allowDragAndDrop: false,
             cellEndPadding: 0,
             appointmentBuilder: (_, calendarAppointmentDetails) {
               final appointment = calendarAppointmentDetails.appointments
