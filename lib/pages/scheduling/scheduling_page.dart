@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../manager/models/location_item_md.dart';
@@ -14,7 +14,7 @@ import 'table_views/week_view.dart';
 
 class SchedulingPage extends StatelessWidget {
   SchedulingPage({Key? key}) : super(key: key);
-  DateTime get today => DateTime.now();
+
   //Day
   DateTime day = DateTime.now();
 
@@ -39,9 +39,9 @@ class SchedulingPage extends StatelessWidget {
         builder: (_, state) {
           final scheduleState = state.scheduleState;
           final u = [...(state.usersState.usersList.data ?? [])];
-          final l = [...(state.generalState.locationItems.data ?? [])];
+          final l = [...(state.generalState.properties.data ?? [])];
           final users = [UserRes.all(), ...u];
-          final locs = [LocationItemMd.all(), ...l];
+          final locs = [PropertiesMd.all(), ...l];
 
           return PageWrapper(
               child: TableWrapperWidget(
@@ -98,7 +98,7 @@ class SchedulingPage extends StatelessWidget {
                                 dropdownOptionsWidth: 300,
                                 dropdownBtnWidth: 300,
                                 hintText: "Location",
-                                items: locs.map((e) => e.name).toList(),
+                                items: locs.map((e) => e.title).toList(),
                                 objItems: locs,
                                 customItemIcons: {
                                   for (var i = 0;
@@ -113,7 +113,7 @@ class SchedulingPage extends StatelessWidget {
                                 value: scheduleState.filteredLocations.isEmpty
                                     ? "All"
                                     : scheduleState
-                                        .filteredLocations.first.name,
+                                        .filteredLocations.first.title,
                                 onChangedWithObj: (p0) {
                                   appStore
                                       .dispatch(SCAddFilter(location: p0.item));
@@ -326,7 +326,7 @@ class SchedulingPage extends StatelessWidget {
                 ErrorWrapper(
                     height: 650,
                     errors: [
-                      scheduleState.shifts.error,
+                      // scheduleState.shifts.error,
                     ],
                     child: SizedBox(
                         height: 650,

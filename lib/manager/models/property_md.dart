@@ -113,4 +113,35 @@ class PropertiesMd {
     data['active'] = active;
     return data;
   }
+
+  factory PropertiesMd.all() {
+    return PropertiesMd(
+      id: 0,
+      title: 'All',
+      locationId: 0,
+      locationName: 'All',
+      clientId: 0,
+      clientName: 'All',
+      warehouseId: 0,
+      warehouseName: 'All',
+      checklistTemplateId: 0,
+      checklistTemplateName: 'All',
+      startTime: '00:00',
+      finishTime: '00:00',
+      startBreak: '00:00',
+      finishBreak: '00:00',
+      fpStartTime: '00:00',
+      fpFinishTime: '00:00',
+      fpStartBreak: '00:00',
+      fpFinishBreak: '00:00',
+      strictBreak: false,
+      minPaidTime: 0,
+      minWorkTime: 0,
+      splitTime: false,
+      checklist: false,
+      linked: null,
+      days: null,
+      active: true,
+    );
+  }
 }

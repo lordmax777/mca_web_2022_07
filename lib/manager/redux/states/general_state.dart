@@ -203,11 +203,6 @@ class GetAllLocationsAction {
       stateValue.error.isError = false;
       stateValue.data = list;
       LocationsController.to.setList(list);
-      next(UpdateScheduleState(
-        locationResources: [
-          for (int i = 0; i < list.length; i++) CalendarResource(id: list[i])
-        ],
-      ));
     } else {
       stateValue.error.retries =
           state.generalState.locationItems.error.retries + 1;
@@ -315,6 +310,11 @@ class GetPropertiesAction {
       stateValue.error.isError = false;
       stateValue.data = list;
       PropertiesController.to.setList(list);
+      next(UpdateScheduleState(
+        locationResources: [
+          for (int i = 0; i < list.length; i++) CalendarResource(id: list[i])
+        ],
+      ));
     } else {
       stateValue.error.retries =
           state.generalState.properties.error.retries + 1;

@@ -77,44 +77,11 @@ class DailyViewCalendar extends StatelessWidget {
 
   Widget _appWidget(Appointment appointment, int count) {
     final ap = appointment.id as AppointmentIdMd;
-    final location = ap.location;
+    final location = ap.property;
     final user = ap.user;
     final bool isLarge = count == 1;
 
     return Tooltip(
-      // padding: const EdgeInsets.all(4),
-      // decoration: BoxDecoration(
-      //   color: user.userRandomBgColor,
-      //   border: Border.all(
-      //     width: 1,
-      //     color: ThemeColors.gray10,
-      //   ),
-      // ),
-      // richMessage: TextSpan(children: [
-      //   WidgetSpan(
-      //       child: SizedBox(
-      //     width: 300,
-      //     child: Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: [
-      //         KText(
-      //           isSelectable: false,
-      //           text:
-      //               "${DateFormat('h:mm a').format(appointment!.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
-      //           fontSize: 12,
-      //           fontWeight: FWeight.bold,
-      //         ),
-      //         KText(
-      //           isSelectable: false,
-      //           text: location.name ?? "-",
-      //           fontSize: 12,
-      //           fontWeight: FWeight.bold,
-      //         ),
-      //       ],
-      //     ),
-      //   )),
-      // ]),
       message:
           "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
       child: Container(
@@ -141,7 +108,7 @@ class DailyViewCalendar extends StatelessWidget {
                   ),
                   KText(
                     isSelectable: false,
-                    text: location.name ?? "-",
+                    text: location.title ?? "-",
                     fontSize: 14,
                     fontWeight: FWeight.bold,
                   ),
@@ -160,7 +127,7 @@ class DailyViewCalendar extends StatelessWidget {
                   ),
                   KText(
                     isSelectable: false,
-                    text: location.name ?? "-",
+                    text: location.title ?? "-",
                     fontSize: 14 / count * 2,
                     fontWeight: FWeight.bold,
                   ),
@@ -263,6 +230,6 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    return ShiftDataSource(state.getShifts, state.userResources);
+    return ShiftDataSource([], state.userResources);
   }
 }

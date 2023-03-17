@@ -3,12 +3,12 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 
 class ShiftDataSource extends CalendarDataSource {
-  final List<Appointment> source;
+  final List<AppointmentIdMd1> source;
   final List<CalendarResource>? resourceColl;
   ShiftDataSource(this.source, this.resourceColl);
 
   @override
-  List<dynamic> get appointments => source;
+  List<AppointmentIdMd1> get appointments => source;
 
   @override
   List<CalendarResource>? get resources => resourceColl;
@@ -24,16 +24,13 @@ class ShiftDataSource extends CalendarDataSource {
   }
 
   @override
-  bool isAllDay(int index) {
-    return source[index].isAllDay;
-  }
-
-  @override
   Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
-    final apps = await appStore.dispatch(SCFetchShiftMonthAction(
+    final List<AppointmentIdMd1> apps =
+        await appStore.dispatch(SCFetchShiftMonthAction(
       startDate: DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day - 1),
-      endDate: DateTime(DateTime.now().year, DateTime.now().month, 30),
+          DateTime.now().year, DateTime.now().month, DateTime.now().day - 7),
+      endDate: DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day),
     ));
     appointments.addAll(apps);
     notifyListeners(CalendarDataSourceAction.add, apps);

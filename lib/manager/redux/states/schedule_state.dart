@@ -38,7 +38,7 @@ class ScheduleState {
   List<Appointment> get getMonthShifts =>
       shifts.data?[CalendarView.month] ?? [];
 
-  int countSameShiftStartDate(Appointment ap, {bool isWeek = true}) {
+  int countSameShiftStartDate(AppointmentIdMd1 ap, {bool isWeek = true}) {
     final AppointmentIdMd id = ap.id as AppointmentIdMd;
 
     int count = 0;
@@ -67,7 +67,7 @@ class ScheduleState {
             count++;
           }
         } else {
-          if (id.location.id == (shift.id as AppointmentIdMd).location.id &&
+          if (id.property.id == (shift.id as AppointmentIdMd).property.id &&
               ap.startTime == shift.startTime) {
             count++;
           }
@@ -108,8 +108,8 @@ class ScheduleState {
   SidebarType get getSidebarType => sidebarType;
   final List<UserRes> filteredUsers;
   List<UserRes> get getFilteredUsers => filteredUsers;
-  final List<LocationItemMd> filteredLocations;
-  List<LocationItemMd> get getFilteredLocations => filteredLocations;
+  final List<PropertiesMd> filteredLocations;
+  List<PropertiesMd> get getFilteredLocations => filteredLocations;
 
   const ScheduleState({
     required this.interval,
@@ -127,7 +127,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.day,
+      calendarView: CalendarView.week,
       interval: 60,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
@@ -150,7 +150,7 @@ class ScheduleState {
     List<CalendarResource>? locationResources,
     SidebarType? sidebarType,
     List<UserRes>? filteredUsers,
-    List<LocationItemMd>? filteredLocations,
+    List<PropertiesMd>? filteredLocations,
     List<Appointment>? backupShifts,
     List<Appointment>? backupShiftsWeek,
     List<Appointment>? backupShiftsMonth,
@@ -178,7 +178,7 @@ class UpdateScheduleState {
   final List<CalendarResource>? userResources;
   final SidebarType? sidebarType;
   final List<UserRes>? filteredUsers;
-  final List<LocationItemMd>? filteredLocations;
+  final List<PropertiesMd>? filteredLocations;
   final List<Appointment>? backupShifts;
   final List<Appointment>? backupShiftsWeek;
   final List<Appointment>? backupShiftsMonth;
@@ -203,44 +203,56 @@ class AppointmentIdMd {
   final PropertiesMd property;
   final UserRes user;
   final ShiftMd allocation;
-  final LocationItemMd location;
 
   AppointmentIdMd({
     required this.property,
     required this.user,
-    required this.location,
     required this.allocation,
   });
 
-  // @override
-  // int get hashCode =>
-  //     property.hashCode ^
-  //     user.hashCode ^
-  //     allocation.hashCode ^
-  //     location.hashCode;
-  //
-  // @override
-  // bool operator ==(Object other) =>
-  //     identical(this, other) ||
-  //     other is AppointmentIdMd &&
-  //         runtimeType == other.runtimeType &&
-  //         property == other.property &&
-  //         user == other.user &&
-  //         allocation == other.allocation &&
-  //         location == other.location;
-
-  //copyWith
   AppointmentIdMd copyWith({
     PropertiesMd? property,
     UserRes? user,
     ShiftMd? allocation,
-    LocationItemMd? location,
+    PropertiesMd? location,
   }) {
     return AppointmentIdMd(
       property: property ?? this.property,
       user: user ?? this.user,
       allocation: allocation ?? this.allocation,
-      location: location ?? this.location,
+    );
+  }
+}
+
+class AppointmentIdMd1 {
+  final DateTime startTime;
+  final DateTime endTime;
+  final PropertiesMd property;
+  final UserRes user;
+  final ShiftMd allocation;
+
+  AppointmentIdMd1({
+    required this.startTime,
+    required this.endTime,
+    required this.property,
+    required this.user,
+    required this.allocation,
+  });
+
+  AppointmentIdMd1 copyWith({
+    PropertiesMd? property,
+    UserRes? user,
+    ShiftMd? allocation,
+    PropertiesMd? location,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    return AppointmentIdMd1(
+      property: property ?? this.property,
+      user: user ?? this.user,
+      allocation: allocation ?? this.allocation,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
     );
   }
 }
@@ -290,7 +302,7 @@ class SCFetchShiftsWeekAction {
 
 class SCAddFilter {
   final UserRes? user;
-  final LocationItemMd? location;
+  final PropertiesMd? location;
   SCAddFilter({
     this.user,
     this.location,
