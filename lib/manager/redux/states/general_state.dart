@@ -312,7 +312,7 @@ class GetPropertiesAction {
       PropertiesController.to.setList(list);
       next(UpdateScheduleState(
         locationResources: [
-          for (int i = 0; i < list.length; i++) CalendarResource(id: list[i])
+          for (int i = 0; i < list.length; i++) list[i],
         ],
       ));
     } else {

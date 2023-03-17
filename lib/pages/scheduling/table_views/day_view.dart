@@ -66,10 +66,10 @@ class DailyViewCalendar extends StatelessWidget {
               if (ap == null) {
                 return const SizedBox();
               }
-              final count = scheduleState.countSameShiftStartDate(appointment!,
-                  isWeek: false);
+              // final count = scheduleState.countSameShiftStartDate(appointment!,
+              //     isWeek: false);
 
-              return _appWidget(appointment, count);
+              return _appWidget(appointment!, 8);
             },
           );
         });
@@ -230,6 +230,10 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    return ShiftDataSource([], state.userResources);
+    return ShiftDataSource(
+        [],
+        state.userResources
+            .map<CalendarResource>((e) => CalendarResource(id: e))
+            .toList());
   }
 }

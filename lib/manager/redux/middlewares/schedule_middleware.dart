@@ -281,6 +281,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           allocation: shift,
           property: pr,
         );
+
         appointments.add(Appointment(
           startTime: st,
           endTime: et,
@@ -391,7 +392,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   //       .map<AppointmentIdMd>((e) => e.id as AppointmentIdMd)
   //       .toList();
   // }
-  Future<List<AppointmentIdMd1>> _onFetchShiftMonth(AppState state,
+  Future<List<Appointment>> _onFetchShiftMonth(AppState state,
       SCFetchShiftMonthAction action, NextDispatcher next) async {
     final locId = action.locationId ?? 0;
     final userId = action.userId ?? 0;
@@ -399,7 +400,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final startDate = action.startDate;
     final endDate = action.endDate;
 
-    final appointmentsMonth = <AppointmentIdMd1>[];
+    final appointmentsMonth = <Appointment>[];
 
     final ApiResponse res = await restClient()
         .getShifts(
@@ -424,18 +425,27 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           if (pr == null) continue;
           final us =
               users.firstWhereOrNull((element) => element.id == shift.userId);
+
           if (us == null) continue;
 
           final stMonth = DateTime(date.year, date.month, date.day, 00, 00);
           DateTime? etMonth = DateTime(date.year, date.month, date.day, 01, 00);
 
-          final AppointmentIdMd1 id = AppointmentIdMd1(
-            endTime: etMonth,
-            startTime: stMonth,
+          final appId = AppointmentIdMd(
             user: us,
             allocation: shift,
             property: pr,
           );
+
+          final Appointment id = Appointment(
+            location: pr.title,
+            subject: us.username,
+            endTime: etMonth,
+            startTime: stMonth,
+            id: appId,
+            resourceIds: [us, pr],
+          );
+
           appointmentsMonth.add(id);
         }
       }
@@ -450,6 +460,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final loc = action.location;
     final filter = state.scheduleState.filteredUsers;
     final filterLocs = state.scheduleState.filteredLocations;
+    logger(loc, hint: "ADD FILTER 1");
     if (user != null) {
       if (user.username == "All") {
         filter.clear();
@@ -462,19 +473,18 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       }
       //Handle user filtering
       final users = state.scheduleState.userResources;
+      logger(users, hint: "ADD FILTER 2");
       if (filter.isNotEmpty) {
         users.clear();
         for (int i = 0; i < filter.length; i++) {
-          users.add(CalendarResource(id: filter[i]));
+          users.add(filter[i]);
           users.sort((a, b) => (a.id as UserRes)
               .firstName
               .compareTo((b.id as UserRes).firstName));
         }
       } else {
         users.clear();
-
-        users.addAll((appStore.state.generalState.properties.data ?? [])
-            .map((e) => CalendarResource(id: e)));
+        users.addAll((appStore.state.usersState.usersList.data ?? []));
       }
       next(UpdateScheduleState(filteredUsers: filter, userResources: users));
     } else if (loc != null) {
@@ -492,7 +502,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       if (filterLocs.isNotEmpty) {
         locs.clear();
         for (int i = 0; i < filterLocs.length; i++) {
-          locs.add(CalendarResource(id: filterLocs[i]));
+          locs.add(filterLocs[i]);
           locs.sort((a, b) => (a.id as PropertiesMd)
               .title!
               .compareTo((b.id as PropertiesMd).title!));
@@ -500,8 +510,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       } else {
         locs.clear();
 
-        locs.addAll((appStore.state.generalState.properties.data ?? [])
-            .map((e) => CalendarResource(id: e)));
+        locs.addAll(
+            (appStore.state.generalState.properties.data ?? []).map((e) => e));
       }
       next(UpdateScheduleState(filteredUsers: filter, locationResources: locs));
     }
@@ -529,6 +539,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   void _onChangeSidebarType(
       AppState state, SCChangeSidebarType action, NextDispatcher next) async {
     SidebarType sidebarType = state.scheduleState.sidebarType;
+    logger("Sidebar type: $sidebarType");
     if (sidebarType == SidebarType.user) {
       sidebarType = SidebarType.location;
       appStore.dispatch(SCAddFilter(location: PropertiesMd.all()));

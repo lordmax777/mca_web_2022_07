@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../../manager/models/location_item_md.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
@@ -11,7 +9,7 @@ import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
 
-class WeeklyViewCalendar extends StatefulWidget {
+class WeeklyViewCalendar extends StatelessWidget {
   final DateTime firstDayOfWeek;
   final DateTime lastDayOfWeek;
 
@@ -19,38 +17,20 @@ class WeeklyViewCalendar extends StatefulWidget {
       {Key? key, required this.lastDayOfWeek, required this.firstDayOfWeek})
       : super(key: key);
 
-  @override
-  State<WeeklyViewCalendar> createState() => _WeeklyViewCalendarState();
-}
+  DateTime get from => firstDayOfWeek;
 
-class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
-  DateTime get from => widget.firstDayOfWeek;
-
-  DateTime get to => widget.lastDayOfWeek;
-
-  final CalendarController controller = CalendarController();
-
-  final ShiftDataSource _source = ShiftDataSource(<AppointmentIdMd1>[], null);
-
-  @override
-  void initState() {
-    controller.view = CalendarView.timelineWeek;
-    controller.selectedDate = to.subtract(from.difference(to));
-    super.initState();
-  }
+  DateTime get to => lastDayOfWeek;
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, AppState>(
-        converter: (store) => store.state,
-        builder: (_, state) {
-          final scheduleState = state.scheduleState;
+    return StoreConnector<AppState, ScheduleState>(
+        converter: (store) => store.state.scheduleState,
+        builder: (_, scheduleState) {
           return SfCalendar(
-            controller: controller,
-            view: controller.view ?? CalendarView.timelineWeek,
+            view: CalendarView.timelineWeek,
             initialSelectedDate: from,
             initialDisplayDate: from,
-            dataSource: _source,
+            dataSource: getDataSource(scheduleState),
             resourceViewHeaderBuilder: (context, details) {
               final res = details.resource.id;
               if (res is UserRes) {
@@ -58,10 +38,6 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               }
               return _locWidget(res as PropertiesMd);
             },
-            showNavigationArrow: true,
-            showDatePickerButton: true,
-            showCurrentTimeIndicator: false,
-            showWeekNumber: false,
             resourceViewSettings: ResourceViewSettings(
               size: 300,
               visibleResourceCount: visibleResourceCount(scheduleState),
@@ -80,17 +56,17 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               endHour: 1,
             ),
             viewHeaderHeight: 0,
-            loadMoreWidgetBuilder: (context, loadMoreAppointments) {
-              return FutureBuilder<void>(
-                future: loadMoreAppointments(),
-                builder: (context, snapShot) {
-                  return Container(
-                      alignment: Alignment.center,
-                      child: const CircularProgressIndicator());
-                },
-              );
-            },
-            minDate: from.subtract(const Duration(days: 1)),
+            // loadMoreWidgetBuilder: (context, loadMoreAppointments) {
+            //   return FutureBuilder<void>(
+            //     future: loadMoreAppointments(),
+            //     builder: (context, snapShot) {
+            //       return Container(
+            //           alignment: Alignment.center,
+            //           child: const CircularProgressIndicator());
+            //     },
+            //   );
+            // },
+            // minDate: from.subtract(const Duration(days: 1)),
             maxDate: to,
             viewNavigationMode: ViewNavigationMode.snap,
             dragAndDropSettings: const DragAndDropSettings(
@@ -103,7 +79,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   logger("appointment");
                   break;
                 case CalendarElement.calendarCell:
-                  logger("calendarCell");
+                  logger("calendarCell ${calendarTapDetails.appointments}");
                   break;
                 default:
                   logger(calendarTapDetails.targetElement);
@@ -119,15 +95,15 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
             appointmentBuilder: (_, calendarAppointmentDetails) {
               final appointment = calendarAppointmentDetails.appointments
                   .toList()
-                  .first as AppointmentIdMd1?;
-              final ap = appointment;
+                  .first as Appointment?;
+              final ap = appointment?.id as AppointmentIdMd?;
               if (ap == null) {
                 return const SizedBox();
               }
-              final isUserView =
-                  state.scheduleState.sidebarType == SidebarType.user;
-              final count = scheduleState.countSameShiftStartDate(appointment!);
-              return _appWidget(ap, count, isUserView);
+
+              final isUserView = scheduleState.sidebarType == SidebarType.user;
+              // final count = scheduleState.countSameShiftStartDate(appointment!);
+              return _appWidget(ap, 8, isUserView);
             },
           );
         });
@@ -182,13 +158,13 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     mainAxisSize: MainAxisSize.min,
                     horizontalSpace: 4,
                     children: [
-                      HeroIcon(HeroIcons.pin, size: 16 / count),
+                      if (isLarge) HeroIcon(HeroIcons.pin, size: 12 / count),
                       SizedBox(
                         width: 150,
                         child: KText(
                           isSelectable: false,
                           text: alloc.title ?? "-",
-                          fontSize: 14 / count,
+                          fontSize: 12 / count,
                           maxLines: 1,
                           textColor: ThemeColors.gray2,
                           fontWeight: FWeight.bold,
@@ -196,34 +172,34 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                       ),
                     ],
                   ),
-                  SpacedRow(
-                    mainAxisSize: MainAxisSize.min,
-                    horizontalSpace: 4,
-                    children: [
-                      HeroIcon(HeroIcons.house, size: 16 / count),
-                      SizedBox(
-                        width: 150,
-                        child: KText(
-                          maxLines: 1,
-                          isSelectable: false,
-                          text: alloc.title ?? "-",
-                          fontSize: 14 / count,
-                          textColor: ThemeColors.gray2,
-                          fontWeight: FWeight.bold,
+                  if (isLarge)
+                    SpacedRow(
+                      mainAxisSize: MainAxisSize.min,
+                      horizontalSpace: 4,
+                      children: [
+                        HeroIcon(HeroIcons.house, size: 12 / count),
+                        SizedBox(
+                          width: 150,
+                          child: KText(
+                            maxLines: 1,
+                            isSelectable: false,
+                            text: alloc.title ?? "-",
+                            fontSize: 14 / count,
+                            textColor: ThemeColors.gray2,
+                            fontWeight: FWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
             IconButton(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.all(0.0),
-                iconSize: 24,
+                iconSize: 24 / count,
                 onPressed: () async {},
                 icon: const HeroIcon(
                   HeroIcons.moreVertical,
-                  size: 24.0,
                   color: ThemeColors.gray2,
                 )),
           ],
@@ -251,7 +227,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
       case 8:
         return len;
       default:
-        return 4;
+        return 9;
     }
   }
 
@@ -358,5 +334,15 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
             ),
           ],
         ));
+  }
+
+  CalendarDataSource getDataSource(ScheduleState state) {
+    final isUserView = state.sidebarType == SidebarType.user;
+    dynamic users = state.userResources;
+    if (!isUserView) {
+      users = state.locationResources;
+    }
+    return ShiftDataSource(state.getWeekShifts,
+        users.map<CalendarResource>((e) => CalendarResource(id: e)).toList());
   }
 }

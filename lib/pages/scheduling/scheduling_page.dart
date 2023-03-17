@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
@@ -310,6 +311,9 @@ class SchedulingPage extends StatelessWidget {
                             ),
                         ],
                       ),
+                      if (kDebugMode)
+                        Text(state.scheduleState.userResources.length
+                            .toString()),
                       if (scheduleState.calendarView == CalendarView.week)
                         ButtonLargeSecondary(
                           text: scheduleState.sidebarType == SidebarType.user
@@ -326,7 +330,7 @@ class SchedulingPage extends StatelessWidget {
                 ErrorWrapper(
                     height: 650,
                     errors: [
-                      // scheduleState.shifts.error,
+                      scheduleState.shifts.error,
                     ],
                     child: SizedBox(
                         height: 650,
