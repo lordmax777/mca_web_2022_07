@@ -230,10 +230,8 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    return ShiftDataSource(
-        [],
-        state.userResources
-            .map<CalendarResource>((e) => CalendarResource(id: e))
-            .toList());
+    dynamic users = state.userResources;
+    return ShiftDataSource(state.getShifts,
+        users.map<CalendarResource>((e) => CalendarResource(id: e)).toList());
   }
 }
