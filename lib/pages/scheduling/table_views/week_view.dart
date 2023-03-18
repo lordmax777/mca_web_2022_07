@@ -56,6 +56,7 @@ class WeeklyViewCalendar extends StatelessWidget {
               endHour: 1,
             ),
             viewHeaderHeight: 0,
+            headerHeight: 0,
             // loadMoreWidgetBuilder: (context, loadMoreAppointments) {
             //   return FutureBuilder<void>(
             //     future: loadMoreAppointments(),
@@ -85,26 +86,26 @@ class WeeklyViewCalendar extends StatelessWidget {
                   logger(calendarTapDetails.targetElement);
               }
             },
-            onDragEnd: (appointmentDragEndDetails) {
-              appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
-            },
+            // onDragEnd: (appointmentDragEndDetails) {
+            //   appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
+            // },
             firstDayOfWeek: 1,
             todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: false,
             cellEndPadding: 0,
-            appointmentBuilder: (_, calendarAppointmentDetails) {
-              final appointment = calendarAppointmentDetails.appointments
-                  .toList()
-                  .first as Appointment?;
-              final ap = appointment?.id as AppointmentIdMd?;
-              if (ap == null) {
-                return const SizedBox();
-              }
-
-              final isUserView = scheduleState.sidebarType == SidebarType.user;
-              // final count = scheduleState.countSameShiftStartDate(appointment!);
-              return _appWidget(ap, 8, isUserView);
-            },
+            // appointmentBuilder: (_, calendarAppointmentDetails) {
+            //   final appointment = calendarAppointmentDetails.appointments
+            //       .toList()
+            //       .first as Appointment?;
+            //   final ap = appointment?.id as AppointmentIdMd?;
+            //   if (ap == null) {
+            //     return const SizedBox();
+            //   }
+            //
+            //   final isUserView = scheduleState.sidebarType == SidebarType.user;
+            //   // final count = scheduleState.countSameShiftStartDate(appointment!);
+            //   return _appWidget(ap, 8, isUserView);
+            // },
           );
         });
   }
@@ -214,6 +215,8 @@ class WeeklyViewCalendar extends StatelessWidget {
             ? scheduleState.userResources
             : scheduleState.locationResources)
         .length;
+    logger(
+        "visibleResourceCount: ${scheduleState.largestAppointmentCountWeek}");
     switch (len) {
       case 0:
         return 0;
@@ -227,7 +230,10 @@ class WeeklyViewCalendar extends StatelessWidget {
       case 8:
         return len;
       default:
-        return 9;
+        if (scheduleState.largestAppointmentCountWeek == 0) {
+          return 9;
+        }
+        return 650 ~/ (36 * scheduleState.largestAppointmentCountWeek);
     }
   }
 

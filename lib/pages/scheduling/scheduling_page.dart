@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import '../../manager/models/location_item_md.dart';
 import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
@@ -38,9 +36,9 @@ class _SchedulingPageState extends State<SchedulingPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await appStore.dispatch(SCFetchShiftsAction(date: day));
-      // await appStore.dispatch(SCFetchShiftsWeekAction(
-      //     startDate: firstDayOfWeek, endDate: lastDayOfWeek));
+      // await appStore.dispatch(SCFetchShiftsAction(date: day));
+      await appStore.dispatch(SCFetchShiftsWeekAction(
+          startDate: firstDayOfWeek, endDate: lastDayOfWeek));
     });
   }
 

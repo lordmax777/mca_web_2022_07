@@ -242,9 +242,9 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       //   // ));
       //   print("Isolate FINISH");
       // });
+
       // Finds the occurrence of resourceIds and
       // sets the largestAppointmentCountDay
-
       for (var e in list) {
         int max = 0;
         for (var a in list) {
@@ -252,7 +252,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             max++;
           }
         }
-        logger("Max: $max");
         if (max > largestAppointmentCountDay) {
           largestAppointmentCountDay = max;
         }
@@ -294,6 +293,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final startDate = action.startDate;
     final endDate = action.endDate;
     final stateVal = state.scheduleState.shifts;
+    int largestAppointmentCountWeek = 0;
 
     stateVal.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateVal));
@@ -334,12 +334,35 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         appointments.add(Appointment(
           startTime: st,
           endTime: et,
-          color: Colors.white,
+          color: id.user.userRandomBgColor,
           subject: pr.title ?? "-",
           id: id,
           resourceIds: [us, pr],
         ));
       }
+
+      bool isSameDate(DateTime a, DateTime b) {
+        return a.year == b.year && a.month == b.month && a.day == b.day;
+      }
+
+      // Finds the occurrence of resourceIds and
+      // sets the largestAppointmentCountWeek
+      for (var e in list) {
+        int max = 0;
+        for (var a in appointments) {
+          if (isSameDate(DateTime.parse(e.date), a.startTime)) {
+            if (e.userId == (a.id! as AppointmentIdMd).user.id) {
+              max++;
+            }
+          }
+        }
+        if (max > largestAppointmentCountWeek) {
+          largestAppointmentCountWeek = max;
+        }
+      }
+
+      logger("Largest Appointment Count Week: $largestAppointmentCountWeek");
+
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.week] = appointments;
       stateVal.error.action = action;
@@ -347,6 +370,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
       next(UpdateScheduleState(
         shifts: stateVal,
+        largestAppointmentCountWeek: largestAppointmentCountWeek,
         backupShiftsWeek: appointments,
       ));
     } else {

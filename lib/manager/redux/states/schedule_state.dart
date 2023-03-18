@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -132,7 +133,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.day,
+      calendarView: kDebugMode ? CalendarView.week : CalendarView.day,
       interval: 60,
       largestAppointmentCountDay: 1,
       largestAppointmentCountWeek: 1,
