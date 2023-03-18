@@ -33,7 +33,7 @@ class SchedulingPage extends StatelessWidget {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          // await appStore.dispatch(SCFetchShiftsAction(date: day));
+          await appStore.dispatch(SCFetchShiftsAction(date: day));
           await appStore.dispatch(SCFetchShiftsWeekAction(
               startDate: firstDayOfWeek, endDate: lastDayOfWeek));
         },

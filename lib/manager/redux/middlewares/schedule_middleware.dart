@@ -151,6 +151,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final shiftId = action.shiftId ?? 0;
     final date = action.date;
     final stateVal = state.scheduleState.shifts;
+    int largestAppointmentCountDay =
+        state.scheduleState.largestAppointmentCountDay;
 
     stateVal.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateVal));
@@ -206,12 +208,25 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           startTime: st,
           endTime: et ?? DateTime.now(),
           isAllDay: et == null,
-          color: Colors.white,
+          color: Colors.blueAccent,
           subject: pr.title ?? "-",
           id: id,
           resourceIds: [us],
         ));
       }
+
+      // Finds the occurrence of resourceIds and
+      // sets the largestAppointmentCountDay
+      for (var e in list) {
+        int max = 0;
+        for (var a in list) {
+          if (e.userId == a.userId) {
+            max++;
+          }
+        }
+        largestAppointmentCountDay = max;
+      }
+
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.day] = appointments;
       stateVal.error.action = action;
@@ -220,6 +235,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       next(UpdateScheduleState(
         shifts: stateVal,
         backupShifts: appointments,
+        largestAppointmentCountDay: largestAppointmentCountDay,
       ));
     } else {
       stateVal.error.isLoading = false;
@@ -555,9 +571,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         users.clear();
         for (int i = 0; i < filter.length; i++) {
           users.add(filter[i]);
-          users.sort((a, b) => (a.id as UserRes)
-              .firstName
-              .compareTo((b.id as UserRes).firstName));
+          users.sort((a, b) => (a).firstName.compareTo(b.firstName));
         }
       } else {
         users.clear();
@@ -580,9 +594,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         locs.clear();
         for (int i = 0; i < filterLocs.length; i++) {
           locs.add(filterLocs[i]);
-          locs.sort((a, b) => (a.id as PropertiesMd)
-              .title!
-              .compareTo((b.id as PropertiesMd).title!));
+          locs.sort((a, b) => a.title!.compareTo(b.title!));
         }
       } else {
         locs.clear();
@@ -616,7 +628,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   void _onChangeSidebarType(
       AppState state, SCChangeSidebarType action, NextDispatcher next) async {
     SidebarType sidebarType = state.scheduleState.sidebarType;
-    logger("Sidebar type: $sidebarType");
     if (sidebarType == SidebarType.user) {
       sidebarType = SidebarType.location;
       appStore.dispatch(SCAddFilter(location: PropertiesMd.all()));

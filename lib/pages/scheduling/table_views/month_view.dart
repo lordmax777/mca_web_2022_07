@@ -34,6 +34,7 @@ class MonthlyViewCalendar extends StatelessWidget {
     return StoreConnector<AppState, ScheduleState>(
         converter: (store) => store.state.scheduleState,
         builder: (_, scheduleState) {
+          logger(scheduleState.getWeekShifts.length);
           return SfCalendar(
             view: CalendarView.month,
             dataSource: getDataSource(scheduleState),
@@ -46,6 +47,12 @@ class MonthlyViewCalendar extends StatelessWidget {
               allowScroll: !kDebugMode,
               allowNavigation: !kDebugMode,
             ),
+
+            timeSlotViewSettings: const TimeSlotViewSettings(
+              startHour: 0,
+              endHour: 1,
+            ),
+            headerHeight: 0,
             onTap: (calendarTapDetails) {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
@@ -64,7 +71,6 @@ class MonthlyViewCalendar extends StatelessWidget {
             firstDayOfWeek: 1,
             allowDragAndDrop: false,
             todayHighlightColor: ThemeColors.gray8,
-
             // appointmentBuilder: (_, calendarAppointmentDetails) {
             //   final appointment = calendarAppointmentDetails.appointments
             //       .toList()

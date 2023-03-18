@@ -58,19 +58,19 @@ class DailyViewCalendar extends StatelessWidget {
             initialDisplayDate: day,
             todayHighlightColor: Colors.transparent,
             allowDragAndDrop: false,
-            appointmentBuilder: (_, calendarAppointmentDetails) {
-              final appointment = calendarAppointmentDetails.appointments
-                  .toList()
-                  .first as Appointment?;
-              final ap = appointment?.id as AppointmentIdMd?;
-              if (ap == null) {
-                return const SizedBox();
-              }
-              // final count = scheduleState.countSameShiftStartDate(appointment!,
-              //     isWeek: false);
-
-              return _appWidget(appointment!, 8);
-            },
+            // appointmentBuilder: (_, calendarAppointmentDetails) {
+            //   final appointment = calendarAppointmentDetails.appointments
+            //       .toList()
+            //       .first as Appointment?;
+            //   final ap = appointment?.id as AppointmentIdMd?;
+            //   if (ap == null) {
+            //     return const SizedBox();
+            //   }
+            //   // final count = scheduleState.countSameShiftStartDate(appointment!,
+            //   //     isWeek: false);
+            //
+            //   return _appWidget(appointment!, 8);
+            // },
           );
         });
   }
@@ -133,15 +133,15 @@ class DailyViewCalendar extends StatelessWidget {
                   ),
                 ],
               ),
-            IconButton(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.all(0.0),
-                onPressed: () async {},
-                icon: HeroIcon(
-                  HeroIcons.moreVertical,
-                  size: 24.0 / count,
-                  color: Colors.white,
-                )),
+            // IconButton(
+            //     alignment: Alignment.centerRight,
+            //     padding: const EdgeInsets.all(0.0),
+            //     onPressed: () async {},
+            //     icon: HeroIcon(
+            //       HeroIcons.moreVertical,
+            //       size: 24.0 / count,
+            //       color: Colors.white,
+            //     )),
           ],
         ),
       ),
@@ -163,7 +163,7 @@ class DailyViewCalendar extends StatelessWidget {
       case 8:
         return len;
       default:
-        return 9;
+        return scheduleState.largestAppointmentCountDay;
     }
   }
 

@@ -32,6 +32,9 @@ class ResourceIdMd {
 @immutable
 class ScheduleState {
   final int interval;
+  final int largestAppointmentCountDay;
+  final int largestAppointmentCountWeek;
+
   final StateValue<Map<CalendarView, List<Appointment>>> shifts;
   List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
@@ -123,12 +126,16 @@ class ScheduleState {
     required this.calendarView,
     required this.filteredUsers,
     required this.filteredLocations,
+    required this.largestAppointmentCountDay,
+    required this.largestAppointmentCountWeek,
   });
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.week,
+      calendarView: CalendarView.day,
       interval: 60,
+      largestAppointmentCountDay: 1,
+      largestAppointmentCountWeek: 1,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
       backupShifts: [],
@@ -145,6 +152,8 @@ class ScheduleState {
   ScheduleState copyWith({
     CalendarView? calendarView,
     int? interval,
+    int? largestAppointmentCountDay,
+    int? largestAppointmentCountWeek,
     StateValue<Map<CalendarView, List<Appointment>>>? shifts,
     List<UserRes>? userResources,
     List<PropertiesMd>? locationResources,
@@ -167,6 +176,10 @@ class ScheduleState {
       backupShiftsWeek: backupShiftsWeek ?? this.backupShiftsWeek,
       locationResources: locationResources ?? this.locationResources,
       backupShiftsMonth: backupShiftsMonth ?? this.backupShiftsMonth,
+      largestAppointmentCountDay:
+          largestAppointmentCountDay ?? this.largestAppointmentCountDay,
+      largestAppointmentCountWeek:
+          largestAppointmentCountWeek ?? this.largestAppointmentCountWeek,
     );
   }
 }
@@ -183,6 +196,8 @@ class UpdateScheduleState {
   final List<Appointment>? backupShiftsWeek;
   final List<Appointment>? backupShiftsMonth;
   final List<PropertiesMd>? locationResources;
+  final int? largestAppointmentCountDay;
+  final int? largestAppointmentCountWeek;
 
   UpdateScheduleState({
     this.calendarView,
@@ -196,6 +211,8 @@ class UpdateScheduleState {
     this.backupShiftsWeek,
     this.locationResources,
     this.backupShiftsMonth,
+    this.largestAppointmentCountWeek,
+    this.largestAppointmentCountDay,
   });
 }
 
