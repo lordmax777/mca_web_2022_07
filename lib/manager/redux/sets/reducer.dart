@@ -42,6 +42,10 @@ ScheduleState _updateScheduleState(
     backupShiftsWeek: action.backupShiftsWeek ?? state.backupShiftsWeek,
     backupShiftsMonth: action.backupShiftsMonth ?? state.backupShiftsMonth,
     locationResources: action.locationResources ?? state.locationResources,
+    largestAppointmentCountDay:
+        action.largestAppointmentCountDay ?? state.largestAppointmentCountDay,
+    largestAppointmentCountWeek:
+        action.largestAppointmentCountWeek ?? state.largestAppointmentCountWeek,
   );
 }
 

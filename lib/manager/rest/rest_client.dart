@@ -34,9 +34,6 @@ abstract class RestClient {
   @GET("/api/fe/managedusers")
   Future<HttpResponse> getUsersList();
 
-  @GET("/api/fe/locations")
-  Future<HttpResponse> getLocationsList();
-
   @GET("/api/fe/lists")
   Future<HttpResponse> getLists();
 

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../manager/models/location_item_md.dart';
@@ -14,7 +15,7 @@ import 'table_views/week_view.dart';
 
 class SchedulingPage extends StatelessWidget {
   SchedulingPage({Key? key}) : super(key: key);
-  DateTime get today => DateTime.now();
+
   //Day
   DateTime day = DateTime.now();
 
@@ -24,24 +25,24 @@ class SchedulingPage extends StatelessWidget {
   DateTime get lastDayOfWeek => firstDayOfWeek.add(const Duration(days: 6));
 
   // Month
-  // DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  // DateTime get endDate => DateTime(startDate.year, startDate.month + 1, 0);
-//DateTime(date.year, date.month + 1, 0).day
+  DateTime firstDayOfMonth =
+      DateTime(DateTime.now().year, DateTime.now().month);
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         onInit: (store) async {
-          // await appStore.dispatch(SCFetchShiftsAction(date: day));
+          await appStore.dispatch(SCFetchShiftsAction(date: day));
           await appStore.dispatch(SCFetchShiftsWeekAction(
               startDate: firstDayOfWeek, endDate: lastDayOfWeek));
         },
         builder: (_, state) {
           final scheduleState = state.scheduleState;
           final u = [...(state.usersState.usersList.data ?? [])];
-          final l = [...(state.generalState.locationItems.data ?? [])];
+          final l = [...(state.generalState.properties.data ?? [])];
           final users = [UserRes.all(), ...u];
-          final locs = [LocationItemMd.all(), ...l];
+          final locs = [PropertiesMd.all(), ...l];
 
           return PageWrapper(
               child: TableWrapperWidget(
@@ -66,7 +67,9 @@ class SchedulingPage extends StatelessWidget {
                           Visibility(
                             visible:
                                 scheduleState.sidebarType == SidebarType.user &&
-                                    u.isNotEmpty,
+                                    u.isNotEmpty &&
+                                    scheduleState.calendarView !=
+                                        CalendarView.month,
                             child: DropdownWidget1(
                               hasSearchBox: true,
                               dropdownOptionsWidth: 250,
@@ -92,13 +95,13 @@ class SchedulingPage extends StatelessWidget {
                             visible: scheduleState.sidebarType ==
                                     SidebarType.location &&
                                 l.isNotEmpty &&
-                                scheduleState.calendarView != CalendarView.day,
+                                scheduleState.calendarView == CalendarView.week,
                             child: DropdownWidget1(
                                 hasSearchBox: true,
                                 dropdownOptionsWidth: 300,
                                 dropdownBtnWidth: 300,
                                 hintText: "Location",
-                                items: locs.map((e) => e.name).toList(),
+                                items: locs.map((e) => e.title).toList(),
                                 objItems: locs,
                                 customItemIcons: {
                                   for (var i = 0;
@@ -113,7 +116,7 @@ class SchedulingPage extends StatelessWidget {
                                 value: scheduleState.filteredLocations.isEmpty
                                     ? "All"
                                     : scheduleState
-                                        .filteredLocations.first.name,
+                                        .filteredLocations.first.title,
                                 onChangedWithObj: (p0) {
                                   appStore
                                       .dispatch(SCAddFilter(location: p0.item));
@@ -267,13 +270,10 @@ class SchedulingPage extends StatelessWidget {
                                 children: [
                                   IconButton(
                                     onPressed: () async {
-                                      // firstDayOfWeek = firstDayOfWeek
-                                      //     .subtract(const Duration(days: 7));
-                                      // await appStore
-                                      //     .dispatch(SCFetchShiftsWeekAction(
-                                      //   startDate: firstDayOfWeek,
-                                      //   endDate: lastDayOfWeek,
-                                      // ));
+                                      firstDayOfMonth = DateTime(
+                                          firstDayOfMonth.year,
+                                          firstDayOfMonth.month - 1,
+                                          1);
                                     },
                                     icon: const HeroIcon(
                                       HeroIcons.leftSmall,
@@ -284,20 +284,17 @@ class SchedulingPage extends StatelessWidget {
                                   KText(
                                     textAlign: TextAlign.center,
                                     text:
-                                        "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
+                                        "${DateFormat("MMM").format(firstDayOfMonth)} ${DateFormat("yyyy").format(firstDayOfMonth)}",
                                     fontSize: 16,
                                     textColor: ThemeColors.gray2,
                                     fontWeight: FWeight.medium,
                                   ),
                                   IconButton(
                                     onPressed: () async {
-                                      // firstDayOfWeek = firstDayOfWeek
-                                      //     .add(const Duration(days: 7));
-                                      // await appStore
-                                      //     .dispatch(SCFetchShiftsWeekAction(
-                                      //   startDate: firstDayOfWeek,
-                                      //   endDate: lastDayOfWeek,
-                                      // ));
+                                      firstDayOfMonth = DateTime(
+                                          firstDayOfMonth.year,
+                                          firstDayOfMonth.month + 1,
+                                          1);
                                     },
                                     icon: const HeroIcon(
                                       HeroIcons.rightSmall,
@@ -344,8 +341,8 @@ class SchedulingPage extends StatelessWidget {
       case CalendarView.week:
         return WeeklyViewCalendar(
             lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
-      // case CalendarView.month:
-      //   return const MonthlyViewCalendar();
+      case CalendarView.month:
+        return MonthlyViewCalendar(month: firstDayOfMonth);
       default:
         return const Center(
           child: Text("No calendar view selected"),

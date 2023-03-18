@@ -32,84 +32,87 @@ class ResourceIdMd {
 @immutable
 class ScheduleState {
   final int interval;
+  final int largestAppointmentCountDay;
+  final int largestAppointmentCountWeek;
+
   final StateValue<Map<CalendarView, List<Appointment>>> shifts;
   List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
   List<Appointment> get getMonthShifts =>
       shifts.data?[CalendarView.month] ?? [];
 
-  int countSameShiftStartDate(Appointment ap, {bool isWeek = true}) {
-    final AppointmentIdMd id = ap.id as AppointmentIdMd;
-
-    int count = 0;
-    DateTime? largestStartDate;
-    DateTime? largestEndDate;
-    for (final shift in (isWeek ? getWeekShifts : getShifts)) {
-      //Find the largest date and compare all if they are included in the largest date
-
-      if (!isWeek) {
-        if (largestStartDate == null) {
-          largestStartDate = shift.startTime;
-          largestEndDate = shift.endTime;
-        } else {
-          if (largestStartDate.isAfter(shift.startTime)) {
-            largestStartDate = shift.startTime;
-            largestEndDate = shift.endTime;
-          }
-        }
-      }
-
-      if (isWeek) {
-        final isUserView = getSidebarType == SidebarType.user;
-        if (isUserView) {
-          if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
-              ap.startTime == shift.startTime) {
-            count++;
-          }
-        } else {
-          if (id.location.id == (shift.id as AppointmentIdMd).location.id &&
-              ap.startTime == shift.startTime) {
-            count++;
-          }
-        }
-      }
-    }
-
-    //compare all if they are included in the largest date and increase count
-    if (!isWeek) {
-      count = 1;
-      for (final shift in getShifts) {
-        if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
-            shift.startTime.isAfter(largestStartDate!) &&
-            shift.endTime.isBefore(largestEndDate!)) {
-          count += 1;
-        }
-      }
-    }
-    if (!isWeek) {
-      if (getFilteredUsers.isNotEmpty && getFilteredUsers.length < 4) {
-        count = 1;
-      }
-    } else {
-      if (getFilteredLocations.isNotEmpty && getFilteredLocations.length < 6) {
-        count = 1;
-      }
-    }
-    return count;
-  }
+  // int countSameShiftStartDate(Appointment ap, {bool isWeek = true}) {
+  //   final AppointmentIdMd id = ap.id as AppointmentIdMd;
+  //
+  //   int count = 0;
+  //   DateTime? largestStartDate;
+  //   DateTime? largestEndDate;
+  //   for (final shift in (isWeek ? getWeekShifts : getShifts)) {
+  //     //Find the largest date and compare all if they are included in the largest date
+  //
+  //     if (!isWeek) {
+  //       if (largestStartDate == null) {
+  //         largestStartDate = shift.startTime;
+  //         largestEndDate = shift.endTime;
+  //       } else {
+  //         if (largestStartDate.isAfter(shift.startTime)) {
+  //           largestStartDate = shift.startTime;
+  //           largestEndDate = shift.endTime;
+  //         }
+  //       }
+  //     }
+  //
+  //     if (isWeek) {
+  //       final isUserView = getSidebarType == SidebarType.user;
+  //       if (isUserView) {
+  //         if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
+  //             ap.startTime == shift.startTime) {
+  //           count++;
+  //         }
+  //       } else {
+  //         if (id.property.id == (shift.id as AppointmentIdMd).property.id &&
+  //             ap.startTime == shift.startTime) {
+  //           count++;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   //compare all if they are included in the largest date and increase count
+  //   if (!isWeek) {
+  //     count = 1;
+  //     for (final shift in getShifts) {
+  //       if (id.user.id == (shift.id as AppointmentIdMd).user.id &&
+  //           shift.startTime.isAfter(largestStartDate!) &&
+  //           shift.endTime.isBefore(largestEndDate!)) {
+  //         count += 1;
+  //       }
+  //     }
+  //   }
+  //   if (!isWeek) {
+  //     if (getFilteredUsers.isNotEmpty && getFilteredUsers.length < 4) {
+  //       count = 1;
+  //     }
+  //   } else {
+  //     if (getFilteredLocations.isNotEmpty && getFilteredLocations.length < 6) {
+  //       count = 1;
+  //     }
+  //   }
+  //   return count;
+  // }
 
   final List<Appointment> backupShifts;
   final List<Appointment> backupShiftsWeek;
   final List<Appointment> backupShiftsMonth;
-  final List<CalendarResource> userResources;
-  final List<CalendarResource> locationResources;
+  final List<UserRes> userResources;
+  final List<PropertiesMd> locationResources;
   final CalendarView calendarView;
   final SidebarType sidebarType;
   SidebarType get getSidebarType => sidebarType;
   final List<UserRes> filteredUsers;
   List<UserRes> get getFilteredUsers => filteredUsers;
-  final List<LocationItemMd> filteredLocations;
-  List<LocationItemMd> get getFilteredLocations => filteredLocations;
+  final List<PropertiesMd> filteredLocations;
+  List<PropertiesMd> get getFilteredLocations => filteredLocations;
 
   const ScheduleState({
     required this.interval,
@@ -123,12 +126,16 @@ class ScheduleState {
     required this.calendarView,
     required this.filteredUsers,
     required this.filteredLocations,
+    required this.largestAppointmentCountDay,
+    required this.largestAppointmentCountWeek,
   });
 
   factory ScheduleState.initial() {
     return ScheduleState(
       calendarView: CalendarView.day,
       interval: 60,
+      largestAppointmentCountDay: 1,
+      largestAppointmentCountWeek: 1,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
       backupShifts: [],
@@ -145,12 +152,14 @@ class ScheduleState {
   ScheduleState copyWith({
     CalendarView? calendarView,
     int? interval,
+    int? largestAppointmentCountDay,
+    int? largestAppointmentCountWeek,
     StateValue<Map<CalendarView, List<Appointment>>>? shifts,
-    List<CalendarResource>? userResources,
-    List<CalendarResource>? locationResources,
+    List<UserRes>? userResources,
+    List<PropertiesMd>? locationResources,
     SidebarType? sidebarType,
     List<UserRes>? filteredUsers,
-    List<LocationItemMd>? filteredLocations,
+    List<PropertiesMd>? filteredLocations,
     List<Appointment>? backupShifts,
     List<Appointment>? backupShiftsWeek,
     List<Appointment>? backupShiftsMonth,
@@ -167,6 +176,10 @@ class ScheduleState {
       backupShiftsWeek: backupShiftsWeek ?? this.backupShiftsWeek,
       locationResources: locationResources ?? this.locationResources,
       backupShiftsMonth: backupShiftsMonth ?? this.backupShiftsMonth,
+      largestAppointmentCountDay:
+          largestAppointmentCountDay ?? this.largestAppointmentCountDay,
+      largestAppointmentCountWeek:
+          largestAppointmentCountWeek ?? this.largestAppointmentCountWeek,
     );
   }
 }
@@ -175,14 +188,16 @@ class UpdateScheduleState {
   final CalendarView? calendarView;
   final int? interval;
   final StateValue<Map<CalendarView, List<Appointment>>>? shifts;
-  final List<CalendarResource>? userResources;
+  final List<UserRes>? userResources;
   final SidebarType? sidebarType;
   final List<UserRes>? filteredUsers;
-  final List<LocationItemMd>? filteredLocations;
+  final List<PropertiesMd>? filteredLocations;
   final List<Appointment>? backupShifts;
   final List<Appointment>? backupShiftsWeek;
   final List<Appointment>? backupShiftsMonth;
-  final List<CalendarResource>? locationResources;
+  final List<PropertiesMd>? locationResources;
+  final int? largestAppointmentCountDay;
+  final int? largestAppointmentCountWeek;
 
   UpdateScheduleState({
     this.calendarView,
@@ -196,6 +211,8 @@ class UpdateScheduleState {
     this.backupShiftsWeek,
     this.locationResources,
     this.backupShiftsMonth,
+    this.largestAppointmentCountWeek,
+    this.largestAppointmentCountDay,
   });
 }
 
@@ -203,45 +220,78 @@ class AppointmentIdMd {
   final PropertiesMd property;
   final UserRes user;
   final ShiftMd allocation;
-  final LocationItemMd location;
 
   AppointmentIdMd({
     required this.property,
     required this.user,
-    required this.location,
     required this.allocation,
   });
 
-  // @override
-  // int get hashCode =>
-  //     property.hashCode ^
-  //     user.hashCode ^
-  //     allocation.hashCode ^
-  //     location.hashCode;
-  //
-  // @override
-  // bool operator ==(Object other) =>
-  //     identical(this, other) ||
-  //     other is AppointmentIdMd &&
-  //         runtimeType == other.runtimeType &&
-  //         property == other.property &&
-  //         user == other.user &&
-  //         allocation == other.allocation &&
-  //         location == other.location;
-
-  //copyWith
   AppointmentIdMd copyWith({
     PropertiesMd? property,
     UserRes? user,
     ShiftMd? allocation,
-    LocationItemMd? location,
+    PropertiesMd? location,
   }) {
     return AppointmentIdMd(
       property: property ?? this.property,
       user: user ?? this.user,
       allocation: allocation ?? this.allocation,
-      location: location ?? this.location,
     );
+  }
+}
+
+class AppointmentIdMd1 {
+  final DateTime startTime;
+  final DateTime endTime;
+  final PropertiesMd property;
+  final UserRes user;
+  final ShiftMd allocation;
+
+  AppointmentIdMd1({
+    required this.startTime,
+    required this.endTime,
+    required this.property,
+    required this.user,
+    required this.allocation,
+  });
+
+  AppointmentIdMd1 copyWith({
+    PropertiesMd? property,
+    UserRes? user,
+    ShiftMd? allocation,
+    PropertiesMd? location,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    return AppointmentIdMd1(
+      property: property ?? this.property,
+      user: user ?? this.user,
+      allocation: allocation ?? this.allocation,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is AppointmentIdMd1 &&
+        other.startTime == startTime &&
+        other.endTime == endTime &&
+        other.property == property &&
+        other.user == user &&
+        other.allocation == allocation;
+  }
+
+  @override
+  int get hashCode {
+    return startTime.hashCode ^
+        endTime.hashCode ^
+        property.hashCode ^
+        user.hashCode ^
+        allocation.hashCode;
   }
 }
 
@@ -290,7 +340,7 @@ class SCFetchShiftsWeekAction {
 
 class SCAddFilter {
   final UserRes? user;
-  final LocationItemMd? location;
+  final PropertiesMd? location;
   SCAddFilter({
     this.user,
     this.location,

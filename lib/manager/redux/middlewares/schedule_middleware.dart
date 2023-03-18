@@ -5,7 +5,6 @@ import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../theme/theme.dart';
-import '../../models/location_item_md.dart';
 import '../../models/property_md.dart';
 import '../../models/shift_md.dart';
 import '../../models/users_list.dart';
@@ -152,6 +151,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final shiftId = action.shiftId ?? 0;
     final date = action.date;
     final stateVal = state.scheduleState.shifts;
+    int largestAppointmentCountDay =
+        state.scheduleState.largestAppointmentCountDay;
 
     stateVal.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateVal));
@@ -168,8 +169,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         ...(state.generalState.properties.data ?? <PropertiesMd>[])
       ];
       final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
-      final locs = <LocationItemMd>[
-        ...(state.generalState.locationItems.data ?? [])
+      final locs = <PropertiesMd>[
+        ...(state.generalState.properties.data ?? [])
       ];
       for (var item in res.data['allocations']) {
         final ShiftMd shift = ShiftMd.fromJson(item);
@@ -202,27 +203,30 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           user: us,
           allocation: shift,
           property: pr,
-          location: loc,
         );
         appointments.add(Appointment(
           startTime: st,
           endTime: et ?? DateTime.now(),
           isAllDay: et == null,
-          color: Colors.white,
+          color: Colors.blueAccent,
           subject: pr.title ?? "-",
           id: id,
           resourceIds: [us],
         ));
       }
-      // for (int i = 0; i < appointments.length; i++) {
-      //   final prev = appointments[i];
-      //   for (int j = 0; j < appointments.length; j++) {
-      //     final next = appointments[j];
-      //     if (prev.resourceIds!.contains(next.resourceIds)) {
-      //       prev.resourceIds = [...prev.resourceIds!, ...next.resourceIds!];
-      //     }
-      //   }
-      // }
+
+      // Finds the occurrence of resourceIds and
+      // sets the largestAppointmentCountDay
+      for (var e in list) {
+        int max = 0;
+        for (var a in list) {
+          if (e.userId == a.userId) {
+            max++;
+          }
+        }
+        largestAppointmentCountDay = max;
+      }
+
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.day] = appointments;
       stateVal.error.action = action;
@@ -231,6 +235,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       next(UpdateScheduleState(
         shifts: stateVal,
         backupShifts: appointments,
+        largestAppointmentCountDay: largestAppointmentCountDay,
       ));
     } else {
       stateVal.error.isLoading = false;
@@ -256,71 +261,232 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final startDate = action.startDate;
     final endDate = action.endDate;
     final stateVal = state.scheduleState.shifts;
-    stateVal.data?[CalendarView.week] = [];
 
     stateVal.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateVal));
-    final appointmentsWeek = <Appointment>[];
 
-    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
-      final date = startDate.add(Duration(days: i));
-      final ApiResponse res = await restClient()
-          .getShifts(
-              locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(date))
-          .nocodeErrorHandler();
-      if (res.success) {
-        final list = <ShiftMd>[];
-        final properties = <PropertiesMd>[
-          ...(state.generalState.properties.data ?? <PropertiesMd>[])
-        ];
-        final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
-        final locs = <LocationItemMd>[
-          ...(state.generalState.locationItems.data ?? [])
-        ];
-        for (var item in res.data['allocations']) {
-          final ShiftMd shift = ShiftMd.fromJson(item);
-          list.add(shift);
-          final pr = properties
-              .firstWhereOrNull((element) => element.id == shift.shiftId);
-          if (pr == null) continue;
-          final us =
-              users.firstWhereOrNull((element) => element.id == shift.userId);
-          if (us == null) continue;
-          final loc =
-              locs.firstWhereOrNull((element) => element.id == pr.locationId);
-          if (loc == null) continue;
-          final AppointmentIdMd id = AppointmentIdMd(
-            user: us,
-            allocation: shift,
-            property: pr,
-            location: loc,
-          );
+    final ApiResponse res = await restClient()
+        .getShifts(
+            locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
+            until: DateFormat('yyyy-MM-dd').format(endDate))
+        .nocodeErrorHandler();
 
-          final stWeek = DateTime(date.year, date.month, date.day, 00, 00);
-          DateTime? etWeek = DateTime(date.year, date.month, date.day, 01, 00);
+    if (res.success) {
+      final list = <ShiftMd>[];
+      final appointments = <Appointment>[];
+      final properties = <PropertiesMd>[
+        ...(state.generalState.properties.data ?? <PropertiesMd>[])
+      ];
+      final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
+      for (var item in res.data['allocations']) {
+        final ShiftMd shift = ShiftMd.fromJson(item);
+        list.add(shift);
+        final pr = properties
+            .firstWhereOrNull((element) => element.id == shift.shiftId);
+        if (pr == null) continue;
+        final us =
+            users.firstWhereOrNull((element) => element.id == shift.userId);
+        if (us == null) continue;
 
-          appointmentsWeek.add(Appointment(
-            startTime: stWeek,
-            endTime: etWeek,
-            color: Colors.white,
-            subject: pr.title ?? "-",
-            id: id,
-            resourceIds: [us, loc],
-          ));
-        }
+        final DateTime date = DateTime.parse(shift.date);
+        final st = DateTime(date.year, date.month, date.day, 00, 00);
+        final et = DateTime(date.year, date.month, date.day, 01, 00);
+
+        final AppointmentIdMd id = AppointmentIdMd(
+          user: us,
+          allocation: shift,
+          property: pr,
+        );
+
+        appointments.add(Appointment(
+          startTime: st,
+          endTime: et,
+          color: Colors.white,
+          subject: pr.title ?? "-",
+          id: id,
+          resourceIds: [us, pr],
+        ));
       }
+      stateVal.error.isLoading = false;
+      stateVal.data?[CalendarView.week] = appointments;
+      stateVal.error.action = action;
+      stateVal.error.isError = false;
+
+      next(UpdateScheduleState(
+        shifts: stateVal,
+        backupShiftsWeek: appointments,
+      ));
+    } else {
+      stateVal.error.isLoading = false;
+      stateVal.data?[CalendarView.week] = [];
+      stateVal.error.action = action;
+      stateVal.error.isError = false;
+      if (res.resCode != 404) {
+        stateVal.error.isError = true;
+        stateVal.error.errorCode = res.resCode;
+        stateVal.error.errorMessage = res.resMessage;
+        stateVal.error.rawError = res.rawError;
+        stateVal.error.retries = stateVal.error.retries + 1;
+      }
+      next(UpdateScheduleState(shifts: stateVal, backupShiftsWeek: []));
     }
-    stateVal.error.isLoading = false;
-    stateVal.data?[CalendarView.week] = [
-      ...(stateVal.data?[CalendarView.week] ?? []),
-      ...appointmentsWeek
-    ];
-    stateVal.error.action = action;
-    stateVal.error.isError = false;
-    next(UpdateScheduleState(
-        shifts: stateVal, backupShiftsWeek: appointmentsWeek));
   }
 
+  void _onFetchShiftsMonth(AppState state, SCFetchShiftMonthAction action,
+      NextDispatcher next) async {
+    final locId = action.locationId ?? 0;
+    final userId = action.userId ?? 0;
+    final shiftId = action.shiftId ?? 0;
+    final startDate = action.startDate;
+    final endDate = action.endDate;
+    final stateVal = state.scheduleState.shifts;
+
+    stateVal.error.isLoading = true;
+    next(UpdateScheduleState(shifts: stateVal));
+
+    final ApiResponse res = await restClient()
+        .getShifts(
+            locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
+            until: DateFormat('yyyy-MM-dd').format(endDate))
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      final list = <ShiftMd>[];
+      final appointments = <Appointment>[];
+      final properties = <PropertiesMd>[
+        ...(state.generalState.properties.data ?? <PropertiesMd>[])
+      ];
+      final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
+      for (var item in res.data['allocations']) {
+        final ShiftMd shift = ShiftMd.fromJson(item);
+        list.add(shift);
+        final pr = properties
+            .firstWhereOrNull((element) => element.id == shift.shiftId);
+        if (pr == null) continue;
+        final us =
+            users.firstWhereOrNull((element) => element.id == shift.userId);
+        if (us == null) continue;
+
+        final DateTime date = DateTime.parse(shift.date);
+        final st = DateTime(date.year, date.month, date.day, 00, 00);
+        final et = DateTime(date.year, date.month, date.day, 01, 00);
+
+        final AppointmentIdMd id = AppointmentIdMd(
+          user: us,
+          allocation: shift,
+          property: pr,
+        );
+
+        appointments.add(Appointment(
+          startTime: st,
+          endTime: et,
+          color: Colors.white,
+          subject: pr.title ?? "-",
+          id: id,
+          resourceIds: [us, pr],
+        ));
+      }
+      stateVal.error.isLoading = false;
+      stateVal.data?[CalendarView.week] = appointments;
+      stateVal.error.action = action;
+      stateVal.error.isError = false;
+
+      next(UpdateScheduleState(
+        shifts: stateVal,
+        backupShiftsWeek: appointments,
+      ));
+    } else {
+      stateVal.error.isLoading = false;
+      stateVal.data?[CalendarView.week] = [];
+      stateVal.error.action = action;
+      stateVal.error.isError = false;
+      if (res.resCode != 404) {
+        stateVal.error.isError = true;
+        stateVal.error.errorCode = res.resCode;
+        stateVal.error.errorMessage = res.resMessage;
+        stateVal.error.rawError = res.rawError;
+        stateVal.error.retries = stateVal.error.retries + 1;
+      }
+      next(UpdateScheduleState(shifts: stateVal, backupShiftsWeek: []));
+    }
+  }
+
+  // Future<List<AppointmentIdMd>> _onFetchShiftMonth(AppState state,
+  //     SCFetchShiftMonthAction action, NextDispatcher next) async {
+  //   final locId = action.locationId ?? 0;
+  //   final userId = action.userId ?? 0;
+  //   final shiftId = action.shiftId ?? 0;
+  //   final startDate = action.startDate;
+  //   final endDate = action.endDate;
+  //   final stateVal = state.scheduleState.shifts;
+  //   stateVal.data?[CalendarView.month] = [];
+  //
+  //   stateVal.error.isLoading = true;
+  //   // next(UpdateScheduleState(shifts: stateVal));
+  //   final appointmentsMonth = <Appointment>[];
+  //   final ApiResponse res = await restClient()
+  //       .getShifts(
+  //       locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
+  //       until: DateFormat('yyyy-MM-dd').format(endDate))
+  //       .nocodeErrorHandler();
+  //
+  //   for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+  //     final date = startDate.add(Duration(days: i));
+  //     if (res.success) {
+  //       final list = <ShiftMd>[];
+  //       final properties = <PropertiesMd>[
+  //         ...(state.generalState.properties.data ?? <PropertiesMd>[])
+  //       ];
+  //       final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
+  //       final locs = <PropertiesMd>[
+  //         ...(state.generalState.properties.data ?? [])
+  //       ];
+  //       for (var item in res.data['allocations']) {
+  //         final ShiftMd shift = ShiftMd.fromJson(item);
+  //         list.add(shift);
+  //         final pr = properties
+  //             .firstWhereOrNull((element) => element.id == shift.shiftId);
+  //         if (pr == null) continue;
+  //         final us =
+  //         users.firstWhereOrNull((element) => element.id == shift.userId);
+  //         if (us == null) continue;
+  //         final loc =
+  //         locs.firstWhereOrNull((element) => element.id == pr.locationId);
+  //         if (loc == null) continue;
+  //         final AppointmentIdMd id = AppointmentIdMd(
+  //           user: us,
+  //           allocation: shift,
+  //           property: pr,
+  //         );
+  //
+  //         final stMonth = DateTime(date.year, date.month, date.day, 00, 00);
+  //         DateTime? etMonth = DateTime(date.year, date.month, date.day, 01, 00);
+  //
+  //         appointmentsMonth.add(Appointment(
+  //           startTime: stMonth,
+  //           endTime: etMonth,
+  //           color: Colors.white,
+  //           subject: pr.title ?? "-",
+  //           id: id,
+  //           resourceIds: [us, loc],
+  //         ));
+  //       }
+  //     }
+  //   }
+  //   stateVal.error.isLoading = false;
+  //
+  //   stateVal.data?[CalendarView.month] = [
+  //     ...(stateVal.data?[CalendarView.month] ?? []),
+  //     ...appointmentsMonth
+  //   ];
+  //
+  //   stateVal.error.action = action;
+  //   stateVal.error.isError = false;
+  //
+  //   return appointmentsMonth
+  //       .map<AppointmentIdMd>((e) => e.id as AppointmentIdMd)
+  //       .toList();
+  // }
   Future<List<Appointment>> _onFetchShiftMonth(AppState state,
       SCFetchShiftMonthAction action, NextDispatcher next) async {
     final locId = action.locationId ?? 0;
@@ -328,12 +494,9 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final shiftId = action.shiftId ?? 0;
     final startDate = action.startDate;
     final endDate = action.endDate;
-    final stateVal = state.scheduleState.shifts;
-    stateVal.data?[CalendarView.month] = [];
 
-    stateVal.error.isLoading = true;
-    // next(UpdateScheduleState(shifts: stateVal));
     final appointmentsMonth = <Appointment>[];
+
     final ApiResponse res = await restClient()
         .getShifts(
             locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
@@ -348,9 +511,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           ...(state.generalState.properties.data ?? <PropertiesMd>[])
         ];
         final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
-        final locs = <LocationItemMd>[
-          ...(state.generalState.locationItems.data ?? [])
-        ];
+
         for (var item in res.data['allocations']) {
           final ShiftMd shift = ShiftMd.fromJson(item);
           list.add(shift);
@@ -359,44 +520,33 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           if (pr == null) continue;
           final us =
               users.firstWhereOrNull((element) => element.id == shift.userId);
+
           if (us == null) continue;
-          final loc =
-              locs.firstWhereOrNull((element) => element.id == pr.locationId);
-          if (loc == null) continue;
-          final AppointmentIdMd id = AppointmentIdMd(
-            user: us,
-            allocation: shift,
-            property: pr,
-            location: loc,
-          );
 
           final stMonth = DateTime(date.year, date.month, date.day, 00, 00);
           DateTime? etMonth = DateTime(date.year, date.month, date.day, 01, 00);
 
-          appointmentsMonth.add(Appointment(
-            startTime: stMonth,
+          final appId = AppointmentIdMd(
+            user: us,
+            allocation: shift,
+            property: pr,
+          );
+
+          final Appointment id = Appointment(
+            location: pr.title,
+            subject: us.username,
             endTime: etMonth,
-            color: Colors.white,
-            subject: pr.title ?? "-",
-            id: id,
-            resourceIds: [us, loc],
-          ));
+            startTime: stMonth,
+            id: appId,
+            resourceIds: [us, pr],
+          );
+
+          appointmentsMonth.add(id);
         }
       }
     }
-    stateVal.error.isLoading = false;
-
-    stateVal.data?[CalendarView.month] = [
-      ...(stateVal.data?[CalendarView.month] ?? []),
-      ...appointmentsMonth
-    ];
-
-    stateVal.error.action = action;
-    stateVal.error.isError = false;
 
     return appointmentsMonth;
-    // next(UpdateScheduleState(
-    //     shifts: stateVal, backupShiftsMonth: appointmentsMonth));
   }
 
   void _onAddFilter(
@@ -420,20 +570,16 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       if (filter.isNotEmpty) {
         users.clear();
         for (int i = 0; i < filter.length; i++) {
-          users.add(CalendarResource(id: filter[i]));
-          users.sort((a, b) => (a.id as UserRes)
-              .firstName
-              .compareTo((b.id as UserRes).firstName));
+          users.add(filter[i]);
+          users.sort((a, b) => (a).firstName.compareTo(b.firstName));
         }
       } else {
         users.clear();
-
-        users.addAll((appStore.state.usersState.usersList.data ?? [])
-            .map((e) => CalendarResource(id: e)));
+        users.addAll((appStore.state.usersState.usersList.data ?? []));
       }
       next(UpdateScheduleState(filteredUsers: filter, userResources: users));
     } else if (loc != null) {
-      if (loc.name == "All") {
+      if (loc.title == "All") {
         filterLocs.clear();
       } else {
         if (filterLocs.contains(loc)) {
@@ -447,16 +593,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       if (filterLocs.isNotEmpty) {
         locs.clear();
         for (int i = 0; i < filterLocs.length; i++) {
-          locs.add(CalendarResource(id: filterLocs[i]));
-          locs.sort((a, b) => (a.id as LocationItemMd)
-              .name!
-              .compareTo((b.id as LocationItemMd).name!));
+          locs.add(filterLocs[i]);
+          locs.sort((a, b) => a.title!.compareTo(b.title!));
         }
       } else {
         locs.clear();
 
-        locs.addAll((appStore.state.generalState.locationItems.data ?? [])
-            .map((e) => CalendarResource(id: e)));
+        locs.addAll(
+            (appStore.state.generalState.properties.data ?? []).map((e) => e));
       }
       next(UpdateScheduleState(filteredUsers: filter, locationResources: locs));
     }
@@ -486,7 +630,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     SidebarType sidebarType = state.scheduleState.sidebarType;
     if (sidebarType == SidebarType.user) {
       sidebarType = SidebarType.location;
-      appStore.dispatch(SCAddFilter(location: LocationItemMd.all()));
+      appStore.dispatch(SCAddFilter(location: PropertiesMd.all()));
     } else {
       sidebarType = SidebarType.user;
       appStore.dispatch(SCAddFilter(user: UserRes.all()));

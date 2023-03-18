@@ -174,7 +174,7 @@ class GetUsersListAction {
       stateValue.data = users;
       next(UpdateScheduleState(
         userResources: [
-          for (int i = 0; i < users.length; i++) CalendarResource(id: users[i])
+          for (int i = 0; i < users.length; i++) users[i],
         ],
       ));
       next(UpdateUsersStateAction(usersList: stateValue));
