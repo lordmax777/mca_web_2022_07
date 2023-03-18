@@ -163,7 +163,7 @@ class DailyViewCalendar extends StatelessWidget {
       case 8:
         return len;
       default:
-        return scheduleState.largestAppointmentCountDay;
+        return 650 ~/ (36 * scheduleState.largestAppointmentCountDay);
     }
   }
 

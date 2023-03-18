@@ -13,15 +13,21 @@ import 'table_views/day_view.dart';
 import 'table_views/month_view.dart';
 import 'table_views/week_view.dart';
 
-class SchedulingPage extends StatelessWidget {
-  SchedulingPage({Key? key}) : super(key: key);
+class SchedulingPage extends StatefulWidget {
+  const SchedulingPage({Key? key}) : super(key: key);
 
+  @override
+  State<SchedulingPage> createState() => _SchedulingPageState();
+}
+
+class _SchedulingPageState extends State<SchedulingPage> {
   //Day
   DateTime day = DateTime.now();
 
   //Week
   DateTime firstDayOfWeek =
       DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+
   DateTime get lastDayOfWeek => firstDayOfWeek.add(const Duration(days: 6));
 
   // Month
@@ -29,21 +35,26 @@ class SchedulingPage extends StatelessWidget {
       DateTime(DateTime.now().year, DateTime.now().month);
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await appStore.dispatch(SCFetchShiftsAction(date: day));
+      // await appStore.dispatch(SCFetchShiftsWeekAction(
+      //     startDate: firstDayOfWeek, endDate: lastDayOfWeek));
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
-        onInit: (store) async {
-          await appStore.dispatch(SCFetchShiftsAction(date: day));
-          await appStore.dispatch(SCFetchShiftsWeekAction(
-              startDate: firstDayOfWeek, endDate: lastDayOfWeek));
-        },
+        onInit: (store) async {},
         builder: (_, state) {
           final scheduleState = state.scheduleState;
           final u = [...(state.usersState.usersList.data ?? [])];
           final l = [...(state.generalState.properties.data ?? [])];
           final users = [UserRes.all(), ...u];
           final locs = [PropertiesMd.all(), ...l];
-
           return PageWrapper(
               child: TableWrapperWidget(
                   child: SizedBox(

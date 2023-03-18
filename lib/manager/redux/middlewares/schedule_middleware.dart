@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:redux/redux.dart';
@@ -10,6 +11,23 @@ import '../../models/shift_md.dart';
 import '../../models/users_list.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
+
+int _findLargestAppointmentCountDayInIsolate(Map<String, dynamic> args) {
+  print("Isolate START");
+  final List<ShiftMd> list = args['list'] as List<ShiftMd>;
+  int largestAppointmentCountDay = args['largestAppointmentCountDay'] as int;
+  for (var e in list) {
+    int max = 0;
+    for (var a in list) {
+      if (e.userId == a.userId) {
+        max++;
+      }
+    }
+    largestAppointmentCountDay = max;
+  }
+
+  return largestAppointmentCountDay;
+}
 
 class ScheduleMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -151,8 +169,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final shiftId = action.shiftId ?? 0;
     final date = action.date;
     final stateVal = state.scheduleState.shifts;
-    int largestAppointmentCountDay =
-        state.scheduleState.largestAppointmentCountDay;
+    int largestAppointmentCountDay = 0;
 
     stateVal.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateVal));
@@ -215,8 +232,19 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         ));
       }
 
+      // compute(_findLargestAppointmentCountDayInIsolate, {
+      //   "list": list,
+      //   "largestAppointmentCountDay": largestAppointmentCountDay,
+      // }).then((value) {
+      //   largestAppointmentCountDay = value;
+      //   // next(UpdateScheduleState(
+      //   //   largestAppointmentCountDay: largestAppointmentCountDay,
+      //   // ));
+      //   print("Isolate FINISH");
+      // });
       // Finds the occurrence of resourceIds and
       // sets the largestAppointmentCountDay
+
       for (var e in list) {
         int max = 0;
         for (var a in list) {
@@ -224,8 +252,13 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             max++;
           }
         }
-        largestAppointmentCountDay = max;
+        logger("Max: $max");
+        if (max > largestAppointmentCountDay) {
+          largestAppointmentCountDay = max;
+        }
       }
+
+      logger("Largest Appointment Count Day: $largestAppointmentCountDay");
 
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.day] = appointments;
