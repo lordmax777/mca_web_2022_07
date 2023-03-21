@@ -150,6 +150,35 @@ class DailyViewCalendar extends StatelessWidget {
 
   int visibleResourceCount(ScheduleState scheduleState) {
     final len = scheduleState.userResources.length;
+    final count = scheduleState.largestAppointmentCountDay;
+    switch (len) {
+      case 0:
+        return 0;
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+        return len;
+      default:
+        switch (count) {
+          case 0:
+          case 1:
+            return 9;
+          case 2:
+          case 3:
+            return 3;
+          case 4:
+            return 3;
+          case 5:
+            return 2;
+          default:
+            return 1;
+        }
+    }
     switch (len) {
       case 0:
         return 0;

@@ -69,7 +69,7 @@ class WeeklyViewCalendar extends StatelessWidget {
             // },
             // minDate: from.subtract(const Duration(days: 1)),
             maxDate: to,
-            viewNavigationMode: ViewNavigationMode.snap,
+            viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: !kDebugMode,
               allowNavigation: !kDebugMode,
@@ -93,26 +93,24 @@ class WeeklyViewCalendar extends StatelessWidget {
             todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: false,
             cellEndPadding: 0,
-            // appointmentBuilder: (_, calendarAppointmentDetails) {
-            //   final appointment = calendarAppointmentDetails.appointments
-            //       .toList()
-            //       .first as Appointment?;
-            //   final ap = appointment?.id as AppointmentIdMd?;
-            //   if (ap == null) {
-            //     return const SizedBox();
-            //   }
-            //
-            //   final isUserView = scheduleState.sidebarType == SidebarType.user;
-            //   // final count = scheduleState.countSameShiftStartDate(appointment!);
-            //   return _appWidget(ap, 8, isUserView);
-            // },
+            appointmentBuilder: (_, calendarAppointmentDetails) {
+              final appointment = calendarAppointmentDetails.appointments
+                  .toList()
+                  .first as Appointment?;
+              final ap = appointment?.id as AppointmentIdMd?;
+              if (ap == null) {
+                return const SizedBox();
+              }
+
+              final isUserView = scheduleState.sidebarType == SidebarType.user;
+              return _appWidget(ap, isUserView);
+            },
           );
         });
   }
 
-  Widget _appWidget(AppointmentIdMd ap, int count, bool isUserView) {
+  Widget _appWidget(AppointmentIdMd ap, bool isUserView) {
     final alloc = ap.property;
-    final bool isLarge = count == 1;
     return Tooltip(
       message: alloc.title ?? "-",
       child: Container(
@@ -124,8 +122,7 @@ class WeeklyViewCalendar extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(4.0),
         ),
-        padding: EdgeInsets.symmetric(
-            horizontal: 16.0, vertical: !isLarge ? 0.0 : 6.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,13 +133,13 @@ class WeeklyViewCalendar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 horizontalSpace: 4,
                 children: [
-                  HeroIcon(HeroIcons.user, size: 16 / count),
+                  const HeroIcon(HeroIcons.user, size: 16),
                   SizedBox(
                     width: 150,
                     child: KText(
                       isSelectable: false,
                       text: ap.user.fullname,
-                      fontSize: 20 / count,
+                      fontSize: 20,
                       maxLines: 1,
                       textColor: ThemeColors.gray2,
                       fontWeight: FWeight.bold,
@@ -159,13 +156,13 @@ class WeeklyViewCalendar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     horizontalSpace: 4,
                     children: [
-                      if (isLarge) HeroIcon(HeroIcons.pin, size: 12 / count),
+                      const HeroIcon(HeroIcons.pin, size: 16),
                       SizedBox(
                         width: 150,
                         child: KText(
                           isSelectable: false,
                           text: alloc.title ?? "-",
-                          fontSize: 12 / count,
+                          fontSize: 16,
                           maxLines: 1,
                           textColor: ThemeColors.gray2,
                           fontWeight: FWeight.bold,
@@ -173,34 +170,33 @@ class WeeklyViewCalendar extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (isLarge)
-                    SpacedRow(
-                      mainAxisSize: MainAxisSize.min,
-                      horizontalSpace: 4,
-                      children: [
-                        HeroIcon(HeroIcons.house, size: 12 / count),
-                        SizedBox(
-                          width: 150,
-                          child: KText(
-                            maxLines: 1,
-                            isSelectable: false,
-                            text: alloc.title ?? "-",
-                            fontSize: 14 / count,
-                            textColor: ThemeColors.gray2,
-                            fontWeight: FWeight.bold,
-                          ),
+                  SpacedRow(
+                    mainAxisSize: MainAxisSize.min,
+                    horizontalSpace: 4,
+                    children: [
+                      const HeroIcon(HeroIcons.house, size: 16),
+                      SizedBox(
+                        width: 150,
+                        child: KText(
+                          maxLines: 1,
+                          isSelectable: false,
+                          text: alloc.clientName ?? "-",
+                          fontSize: 16,
+                          textColor: ThemeColors.gray2,
+                          fontWeight: FWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             IconButton(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.all(0.0),
-                iconSize: 24 / count,
-                onPressed: () async {},
+                onPressed: _onAppointmentTap,
                 icon: const HeroIcon(
                   HeroIcons.moreVertical,
+                  size: 24,
                   color: ThemeColors.gray2,
                 )),
           ],
@@ -209,14 +205,18 @@ class WeeklyViewCalendar extends StatelessWidget {
     );
   }
 
+  void _onAppointmentTap() {
+    logger("onAppointmentTap");
+  }
+
   int visibleResourceCount(ScheduleState scheduleState) {
     final isUserView = scheduleState.sidebarType == SidebarType.user;
     final len = (isUserView
             ? scheduleState.userResources
             : scheduleState.locationResources)
         .length;
-    logger(
-        "visibleResourceCount: ${scheduleState.largestAppointmentCountWeek}");
+    final count = scheduleState.largestAppointmentCountWeek;
+    logger("visibleResourceCount: ${count}");
     switch (len) {
       case 0:
         return 0;
@@ -230,10 +230,22 @@ class WeeklyViewCalendar extends StatelessWidget {
       case 8:
         return len;
       default:
-        if (scheduleState.largestAppointmentCountWeek == 0) {
-          return 9;
+        switch (count) {
+          case 0:
+          case 1:
+            return 9;
+          case 2:
+          case 3:
+            return 3;
+          case 4:
+            return 2;
+          default:
+            return 1;
         }
-        return 650 ~/ (36 * scheduleState.largestAppointmentCountWeek);
+      // if (count == 0) {
+      //   return 9;
+      // }
+      // return 600 ~/ (50 * count);
     }
   }
 
