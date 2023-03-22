@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
+import 'package:mix/mix.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -47,6 +49,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onChangeSidebarType(store.state, action, next);
       case SCFetchShiftMonthAction:
         return _onFetchShiftMonth(store.state, action, next);
+      case SCCopyAllocationAction:
+        return _onCopyAllocation(store.state, action, next);
       default:
         return next(action);
     }
@@ -225,7 +229,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           startTime: st,
           endTime: et ?? DateTime.now(),
           isAllDay: et == null,
-          color: Colors.blueAccent,
+          color: us.userRandomBgColor,
           subject: pr.title ?? "-",
           id: id,
           resourceIds: [us],
@@ -675,10 +679,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     if (view == CalendarView.week) {
       interval = 60;
     }
+    appStore.dispatch(SCAddFilter(location: PropertiesMd.all()));
+    appStore.dispatch(SCAddFilter(user: UserRes.all()));
     next(UpdateScheduleState(
       calendarView: view,
       sidebarType: sidebarType,
       interval: interval,
+      filteredUsers: [],
+      filteredLocations: [],
     ));
   }
 
@@ -695,5 +703,33 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     next(UpdateScheduleState(
       sidebarType: sidebarType,
     ));
+  }
+
+  void _onCopyAllocation(AppState state, SCCopyAllocationAction action,
+      NextDispatcher next) async {
+    final allocation = action.allocation;
+    String target() => DateFormat('yyyy-MM-dd').format(action.targetDate);
+    String date() => DateFormat('yyyy-MM-dd').format(action.date);
+    final stateValue = state.scheduleState.shifts;
+    stateValue.error.isLoading = true;
+    next(UpdateScheduleState(shifts: stateValue));
+    final ApiResponse res = await restClient()
+        .postShifts(
+          allocation.property.locationId ?? 0,
+          action.userId ?? 0,
+          0,
+          date(),
+          "copy",
+          date_until: action.userId == null ? null : date(),
+          target_date: target(),
+        )
+        .nocodeErrorHandler();
+    stateValue.error.isLoading = false;
+    next(UpdateScheduleState(shifts: stateValue));
+    if (!res.success) {
+    } else {
+      await appStore.dispatch(action.fetchAction);
+      showError("Shift copied successfully", titleMsg: "Success");
+    }
   }
 }

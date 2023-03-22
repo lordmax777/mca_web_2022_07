@@ -145,11 +145,9 @@ class _$AppRouter extends RootStackRouter {
       );
     },
     SchedulingRoute.name: (routeData) {
-      final args = routeData.argsAs<SchedulingRouteArgs>(
-          orElse: () => const SchedulingRouteArgs());
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: SchedulingPage(key: args.key),
+        child: const SchedulingPage(),
       );
     },
   };
@@ -547,24 +545,12 @@ class NewPropertyRouteArgs {
 
 /// generated route for
 /// [SchedulingPage]
-class SchedulingRoute extends PageRouteInfo<SchedulingRouteArgs> {
-  SchedulingRoute({Key? key})
+class SchedulingRoute extends PageRouteInfo<void> {
+  const SchedulingRoute()
       : super(
           SchedulingRoute.name,
           path: 'schedule',
-          args: SchedulingRouteArgs(key: key),
         );
 
   static const String name = 'SchedulingRoute';
-}
-
-class SchedulingRouteArgs {
-  const SchedulingRouteArgs({this.key});
-
-  final Key? key;
-
-  @override
-  String toString() {
-    return 'SchedulingRouteArgs{key: $key}';
-  }
 }

@@ -110,7 +110,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                                 dropdownOptionsWidth: 300,
                                 dropdownBtnWidth: 300,
                                 hintText: "Location",
-                                items: locs.map((e) => e.title).toList(),
+                                items: locs.map((e) => "${e.title}").toList(),
                                 objItems: locs,
                                 customItemIcons: {
                                   for (var i = 0;

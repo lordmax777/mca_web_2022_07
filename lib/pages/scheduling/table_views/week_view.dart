@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../../comps/tables/simple_popup_menu.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
@@ -9,17 +13,26 @@ import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
 
-class WeeklyViewCalendar extends StatelessWidget {
+class WeeklyViewCalendar extends StatefulWidget {
   final DateTime firstDayOfWeek;
   final DateTime lastDayOfWeek;
 
-  const WeeklyViewCalendar(
+  WeeklyViewCalendar(
       {Key? key, required this.lastDayOfWeek, required this.firstDayOfWeek})
       : super(key: key);
 
-  DateTime get from => firstDayOfWeek;
+  @override
+  State<WeeklyViewCalendar> createState() => _WeeklyViewCalendarState();
+}
 
-  DateTime get to => lastDayOfWeek;
+class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
+  DateTime get from => widget.firstDayOfWeek;
+
+  DateTime get to => widget.lastDayOfWeek;
+
+  final Map<String, dynamic> selectedAppointment = <String, dynamic>{};
+
+  bool get isCopyMode => selectedAppointment.isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +70,7 @@ class WeeklyViewCalendar extends StatelessWidget {
             ),
             viewHeaderHeight: 0,
             headerHeight: 0,
+            backgroundColor: isCopyMode ? Colors.blue[50] : Colors.white,
             // loadMoreWidgetBuilder: (context, loadMoreAppointments) {
             //   return FutureBuilder<void>(
             //     future: loadMoreAppointments(),
@@ -78,9 +92,12 @@ class WeeklyViewCalendar extends StatelessWidget {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   logger("appointment");
+                  logger(calendarTapDetails.appointments?.first.id.user.id);
+                  logger(calendarTapDetails
+                      .appointments?.first.id.property.locationId);
                   break;
                 case CalendarElement.calendarCell:
-                  logger("calendarCell ${calendarTapDetails.appointments}");
+                  _onAppointmentTap(calendarTapDetails.date!);
                   break;
                 default:
                   logger(calendarTapDetails.targetElement);
@@ -103,16 +120,16 @@ class WeeklyViewCalendar extends StatelessWidget {
               }
 
               final isUserView = scheduleState.sidebarType == SidebarType.user;
-              return _appWidget(ap, isUserView);
+              return _appWidget(ap, isUserView, context);
             },
           );
         });
   }
 
-  Widget _appWidget(AppointmentIdMd ap, bool isUserView) {
+  Widget _appWidget(AppointmentIdMd ap, bool isUserView, BuildContext context) {
     final alloc = ap.property;
     return Tooltip(
-      message: alloc.title ?? "-",
+      message: (isUserView ? alloc.title : ap.user.fullname) ?? "-",
       child: Container(
         decoration: BoxDecoration(
           color: ThemeColors.transparent,
@@ -190,23 +207,132 @@ class WeeklyViewCalendar extends StatelessWidget {
                   ),
                 ],
               ),
-            IconButton(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.all(0.0),
-                onPressed: _onAppointmentTap,
-                icon: const HeroIcon(
-                  HeroIcons.moreVertical,
-                  size: 24,
-                  color: ThemeColors.gray2,
-                )),
+            SimplePopupMenuWidget(
+              menus: [
+                SimplePopupMenu(
+                  label: "Copy",
+                  onTap: () async {
+                    setState(() {
+                      selectedAppointment['copy'] = ap;
+                    });
+                    showError("Now select a date to copy to",
+                        titleMsg: "Copied.");
+
+                    return;
+                    DateTime? val = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.parse(ap.allocation.date),
+                      firstDate: DateTime(2015),
+                      lastDate: DateTime(2035),
+                    );
+                    if (val != null && ap.allocation.dateTimeDate != null) {
+                      appStore.dispatch(SCCopyAllocationAction(
+                        fetchAction: SCFetchShiftsWeekAction(
+                          startDate: widget.firstDayOfWeek,
+                          endDate: widget.lastDayOfWeek,
+                        ),
+                        allocation: ap,
+                        targetDate: val,
+                        userId: ap.user.id,
+                        date: ap.allocation.dateTimeDate!,
+                      ));
+                    }
+                  },
+                ),
+                SimplePopupMenu(
+                  label: "Copy All",
+                  onTap: () async {
+                    setState(() {
+                      selectedAppointment['copyAll'] = ap;
+                    });
+                    showError("Now select a date to copy to",
+                        titleMsg: "Copied.");
+                    return;
+                    // DateTime? val = await showDatePicker(
+                    //   context: context,
+                    //   initialDate: DateTime.parse(ap.allocation.date),
+                    //   firstDate: DateTime(2015),
+                    //   lastDate: DateTime(2035),
+                    // );
+                    // if (val != null && ap.allocation.dateTimeDate != null) {
+                    //   appStore.dispatch(SCCopyAllocationAction(
+                    //     fetchAction: SCFetchShiftsWeekAction(
+                    //       startDate: widget.firstDayOfWeek,
+                    //       endDate: widget.lastDayOfWeek,
+                    //     ),
+                    //     allocation: ap,
+                    //     targetDate: val,
+                    //     date: ap.allocation.dateTimeDate!,
+                    //   ));
+                    // }
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  void _onAppointmentTap() {
-    logger("onAppointmentTap");
+  void _onAppointmentTap(DateTime date) async {
+    if (selectedAppointment.isEmpty) {
+      return;
+    }
+    AppointmentIdMd? ap = selectedAppointment['copy'];
+    int? userId = ap?.user.id;
+    if (ap == null) {
+      ap = selectedAppointment['copyAll'];
+      userId = null;
+    }
+    if (ap == null) {
+      return;
+    }
+    if (ap.allocation.dateTimeDate == null) {
+      return;
+    }
+    if (date.isBefore(ap.allocation.dateTimeDate!)) {
+      showError("Cannot copy to a date before the current date");
+      return;
+    }
+    bool? canCopy = false;
+    canCopy = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Copy"),
+          content: Text(
+              "Are you sure you want to copy to ${DateFormat('dd MMM yyyy').format(date)}?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                return Get.back(result: false);
+              },
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () async {
+                return Get.back(result: true);
+              },
+              child: const Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+    if (canCopy != null && canCopy) {
+      appStore.dispatch(SCCopyAllocationAction(
+        fetchAction: SCFetchShiftsWeekAction(
+          startDate: widget.firstDayOfWeek,
+          endDate: widget.lastDayOfWeek,
+        ),
+        allocation: ap,
+        userId: userId,
+        targetDate: date,
+        date: ap.allocation.dateTimeDate!,
+      ));
+      selectedAppointment.clear();
+    }
   }
 
   int visibleResourceCount(ScheduleState scheduleState) {
@@ -344,7 +470,7 @@ class WeeklyViewCalendar extends StatelessWidget {
               child: KText(
                 isSelectable: false,
                 maxLines: 2,
-                text: location.title,
+                text: "${location.title} - ${location.locationName}",
                 fontSize: 14.0,
                 textColor: ThemeColors.gray2,
                 fontWeight: FWeight.bold,

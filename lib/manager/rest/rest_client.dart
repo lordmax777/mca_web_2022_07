@@ -507,9 +507,11 @@ abstract class RestClient {
     @Path() int shiftId,
     @Path() String date,
 
-    ///Action. Available: add,remove,publish,unpublish,more,less
-    @Field() String action,
-  );
+    ///Action. Available: add,remove,publish,unpublish,more,less, copy
+    @Field() String action, {
+    @Field() String? date_until,
+    @Field() String? target_date,
+  });
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

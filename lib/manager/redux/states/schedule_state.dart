@@ -314,3 +314,19 @@ class SCFetchShiftMonthAction {
     required this.endDate,
   });
 }
+
+class SCCopyAllocationAction {
+  final AppointmentIdMd allocation;
+  final DateTime targetDate;
+  final SCFetchShiftsWeekAction fetchAction;
+  final DateTime date;
+  final int? userId;
+
+  const SCCopyAllocationAction({
+    required this.allocation,
+    required this.targetDate,
+    required this.fetchAction,
+    required this.date,
+    this.userId,
+  });
+}

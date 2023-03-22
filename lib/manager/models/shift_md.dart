@@ -23,6 +23,8 @@ class ShiftMd {
   final num? special_rate;
   final int? user_order;
 
+  DateTime? get dateTimeDate => DateTime.tryParse(date);
+
   ShiftMd({
     required this.id,
     required this.locationId,
