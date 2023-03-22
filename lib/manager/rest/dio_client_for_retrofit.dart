@@ -81,22 +81,22 @@ class DioClientForRetrofit {
   }
 
   Dio init({List<Interceptor>? customInterceptors, bool prettyLog = true}) {
-    Dio _dio = Dio();
+    Dio dio = Dio();
 
     if (prettyLog) {
-      _dio.interceptors.add(loggerInterceptor);
-      _dio.interceptors.add(TokenHandler.interceptor);
+      dio.interceptors.add(loggerInterceptor);
+      dio.interceptors.add(TokenHandler.interceptor);
     }
     if (customInterceptors != null && customInterceptors.isNotEmpty) {
-      _dio.interceptors.addAll(customInterceptors);
+      dio.interceptors.addAll(customInterceptors);
     }
     // _dio.interceptors.add(tokenInterceptor);
     BaseOptions options = BaseOptions(
         headers: headers,
         responseType: responseType,
         receiveDataWhenStatusError: true);
-    _dio.options = options;
-    return _dio;
+    dio.options = options;
+    return dio;
   }
 }
 
@@ -116,7 +116,7 @@ final loggerInterceptor =
 }, onResponse: (Response response, handler) async {
   final talker = TalkerController.to.talker;
   Logger.i(
-      "| [DIO] Response [code ${response.statusCode}]: ${response.data.toString()}");
+      "| [DIO] Response [code ${response.statusCode}]"); //: ${response.data.toString().substring(0, 100)}
   handler.next(response);
   // return response; // continue
 }, onError: (DioError error, handler) async {

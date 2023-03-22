@@ -578,11 +578,13 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final stateValue = state.scheduleState.shifts;
     stateValue.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateValue));
+    //To copy all shifts, use action.isAll and shiftId must be 0
+    //To copy single shift, use !action.isAll and shiftId must be the id of the shift
     final ApiResponse res = await restClient()
         .postShifts(
           allocation.property.locationId ?? 0,
           action.allocation.user.id,
-          allocation.property.id ?? 0,
+          action.isAll ? 0 : (allocation.allocation.id ?? 0),
           date(),
           "copy",
           date_until: action.isAll ? null : date(),

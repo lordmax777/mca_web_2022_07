@@ -214,8 +214,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     setState(() {
                       selectedAppointment['copy'] = ap;
                     });
-                    showError("Now select a date to copy to",
-                        titleMsg: "Copied.");
+                    // showError("Now select a date to copy to",
+                    //     titleMsg: "Copied.");
 
                     return;
                     // DateTime? val = await showDatePicker(
@@ -244,8 +244,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     setState(() {
                       selectedAppointment['copyAll'] = ap;
                     });
-                    showError("Now select a date to copy to",
-                        titleMsg: "Copied.");
+                    // showError("Now select a date to copy to",
+                    //     titleMsg: "Copied.");
                     return;
                     // DateTime? val = await showDatePicker(
                     //   context: context,
