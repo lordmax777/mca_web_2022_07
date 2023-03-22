@@ -200,9 +200,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
                                       size: 18,
                                     ),
                                   ),
-                                  // Text(
-                                  //   scheduleState.
-                                  // )
                                 ],
                               ),
                             ),
@@ -285,6 +282,9 @@ class _SchedulingPageState extends State<SchedulingPage> {
                                           firstDayOfMonth.year,
                                           firstDayOfMonth.month - 1,
                                           1);
+                                      await appStore.dispatch(
+                                          SCFetchShiftsMonthAction(
+                                              startDate: firstDayOfMonth));
                                     },
                                     icon: const HeroIcon(
                                       HeroIcons.leftSmall,
@@ -306,6 +306,9 @@ class _SchedulingPageState extends State<SchedulingPage> {
                                           firstDayOfMonth.year,
                                           firstDayOfMonth.month + 1,
                                           1);
+                                      await appStore.dispatch(
+                                          SCFetchShiftsMonthAction(
+                                              startDate: firstDayOfMonth));
                                     },
                                     icon: const HeroIcon(
                                       HeroIcons.rightSmall,
