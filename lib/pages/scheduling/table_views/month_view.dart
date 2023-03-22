@@ -40,9 +40,10 @@ class MonthlyViewCalendar extends StatelessWidget {
             dataSource: getDataSource(scheduleState),
             monthViewSettings: const MonthViewSettings(
               dayFormat: "EEE",
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
             ),
             maxDate: to,
-            viewNavigationMode: ViewNavigationMode.snap,
+            viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: !kDebugMode,
               allowNavigation: !kDebugMode,
@@ -188,6 +189,7 @@ class MonthlyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    return ShiftDataSource(state.getWeekShifts, []);
+    logger(state.backupShiftsMonth.length);
+    return ShiftDataSource(state.backupShiftsMonth, []);
   }
 }

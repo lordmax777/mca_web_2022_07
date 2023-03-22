@@ -73,7 +73,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: kDebugMode ? CalendarView.week : CalendarView.day,
+      calendarView: kDebugMode ? CalendarView.day : CalendarView.day,
       interval: 60,
       largestAppointmentCountDay: 1,
       largestAppointmentCountWeek: 1,
@@ -279,6 +279,24 @@ class SCFetchShiftsWeekAction {
   });
 }
 
+class SCFetchShiftsMonthAction {
+  //Location id. If not specified user 0
+  final int? locationId;
+  //User id. If not specified user 0
+  final int? userId;
+  //Shift id. If not specified user 0
+  final int? shiftId;
+  //Date in Y-m-d format
+  final DateTime startDate;
+
+  SCFetchShiftsMonthAction({
+    this.locationId,
+    this.userId,
+    this.shiftId,
+    required this.startDate,
+  });
+}
+
 class SCAddFilter {
   final UserRes? user;
   final PropertiesMd? location;
@@ -295,38 +313,20 @@ class SCChangeCalendarView {
 
 class SCChangeSidebarType {}
 
-class SCFetchShiftMonthAction {
-  //Location id. If not specified user 0
-  final int? locationId;
-  //User id. If not specified user 0
-  final int? userId;
-  //Shift id. If not specified user 0
-  final int? shiftId;
-  //Date in Y-m-d format
-  final DateTime startDate;
-  final DateTime endDate;
-
-  SCFetchShiftMonthAction({
-    this.locationId,
-    this.userId,
-    this.shiftId,
-    required this.startDate,
-    required this.endDate,
-  });
-}
-
 class SCCopyAllocationAction {
   final AppointmentIdMd allocation;
   final DateTime targetDate;
   final SCFetchShiftsWeekAction fetchAction;
-  final DateTime date;
-  final int? userId;
+  final int? targetUserId;
+  final int? targetLocationId;
+  final bool isAll;
 
   const SCCopyAllocationAction({
     required this.allocation,
     required this.targetDate,
     required this.fetchAction,
-    required this.date,
-    this.userId,
+    this.isAll = false,
+    this.targetLocationId,
+    this.targetUserId,
   });
 }

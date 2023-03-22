@@ -2189,6 +2189,8 @@ class _RestClient implements RestClient {
     action, {
     date_until,
     target_date,
+    target_location,
+    target_user,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -2198,6 +2200,8 @@ class _RestClient implements RestClient {
       'action': action,
       'date_until': date_until,
       'target_date': target_date,
+      'target_location': target_location,
+      'target_user': target_user,
     };
     _data.removeWhere((k, v) => v == null);
     final _result =

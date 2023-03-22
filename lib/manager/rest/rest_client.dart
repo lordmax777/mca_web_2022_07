@@ -511,6 +511,8 @@ abstract class RestClient {
     @Field() String action, {
     @Field() String? date_until,
     @Field() String? target_date,
+    @Field() int? target_location,
+    @Field() int? target_user,
   });
 }
 

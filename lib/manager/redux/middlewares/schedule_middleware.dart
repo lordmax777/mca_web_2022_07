@@ -41,14 +41,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onFetchShifts(store.state, action, next);
       case SCFetchShiftsWeekAction:
         return _onFetchShiftsWeek(store.state, action, next);
+      case SCFetchShiftsMonthAction:
+        return _onFetchShiftsMonth(store.state, action, next);
       case SCAddFilter:
         return _onAddFilter(store.state, action, next);
       case SCChangeCalendarView:
         return _onChangeCalendarView(store.state, action, next);
       case SCChangeSidebarType:
         return _onChangeSidebarType(store.state, action, next);
-      case SCFetchShiftMonthAction:
-        return _onFetchShiftMonth(store.state, action, next);
       case SCCopyAllocationAction:
         return _onCopyAllocation(store.state, action, next);
       default:
@@ -393,13 +393,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  void _onFetchShiftsMonth(AppState state, SCFetchShiftMonthAction action,
+  void _onFetchShiftsMonth(AppState state, SCFetchShiftsMonthAction action,
       NextDispatcher next) async {
     final locId = action.locationId ?? 0;
     final userId = action.userId ?? 0;
     final shiftId = action.shiftId ?? 0;
     final startDate = action.startDate;
-    final endDate = action.endDate;
+    //Find the last day of the month
+    final endDate = DateTime(startDate.year, startDate.month + 1, 0);
     final stateVal = state.scheduleState.shifts;
 
     stateVal.error.isLoading = true;
@@ -441,24 +442,25 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         appointments.add(Appointment(
           startTime: st,
           endTime: et,
-          color: Colors.white,
+          color: id.user.userRandomBgColor,
           subject: pr.title ?? "-",
           id: id,
           resourceIds: [us, pr],
         ));
       }
+
       stateVal.error.isLoading = false;
-      stateVal.data?[CalendarView.week] = appointments;
+      stateVal.data?[CalendarView.month] = appointments;
       stateVal.error.action = action;
       stateVal.error.isError = false;
 
       next(UpdateScheduleState(
         shifts: stateVal,
-        backupShiftsWeek: appointments,
+        backupShiftsMonth: appointments,
       ));
     } else {
       stateVal.error.isLoading = false;
-      stateVal.data?[CalendarView.week] = [];
+      stateVal.data?[CalendarView.month] = [];
       stateVal.error.action = action;
       stateVal.error.isError = false;
       if (res.resCode != 404) {
@@ -468,146 +470,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         stateVal.error.rawError = res.rawError;
         stateVal.error.retries = stateVal.error.retries + 1;
       }
-      next(UpdateScheduleState(shifts: stateVal, backupShiftsWeek: []));
+      next(UpdateScheduleState(shifts: stateVal, backupShiftsMonth: []));
     }
-  }
-
-  // Future<List<AppointmentIdMd>> _onFetchShiftMonth(AppState state,
-  //     SCFetchShiftMonthAction action, NextDispatcher next) async {
-  //   final locId = action.locationId ?? 0;
-  //   final userId = action.userId ?? 0;
-  //   final shiftId = action.shiftId ?? 0;
-  //   final startDate = action.startDate;
-  //   final endDate = action.endDate;
-  //   final stateVal = state.scheduleState.shifts;
-  //   stateVal.data?[CalendarView.month] = [];
-  //
-  //   stateVal.error.isLoading = true;
-  //   // next(UpdateScheduleState(shifts: stateVal));
-  //   final appointmentsMonth = <Appointment>[];
-  //   final ApiResponse res = await restClient()
-  //       .getShifts(
-  //       locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
-  //       until: DateFormat('yyyy-MM-dd').format(endDate))
-  //       .nocodeErrorHandler();
-  //
-  //   for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
-  //     final date = startDate.add(Duration(days: i));
-  //     if (res.success) {
-  //       final list = <ShiftMd>[];
-  //       final properties = <PropertiesMd>[
-  //         ...(state.generalState.properties.data ?? <PropertiesMd>[])
-  //       ];
-  //       final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
-  //       final locs = <PropertiesMd>[
-  //         ...(state.generalState.properties.data ?? [])
-  //       ];
-  //       for (var item in res.data['allocations']) {
-  //         final ShiftMd shift = ShiftMd.fromJson(item);
-  //         list.add(shift);
-  //         final pr = properties
-  //             .firstWhereOrNull((element) => element.id == shift.shiftId);
-  //         if (pr == null) continue;
-  //         final us =
-  //         users.firstWhereOrNull((element) => element.id == shift.userId);
-  //         if (us == null) continue;
-  //         final loc =
-  //         locs.firstWhereOrNull((element) => element.id == pr.locationId);
-  //         if (loc == null) continue;
-  //         final AppointmentIdMd id = AppointmentIdMd(
-  //           user: us,
-  //           allocation: shift,
-  //           property: pr,
-  //         );
-  //
-  //         final stMonth = DateTime(date.year, date.month, date.day, 00, 00);
-  //         DateTime? etMonth = DateTime(date.year, date.month, date.day, 01, 00);
-  //
-  //         appointmentsMonth.add(Appointment(
-  //           startTime: stMonth,
-  //           endTime: etMonth,
-  //           color: Colors.white,
-  //           subject: pr.title ?? "-",
-  //           id: id,
-  //           resourceIds: [us, loc],
-  //         ));
-  //       }
-  //     }
-  //   }
-  //   stateVal.error.isLoading = false;
-  //
-  //   stateVal.data?[CalendarView.month] = [
-  //     ...(stateVal.data?[CalendarView.month] ?? []),
-  //     ...appointmentsMonth
-  //   ];
-  //
-  //   stateVal.error.action = action;
-  //   stateVal.error.isError = false;
-  //
-  //   return appointmentsMonth
-  //       .map<AppointmentIdMd>((e) => e.id as AppointmentIdMd)
-  //       .toList();
-  // }
-  Future<List<Appointment>> _onFetchShiftMonth(AppState state,
-      SCFetchShiftMonthAction action, NextDispatcher next) async {
-    final locId = action.locationId ?? 0;
-    final userId = action.userId ?? 0;
-    final shiftId = action.shiftId ?? 0;
-    final startDate = action.startDate;
-    final endDate = action.endDate;
-
-    final appointmentsMonth = <Appointment>[];
-
-    final ApiResponse res = await restClient()
-        .getShifts(
-            locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(startDate),
-            until: DateFormat('yyyy-MM-dd').format(endDate))
-        .nocodeErrorHandler();
-
-    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
-      final date = startDate.add(Duration(days: i));
-      if (res.success) {
-        final list = <ShiftMd>[];
-        final properties = <PropertiesMd>[
-          ...(state.generalState.properties.data ?? <PropertiesMd>[])
-        ];
-        final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
-
-        for (var item in res.data['allocations']) {
-          final ShiftMd shift = ShiftMd.fromJson(item);
-          list.add(shift);
-          final pr = properties
-              .firstWhereOrNull((element) => element.id == shift.shiftId);
-          if (pr == null) continue;
-          final us =
-              users.firstWhereOrNull((element) => element.id == shift.userId);
-
-          if (us == null) continue;
-
-          final stMonth = DateTime(date.year, date.month, date.day, 00, 00);
-          DateTime? etMonth = DateTime(date.year, date.month, date.day, 01, 00);
-
-          final appId = AppointmentIdMd(
-            user: us,
-            allocation: shift,
-            property: pr,
-          );
-
-          final Appointment id = Appointment(
-            location: pr.title,
-            subject: us.username,
-            endTime: etMonth,
-            startTime: stMonth,
-            id: appId,
-            resourceIds: [us, pr],
-          );
-
-          appointmentsMonth.add(id);
-        }
-      }
-    }
-
-    return appointmentsMonth;
   }
 
   void _onAddFilter(
@@ -709,18 +573,21 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       NextDispatcher next) async {
     final allocation = action.allocation;
     String target() => DateFormat('yyyy-MM-dd').format(action.targetDate);
-    String date() => DateFormat('yyyy-MM-dd').format(action.date);
+    String date() => DateFormat('yyyy-MM-dd')
+        .format(action.allocation.allocation.dateTimeDate!);
     final stateValue = state.scheduleState.shifts;
     stateValue.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateValue));
     final ApiResponse res = await restClient()
         .postShifts(
           allocation.property.locationId ?? 0,
-          action.userId ?? 0,
-          0,
+          action.allocation.user.id,
+          allocation.property.id ?? 0,
           date(),
           "copy",
-          date_until: action.userId == null ? null : date(),
+          date_until: action.isAll ? null : date(),
+          target_location: action.targetLocationId,
+          target_user: action.targetUserId,
           target_date: target(),
         )
         .nocodeErrorHandler();

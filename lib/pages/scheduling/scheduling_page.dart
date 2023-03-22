@@ -37,8 +37,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // await appStore.dispatch(SCFetchShiftsAction(date: day));
-      await appStore.dispatch(SCFetchShiftsWeekAction(
-          startDate: firstDayOfWeek, endDate: lastDayOfWeek));
+      // await appStore.dispatch(SCFetchShiftsWeekAction(
+      //     startDate: firstDayOfWeek, endDate: lastDayOfWeek));
+      await appStore
+          .dispatch(SCFetchShiftsMonthAction(startDate: firstDayOfMonth));
     });
   }
 

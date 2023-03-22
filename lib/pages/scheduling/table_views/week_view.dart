@@ -17,7 +17,7 @@ class WeeklyViewCalendar extends StatefulWidget {
   final DateTime firstDayOfWeek;
   final DateTime lastDayOfWeek;
 
-  WeeklyViewCalendar(
+  const WeeklyViewCalendar(
       {Key? key, required this.lastDayOfWeek, required this.firstDayOfWeek})
       : super(key: key);
 
@@ -71,17 +71,6 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
             viewHeaderHeight: 0,
             headerHeight: 0,
             backgroundColor: isCopyMode ? Colors.blue[50] : Colors.white,
-            // loadMoreWidgetBuilder: (context, loadMoreAppointments) {
-            //   return FutureBuilder<void>(
-            //     future: loadMoreAppointments(),
-            //     builder: (context, snapShot) {
-            //       return Container(
-            //           alignment: Alignment.center,
-            //           child: const CircularProgressIndicator());
-            //     },
-            //   );
-            // },
-            // minDate: from.subtract(const Duration(days: 1)),
             maxDate: to,
             viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
@@ -97,7 +86,17 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                       .appointments?.first.id.property.locationId);
                   break;
                 case CalendarElement.calendarCell:
-                  _onAppointmentTap(calendarTapDetails.date!);
+                  var resource = (calendarTapDetails.resource?.id);
+                  int? userId;
+                  int? locationId;
+                  if (resource is UserRes) {
+                    userId = resource.id;
+                  } else if (resource is PropertiesMd) {
+                    locationId = resource.locationId;
+                  }
+                  if (locationId == null && userId == null) return;
+                  _onAppointmentTap(
+                      calendarTapDetails.date!, userId, locationId);
                   break;
                 default:
                   logger(calendarTapDetails.targetElement);
@@ -219,24 +218,24 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                         titleMsg: "Copied.");
 
                     return;
-                    DateTime? val = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.parse(ap.allocation.date),
-                      firstDate: DateTime(2015),
-                      lastDate: DateTime(2035),
-                    );
-                    if (val != null && ap.allocation.dateTimeDate != null) {
-                      appStore.dispatch(SCCopyAllocationAction(
-                        fetchAction: SCFetchShiftsWeekAction(
-                          startDate: widget.firstDayOfWeek,
-                          endDate: widget.lastDayOfWeek,
-                        ),
-                        allocation: ap,
-                        targetDate: val,
-                        userId: ap.user.id,
-                        date: ap.allocation.dateTimeDate!,
-                      ));
-                    }
+                    // DateTime? val = await showDatePicker(
+                    //   context: context,
+                    //   initialDate: DateTime.parse(ap.allocation.date),
+                    //   firstDate: DateTime(2015),
+                    //   lastDate: DateTime(2035),
+                    // );
+                    // if (val != null && ap.allocation.dateTimeDate != null) {
+                    //   appStore.dispatch(SCCopyAllocationAction(
+                    //     fetchAction: SCFetchShiftsWeekAction(
+                    //       startDate: widget.firstDayOfWeek,
+                    //       endDate: widget.lastDayOfWeek,
+                    //     ),
+                    //     allocation: ap,
+                    //     targetDate: val,
+                    //     userId: ap.user.id,
+                    //     date: ap.allocation.dateTimeDate!,
+                    //   ));
+                    // }
                   },
                 ),
                 SimplePopupMenu(
@@ -275,15 +274,16 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     );
   }
 
-  void _onAppointmentTap(DateTime date) async {
+  void _onAppointmentTap(
+      DateTime date, int? targetUserId, int? targetLocationId) async {
     if (selectedAppointment.isEmpty) {
       return;
     }
     AppointmentIdMd? ap = selectedAppointment['copy'];
-    int? userId = ap?.user.id;
+    bool isAll = false;
     if (ap == null) {
       ap = selectedAppointment['copyAll'];
-      userId = null;
+      isAll = true;
     }
     if (ap == null) {
       return;
@@ -320,16 +320,18 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
         );
       },
     );
-    if (canCopy != null && canCopy) {
+    canCopy ??= false;
+    if (canCopy) {
       appStore.dispatch(SCCopyAllocationAction(
         fetchAction: SCFetchShiftsWeekAction(
           startDate: widget.firstDayOfWeek,
           endDate: widget.lastDayOfWeek,
         ),
         allocation: ap,
-        userId: userId,
+        targetUserId: targetUserId,
+        targetLocationId: targetLocationId,
         targetDate: date,
-        date: ap.allocation.dateTimeDate!,
+        isAll: isAll,
       ));
       selectedAppointment.clear();
     }
