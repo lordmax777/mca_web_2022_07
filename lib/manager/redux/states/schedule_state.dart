@@ -319,6 +319,7 @@ class SCCopyAllocationAction {
   final SCFetchShiftsWeekAction fetchAction;
   final int? targetUserId;
   final int? targetLocationId;
+  final int? targetShiftId;
   final bool isAll;
 
   const SCCopyAllocationAction({
@@ -327,6 +328,7 @@ class SCCopyAllocationAction {
     required this.fetchAction,
     this.isAll = false,
     this.targetLocationId,
+    this.targetShiftId,
     this.targetUserId,
   });
 }

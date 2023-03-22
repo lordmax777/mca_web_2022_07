@@ -582,20 +582,22 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     //To copy single shift, use !action.isAll and shiftId must be the id of the shift
     final ApiResponse res = await restClient()
         .postShifts(
-          allocation.property.locationId ?? 0,
+          0,
           action.allocation.user.id,
-          action.isAll ? 0 : (allocation.allocation.id ?? 0),
+          action.isAll ? 0 : action.allocation.property.id ?? 0,
           date(),
           "copy",
-          // date_until: date(),
-          target_location: action.targetLocationId,
+          date_until: date(),
+          target_shift: action.targetShiftId,
           target_user: action.targetUserId,
           target_date: target(),
+          // target_location: action.targetLocationId,
         )
         .nocodeErrorHandler();
     stateValue.error.isLoading = false;
     next(UpdateScheduleState(shifts: stateValue));
     if (!res.success) {
+      showError(res.data, titleMsg: "Error");
     } else {
       await appStore.dispatch(action.fetchAction);
       showError("Shift copied successfully", titleMsg: "Success");

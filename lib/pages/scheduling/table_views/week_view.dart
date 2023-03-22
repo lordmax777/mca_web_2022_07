@@ -88,15 +88,14 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                 case CalendarElement.calendarCell:
                   var resource = (calendarTapDetails.resource?.id);
                   int? userId;
-                  int? locationId;
+                  int? shiftId;
                   if (resource is UserRes) {
                     userId = resource.id;
                   } else if (resource is PropertiesMd) {
-                    locationId = resource.locationId;
+                    shiftId = resource.id;
                   }
-                  if (locationId == null && userId == null) return;
-                  _onAppointmentTap(
-                      calendarTapDetails.date!, userId, locationId);
+                  if (shiftId == null && userId == null) return;
+                  _onAppointmentTap(calendarTapDetails.date!, userId, shiftId);
                   break;
                 default:
                   logger(calendarTapDetails.targetElement);
@@ -275,7 +274,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
   }
 
   void _onAppointmentTap(
-      DateTime date, int? targetUserId, int? targetLocationId) async {
+      DateTime date, int? targetUserId, int? targtShiftId) async {
     if (selectedAppointment.isEmpty) {
       return;
     }
@@ -329,7 +328,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
         ),
         allocation: ap,
         targetUserId: targetUserId,
-        targetLocationId: targetLocationId,
+        targetShiftId: targtShiftId,
         targetDate: date,
         isAll: isAll,
       ));
@@ -344,7 +343,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
             : scheduleState.locationResources)
         .length;
     final count = scheduleState.largestAppointmentCountWeek;
-    logger("visibleResourceCount: ${count}");
+    logger("visibleResourceCount: $count");
     switch (len) {
       case 0:
         return 0;
