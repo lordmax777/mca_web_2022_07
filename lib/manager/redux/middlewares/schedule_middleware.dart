@@ -587,7 +587,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           action.isAll ? 0 : (allocation.allocation.id ?? 0),
           date(),
           "copy",
-          date_until: action.isAll ? null : date(),
+          // date_until: date(),
           target_location: action.targetLocationId,
           target_user: action.targetUserId,
           target_date: target(),
