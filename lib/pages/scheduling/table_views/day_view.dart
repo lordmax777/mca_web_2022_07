@@ -24,17 +24,20 @@ class DailyViewCalendar extends StatelessWidget {
           final interval = scheduleState.interval;
           return SfCalendar(
             view: CalendarView.timelineDay,
-            resourceViewHeaderBuilder: (context, details) {
-              final user = details.resource.id as UserRes;
-              return _userWidget(user);
-            },
+            // resourceViewHeaderBuilder: (context, details) {
+            //   final user = details.resource.id as UserRes;
+            //   return _userWidget(user);
+            // },
             resourceViewSettings: ResourceViewSettings(
-              size: 300,
-              visibleResourceCount: visibleResourceCount(scheduleState),
+              // size: 300,
+              // size: 300,
+              showAvatar: false,
+              // visibleResourceCount: visibleResourceCount(scheduleState),
             ),
             dataSource: getDataSource(scheduleState),
             timeSlotViewSettings: TimeSlotViewSettings(
-              timeIntervalWidth: 80,
+              timeIntervalWidth: 70,
+              timelineAppointmentHeight: 30,
               timeInterval: Duration(minutes: interval),
               timeFormat: "h:mm a",
               timeTextStyle: const TextStyle(
@@ -152,17 +155,17 @@ class DailyViewCalendar extends StatelessWidget {
     final len = scheduleState.userResources.length;
     final count = scheduleState.largestAppointmentCountDay;
     switch (len) {
-      case 0:
-        return 0;
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-        return len;
+      // case 0:
+      //   return 0;
+      // case 1:
+      // case 2:
+      // case 3:
+      // case 4:
+      // case 5:
+      // case 6:
+      // case 7:
+      // case 8:
+      //   return len;
       default:
         switch (count) {
           case 0:
