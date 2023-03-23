@@ -5,7 +5,7 @@ class Constants {
   static const String appName = "MCA Web";
   static const int mj = 0;
   static const int mn = 0;
-  static const int up = 7;
+  static const int up = 8;
   static String appVersion = "$mj.$mn.$up";
   static bool isDebug = true;
   static bool enableTalker = false;
