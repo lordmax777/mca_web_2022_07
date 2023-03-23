@@ -324,7 +324,7 @@ class SCChangeSidebarType {}
 class SCCopyAllocationAction {
   final AppointmentIdMd allocation;
   final DateTime targetDate;
-  final SCFetchShiftsWeekAction fetchAction;
+  final dynamic fetchAction;
   final int? targetUserId;
   final int? targetLocationId;
   final int? targetShiftId;
@@ -342,26 +342,28 @@ class SCCopyAllocationAction {
 class SCCopyAllAllocationAction {
   final AppointmentIdMd allocation;
   final DateTime targetDate;
-  final SCFetchShiftsWeekAction fetchAction;
+  final dynamic fetchAction;
   final int? targetUserId;
   final int? targetLocationId;
   final int? targetShiftId;
   final int? locationId;
+  final bool isUserView;
 
   const SCCopyAllAllocationAction({
     required this.allocation,
     required this.targetDate,
     this.locationId,
     required this.fetchAction,
+    required this.isUserView,
     this.targetLocationId,
     this.targetShiftId,
     this.targetUserId,
   });
 }
 
-class SCRemoveAllocationAction {
+class SCRemoveAllocationAction<T> {
   final AppointmentIdMd allocation;
-  final SCFetchShiftsWeekAction fetchAction;
+  final dynamic fetchAction;
 
   const SCRemoveAllocationAction({
     required this.allocation,

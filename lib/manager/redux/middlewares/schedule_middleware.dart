@@ -616,7 +616,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final stateValue = state.scheduleState.shifts;
     stateValue.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateValue));
-    bool isUserView = state.scheduleState.sidebarType == SidebarType.user;
+    bool isUserView = action.isUserView;
     //To copy all shifts, use action.isAll and shiftId must be 0
     //To copy single shift, use !action.isAll and shiftId must be the id of the shift
     final ApiResponse res = await restClient()

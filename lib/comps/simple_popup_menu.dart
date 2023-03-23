@@ -1,4 +1,4 @@
-import '../../theme/theme.dart';
+import '../theme/theme.dart';
 
 class SimplePopupMenu {
   final String label;
@@ -8,37 +8,26 @@ class SimplePopupMenu {
 }
 
 class SimplePopupMenuWidget extends StatelessWidget {
-  // final GlobalKey gKey = GlobalKey();
-
   final List<SimplePopupMenu> menus;
-  final HeroIcons icon;
+  final Widget? child;
 
-  const SimplePopupMenuWidget(
-      {super.key, required this.menus, this.icon = HeroIcons.moreVertical});
+  const SimplePopupMenuWidget({
+    super.key,
+    required this.menus,
+    this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-      // offset: const Offset(30.0, 0.0),
       elevation: 30,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
-      tooltip: "More options",
+      tooltip: "",
       itemBuilder: (_) =>
           menus.map<PopupMenuItem>((e) => _buildItem(e)).toList(),
-      // child: IconButton(
-      //     alignment: Alignment.centerRight,
-      //     padding: const EdgeInsets.all(0.0),
-      //     onPressed: () {
-      //       dynamic state = gKey.currentState;
-      //       state.showButtonMenu();
-      //     },
-      //     icon: HeroIcon(
-      //       icon,
-      //       size: 24,
-      //       color: ThemeColors.gray2,
-      //     )),
+      child: child,
     );
   }
 

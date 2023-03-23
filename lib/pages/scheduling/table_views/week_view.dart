@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../../comps/tables/simple_popup_menu.dart';
+import '../../../comps/simple_popup_menu.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
@@ -95,7 +95,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     shiftId = resource.id;
                   }
                   if (shiftId == null && userId == null) return;
-                  _onAppointmentTap(calendarTapDetails.date!, userId, shiftId);
+                  _onAppointmentTap(
+                      calendarTapDetails.date!, userId, shiftId, scheduleState);
                   break;
                 default:
                   logger(calendarTapDetails.targetElement);
@@ -287,8 +288,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     );
   }
 
-  void _onAppointmentTap(
-      DateTime date, int? targetUserId, int? targtShiftId) async {
+  void _onAppointmentTap(DateTime date, int? targetUserId, int? targtShiftId,
+      ScheduleState state) async {
     if (selectedAppointment.isEmpty) {
       return;
     }
@@ -338,6 +339,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
       logger("$isAll", hint: "isAll");
       if (isAll) {
         appStore.dispatch(SCCopyAllAllocationAction(
+          isUserView: state.sidebarType == SidebarType.user,
           fetchAction: SCFetchShiftsWeekAction(
             startDate: widget.firstDayOfWeek,
             endDate: widget.lastDayOfWeek,
