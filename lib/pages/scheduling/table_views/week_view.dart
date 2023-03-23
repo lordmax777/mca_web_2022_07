@@ -127,7 +127,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
   Widget _appWidget(AppointmentIdMd ap, bool isUserView, BuildContext context) {
     final alloc = ap.property;
     return Tooltip(
-      message: (isUserView ? alloc.title : ap.user.fullname) ?? "-",
+      message: (isUserView ? alloc.locationName : ap.user.fullname) ?? "-",
       child: Container(
         decoration: BoxDecoration(
           color: ThemeColors.transparent,
@@ -176,7 +176,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                         width: 150,
                         child: KText(
                           isSelectable: false,
-                          text: alloc.title ?? "-",
+                          text: alloc.locationName ?? "-",
                           fontSize: 16,
                           maxLines: 1,
                           textColor: ThemeColors.gray2,
@@ -195,7 +195,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                         child: KText(
                           maxLines: 1,
                           isSelectable: false,
-                          text: alloc.clientName ?? "-",
+                          text: alloc.title ?? "-",
                           fontSize: 16,
                           textColor: ThemeColors.gray2,
                           fontWeight: FWeight.bold,
@@ -265,6 +265,20 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     // }
                   },
                 ),
+                SimplePopupMenu(
+                  label: "Remove",
+                  onTap: () async {
+                    if (ap.allocation.dateTimeDate != null) {
+                      appStore.dispatch(SCRemoveAllocationAction(
+                        fetchAction: SCFetchShiftsWeekAction(
+                          startDate: widget.firstDayOfWeek,
+                          endDate: widget.lastDayOfWeek,
+                        ),
+                        allocation: ap,
+                      ));
+                    }
+                  },
+                ),
               ],
             ),
           ],
@@ -321,17 +335,30 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     );
     canCopy ??= false;
     if (canCopy) {
-      appStore.dispatch(SCCopyAllocationAction(
-        fetchAction: SCFetchShiftsWeekAction(
-          startDate: widget.firstDayOfWeek,
-          endDate: widget.lastDayOfWeek,
-        ),
-        allocation: ap,
-        targetUserId: targetUserId,
-        targetShiftId: targtShiftId,
-        targetDate: date,
-        isAll: isAll,
-      ));
+      logger("$isAll", hint: "isAll");
+      if (isAll) {
+        appStore.dispatch(SCCopyAllAllocationAction(
+          fetchAction: SCFetchShiftsWeekAction(
+            startDate: widget.firstDayOfWeek,
+            endDate: widget.lastDayOfWeek,
+          ),
+          allocation: ap,
+          targetUserId: targetUserId,
+          targetShiftId: targtShiftId,
+          targetDate: date,
+        ));
+      } else {
+        appStore.dispatch(SCCopyAllocationAction(
+          fetchAction: SCFetchShiftsWeekAction(
+            startDate: widget.firstDayOfWeek,
+            endDate: widget.lastDayOfWeek,
+          ),
+          allocation: ap,
+          targetUserId: targetUserId,
+          targetShiftId: targtShiftId,
+          targetDate: date,
+        ));
+      }
       selectedAppointment.clear();
     }
   }

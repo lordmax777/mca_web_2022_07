@@ -51,6 +51,10 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onChangeSidebarType(store.state, action, next);
       case SCCopyAllocationAction:
         return _onCopyAllocation(store.state, action, next);
+      case SCRemoveAllocationAction:
+        return _onRemoveAllocation(store.state, action, next);
+      case SCCopyAllAllocationAction:
+        return _onCopyAllAllocation(store.state, action, next);
       default:
         return next(action);
     }
@@ -573,8 +577,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       NextDispatcher next) async {
     final allocation = action.allocation;
     String target() => DateFormat('yyyy-MM-dd').format(action.targetDate);
-    String date() => DateFormat('yyyy-MM-dd')
-        .format(action.allocation.allocation.dateTimeDate!);
+    String date() =>
+        DateFormat('yyyy-MM-dd').format(allocation.allocation.dateTimeDate!);
     final stateValue = state.scheduleState.shifts;
     stateValue.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateValue));
@@ -583,24 +587,84 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final ApiResponse res = await restClient()
         .postShifts(
           0,
-          action.allocation.user.id,
-          action.isAll ? 0 : action.allocation.property.id ?? 0,
+          allocation.user.id,
+          allocation.property.id ?? 0,
           date(),
-          "copy",
+          AllocationActions.copy.name,
           date_until: date(),
           target_shift: action.targetShiftId,
           target_user: action.targetUserId,
           target_date: target(),
-          // target_location: action.targetLocationId,
         )
         .nocodeErrorHandler();
     stateValue.error.isLoading = false;
     next(UpdateScheduleState(shifts: stateValue));
     if (!res.success) {
-      showError(res.data, titleMsg: "Error");
+      showError(HtmlHelper.replaceBr(res.data), titleMsg: "Error");
     } else {
       await appStore.dispatch(action.fetchAction);
       showError("Shift copied successfully", titleMsg: "Success");
+    }
+  }
+
+  void _onCopyAllAllocation(AppState state, SCCopyAllAllocationAction action,
+      NextDispatcher next) async {
+    final allocation = action.allocation;
+    String target() => DateFormat('yyyy-MM-dd').format(action.targetDate);
+    String date() =>
+        DateFormat('yyyy-MM-dd').format(allocation.allocation.dateTimeDate!);
+    final stateValue = state.scheduleState.shifts;
+    stateValue.error.isLoading = true;
+    next(UpdateScheduleState(shifts: stateValue));
+    //To copy all shifts, use action.isAll and shiftId must be 0
+    //To copy single shift, use !action.isAll and shiftId must be the id of the shift
+    final ApiResponse res = await restClient()
+        .postShifts(
+          0,
+          allocation.user.id,
+          0,
+          date(),
+          AllocationActions.copy.name,
+          date_until: date(),
+          target_shift: action.targetShiftId,
+          target_user: action.targetUserId,
+          target_date: target(),
+        )
+        .nocodeErrorHandler();
+    stateValue.error.isLoading = false;
+    next(UpdateScheduleState(shifts: stateValue));
+    if (!res.success) {
+      showError(HtmlHelper.replaceBr(res.data), titleMsg: "Error");
+    } else {
+      await appStore.dispatch(action.fetchAction);
+      showError("Shifts copied successfully", titleMsg: "Success");
+    }
+  }
+
+  void _onRemoveAllocation(AppState state, SCRemoveAllocationAction action,
+      NextDispatcher next) async {
+    final allocation = action.allocation;
+    final stateValue = state.scheduleState.shifts;
+    String date() =>
+        DateFormat('yyyy-MM-dd').format(allocation.allocation.dateTimeDate!);
+    stateValue.error.isLoading = true;
+    next(UpdateScheduleState(shifts: stateValue));
+    final ApiResponse res = await restClient()
+        .postShifts(
+          allocation.property.locationId ?? 0,
+          allocation.user.id,
+          allocation.property.id ?? 0,
+          date(),
+          AllocationActions.remove.name,
+        )
+        .nocodeErrorHandler();
+    stateValue.error.isLoading = false;
+    next(UpdateScheduleState(shifts: stateValue));
+    if (!res.success) {
+      showError(HtmlHelper.replaceBr(res.data), titleMsg: "Error");
+    } else {
+      await appStore.dispatch(action.fetchAction);
+      showError("Removed successfully", titleMsg: "Success");
     }
   }
 }

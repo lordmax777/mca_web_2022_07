@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../../utils/helpers.dart';
 import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 import '../../models/shift_md.dart';
@@ -320,15 +321,43 @@ class SCCopyAllocationAction {
   final int? targetUserId;
   final int? targetLocationId;
   final int? targetShiftId;
-  final bool isAll;
 
   const SCCopyAllocationAction({
     required this.allocation,
     required this.targetDate,
     required this.fetchAction,
-    this.isAll = false,
     this.targetLocationId,
     this.targetShiftId,
     this.targetUserId,
+  });
+}
+
+class SCCopyAllAllocationAction {
+  final AppointmentIdMd allocation;
+  final DateTime targetDate;
+  final SCFetchShiftsWeekAction fetchAction;
+  final int? targetUserId;
+  final int? targetLocationId;
+  final int? targetShiftId;
+  final int? locationId;
+
+  const SCCopyAllAllocationAction({
+    required this.allocation,
+    required this.targetDate,
+    this.locationId,
+    required this.fetchAction,
+    this.targetLocationId,
+    this.targetShiftId,
+    this.targetUserId,
+  });
+}
+
+class SCRemoveAllocationAction {
+  final AppointmentIdMd allocation;
+  final SCFetchShiftsWeekAction fetchAction;
+
+  const SCRemoveAllocationAction({
+    required this.allocation,
+    required this.fetchAction,
   });
 }

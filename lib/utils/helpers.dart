@@ -201,6 +201,34 @@ enum AllocationActions {
   remove,
   publish,
   unpublish,
-  more,
-  less,
+  copy;
+
+  String get name {
+    switch (this) {
+      case AllocationActions.add:
+        return "add";
+      case AllocationActions.remove:
+        return "remove";
+      case AllocationActions.publish:
+        return "publish";
+      case AllocationActions.unpublish:
+        return "unpublish";
+      case AllocationActions.copy:
+        return "copy";
+    }
+  }
+}
+
+abstract class HtmlHelper {
+  static String replaceBr(String html) {
+    if (html.contains("<br>")) {
+      return html.replaceAll("<br>", "\n");
+    } else if (html.contains("<br/>")) {
+      return html.replaceAll("<br/>", "\n");
+    } else if (html.contains("<br />")) {
+      return html.replaceAll("<br />", "\n");
+    } else {
+      return html;
+    }
+  }
 }
