@@ -314,6 +314,13 @@ class SCChangeCalendarView {
 
 class SCChangeSidebarType {}
 
+// TEST
+// Single Same 0
+// Multiple Same 0
+//
+// Single Different 0
+// Multiple Different 0
+
 class SCCopyAllocationAction {
   final AppointmentIdMd allocation;
   final DateTime targetDate;

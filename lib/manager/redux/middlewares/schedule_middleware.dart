@@ -616,13 +616,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final stateValue = state.scheduleState.shifts;
     stateValue.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateValue));
+    bool isUserView = state.scheduleState.sidebarType == SidebarType.user;
     //To copy all shifts, use action.isAll and shiftId must be 0
     //To copy single shift, use !action.isAll and shiftId must be the id of the shift
     final ApiResponse res = await restClient()
         .postShifts(
           0,
-          allocation.user.id,
-          0,
+          isUserView ? allocation.user.id : 0,
+          !isUserView ? allocation.property.id ?? 0 : 0,
           date(),
           AllocationActions.copy.name,
           date_until: date(),
