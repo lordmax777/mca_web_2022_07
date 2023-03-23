@@ -9,9 +9,11 @@ import '../../../comps/simple_popup_menu.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
+import '../schdule_appointment_drawer.dart';
 
 class WeeklyViewCalendar extends StatefulWidget {
   final DateTime firstDayOfWeek;
@@ -77,13 +79,20 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               allowScroll: !kDebugMode,
               allowNavigation: !kDebugMode,
             ),
-            onTap: (calendarTapDetails) {
+            onTap: (calendarTapDetails) async {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   logger("appointment");
-                  logger(calendarTapDetails.appointments?.first.id.user.id);
-                  logger(calendarTapDetails
-                      .appointments?.first.id.property.locationId);
+                  appStore.dispatch(UpdateGeneralStateAction(
+                      endDrawer: AppointmentDrawer(
+                          appointment:
+                              calendarTapDetails.appointments!.first)));
+                  await Future.delayed(const Duration(milliseconds: 100));
+                  if (Constants.scaffoldKey.currentState != null) {
+                    if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+                      Constants.scaffoldKey.currentState!.openEndDrawer();
+                    }
+                  }
                   break;
                 case CalendarElement.calendarCell:
                   var resource = (calendarTapDetails.resource?.id);

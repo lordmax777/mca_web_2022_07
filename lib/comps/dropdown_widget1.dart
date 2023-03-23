@@ -70,7 +70,7 @@ class DropdownWidget1<T> extends StatefulWidget {
 
 class _DropdownWidget1State<T> extends State<DropdownWidget1> {
   List itemList = [];
-  final TextEditingController searchcontroller = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   bool isError = false;
 
@@ -78,7 +78,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
 
   @override
   void dispose() {
-    searchcontroller.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -125,12 +125,12 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
                   hintText: 'Search',
                   labelText: 'Search',
                   defaultBorderColor: ThemeColors.gray10,
-                  controller: searchcontroller,
+                  controller: searchController,
                 ),
               )
             : null,
         searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
-        searchController: searchcontroller,
+        searchController: searchController,
         itemPadding: EdgeInsets.zero,
         decoration: const InputDecoration(
           contentPadding: EdgeInsets.zero,
@@ -311,13 +311,13 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
 
   List<DropdownMenuItem<String>> _getItems() {
     List listValues = itemList;
-    List<DropdownMenuItem<String>> _menuItems = [];
+    List<DropdownMenuItem<String>> menuItems = [];
     int len = listValues.length;
     for (int i = 0; i < len; i++) {
-      _menuItems.add(
+      menuItems.add(
         DropdownMenuItem<String>(
           onTap: () {
-            searchcontroller.clear();
+            searchController.clear();
           },
           value: listValues[i].toString(),
           child: Container(
@@ -357,6 +357,6 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
       );
     }
 
-    return _menuItems;
+    return menuItems;
   }
 }

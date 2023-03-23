@@ -43,6 +43,256 @@ class _SchedulingPageState extends State<SchedulingPage> {
     });
   }
 
+  Widget _usersListDropdown(AppState state) {
+    final scheduleState = state.scheduleState;
+    final u = [...(state.usersState.usersList.data ?? [])];
+    final users = [UserRes.all(), ...u];
+    return Visibility(
+      visible: scheduleState.sidebarType == SidebarType.user &&
+          u.isNotEmpty &&
+          scheduleState.calendarView != CalendarView.month,
+      child: DropdownWidget1(
+        hasSearchBox: true,
+        dropdownOptionsWidth: 250,
+        dropdownBtnWidth: 250,
+        hintText: "User",
+        items: users.map((e) => e.fullname).toList(),
+        objItems: users,
+        customItemIcons: {
+          for (var i = 0; i < scheduleState.filteredUsers.length; i++)
+            users.indexOf(scheduleState.filteredUsers[i]): HeroIcons.check
+        },
+        value: scheduleState.filteredUsers.isEmpty
+            ? "All"
+            : scheduleState.filteredUsers.first.fullname,
+        onChangedWithObj: (p0) => appStore.dispatch(SCAddFilter(user: p0.item)),
+      ),
+    );
+  }
+
+  Widget _locsListDropdown(AppState state) {
+    final scheduleState = state.scheduleState;
+    final l = [...(state.generalState.properties.data ?? [])];
+    final locs = [PropertiesMd.all(), ...l];
+    return Visibility(
+      visible: scheduleState.sidebarType == SidebarType.location &&
+          l.isNotEmpty &&
+          scheduleState.calendarView == CalendarView.week,
+      child: DropdownWidget1(
+          hasSearchBox: true,
+          dropdownOptionsWidth: 300,
+          dropdownBtnWidth: 300,
+          hintText: "Location",
+          items: locs.map((e) => "${e.title}").toList(),
+          objItems: locs,
+          customItemIcons: {
+            for (var i = 0; i < scheduleState.filteredLocations.length; i++)
+              locs.indexOf(scheduleState.filteredLocations[i]): HeroIcons.check
+          },
+          value: scheduleState.filteredLocations.isEmpty
+              ? "All"
+              : scheduleState.filteredLocations.first.title,
+          onChangedWithObj: (p0) {
+            appStore.dispatch(SCAddFilter(location: p0.item));
+          }),
+    );
+  }
+
+  Widget _calendarViewsDropdown(AppState state) {
+    final scheduleState = state.scheduleState;
+    return DropdownWidget1(
+        dropdownOptionsWidth: 150,
+        dropdownBtnWidth: 150,
+        hintText: "Time View",
+        items: [
+          CalendarView.day.name,
+          CalendarView.week.name,
+          // CalendarView.timelineWeek.name,
+          CalendarView.month.name,
+        ],
+        objItems: const [
+          CalendarView.day,
+          CalendarView.week,
+          // CalendarView.timelineWeek,
+          CalendarView.month,
+        ],
+        value: scheduleState.calendarView.name,
+        onChangedWithObj: (p0) async {
+          // if (p0.item == CalendarView.timelineWeek) {
+          //   //Subtract 2 weeks from firstDayOfWeek
+          //   firstDayOfWeek = firstDayOfWeek.subtract(const Duration(days: 14));
+          // }
+          appStore.dispatch(SCChangeCalendarView(p0.item));
+        });
+  }
+
+  Widget _dayDateChanger(AppState state) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: ThemeColors.gray10,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            onPressed: () {
+              day = day.subtract(const Duration(days: 1));
+              appStore.dispatch(SCFetchShiftsAction(date: day));
+            },
+            icon: const HeroIcon(
+              HeroIcons.leftSmall,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+          ),
+          KText(
+            textAlign: TextAlign.center,
+            text: DateFormat("EEE, MMM d").format(day),
+            fontSize: 16,
+            textColor: ThemeColors.gray2,
+            fontWeight: FWeight.medium,
+          ),
+          IconButton(
+            onPressed: () {
+              day = day.add(const Duration(days: 1));
+              appStore.dispatch(SCFetchShiftsAction(date: day));
+            },
+            icon: const HeroIcon(
+              HeroIcons.rightSmall,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _weekDateChanger(AppState state) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: ThemeColors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: ThemeColors.gray10,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            onPressed: () async {
+              firstDayOfWeek = firstDayOfWeek.subtract(const Duration(days: 7));
+              await appStore.dispatch(SCFetchShiftsWeekAction(
+                startDate: firstDayOfWeek,
+                endDate: lastDayOfWeek,
+              ));
+            },
+            icon: const HeroIcon(
+              HeroIcons.leftSmall,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+          ),
+          KText(
+            textAlign: TextAlign.center,
+            text:
+                "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
+            fontSize: 16,
+            textColor: ThemeColors.gray2,
+            fontWeight: FWeight.medium,
+          ),
+          IconButton(
+            onPressed: () async {
+              firstDayOfWeek = firstDayOfWeek.add(const Duration(days: 7));
+              await appStore.dispatch(SCFetchShiftsWeekAction(
+                startDate: firstDayOfWeek,
+                endDate: lastDayOfWeek,
+              ));
+            },
+            icon: const HeroIcon(
+              HeroIcons.rightSmall,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _monthDateChanger(AppState state) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: ThemeColors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: ThemeColors.gray10,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            onPressed: () async {
+              firstDayOfMonth =
+                  DateTime(firstDayOfMonth.year, firstDayOfMonth.month - 1, 1);
+              await appStore.dispatch(
+                  SCFetchShiftsMonthAction(startDate: firstDayOfMonth));
+            },
+            icon: const HeroIcon(
+              HeroIcons.leftSmall,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+          ),
+          KText(
+            textAlign: TextAlign.center,
+            text:
+                "${DateFormat("MMM").format(firstDayOfMonth)} ${DateFormat("yyyy").format(firstDayOfMonth)}",
+            fontSize: 16,
+            textColor: ThemeColors.gray2,
+            fontWeight: FWeight.medium,
+          ),
+          IconButton(
+            onPressed: () async {
+              firstDayOfMonth =
+                  DateTime(firstDayOfMonth.year, firstDayOfMonth.month + 1, 1);
+              await appStore.dispatch(
+                  SCFetchShiftsMonthAction(startDate: firstDayOfMonth));
+            },
+            icon: const HeroIcon(
+              HeroIcons.rightSmall,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _resourceChanger(AppState state) {
+    final scheduleState = state.scheduleState;
+    return ButtonLargeSecondary(
+      text: scheduleState.sidebarType == SidebarType.user ? "User" : "Location",
+      leftIcon: const HeroIcon(HeroIcons.loop),
+      onPressed: () {
+        appStore.dispatch(SCChangeSidebarType());
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
@@ -50,10 +300,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
         onInit: (store) async {},
         builder: (_, state) {
           final scheduleState = state.scheduleState;
-          final u = [...(state.usersState.usersList.data ?? [])];
-          final l = [...(state.generalState.properties.data ?? [])];
-          final users = [UserRes.all(), ...u];
-          final locs = [PropertiesMd.all(), ...l];
+
           return PageWrapper(
               child: TableWrapperWidget(
                   child: SizedBox(
@@ -74,262 +321,23 @@ class _SchedulingPageState extends State<SchedulingPage> {
                       SpacedRow(
                         horizontalSpace: 16.0,
                         children: [
-                          Visibility(
-                            visible:
-                                scheduleState.sidebarType == SidebarType.user &&
-                                    u.isNotEmpty &&
-                                    scheduleState.calendarView !=
-                                        CalendarView.month,
-                            child: DropdownWidget1(
-                              hasSearchBox: true,
-                              dropdownOptionsWidth: 250,
-                              dropdownBtnWidth: 250,
-                              hintText: "User",
-                              items: users.map((e) => e.fullname).toList(),
-                              objItems: users,
-                              customItemIcons: {
-                                for (var i = 0;
-                                    i < scheduleState.filteredUsers.length;
-                                    i++)
-                                  users.indexOf(scheduleState.filteredUsers[i]):
-                                      HeroIcons.check
-                              },
-                              value: scheduleState.filteredUsers.isEmpty
-                                  ? "All"
-                                  : scheduleState.filteredUsers.first.fullname,
-                              onChangedWithObj: (p0) =>
-                                  appStore.dispatch(SCAddFilter(user: p0.item)),
-                            ),
-                          ),
-                          Visibility(
-                            visible: scheduleState.sidebarType ==
-                                    SidebarType.location &&
-                                l.isNotEmpty &&
-                                scheduleState.calendarView == CalendarView.week,
-                            child: DropdownWidget1(
-                                hasSearchBox: true,
-                                dropdownOptionsWidth: 300,
-                                dropdownBtnWidth: 300,
-                                hintText: "Location",
-                                items: locs.map((e) => "${e.title}").toList(),
-                                objItems: locs,
-                                customItemIcons: {
-                                  for (var i = 0;
-                                      i <
-                                          scheduleState
-                                              .filteredLocations.length;
-                                      i++)
-                                    locs.indexOf(
-                                            scheduleState.filteredLocations[i]):
-                                        HeroIcons.check
-                                },
-                                value: scheduleState.filteredLocations.isEmpty
-                                    ? "All"
-                                    : scheduleState
-                                        .filteredLocations.first.title,
-                                onChangedWithObj: (p0) {
-                                  appStore
-                                      .dispatch(SCAddFilter(location: p0.item));
-                                }),
-                          ),
-                          if (u.isNotEmpty)
-                            DropdownWidget1(
-                                dropdownOptionsWidth: 150,
-                                dropdownBtnWidth: 150,
-                                hintText: "Time View",
-                                items: [
-                                  CalendarView.day.name,
-                                  CalendarView.week.name,
-                                  CalendarView.month.name,
-                                ],
-                                objItems: const [
-                                  CalendarView.day,
-                                  CalendarView.week,
-                                  CalendarView.month,
-                                ],
-                                value: scheduleState.calendarView.name,
-                                onChangedWithObj: (p0) async {
-                                  appStore
-                                      .dispatch(SCChangeCalendarView(p0.item));
-                                }),
+                          _usersListDropdown(state),
+                          _locsListDropdown(state),
+                          if (u.isNotEmpty) _calendarViewsDropdown(state),
                           if (scheduleState.calendarView == CalendarView.day)
-                            Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: ThemeColors.gray10,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      day =
-                                          day.subtract(const Duration(days: 1));
-                                      appStore.dispatch(
-                                          SCFetchShiftsAction(date: day));
-                                    },
-                                    icon: const HeroIcon(
-                                      HeroIcons.leftSmall,
-                                      color: ThemeColors.gray2,
-                                      size: 18,
-                                    ),
-                                  ),
-                                  KText(
-                                    textAlign: TextAlign.center,
-                                    text: DateFormat("EEE, MMM d").format(day),
-                                    fontSize: 16,
-                                    textColor: ThemeColors.gray2,
-                                    fontWeight: FWeight.medium,
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      day = day.add(const Duration(days: 1));
-                                      appStore.dispatch(
-                                          SCFetchShiftsAction(date: day));
-                                    },
-                                    icon: const HeroIcon(
-                                      HeroIcons.rightSmall,
-                                      color: ThemeColors.gray2,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (scheduleState.calendarView == CalendarView.week)
-                            Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: ThemeColors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: ThemeColors.gray10,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                    onPressed: () async {
-                                      firstDayOfWeek = firstDayOfWeek
-                                          .subtract(const Duration(days: 7));
-                                      await appStore
-                                          .dispatch(SCFetchShiftsWeekAction(
-                                        startDate: firstDayOfWeek,
-                                        endDate: lastDayOfWeek,
-                                      ));
-                                    },
-                                    icon: const HeroIcon(
-                                      HeroIcons.leftSmall,
-                                      color: ThemeColors.gray2,
-                                      size: 18,
-                                    ),
-                                  ),
-                                  KText(
-                                    textAlign: TextAlign.center,
-                                    text:
-                                        "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
-                                    fontSize: 16,
-                                    textColor: ThemeColors.gray2,
-                                    fontWeight: FWeight.medium,
-                                  ),
-                                  IconButton(
-                                    onPressed: () async {
-                                      firstDayOfWeek = firstDayOfWeek
-                                          .add(const Duration(days: 7));
-                                      await appStore
-                                          .dispatch(SCFetchShiftsWeekAction(
-                                        startDate: firstDayOfWeek,
-                                        endDate: lastDayOfWeek,
-                                      ));
-                                    },
-                                    icon: const HeroIcon(
-                                      HeroIcons.rightSmall,
-                                      color: ThemeColors.gray2,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            _dayDateChanger(state),
+                          if (scheduleState.calendarView == CalendarView.week ||
+                              scheduleState.calendarView ==
+                                  CalendarView.timelineWeek)
+                            _weekDateChanger(state),
                           if (scheduleState.calendarView == CalendarView.month)
-                            Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: ThemeColors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: ThemeColors.gray10,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                    onPressed: () async {
-                                      firstDayOfMonth = DateTime(
-                                          firstDayOfMonth.year,
-                                          firstDayOfMonth.month - 1,
-                                          1);
-                                      await appStore.dispatch(
-                                          SCFetchShiftsMonthAction(
-                                              startDate: firstDayOfMonth));
-                                    },
-                                    icon: const HeroIcon(
-                                      HeroIcons.leftSmall,
-                                      color: ThemeColors.gray2,
-                                      size: 18,
-                                    ),
-                                  ),
-                                  KText(
-                                    textAlign: TextAlign.center,
-                                    text:
-                                        "${DateFormat("MMM").format(firstDayOfMonth)} ${DateFormat("yyyy").format(firstDayOfMonth)}",
-                                    fontSize: 16,
-                                    textColor: ThemeColors.gray2,
-                                    fontWeight: FWeight.medium,
-                                  ),
-                                  IconButton(
-                                    onPressed: () async {
-                                      firstDayOfMonth = DateTime(
-                                          firstDayOfMonth.year,
-                                          firstDayOfMonth.month + 1,
-                                          1);
-                                      await appStore.dispatch(
-                                          SCFetchShiftsMonthAction(
-                                              startDate: firstDayOfMonth));
-                                    },
-                                    icon: const HeroIcon(
-                                      HeroIcons.rightSmall,
-                                      color: ThemeColors.gray2,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            _monthDateChanger(state),
                         ],
                       ),
-                      if (scheduleState.calendarView == CalendarView.week)
-                        ButtonLargeSecondary(
-                          text: scheduleState.sidebarType == SidebarType.user
-                              ? "User"
-                              : "Location",
-                          leftIcon: const HeroIcon(HeroIcons.loop),
-                          onPressed: () {
-                            appStore.dispatch(SCChangeSidebarType());
-                          },
-                        ),
+                      if (scheduleState.calendarView == CalendarView.week ||
+                          scheduleState.calendarView ==
+                              CalendarView.timelineWeek)
+                        _resourceChanger(state),
                     ],
                   ),
                 ),
@@ -352,13 +360,14 @@ class _SchedulingPageState extends State<SchedulingPage> {
       case CalendarView.day:
         return DailyViewCalendar(day: day);
       case CalendarView.week:
+      case CalendarView.timelineWeek:
         return WeeklyViewCalendar(
             lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
       case CalendarView.month:
         return MonthlyViewCalendar(month: firstDayOfMonth);
       default:
         return const Center(
-          child: Text("No calendar view selected"),
+          child: Text("Cannot find calendar view"),
         );
       // return MonthlyViewCalendar();
     }

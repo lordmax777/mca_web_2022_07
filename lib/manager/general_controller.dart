@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
@@ -54,6 +55,11 @@ class GeneralController extends GetxController {
 
   void initAll() async {
     getCompanyInfo();
+    // await fetch(GetAllParamListAction());
+    // await fetch(GetUsersListAction());
+    // await fetch(GetAllLocationsAction());
+    // await fetch(GetPropertiesAction());
+    // return;
     await Future.wait([
       fetch(GetAllParamListAction()),
       fetch(GetUsersListAction()),
