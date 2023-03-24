@@ -4,8 +4,8 @@ import '../theme/theme.dart';
 class Constants {
   static const String appName = "MCA Web";
   static const int mj = 0;
-  static const int mn = 0;
-  static const int up = 9;
+  static const int mn = 1;
+  static const int up = 0;
   static String appVersion = "$mj.$mn.$up";
   static bool isDebug = true;
   static bool enableTalker = false;
