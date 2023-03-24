@@ -1,5 +1,6 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../manager/models/location_item_md.dart';
@@ -24,20 +25,19 @@ class DailyViewCalendar extends StatelessWidget {
           final interval = scheduleState.interval;
           return SfCalendar(
             view: CalendarView.timelineDay,
-            // resourceViewHeaderBuilder: (context, details) {
-            //   final user = details.resource.id as UserRes;
-            //   return _userWidget(user);
-            // },
+            resourceViewHeaderBuilder: (context, details) {
+              final user = details.resource.id as UserRes;
+              return _userWidget(user);
+            },
             resourceViewSettings: ResourceViewSettings(
-              // size: 300,
-              // size: 300,
+              size: CalendarConstants.resourceWidth,
               showAvatar: false,
-              // visibleResourceCount: visibleResourceCount(scheduleState),
+              visibleResourceCount: CalendarConstants.resourceCount(context),
             ),
             dataSource: getDataSource(scheduleState),
             timeSlotViewSettings: TimeSlotViewSettings(
               timeIntervalWidth: 70,
-              timelineAppointmentHeight: 30,
+              timelineAppointmentHeight: CalendarConstants.shiftHeight,
               timeInterval: Duration(minutes: interval),
               timeFormat: "h:mm a",
               timeTextStyle: const TextStyle(
@@ -61,91 +61,51 @@ class DailyViewCalendar extends StatelessWidget {
             initialDisplayDate: day,
             todayHighlightColor: Colors.transparent,
             allowDragAndDrop: false,
-            // appointmentBuilder: (_, calendarAppointmentDetails) {
-            //   final appointment = calendarAppointmentDetails.appointments
-            //       .toList()
-            //       .first as Appointment?;
-            //   final ap = appointment?.id as AppointmentIdMd?;
-            //   if (ap == null) {
-            //     return const SizedBox();
-            //   }
-            //   // final count = scheduleState.countSameShiftStartDate(appointment!,
-            //   //     isWeek: false);
-            //
-            //   return _appWidget(appointment!, 8);
-            // },
+            appointmentBuilder: (_, calendarAppointmentDetails) {
+              final appointment = calendarAppointmentDetails.appointments
+                  .toList()
+                  .first as Appointment?;
+              final ap = appointment?.id as AppointmentIdMd?;
+              if (ap == null) {
+                return const SizedBox();
+              }
+              return _appWidget(appointment!, context);
+            },
           );
         });
   }
 
-  Widget _appWidget(Appointment appointment, int count) {
+  Widget _appWidget(Appointment appointment, BuildContext context) {
     final ap = appointment.id as AppointmentIdMd;
     final location = ap.property;
     final user = ap.user;
-    final bool isLarge = count == 1;
-
+    final formatter = DateFormat('h:mm a');
+    final start = appointment.startTime;
+    final end = appointment.endTime;
+    final title =
+        "${formatter.format(start)} - ${formatter.format(end)} / ${location.title ?? "-"} / ${location.locationName}";
     return Tooltip(
-      message:
-          "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
+      verticalOffset: 10,
+      message: title,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
           color: user.userRandomBgColor,
         ),
-        padding: EdgeInsets.symmetric(
-            horizontal: 16.0, vertical: isLarge ? 8.0 : 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (isLarge)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  KText(
-                    isSelectable: false,
-                    text:
-                        "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
-                    fontSize: 14,
-                    fontWeight: FWeight.bold,
-                  ),
-                  KText(
-                    isSelectable: false,
-                    text: location.title ?? "-",
-                    fontSize: 14,
-                    fontWeight: FWeight.bold,
-                  ),
-                ],
-              )
-            else
-              SpacedRow(
-                horizontalSpace: 16.0,
-                children: [
-                  KText(
-                    isSelectable: false,
-                    text:
-                        "${DateFormat('h:mm a').format(appointment.startTime)} - ${DateFormat('h:mm a').format(appointment.endTime)}",
-                    fontSize: 14 / count * 2,
-                    fontWeight: FWeight.bold,
-                  ),
-                  KText(
-                    isSelectable: false,
-                    text: location.title ?? "-",
-                    fontSize: 14 / count * 2,
-                    fontWeight: FWeight.bold,
-                  ),
-                ],
-              ),
-            // IconButton(
-            //     alignment: Alignment.centerRight,
-            //     padding: const EdgeInsets.all(0.0),
-            //     onPressed: () async {},
-            //     icon: HeroIcon(
-            //       HeroIcons.moreVertical,
-            //       size: 24.0 / count,
-            //       color: Colors.white,
-            //     )),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: FittedBox(
+          alignment: Alignment.centerLeft,
+          fit: BoxFit.scaleDown,
+          child: Text(
+            title,
+            softWrap: false,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                  color: Colors.white,
+                  fontFamily: ThemeText.fontFamilyM,
+                ),
+          ),
         ),
       ),
     );

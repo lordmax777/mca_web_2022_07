@@ -17,7 +17,7 @@ class NavbarWidget extends StatelessWidget with PreferredSizeWidget {
       color: ThemeColors.MAIN_COLOR,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
-        width: Constants.defaultWidth,
+        width: Constants.defaultWidth(context),
         child: Row(
           children: [
             _LeadinBtn(scaffoldKey: Constants.scaffoldKey),

@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
+import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
@@ -305,7 +307,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
               child: TableWrapperWidget(
                   child: SizedBox(
             width: double.infinity,
-            height: 800,
+            height: CalendarConstants.fullHeight(context),
             child: SpacedColumn(
               verticalSpace: 16.0,
               children: [
@@ -342,12 +344,12 @@ class _SchedulingPageState extends State<SchedulingPage> {
                   ),
                 ),
                 ErrorWrapper(
-                    height: 650,
+                    height: CalendarConstants.tableHeight(context),
                     errors: [
                       scheduleState.shifts.error,
                     ],
                     child: SizedBox(
-                        height: 650,
+                        height: CalendarConstants.tableHeight(context),
                         child: _getCalendar(scheduleState.calendarView))),
               ],
             ),

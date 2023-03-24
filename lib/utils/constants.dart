@@ -9,7 +9,8 @@ class Constants {
   static String appVersion = "$mj.$mn.$up";
   static bool isDebug = true;
   static bool enableTalker = false;
-  static const double defaultWidth = 2000;
+  static double defaultWidth(BuildContext context) =>
+      MediaQuery.of(context).size.width - 60;
 
   //REST API related data
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";

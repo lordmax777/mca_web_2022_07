@@ -9,7 +9,7 @@ class PageWrapper extends StatelessWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: SizedBox(
-        width: Constants.defaultWidth,
+        width: Constants.defaultWidth(context),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(Constants.pagePaddingHorizontal),
           child: child,

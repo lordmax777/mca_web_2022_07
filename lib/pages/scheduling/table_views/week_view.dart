@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../comps/simple_popup_menu.dart';
@@ -53,20 +54,24 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               }
               return _locWidget(res as PropertiesMd);
             },
+            // resourceViewSettings: ResourceViewSettings(
+            //   size: 300,
+            //   visibleResourceCount: visibleResourceCount(scheduleState),
+            // ),
             resourceViewSettings: ResourceViewSettings(
-              size: 300,
-              visibleResourceCount: visibleResourceCount(scheduleState),
+              size: CalendarConstants.resourceWidth,
+              showAvatar: false,
+              visibleResourceCount: CalendarConstants.resourceCount(context),
             ),
             timeSlotViewSettings: const TimeSlotViewSettings(
               timeIntervalWidth: 250,
+              timelineAppointmentHeight: CalendarConstants.shiftHeight,
               timeFormat: "EEE d MMM",
               timeTextStyle: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
                 fontFamily: ThemeText.fontFamilyR,
               ),
-              timeIntervalHeight: 40,
-              timeRulerSize: 40,
               startHour: 0,
               endHour: 1,
             ),
@@ -111,13 +116,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   logger(calendarTapDetails.targetElement);
               }
             },
-            // onDragEnd: (appointmentDragEndDetails) {
-            //   appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
-            // },
-            firstDayOfWeek: 1,
             todayHighlightColor: ThemeColors.transparent,
             allowDragAndDrop: false,
-            cellEndPadding: 0,
             appointmentBuilder: (_, calendarAppointmentDetails) {
               final appointment = calendarAppointmentDetails.appointments
                   .toList()
@@ -126,176 +126,249 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               if (ap == null) {
                 return const SizedBox();
               }
-
-              final isUserView = scheduleState.sidebarType == SidebarType.user;
-              return _appWidget(ap, isUserView, context);
+              return _appWidget(appointment!, context);
             },
           );
         });
   }
 
-  Widget _appWidget(AppointmentIdMd ap, bool isUserView, BuildContext context) {
-    final alloc = ap.property;
+  Widget _appWidget(Appointment appointment, BuildContext context) {
+    final ap = appointment.id as AppointmentIdMd;
+    final location = ap.property;
+    final user = ap.user;
+    final title = "${location.title ?? "-"} - ${location.locationName}";
     return Tooltip(
-      message: (isUserView ? alloc.locationName : ap.user.fullname) ?? "-",
+      verticalOffset: 10,
+      message: title,
       child: Container(
         decoration: BoxDecoration(
-          color: ThemeColors.transparent,
-          border: Border.all(
-            color: ThemeColors.gray10,
-            width: 1,
-          ),
           borderRadius: BorderRadius.circular(4.0),
+          color: user.userRandomBgColor,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (!isUserView)
-              SpacedRow(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                horizontalSpace: 4,
-                children: [
-                  const HeroIcon(HeroIcons.user, size: 16),
-                  SizedBox(
-                    width: 150,
-                    child: KText(
-                      isSelectable: false,
-                      text: ap.user.fullname,
-                      fontSize: 20,
-                      maxLines: 1,
-                      textColor: ThemeColors.gray2,
-                      fontWeight: FWeight.bold,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: FittedBox(
+          alignment: Alignment.centerLeft,
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                softWrap: false,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headline6!.copyWith(
+                      color: Colors.white,
+                      fontFamily: ThemeText.fontFamilyM,
                     ),
-                  ),
-                ],
               ),
-            if (isUserView)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  SpacedRow(
-                    mainAxisSize: MainAxisSize.min,
-                    horizontalSpace: 4,
-                    children: [
-                      const HeroIcon(HeroIcons.pin, size: 16),
-                      SizedBox(
-                        width: 150,
-                        child: KText(
-                          isSelectable: false,
-                          text: alloc.locationName ?? "-",
-                          fontSize: 16,
-                          maxLines: 1,
-                          textColor: ThemeColors.gray2,
-                          fontWeight: FWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SpacedRow(
-                    mainAxisSize: MainAxisSize.min,
-                    horizontalSpace: 4,
-                    children: [
-                      const HeroIcon(HeroIcons.house, size: 16),
-                      SizedBox(
-                        width: 150,
-                        child: KText(
-                          maxLines: 1,
-                          isSelectable: false,
-                          text: alloc.title ?? "-",
-                          fontSize: 16,
-                          textColor: ThemeColors.gray2,
-                          fontWeight: FWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            SimplePopupMenuWidget(
-              menus: [
-                SimplePopupMenu(
-                  label: "Copy",
-                  onTap: () async {
-                    setState(() {
-                      selectedAppointment['copy'] = ap;
-                    });
-                    // showError("Now select a date to copy to",
-                    //     titleMsg: "Copied.");
-
-                    return;
-                    // DateTime? val = await showDatePicker(
-                    //   context: context,
-                    //   initialDate: DateTime.parse(ap.allocation.date),
-                    //   firstDate: DateTime(2015),
-                    //   lastDate: DateTime(2035),
-                    // );
-                    // if (val != null && ap.allocation.dateTimeDate != null) {
-                    //   appStore.dispatch(SCCopyAllocationAction(
-                    //     fetchAction: SCFetchShiftsWeekAction(
-                    //       startDate: widget.firstDayOfWeek,
-                    //       endDate: widget.lastDayOfWeek,
-                    //     ),
-                    //     allocation: ap,
-                    //     targetDate: val,
-                    //     userId: ap.user.id,
-                    //     date: ap.allocation.dateTimeDate!,
-                    //   ));
-                    // }
-                  },
-                ),
-                SimplePopupMenu(
-                  label: "Copy All",
-                  onTap: () async {
-                    setState(() {
-                      selectedAppointment['copyAll'] = ap;
-                    });
-                    // showError("Now select a date to copy to",
-                    //     titleMsg: "Copied.");
-                    return;
-                    // DateTime? val = await showDatePicker(
-                    //   context: context,
-                    //   initialDate: DateTime.parse(ap.allocation.date),
-                    //   firstDate: DateTime(2015),
-                    //   lastDate: DateTime(2035),
-                    // );
-                    // if (val != null && ap.allocation.dateTimeDate != null) {
-                    //   appStore.dispatch(SCCopyAllocationAction(
-                    //     fetchAction: SCFetchShiftsWeekAction(
-                    //       startDate: widget.firstDayOfWeek,
-                    //       endDate: widget.lastDayOfWeek,
-                    //     ),
-                    //     allocation: ap,
-                    //     targetDate: val,
-                    //     date: ap.allocation.dateTimeDate!,
-                    //   ));
-                    // }
-                  },
-                ),
-                SimplePopupMenu(
-                  label: "Remove",
-                  onTap: () async {
-                    if (ap.allocation.dateTimeDate != null) {
-                      appStore.dispatch(SCRemoveAllocationAction(
-                        fetchAction: SCFetchShiftsWeekAction(
-                          startDate: widget.firstDayOfWeek,
-                          endDate: widget.lastDayOfWeek,
-                        ),
-                        allocation: ap,
-                      ));
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+              _appActionWidget(ap),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  Widget _appActionWidget(AppointmentIdMd ap) {
+    return SimplePopupMenuWidget(
+      menus: [
+        SimplePopupMenu(
+          label: "Copy",
+          onTap: () async {
+            setState(() {
+              selectedAppointment['copy'] = ap;
+            });
+          },
+        ),
+        SimplePopupMenu(
+          label: "Copy All",
+          onTap: () async {
+            setState(() {
+              selectedAppointment['copyAll'] = ap;
+            });
+          },
+        ),
+        SimplePopupMenu(
+          label: "Remove",
+          onTap: () async {
+            if (ap.allocation.dateTimeDate != null) {
+              appStore.dispatch(SCRemoveAllocationAction(
+                fetchAction: SCFetchShiftsWeekAction(
+                  startDate: widget.firstDayOfWeek,
+                  endDate: widget.lastDayOfWeek,
+                ),
+                allocation: ap,
+              ));
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  // Widget _appWidget(AppointmentIdMd ap, bool isUserView, BuildContext context) {
+  //   final alloc = ap.property;
+  //   return Tooltip(
+  //     message: (isUserView ? alloc.locationName : ap.user.fullname) ?? "-",
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         color: ThemeColors.transparent,
+  //         border: Border.all(
+  //           color: ThemeColors.gray10,
+  //           width: 1,
+  //         ),
+  //         borderRadius: BorderRadius.circular(4.0),
+  //       ),
+  //       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           if (!isUserView)
+  //             SpacedRow(
+  //               mainAxisSize: MainAxisSize.min,
+  //               crossAxisAlignment: CrossAxisAlignment.center,
+  //               horizontalSpace: 4,
+  //               children: [
+  //                 const HeroIcon(HeroIcons.user, size: 16),
+  //                 SizedBox(
+  //                   width: 150,
+  //                   child: KText(
+  //                     isSelectable: false,
+  //                     text: ap.user.fullname,
+  //                     fontSize: 20,
+  //                     maxLines: 1,
+  //                     textColor: ThemeColors.gray2,
+  //                     fontWeight: FWeight.bold,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           if (isUserView)
+  //             Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //               children: [
+  //                 SpacedRow(
+  //                   mainAxisSize: MainAxisSize.min,
+  //                   horizontalSpace: 4,
+  //                   children: [
+  //                     const HeroIcon(HeroIcons.pin, size: 16),
+  //                     SizedBox(
+  //                       width: 150,
+  //                       child: KText(
+  //                         isSelectable: false,
+  //                         text: alloc.locationName ?? "-",
+  //                         fontSize: 16,
+  //                         maxLines: 1,
+  //                         textColor: ThemeColors.gray2,
+  //                         fontWeight: FWeight.bold,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 SpacedRow(
+  //                   mainAxisSize: MainAxisSize.min,
+  //                   horizontalSpace: 4,
+  //                   children: [
+  //                     const HeroIcon(HeroIcons.house, size: 16),
+  //                     SizedBox(
+  //                       width: 150,
+  //                       child: KText(
+  //                         maxLines: 1,
+  //                         isSelectable: false,
+  //                         text: alloc.title ?? "-",
+  //                         fontSize: 16,
+  //                         textColor: ThemeColors.gray2,
+  //                         fontWeight: FWeight.bold,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           SimplePopupMenuWidget(
+  //             menus: [
+  //               SimplePopupMenu(
+  //                 label: "Copy",
+  //                 onTap: () async {
+  //                   setState(() {
+  //                     selectedAppointment['copy'] = ap;
+  //                   });
+  //                   // showError("Now select a date to copy to",
+  //                   //     titleMsg: "Copied.");
+  //
+  //                   return;
+  //                   // DateTime? val = await showDatePicker(
+  //                   //   context: context,
+  //                   //   initialDate: DateTime.parse(ap.allocation.date),
+  //                   //   firstDate: DateTime(2015),
+  //                   //   lastDate: DateTime(2035),
+  //                   // );
+  //                   // if (val != null && ap.allocation.dateTimeDate != null) {
+  //                   //   appStore.dispatch(SCCopyAllocationAction(
+  //                   //     fetchAction: SCFetchShiftsWeekAction(
+  //                   //       startDate: widget.firstDayOfWeek,
+  //                   //       endDate: widget.lastDayOfWeek,
+  //                   //     ),
+  //                   //     allocation: ap,
+  //                   //     targetDate: val,
+  //                   //     userId: ap.user.id,
+  //                   //     date: ap.allocation.dateTimeDate!,
+  //                   //   ));
+  //                   // }
+  //                 },
+  //               ),
+  //               SimplePopupMenu(
+  //                 label: "Copy All",
+  //                 onTap: () async {
+  //                   setState(() {
+  //                     selectedAppointment['copyAll'] = ap;
+  //                   });
+  //                   // showError("Now select a date to copy to",
+  //                   //     titleMsg: "Copied.");
+  //                   return;
+  //                   // DateTime? val = await showDatePicker(
+  //                   //   context: context,
+  //                   //   initialDate: DateTime.parse(ap.allocation.date),
+  //                   //   firstDate: DateTime(2015),
+  //                   //   lastDate: DateTime(2035),
+  //                   // );
+  //                   // if (val != null && ap.allocation.dateTimeDate != null) {
+  //                   //   appStore.dispatch(SCCopyAllocationAction(
+  //                   //     fetchAction: SCFetchShiftsWeekAction(
+  //                   //       startDate: widget.firstDayOfWeek,
+  //                   //       endDate: widget.lastDayOfWeek,
+  //                   //     ),
+  //                   //     allocation: ap,
+  //                   //     targetDate: val,
+  //                   //     date: ap.allocation.dateTimeDate!,
+  //                   //   ));
+  //                   // }
+  //                 },
+  //               ),
+  //               SimplePopupMenu(
+  //                 label: "Remove",
+  //                 onTap: () async {
+  //                   if (ap.allocation.dateTimeDate != null) {
+  //                     appStore.dispatch(SCRemoveAllocationAction(
+  //                       fetchAction: SCFetchShiftsWeekAction(
+  //                         startDate: widget.firstDayOfWeek,
+  //                         endDate: widget.lastDayOfWeek,
+  //                       ),
+  //                       allocation: ap,
+  //                     ));
+  //                   }
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _onAppointmentTap(DateTime date, int? targetUserId, int? targtShiftId,
       ScheduleState state) async {

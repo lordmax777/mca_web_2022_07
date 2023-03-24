@@ -133,7 +133,8 @@ class DepsListTable extends StatelessWidget {
       };
       _cols.add(col);
     }
-    double _h = 625;
+    //Calculate table height based on rows count
+    double _h = rows.length * 48.0 + 48.0;
 
     return SizedBox(
       height: _h,
