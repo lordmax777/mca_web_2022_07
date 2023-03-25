@@ -8,6 +8,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
+import '../scheduling_page.dart';
 
 class MonthlyViewCalendar extends StatefulWidget {
   final DateTime month;
@@ -175,25 +176,21 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
           color: user.userRandomBgColor,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: FittedBox(
-          alignment: Alignment.centerLeft,
-          fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                softWrap: false,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headline6!.copyWith(
-                      color: Colors.white,
-                      fontFamily: ThemeText.fontFamilyM,
-                    ),
-              ),
-              _appActionWidget(ap),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              softWrap: false,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: Colors.white,
+                    fontFamily: ThemeText.fontFamilyM,
+                  ),
+            ),
+            FittedBox(child: _appActionWidget(ap)),
+          ],
         ),
       ),
     );
@@ -201,36 +198,33 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
 
   Widget _appActionWidget(AppointmentIdMd ap) {
     return SimplePopupMenuWidget(
-      menus: [
-        SimplePopupMenu(
-          label: "Copy",
-          onTap: () async {
-            setState(() {
-              selectedAppointment['copy'] = ap;
-            });
-          },
-        ),
-        SimplePopupMenu(
-          label: "Copy All",
-          onTap: () async {
-            setState(() {
-              selectedAppointment['copyAll'] = ap;
-            });
-          },
-        ),
-        SimplePopupMenu(
-          label: "Remove",
-          onTap: () async {
-            if (ap.allocation.dateTimeDate != null) {
-              appStore.dispatch(SCRemoveAllocationAction(
-                fetchAction: fetcher,
-                allocation: ap,
-              ));
-            }
-          },
-        ),
-      ],
+      menus: getPopupAppointmentMenus(
+        onCopy: () => _onCopy(ap),
+        onCopyAll: () => _onCopyAll(ap),
+        onRemove: () => _onRemove(ap),
+      ),
     );
+  }
+
+  void _onCopy(AppointmentIdMd ap) {
+    setState(() {
+      selectedAppointment['copy'] = ap;
+    });
+  }
+
+  void _onCopyAll(AppointmentIdMd ap) {
+    setState(() {
+      selectedAppointment['copyAll'] = ap;
+    });
+  }
+
+  void _onRemove(AppointmentIdMd ap) {
+    if (ap.allocation.dateTimeDate != null) {
+      appStore.dispatch(SCRemoveAllocationAction(
+        fetchAction: fetcher,
+        allocation: ap,
+      ));
+    }
   }
 
   void _onAppointmentTap(DateTime date, ScheduleState state) async {

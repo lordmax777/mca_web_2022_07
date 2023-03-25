@@ -15,6 +15,7 @@ import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
 import '../schdule_appointment_drawer.dart';
+import '../scheduling_page.dart';
 
 class WeeklyViewCalendar extends StatefulWidget {
   final DateTime firstDayOfWeek;
@@ -146,64 +147,68 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
           color: user.userRandomBgColor,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: FittedBox(
-          alignment: Alignment.centerLeft,
-          fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                softWrap: false,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headline6!.copyWith(
-                      color: Colors.white,
-                      fontFamily: ThemeText.fontFamilyM,
-                    ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: 180,
+              child: FittedBox(
+                alignment: Alignment.centerLeft,
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  title,
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: Colors.white,
+                        fontFamily: ThemeText.fontFamilyM,
+                      ),
+                ),
               ),
-              _appActionWidget(ap),
-            ],
-          ),
+            ),
+            FittedBox(child: _appActionWidget(ap)),
+          ],
         ),
       ),
     );
   }
 
+  get fetcher => SCFetchShiftsWeekAction(
+        startDate: widget.firstDayOfWeek,
+        endDate: widget.lastDayOfWeek,
+      );
+
+  void _onCopy(AppointmentIdMd ap) {
+    setState(() {
+      selectedAppointment['copy'] = ap;
+    });
+  }
+
+  void _onCopyAll(AppointmentIdMd ap) {
+    setState(() {
+      selectedAppointment['copyAll'] = ap;
+    });
+  }
+
+  void _onRemove(AppointmentIdMd ap) {
+    if (ap.allocation.dateTimeDate != null) {
+      appStore.dispatch(
+        SCRemoveAllocationAction(
+          fetchAction: fetcher,
+          allocation: ap,
+        ),
+      );
+    }
+  }
+
   Widget _appActionWidget(AppointmentIdMd ap) {
     return SimplePopupMenuWidget(
-      menus: [
-        SimplePopupMenu(
-          label: "Copy",
-          onTap: () async {
-            setState(() {
-              selectedAppointment['copy'] = ap;
-            });
-          },
-        ),
-        SimplePopupMenu(
-          label: "Copy All",
-          onTap: () async {
-            setState(() {
-              selectedAppointment['copyAll'] = ap;
-            });
-          },
-        ),
-        SimplePopupMenu(
-          label: "Remove",
-          onTap: () async {
-            if (ap.allocation.dateTimeDate != null) {
-              appStore.dispatch(SCRemoveAllocationAction(
-                fetchAction: SCFetchShiftsWeekAction(
-                  startDate: widget.firstDayOfWeek,
-                  endDate: widget.lastDayOfWeek,
-                ),
-                allocation: ap,
-              ));
-            }
-          },
-        ),
-      ],
+      menus: getPopupAppointmentMenus(
+        onCopy: () => _onCopy(ap),
+        onCopyAll: () => _onCopyAll(ap),
+        onRemove: () => _onRemove(ap),
+      ),
     );
   }
 

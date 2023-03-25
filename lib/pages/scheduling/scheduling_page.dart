@@ -9,6 +9,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/modals/custom_date_picker.dart';
 import '../../comps/modals/custom_date_range_picker.dart';
 import '../../comps/modals/custom_month_picker.dart';
+import '../../comps/simple_popup_menu.dart';
 import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
@@ -413,4 +414,38 @@ class _SchedulingPageState extends State<SchedulingPage> {
       // return MonthlyViewCalendar();
     }
   }
+}
+
+List<SimplePopupMenu> getPopupAppointmentMenus(
+    {VoidCallback? onCopy,
+    VoidCallback? onCopyAll,
+    VoidCallback? onRemove,
+    VoidCallback? onEdit}) {
+  final menus = <SimplePopupMenu>[];
+
+  if (onCopy != null) {
+    menus.add(SimplePopupMenu(
+      label: "Copy",
+      onTap: onCopy,
+    ));
+  }
+  if (onCopyAll != null) {
+    menus.add(SimplePopupMenu(
+      label: "Copy All",
+      onTap: onCopyAll,
+    ));
+  }
+  if (onRemove != null) {
+    menus.add(SimplePopupMenu(
+      label: "Remove",
+      onTap: onRemove,
+    ));
+  }
+  if (onEdit != null) {
+    menus.add(SimplePopupMenu(
+      label: "Edit",
+      onTap: onEdit,
+    ));
+  }
+  return menus;
 }

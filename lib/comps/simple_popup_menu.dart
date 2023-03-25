@@ -25,6 +25,10 @@ class SimplePopupMenuWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       tooltip: "",
+      icon: const Icon(
+        Icons.more_vert,
+        color: ThemeColors.white,
+      ),
       itemBuilder: (_) =>
           menus.map<PopupMenuItem>((e) => _buildItem(e)).toList(),
       child: child,
