@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/intl_conf/intl/l10n.dart';
@@ -53,6 +54,7 @@ class _McaWebAppState extends State<McaWebApp> {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
+          MonthYearPickerLocalizations.delegate,
         ],
         locale: const Locale('en'),
         builder: (context, child) => ResponsiveWrapper.builder(child,

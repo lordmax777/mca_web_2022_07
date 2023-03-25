@@ -6,6 +6,9 @@ import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../comps/modals/custom_date_picker.dart';
+import '../../comps/modals/custom_date_range_picker.dart';
+import '../../comps/modals/custom_month_picker.dart';
 import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
@@ -154,6 +157,14 @@ class _SchedulingPageState extends State<SchedulingPage> {
             ),
           ),
           KText(
+            isSelectable: false,
+            onTap: () async {
+              final date = await showCustomDatePicker(context);
+              if (date != null) {
+                day = date;
+                appStore.dispatch(SCFetchShiftsAction(date: day));
+              }
+            },
             textAlign: TextAlign.center,
             text: DateFormat("EEE, MMM d").format(day),
             fontSize: 16,
@@ -205,6 +216,25 @@ class _SchedulingPageState extends State<SchedulingPage> {
             ),
           ),
           KText(
+            onTap: () async {
+              final DateTimeRange? range = await showCustomDateRangePicker(
+                context,
+                initialDate: firstDayOfWeek,
+                initialDateRange: DateTimeRange(
+                  start: firstDayOfWeek,
+                  end: lastDayOfWeek,
+                ),
+              );
+              if (range != null) {
+                logger("range: ${range.toString()}");
+                firstDayOfWeek = range.start;
+                await appStore.dispatch(SCFetchShiftsWeekAction(
+                  startDate: firstDayOfWeek,
+                  endDate: lastDayOfWeek,
+                ));
+              }
+            },
+            isSelectable: false,
             textAlign: TextAlign.center,
             text:
                 "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
@@ -259,6 +289,15 @@ class _SchedulingPageState extends State<SchedulingPage> {
             ),
           ),
           KText(
+            onTap: () async {
+              final date = await showCustomMonthPicker(context);
+              if (date != null) {
+                firstDayOfMonth = date;
+                await appStore.dispatch(
+                    SCFetchShiftsMonthAction(startDate: firstDayOfMonth));
+              }
+            },
+            isSelectable: false,
             textAlign: TextAlign.center,
             text:
                 "${DateFormat("MMM").format(firstDayOfMonth)} ${DateFormat("yyyy").format(firstDayOfMonth)}",
