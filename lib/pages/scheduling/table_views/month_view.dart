@@ -179,15 +179,18 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              softWrap: false,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: Colors.white,
-                    fontFamily: ThemeText.fontFamilyM,
-                  ),
+            SizedBox(
+              width: 180,
+              child: Text(
+                title,
+                softWrap: false,
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Colors.white,
+                      fontFamily: ThemeText.fontFamilyM,
+                    ),
+              ),
             ),
             FittedBox(child: _appActionWidget(ap)),
           ],

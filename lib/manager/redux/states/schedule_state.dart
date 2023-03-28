@@ -370,3 +370,7 @@ class SCRemoveAllocationAction<T> {
     required this.fetchAction,
   });
 }
+
+// class SCPublishAllocationsAction {
+//   final AppointmentIdMd allocation;
+// }
