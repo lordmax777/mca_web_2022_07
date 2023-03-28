@@ -40,9 +40,10 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, ScheduleState>(
-        converter: (store) => store.state.scheduleState,
-        builder: (_, scheduleState) {
+    return StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (_, state) {
+          final scheduleState = state.scheduleState;
           return SfCalendar(
             view: CalendarView.timelineWeek,
             initialSelectedDate: from,
@@ -91,6 +92,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   logger("appointment");
                   appStore.dispatch(UpdateGeneralStateAction(
                       endDrawer: AppointmentDrawer(
+                          state: state,
                           appointment:
                               calendarTapDetails.appointments!.first)));
                   await Future.delayed(const Duration(milliseconds: 100));

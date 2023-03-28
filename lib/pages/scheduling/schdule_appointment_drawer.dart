@@ -1,17 +1,18 @@
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/drawer_tabs/location.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../manager/models/shift_md.dart';
 import '../../manager/redux/sets/app_state.dart';
-
 import '../../theme/theme.dart';
 
 class AppointmentDrawer extends StatefulWidget {
   final Appointment appointment;
-  const AppointmentDrawer({Key? key, required this.appointment})
+  final AppState state;
+  const AppointmentDrawer(
+      {Key? key, required this.appointment, required this.state})
       : super(key: key);
 
   @override
@@ -28,6 +29,8 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
 
   ShiftMd get shift => appid.allocation;
 
+  ScheduleState get state => widget.state.scheduleState;
+
   late final TabController tabController;
 
   final tabs = const [
@@ -39,7 +42,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: tabs.length, vsync: this);
   }
 
   @override
@@ -50,29 +53,24 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
 
   @override
   Widget build(BuildContext context) {
+    final isUserView = state.sidebarType == SidebarType.user;
     return Drawer(
-        width: 640,
+        width: 540,
         backgroundColor: ThemeColors.white,
         elevation: 0.8,
-        child: StoreConnector<AppState, ScheduleState>(
-          converter: (store) => store.state.scheduleState,
-          builder: (context, state) {
-            final isUserView = state.sidebarType == SidebarType.user;
-            return SpacedColumn(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: SpacedColumn(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               children: [
-                Column(
-                  children: [
-                    _header(isUserView: isUserView),
-                    const Divider(),
-                    _body(),
-                  ],
-                ),
+                _header(isUserView: isUserView),
                 const Divider(),
-                _footer(),
+                _body(),
               ],
-            );
-          },
+            ),
+            const Divider(),
+            _footer(),
+          ],
         ));
   }
 
@@ -81,6 +79,25 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   EdgeInsets get _paddingH => const EdgeInsets.symmetric(vertical: 16);
 
   EdgeInsets get _paddingAll => const EdgeInsets.all(24);
+
+  final List<PropertiesMd> selectedLocations = [];
+  final List<UserRes> selectedUsers = [];
+
+  void selectLocation(PropertiesMd location) {
+    if (selectedLocations.any((element) => element.id == location.id)) {
+      selectedLocations.removeWhere((element) => element.id == location.id);
+    } else {
+      selectedLocations.add(location);
+    }
+  }
+
+  void selectUser(UserRes user) {
+    if (selectedUsers.any((element) => element.id == user.id)) {
+      selectedUsers.removeWhere((element) => element.id == user.id);
+    } else {
+      selectedUsers.add(user);
+    }
+  }
 
   Widget _date() {
     return Row(
@@ -106,20 +123,18 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   }
 
   Widget _user({required bool isUserView}) {
-    final user = appid.user;
-    final location = appid.property;
     return Row(
       children: [
         if (isUserView)
           CircleAvatar(
-            backgroundColor: user.userRandomBgColor,
+            backgroundColor: userRes.userRandomBgColor,
             maxRadius: 24.0,
             child: KText(
               fontSize: 16.0,
               isSelectable: false,
               fontWeight: FWeight.bold,
               text:
-                  "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"
+                  "${userRes.firstName.substring(0, 1)}${userRes.lastName.substring(0, 1)}"
                       .toUpperCase(),
             ),
           )
@@ -138,7 +153,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
         ),
         if (isUserView)
           KText(
-            text: user.fullname,
+            text: userRes.fullname,
             textColor: ThemeColors.black,
             fontWeight: FWeight.bold,
             fontSize: 18,
@@ -149,7 +164,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
             child: KText(
               isSelectable: false,
               maxLines: 2,
-              text: "${location.title} - ${location.locationName}",
+              text: "${props.title} - ${props.locationName}",
               fontSize: 14.0,
               textColor: ThemeColors.gray2,
               fontWeight: FWeight.bold,
@@ -210,7 +225,14 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   Widget _getTabView() {
     switch (tabController.index) {
       case 0:
-        return Text("Location and Property");
+        return ScheduleLocationTab(
+          state: widget.state,
+          appointment: widget.appointment,
+          onLocationSelected: selectLocation,
+          onUserSelected: selectUser,
+          selectedLocations: selectedLocations,
+          selectedUsers: selectedUsers,
+        );
       case 1:
         return Text("Shift Settings");
       case 2:
