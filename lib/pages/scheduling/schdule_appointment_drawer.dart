@@ -9,7 +9,7 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
 class AppointmentDrawer extends StatefulWidget {
-  final Appointment appointment;
+  final Appointment? appointment;
   final AppState state;
   const AppointmentDrawer(
       {Key? key, required this.appointment, required this.state})
@@ -21,13 +21,13 @@ class AppointmentDrawer extends StatefulWidget {
 
 class _AppointmentDrawerState extends State<AppointmentDrawer>
     with SingleTickerProviderStateMixin {
-  AppointmentIdMd get appid => widget.appointment.id as AppointmentIdMd;
+  AppointmentIdMd? get appid => widget.appointment?.id as AppointmentIdMd?;
 
-  PropertiesMd get props => appid.property;
+  PropertiesMd? get props => appid?.property;
 
-  UserRes get userRes => appid.user;
+  UserRes? get userRes => appid?.user;
 
-  ShiftMd get shift => appid.allocation;
+  ShiftMd? get shift => appid?.allocation;
 
   ScheduleState get state => widget.state.scheduleState;
 
@@ -39,9 +39,18 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
     Tab(text: "Additional Settings"),
   ];
 
+  bool get isUserView => state.sidebarType == SidebarType.user;
+
   @override
   void initState() {
     super.initState();
+    if (appid != null) {
+      if (isUserView) {
+        selectedLocations.add(props!);
+      } else {
+        selectedUsers.add(userRes!);
+      }
+    }
     tabController = TabController(length: tabs.length, vsync: this);
   }
 
@@ -53,7 +62,6 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
 
   @override
   Widget build(BuildContext context) {
-    final isUserView = state.sidebarType == SidebarType.user;
     return Drawer(
         width: 540,
         backgroundColor: ThemeColors.white,
@@ -105,7 +113,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
       children: [
         KText(
           text: DateFormat('EEEE, MMMM d, y')
-              .format(widget.appointment.startTime),
+              .format(widget.appointment!.startTime),
           textColor: ThemeColors.black,
           fontWeight: FWeight.bold,
           fontSize: 18,
@@ -127,14 +135,14 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
       children: [
         if (isUserView)
           CircleAvatar(
-            backgroundColor: userRes.userRandomBgColor,
+            backgroundColor: userRes!.userRandomBgColor,
             maxRadius: 24.0,
             child: KText(
               fontSize: 16.0,
               isSelectable: false,
               fontWeight: FWeight.bold,
               text:
-                  "${userRes.firstName.substring(0, 1)}${userRes.lastName.substring(0, 1)}"
+                  "${userRes!.firstName.substring(0, 1)}${userRes!.lastName.substring(0, 1)}"
                       .toUpperCase(),
             ),
           )
@@ -153,7 +161,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
         ),
         if (isUserView)
           KText(
-            text: userRes.fullname,
+            text: userRes!.fullname,
             textColor: ThemeColors.black,
             fontWeight: FWeight.bold,
             fontSize: 18,
@@ -164,7 +172,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
             child: KText(
               isSelectable: false,
               maxLines: 2,
-              text: "${props.title} - ${props.locationName}",
+              text: "${props!.title} - ${props!.locationName}",
               fontSize: 14.0,
               textColor: ThemeColors.gray2,
               fontWeight: FWeight.bold,
@@ -227,7 +235,6 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
       case 0:
         return ScheduleLocationTab(
           state: widget.state,
-          appointment: widget.appointment,
           onLocationSelected: selectLocation,
           onUserSelected: selectUser,
           selectedLocations: selectedLocations,
@@ -247,7 +254,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
       padding: _paddingAll,
       child: SpacedRow(horizontalSpace: 16, children: [
         ButtonLarge(text: "Submit", onPressed: () {}),
-        if (appid.allocation.published == true)
+        if (appid!.allocation.published == true)
           ButtonLarge(text: "Unpublish", onPressed: () {})
         else
           ButtonLarge(text: "Publish", onPressed: () {}),

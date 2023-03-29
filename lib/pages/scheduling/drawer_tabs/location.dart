@@ -8,7 +8,6 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 
 class ScheduleLocationTab extends StatefulWidget {
-  final Appointment appointment;
   final AppState state;
   final void Function(PropertiesMd) onLocationSelected;
   final void Function(UserRes) onUserSelected;
@@ -17,7 +16,6 @@ class ScheduleLocationTab extends StatefulWidget {
   const ScheduleLocationTab({
     Key? key,
     required this.state,
-    required this.appointment,
     required this.onLocationSelected,
     required this.onUserSelected,
     required this.selectedLocations,
@@ -29,14 +27,6 @@ class ScheduleLocationTab extends StatefulWidget {
 }
 
 class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
-  AppointmentIdMd get appid => widget.appointment.id as AppointmentIdMd;
-
-  PropertiesMd get props => appid.property;
-
-  UserRes get userRes => appid.user;
-
-  ShiftMd get shift => appid.allocation;
-
   final TextEditingController _searchController = TextEditingController();
 
   AppState get state => widget.state;
@@ -44,7 +34,6 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
   ScheduleState get scheduleState => widget.state.scheduleState;
 
   bool get isUserView => scheduleState.sidebarType == SidebarType.user;
-
   final List<PropertiesMd> filteredLocations = [];
   final List<UserRes> filteredUsers = [];
   bool filterNotFound = true;
@@ -59,24 +48,34 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
     _searchController.addListener(() {
       setState(() {
         if (_searchController.text.isNotEmpty) {
-          // if (!isUserView) {
-          filteredLocations.clear();
-          filteredLocations.addAll(locations.where((element) {
-            return element.title!
-                .toLowerCase()
-                .contains((_searchController.text.toLowerCase()));
-          }).toList());
-          if (filteredLocations.isEmpty) {
+          if (isUserView) {
+            filteredLocations.clear();
             filteredLocations.addAll(locations.where((element) {
-              return element.locationName!
+              return element.title!
                   .toLowerCase()
                   .contains((_searchController.text.toLowerCase()));
             }).toList());
+            if (filteredLocations.isEmpty) {
+              filteredLocations.addAll(locations.where((element) {
+                return element.locationName!
+                    .toLowerCase()
+                    .contains((_searchController.text.toLowerCase()));
+              }).toList());
+            }
+            if (filteredLocations.isNotEmpty) {
+              filterNotFound = false;
+            }
+          } else {
+            filteredUsers.clear();
+            filteredUsers.addAll(users.where((element) {
+              return element.fullname
+                  .toLowerCase()
+                  .contains((_searchController.text.toLowerCase()));
+            }).toList());
+            if (filteredUsers.isNotEmpty) {
+              filterNotFound = false;
+            }
           }
-          if (filteredLocations.isNotEmpty) {
-            filterNotFound = false;
-          }
-          // }
         } else {
           setState(() {
             filteredLocations.clear();
@@ -95,13 +94,17 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
   }
 
   List<PropertiesMd> get locations => state.generalState.properties.data ?? [];
+  List<UserRes> get users => state.usersState.usersList.data ?? [];
 
   @override
   Widget build(BuildContext context) {
     final locs = <PropertiesMd>[];
+    final usrs = <UserRes>[];
     locs.addAll(filteredLocations);
+    usrs.addAll(filteredUsers);
     if (filterNotFound) {
       locs.addAll(locations);
+      usrs.addAll(users);
     }
 
     return Padding(
@@ -111,50 +114,95 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
             width: double.infinity,
             controller: _searchController,
             defaultBorderColor: ThemeColors.gray11,
-            hintText: "Search by location or property ...",
+            hintText: isUserView
+                ? "Search by location or property ..."
+                : "Search by user name ...",
             leftIcon: HeroIcons.search),
         const SizedBox(height: 16),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.59,
-          child: ListView.builder(
-            itemBuilder: (context, index) => _itemBuilder(context, index, locs),
-            itemCount: locs.length,
+        if (isUserView)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.59,
+            child: ListView.builder(
+              itemBuilder: (context, index) =>
+                  _itemBuilder(context, index, locs: locs),
+              itemCount: locs.length,
+            ),
           ),
-        ),
+        if (!isUserView)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.59,
+            child: ListView.builder(
+              itemBuilder: (context, index) =>
+                  _itemBuilder(context, index, usrs: usrs),
+              itemCount: usrs.length,
+            ),
+          ),
       ]),
     );
   }
 
-  Widget _itemBuilder(
-      BuildContext context, int index, final List<PropertiesMd> locs) {
-    final location = locs[index];
-    final bool isSelected = widget.selectedLocations.contains(location);
+  Widget _itemBuilder(BuildContext context, int index,
+      {List<PropertiesMd>? locs, List<UserRes>? usrs}) {
+    if (locs != null) {
+      final location = locs[index];
+      final bool isSelected = widget.selectedLocations.contains(location);
 
-    void onTap() {
-      widget.onLocationSelected(location);
-      setState(() {});
+      void onTap() {
+        widget.onLocationSelected(location);
+        setState(() {});
+      }
+
+      return ListTile(
+        hoverColor: ThemeColors.gray11,
+        leading: CustomCheckboxWidget(
+          onChanged: (value) {
+            onTap();
+          },
+          isChecked: isSelected,
+        ),
+        title: SpacedRow(
+          horizontalSpace: 8,
+          children: [
+            const HeroIcon(
+              HeroIcons.pin,
+              size: 24.0,
+              color: ThemeColors.gray2,
+            ),
+            Text("${location.title ?? ""} - ${location.locationName ?? ""}"),
+          ],
+        ),
+        onTap: onTap,
+      );
+    } else {
+      final user = usrs![index];
+      final bool isSelected = widget.selectedUsers.contains(user);
+
+      void onTap() {
+        widget.onUserSelected(user);
+        setState(() {});
+      }
+
+      return ListTile(
+        hoverColor: ThemeColors.gray11,
+        leading: CustomCheckboxWidget(
+          onChanged: (value) {
+            onTap();
+          },
+          isChecked: isSelected,
+        ),
+        title: SpacedRow(
+          horizontalSpace: 8,
+          children: [
+            const HeroIcon(
+              HeroIcons.pin,
+              size: 24.0,
+              color: ThemeColors.gray2,
+            ),
+            Text("${user.firstName ?? ""} ${user.lastName ?? ""}"),
+          ],
+        ),
+        onTap: onTap,
+      );
     }
-
-    return ListTile(
-      hoverColor: ThemeColors.gray11,
-      leading: CustomCheckboxWidget(
-        onChanged: (value) {
-          onTap();
-        },
-        isChecked: isSelected,
-      ),
-      title: SpacedRow(
-        horizontalSpace: 8,
-        children: [
-          const HeroIcon(
-            HeroIcons.pin,
-            size: 24.0,
-            color: ThemeColors.gray2,
-          ),
-          Text("${location.title ?? ""} - ${location.locationName ?? ""}"),
-        ],
-      ),
-      onTap: onTap,
-    );
   }
 }

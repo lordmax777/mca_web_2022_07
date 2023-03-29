@@ -90,19 +90,13 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   logger("appointment");
-                  appStore.dispatch(UpdateGeneralStateAction(
-                      endDrawer: AppointmentDrawer(
-                          state: state,
-                          appointment:
-                              calendarTapDetails.appointments!.first)));
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  if (Constants.scaffoldKey.currentState != null) {
-                    if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
-                      Constants.scaffoldKey.currentState!.openEndDrawer();
-                    }
-                  }
+                  _openDrawer(state, calendarTapDetails);
                   break;
                 case CalendarElement.calendarCell:
+                  if (calendarTapDetails.appointments == null) {
+                    _openDrawer(state, calendarTapDetails);
+                    return;
+                  }
                   var resource = (calendarTapDetails.resource?.id);
                   int? userId;
                   int? shiftId;
@@ -111,7 +105,9 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   } else if (resource is PropertiesMd) {
                     shiftId = resource.id;
                   }
-                  if (shiftId == null && userId == null) return;
+                  if (shiftId == null && userId == null) {
+                    return;
+                  }
                   _onAppointmentTap(
                       calendarTapDetails.date!, userId, shiftId, scheduleState);
                   break;
@@ -129,24 +125,44 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               if (ap == null) {
                 return const SizedBox();
               }
-              return _appWidget(appointment!, context);
+              final isUserView =
+                  state.scheduleState.sidebarType == SidebarType.user;
+              return _appWidget(appointment!, context, isUserView: isUserView);
             },
           );
         });
   }
 
-  Widget _appWidget(Appointment appointment, BuildContext context) {
+  void _openDrawer(
+      AppState state, CalendarTapDetails calendarTapDetails) async {
+    appStore.dispatch(UpdateGeneralStateAction(
+        endDrawer: AppointmentDrawer(
+            state: state,
+            appointment: calendarTapDetails.appointments?.first)));
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (Constants.scaffoldKey.currentState != null) {
+      if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+        Constants.scaffoldKey.currentState!.openEndDrawer();
+      }
+    }
+  }
+
+  Widget _appWidget(Appointment appointment, BuildContext context,
+      {required bool isUserView}) {
     final ap = appointment.id as AppointmentIdMd;
     final location = ap.property;
-    final user = ap.user;
-    final title = "${location.title ?? "-"} - ${location.locationName}";
+    final color = ap.user.userRandomBgColor;
+    String title = "${location.title ?? "-"} - ${location.locationName}";
+    if (!isUserView) {
+      title = ap.user.fullname;
+    }
     return Tooltip(
       verticalOffset: 10,
       message: title,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
-          color: user.userRandomBgColor,
+          color: color,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
