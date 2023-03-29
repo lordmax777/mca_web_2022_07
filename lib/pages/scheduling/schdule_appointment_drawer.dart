@@ -71,13 +71,13 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
           children: [
             Column(
               children: [
-                _header(isUserView: isUserView),
+                if (appid != null) _header(isUserView: isUserView),
                 const Divider(),
                 _body(),
               ],
             ),
             const Divider(),
-            _footer(),
+            if (appid != null) _footer(),
           ],
         ));
   }
