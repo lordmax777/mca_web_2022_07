@@ -118,7 +118,11 @@ Future fetch(action) async {
   if (action == null) return;
   final res = await appStore.dispatch(action);
 
-  final ErrorModel e = res.error;
+  final ErrorModel? e = res.error;
+
+  if (e == null) {
+    return res;
+  }
 
   if (e.isError) {
     if (e.errorCode == 401) {
