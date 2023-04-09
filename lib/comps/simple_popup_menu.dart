@@ -10,11 +10,13 @@ class SimplePopupMenu {
 class SimplePopupMenuWidget extends StatelessWidget {
   final List<SimplePopupMenu> menus;
   final Widget? child;
+  final Color? iconColor;
 
   const SimplePopupMenuWidget({
     super.key,
     required this.menus,
     this.child,
+    this.iconColor,
   });
 
   @override
@@ -25,9 +27,9 @@ class SimplePopupMenuWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       tooltip: "",
-      icon: const Icon(
+      icon: Icon(
         Icons.more_vert,
-        color: ThemeColors.white,
+        color: iconColor ?? ThemeColors.white,
       ),
       itemBuilder: (_) =>
           menus.map<PopupMenuItem>((e) => _buildItem(e)).toList(),

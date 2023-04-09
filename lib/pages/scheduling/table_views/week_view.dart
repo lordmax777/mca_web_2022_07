@@ -90,14 +90,24 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   logger("appointment");
-                  _openDrawer(state, calendarTapDetails);
+                  _openDrawer(
+                    state,
+                    calendarTapDetails.appointments!.first,
+                  );
                   break;
                 case CalendarElement.calendarCell:
+                  var resource = (calendarTapDetails.resource?.id);
                   if (calendarTapDetails.appointments == null) {
-                    _openDrawer(state, calendarTapDetails);
+                    _openDrawer(
+                      state,
+                      Appointment(
+                        startTime: calendarTapDetails.date!,
+                        endTime: calendarTapDetails.date!,
+                        resourceIds: [resource!],
+                      ),
+                    );
                     return;
                   }
-                  var resource = (calendarTapDetails.resource?.id);
                   int? userId;
                   int? shiftId;
                   if (resource is UserRes) {
@@ -133,12 +143,9 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
         });
   }
 
-  void _openDrawer(
-      AppState state, CalendarTapDetails calendarTapDetails) async {
+  void _openDrawer(AppState state, Appointment appointment) async {
     appStore.dispatch(UpdateGeneralStateAction(
-        endDrawer: AppointmentDrawer(
-            state: state,
-            appointment: calendarTapDetails.appointments?.first)));
+        endDrawer: AppointmentDrawer(state: state, appointment: appointment)));
     await Future.delayed(const Duration(milliseconds: 100));
     if (Constants.scaffoldKey.currentState != null) {
       if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
@@ -179,13 +186,15 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: Colors.white,
+                        color: ap.user.foregroundColor,
                         fontFamily: ThemeText.fontFamilyM,
                       ),
                 ),
               ),
             ),
-            FittedBox(child: _appActionWidget(ap)),
+            FittedBox(
+                child:
+                    _appActionWidget(ap, iconColor: ap.user.foregroundColor)),
           ],
         ),
       ),
@@ -220,8 +229,9 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     }
   }
 
-  Widget _appActionWidget(AppointmentIdMd ap) {
+  Widget _appActionWidget(AppointmentIdMd ap, {required Color iconColor}) {
     return SimplePopupMenuWidget(
+      iconColor: iconColor,
       menus: getPopupAppointmentMenus(
         onCopy: () => _onCopy(ap),
         onCopyAll: () => _onCopyAll(ap),
@@ -535,6 +545,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                 fontSize: 16.0,
                 isSelectable: false,
                 fontWeight: FWeight.bold,
+                textColor: user.foregroundColor,
                 text:
                     "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"
                         .toUpperCase(),

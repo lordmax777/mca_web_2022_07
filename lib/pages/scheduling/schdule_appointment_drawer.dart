@@ -4,12 +4,24 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/drawer_tabs/location.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import '../../manager/models/shift_md.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
 
+class CustomProperty {
+  final int userId;
+  final int propertyId;
+
+  // toJson
+  Map<String, dynamic> toJson() => {
+        'userId': userId,
+        'propertyId': propertyId,
+      };
+
+  CustomProperty({required this.userId, required this.propertyId});
+}
+
 class AppointmentDrawer extends StatefulWidget {
-  final Appointment? appointment;
+  final Appointment appointment;
   final AppState state;
   const AppointmentDrawer(
       {Key? key, required this.appointment, required this.state})
@@ -21,37 +33,78 @@ class AppointmentDrawer extends StatefulWidget {
 
 class _AppointmentDrawerState extends State<AppointmentDrawer>
     with SingleTickerProviderStateMixin {
-  AppointmentIdMd? get appid => widget.appointment?.id as AppointmentIdMd?;
+  bool get isAppSelected => appid != null;
 
-  PropertiesMd? get props => appid?.property;
+  Appointment get appointment => widget.appointment;
 
-  UserRes? get userRes => appid?.user;
+  DateTime get startTime => appointment.startTime;
 
-  ShiftMd? get shift => appid?.allocation;
+  get resource => appointment.resourceIds;
+
+  AppointmentIdMd? get appid {
+    final id = appointment.id;
+    if (id is! int) {
+      return id as AppointmentIdMd?;
+    }
+    return null;
+  }
 
   ScheduleState get state => widget.state.scheduleState;
 
   late final TabController tabController;
 
-  final tabs = const [
+  final tabs = [
     Tab(text: "Location and Property"),
-    Tab(text: "Shift Settings"),
-    Tab(text: "Additional Settings"),
+    const Tab(text: "Shift Settings"),
+    const Tab(text: "Additional Settings"),
   ];
 
   bool get isUserView => state.sidebarType == SidebarType.user;
 
+  final List<UserRes> allUsers = [];
+  final List<PropertiesMd> allProperties = [];
+
+  EdgeInsets get _paddingAll => const EdgeInsets.all(24);
+
+  final List<CustomProperty> selectedProperties = [];
+
+  void selectProperty(int propertyId) {
+    final int = selectedProperties
+        .indexWhere((element) => element.propertyId == propertyId);
+    if (int == -1) {
+      selectedProperties.add(CustomProperty(userId: 0, propertyId: propertyId));
+    } else {
+      selectedProperties.removeAt(int);
+    }
+  }
+
+  void selectUser(int userId) {
+    final int =
+        selectedProperties.indexWhere((element) => element.userId == userId);
+    if (int == -1) {
+      selectedProperties.add(CustomProperty(userId: userId, propertyId: 0));
+    } else {
+      selectedProperties.removeAt(int);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    if (appid != null) {
-      if (isUserView) {
-        selectedLocations.add(props!);
-      } else {
-        selectedUsers.add(userRes!);
+    allUsers.addAll(widget.state.usersState.usersList.data ?? []);
+    allProperties.addAll(widget.state.generalState.properties.data ?? []);
+    if (isAppSelected) {
+      final shifts = appid!.allocation;
+      selectedProperties.add(
+          CustomProperty(userId: shifts.userId!, propertyId: shifts.shiftId));
+      if (!isUserView) {
+        tabs.first = const Tab(text: "Users");
       }
     }
     tabController = TabController(length: tabs.length, vsync: this);
+    tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -67,53 +120,27 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
         backgroundColor: ThemeColors.white,
         elevation: 0.8,
         child: SpacedColumn(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               children: [
-                if (appid != null) _header(isUserView: isUserView),
-                const Divider(),
-                _body(),
+                _header(),
+                if (isAppSelected) const Divider(),
+                if (isAppSelected) _body(),
               ],
             ),
             const Divider(),
-            if (appid != null) _footer(),
+            if (isAppSelected) _footer(),
           ],
         ));
   }
 
-  EdgeInsets get _paddingX => const EdgeInsets.symmetric(horizontal: 16);
-
-  EdgeInsets get _paddingH => const EdgeInsets.symmetric(vertical: 16);
-
-  EdgeInsets get _paddingAll => const EdgeInsets.all(24);
-
-  final List<PropertiesMd> selectedLocations = [];
-  final List<UserRes> selectedUsers = [];
-
-  void selectLocation(PropertiesMd location) {
-    if (selectedLocations.any((element) => element.id == location.id)) {
-      selectedLocations.removeWhere((element) => element.id == location.id);
-    } else {
-      selectedLocations.add(location);
-    }
-  }
-
-  void selectUser(UserRes user) {
-    if (selectedUsers.any((element) => element.id == user.id)) {
-      selectedUsers.removeWhere((element) => element.id == user.id);
-    } else {
-      selectedUsers.add(user);
-    }
-  }
-
   Widget _date() {
+    final date = DateFormat('EEEE, MMMM d, y').format(startTime);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         KText(
-          text: DateFormat('EEEE, MMMM d, y')
-              .format(widget.appointment!.startTime),
+          text: date,
           textColor: ThemeColors.black,
           fontWeight: FWeight.bold,
           fontSize: 18,
@@ -130,59 +157,69 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
     );
   }
 
-  Widget _user({required bool isUserView}) {
-    return Row(
-      children: [
-        if (isUserView)
+  Widget _userOrProperty() {
+    if (isUserView) {
+      final userRes = (resource.first) as UserRes;
+      String text =
+          "${userRes.firstName.substring(0, 1)}${userRes.lastName.substring(0, 1)}"
+              .toUpperCase();
+      return Row(
+        children: [
           CircleAvatar(
-            backgroundColor: userRes!.userRandomBgColor,
+            backgroundColor: userRes.userRandomBgColor,
             maxRadius: 24.0,
             child: KText(
               fontSize: 16.0,
               isSelectable: false,
               fontWeight: FWeight.bold,
-              text:
-                  "${userRes!.firstName.substring(0, 1)}${userRes!.lastName.substring(0, 1)}"
-                      .toUpperCase(),
-            ),
-          )
-        else
-          const CircleAvatar(
-            backgroundColor: ThemeColors.blue7,
-            maxRadius: 24.0,
-            child: HeroIcon(
-              HeroIcons.pin,
-              size: 24.0,
-              color: ThemeColors.white,
+              text: text,
             ),
           ),
-        const SizedBox(
-          width: 16.0,
-        ),
-        if (isUserView)
+          const SizedBox(
+            width: 16.0,
+          ),
           KText(
-            text: userRes!.fullname,
+            text: userRes.fullname,
             textColor: ThemeColors.black,
             fontWeight: FWeight.bold,
             fontSize: 18,
           )
-        else
-          SizedBox(
-            width: 200,
-            child: KText(
-              isSelectable: false,
-              maxLines: 2,
-              text: "${props!.title} - ${props!.locationName}",
-              fontSize: 14.0,
-              textColor: ThemeColors.gray2,
-              fontWeight: FWeight.bold,
-            ),
+        ],
+      );
+    }
+    final props = (resource[1]) as PropertiesMd;
+    final locName = "${props.title} - ${props.locationName}";
+
+    return Row(
+      children: [
+        const CircleAvatar(
+          backgroundColor: ThemeColors.blue7,
+          maxRadius: 24.0,
+          child: HeroIcon(
+            HeroIcons.pin,
+            size: 24.0,
+            color: ThemeColors.white,
           ),
+        ),
+        const SizedBox(
+          width: 16.0,
+        ),
+        SizedBox(
+          width: 200,
+          child: KText(
+            isSelectable: false,
+            maxLines: 2,
+            text: locName,
+            fontSize: 14.0,
+            textColor: ThemeColors.gray2,
+            fontWeight: FWeight.bold,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _header({required bool isUserView}) {
+  Widget _header() {
     return Padding(
       padding: _paddingAll,
       child: SpacedColumn(
@@ -190,7 +227,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _date(),
-          _user(isUserView: isUserView),
+          _userOrProperty(),
         ],
       ),
     );
@@ -198,7 +235,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
 
   Widget _body() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.73,
+      height: MediaQuery.of(context).size.height * (0.73),
       child: Column(
         children: [
           SizedBox(
@@ -235,13 +272,18 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
       case 0:
         return ScheduleLocationTab(
           state: widget.state,
-          onLocationSelected: selectLocation,
+          isAppSelected: isAppSelected,
+          allProperties: allProperties,
+          onPropertySelected: selectProperty,
+          allUsers: allUsers,
           onUserSelected: selectUser,
-          selectedLocations: selectedLocations,
-          selectedUsers: selectedUsers,
+          selectedProperties: selectedProperties,
         );
-      case 1:
-        return Text("Shift Settings");
+      // case 1:
+      //   return ScheduleShiftSettingsTab(
+      //     selectedProperties: selectedProperties,
+      //     state: widget.state,
+      //   );
       case 2:
         return Text("Additional Settings");
       default:
@@ -250,15 +292,16 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   }
 
   Widget _footer() {
-    return Padding(
-      padding: _paddingAll,
-      child: SpacedRow(horizontalSpace: 16, children: [
-        ButtonLarge(text: "Submit", onPressed: () {}),
-        if (appid!.allocation.published == true)
-          ButtonLarge(text: "Unpublish", onPressed: () {})
-        else
-          ButtonLarge(text: "Publish", onPressed: () {}),
-      ]),
-    );
+    return SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 16,
+        children: [
+          ButtonLarge(text: "Submit", onPressed: () {}),
+          if (appid != null)
+            if (appid!.allocation.published == true)
+              ButtonLarge(text: "Unpublish", onPressed: () {})
+            else
+              ButtonLarge(text: "Publish", onPressed: () {}),
+        ]);
   }
 }
