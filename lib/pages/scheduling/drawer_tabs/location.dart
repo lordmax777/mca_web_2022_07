@@ -171,12 +171,19 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
         title: SpacedRow(
           horizontalSpace: 8,
           children: [
-            const HeroIcon(
-              HeroIcons.pin,
-              size: 24.0,
-              color: ThemeColors.gray2,
+            const CircleAvatar(
+              backgroundColor: ThemeColors.blue7,
+              maxRadius: 18.0,
+              child: HeroIcon(
+                HeroIcons.pin,
+                size: 18.0,
+                color: ThemeColors.white,
+              ),
             ),
-            Text("${property.title ?? ""} - ${property.locationName ?? ""}"),
+            SizedBox(
+                width: 350,
+                child: Text(
+                    "${property.title ?? ""} - ${property.locationName ?? ""}")),
           ],
         ),
         onTap: onTap,
@@ -215,7 +222,8 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
                         .toUpperCase(),
               ),
             ),
-            Text("${user.firstName ?? ""} ${user.lastName ?? ""}"),
+            SizedBox(
+                width: 350, child: Text("${user.firstName} ${user.lastName}")),
           ],
         ),
         onTap: onTap,

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/drawer_tabs/location.dart';
+import 'package:mca_web_2022_07/pages/scheduling/drawer_tabs/shift_settings.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../theme/theme.dart';
@@ -59,6 +60,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
     const Tab(text: "Additional Settings"),
   ];
 
+  /// if [isUserView] then use property else use user
   bool get isUserView => state.sidebarType == SidebarType.user;
 
   final List<UserRes> allUsers = [];
@@ -67,6 +69,7 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   EdgeInsets get _paddingAll => const EdgeInsets.all(24);
 
   final List<CustomProperty> selectedProperties = [];
+  CustomProperty selectedProperty = CustomProperty(userId: 0, propertyId: 0);
 
   void selectProperty(int propertyId) {
     final int = selectedProperties
@@ -92,13 +95,20 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
   void initState() {
     super.initState();
     allUsers.addAll(widget.state.usersState.usersList.data ?? []);
+    allUsers.sort((a, b) => a.fullname.compareTo(b.fullname));
     allProperties.addAll(widget.state.generalState.properties.data ?? []);
+    allProperties.sort((a, b) => (a.title ?? "").compareTo(b.title ?? ""));
     if (isAppSelected) {
       final shifts = appid!.allocation;
-      selectedProperties.add(
-          CustomProperty(userId: shifts.userId!, propertyId: shifts.shiftId));
       if (!isUserView) {
+        selectedProperties
+            .add(CustomProperty(userId: shifts.userId!, propertyId: 0));
         tabs.first = const Tab(text: "Users");
+      } else {
+        selectedProperty =
+            CustomProperty(userId: 0, propertyId: shifts.shiftId);
+        selectedProperties
+            .add(CustomProperty(userId: 0, propertyId: shifts.shiftId));
       }
     }
     tabController = TabController(length: tabs.length, vsync: this);
@@ -172,7 +182,10 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
               fontSize: 16.0,
               isSelectable: false,
               fontWeight: FWeight.bold,
-              text: text,
+              textColor: userRes.foregroundColor,
+              text:
+                  "${userRes.firstName.substring(0, 1)}${userRes.lastName.substring(0, 1)}"
+                      .toUpperCase(),
             ),
           ),
           const SizedBox(
@@ -279,11 +292,14 @@ class _AppointmentDrawerState extends State<AppointmentDrawer>
           onUserSelected: selectUser,
           selectedProperties: selectedProperties,
         );
-      // case 1:
-      //   return ScheduleShiftSettingsTab(
-      //     selectedProperties: selectedProperties,
-      //     state: widget.state,
-      //   );
+      case 1:
+        return ScheduleShiftSettingsTab(
+          selectedProperties: selectedProperties,
+          state: widget.state,
+          allProperties: allProperties,
+          allUsers: allUsers,
+          selectedProperty: selectedProperty,
+        );
       case 2:
         return Text("Additional Settings");
       default:
