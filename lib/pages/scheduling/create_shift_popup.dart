@@ -59,6 +59,10 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
     Tab(text: "Site details"),
   ];
 
+  final _shiftDetailsFormKey = GlobalKey<FormState>();
+  final _staffTimingFormKey = GlobalKey<FormState>();
+  final _siteDetailsFormKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -120,7 +124,7 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
             ],
           ),
           content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
+              width: MediaQuery.of(context).size.width * 0.8,
               height: MediaQuery.of(context).size.height * 0.6,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,8 +134,8 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
                       physics: const NeverScrollableScrollPhysics(),
                       controller: _tabController,
                       children: [
-                        _ShiftDetailsForm(state),
-                        const Center(child: Text('Staff & Timing')),
+                        _ShiftDetailsForm(state, _shiftDetailsFormKey),
+                        _StaffAndTimingForm(state, _staffTimingFormKey),
                         const Center(child: Text('Site details')),
                       ],
                     ),
@@ -157,9 +161,41 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
   }
 }
 
+Widget _labelWithField(String label, Widget child) {
+  return SpacedColumn(
+    verticalSpace: 0,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: ThemeText.md1,
+      ),
+      child
+    ],
+  );
+}
+
+Widget _toggle(bool value, Function(bool) onToggle) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: ToggleCheckboxWidget(
+        value: value,
+        width: 64.0,
+        height: 32.0,
+        toggleSize: 26.0,
+        padding: 1.0,
+        inactiveColor: ThemeColors.gray11,
+        onToggle: onToggle),
+  );
+}
+
+// Shift details form
 class _ShiftDetailsForm extends StatefulWidget {
   final AppState state;
-  const _ShiftDetailsForm(this.state, {Key? key}) : super(key: key);
+  final GlobalKey<FormState> formKey;
+
+  const _ShiftDetailsForm(this.state, this.formKey, {Key? key})
+      : super(key: key);
 
   @override
   State<_ShiftDetailsForm> createState() => _ShiftDetailsFormState();
@@ -179,12 +215,10 @@ class _ShiftDetailsFormState extends State<_ShiftDetailsForm> {
   List<ChecklistTemplateMd> get checklistTemplates =>
       state.generalState.checklistTemplates.data ?? [];
 
-  final _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: widget.formKey,
       child: SpacedRow(
         // mainAxisAlignment: MainAxisAlignment.center,
         horizontalSpace: MediaQuery.of(context).size.width * 0.05,
@@ -381,32 +415,216 @@ class _ShiftDetailsFormState extends State<_ShiftDetailsForm> {
       ),
     );
   }
+}
 
-  Widget _labelWithField(String label, Widget child) {
-    return SpacedColumn(
-      verticalSpace: 0,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        child
-      ],
-    );
-  }
+// Staff & Timing Form
+class _StaffAndTimingForm extends StatefulWidget {
+  final AppState appState;
+  final GlobalKey<FormState> formKey;
 
-  Widget _toggle(bool value, Function(bool) onToggle) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: ToggleCheckboxWidget(
-          value: value,
-          width: 64.0,
-          height: 32.0,
-          toggleSize: 26.0,
-          padding: 1.0,
-          inactiveColor: ThemeColors.gray11,
-          onToggle: onToggle),
+  const _StaffAndTimingForm(this.appState, this.formKey, {Key? key})
+      : super(key: key);
+
+  @override
+  State<_StaffAndTimingForm> createState() => _StaffAndTimingFormState();
+}
+
+class _StaffAndTimingFormState extends State<_StaffAndTimingForm> {
+  AppState get state => widget.appState;
+
+  List<ListGroup> get departments =>
+      state.generalState.paramList.data?.groups ?? [];
+  List<ListQualification> get qualifications =>
+      state.generalState.paramList.data?.qualifications ?? [];
+  List<ListQualificationLevel> get qualificationLevels =>
+      state.generalState.paramList.data?.qualification_levels ?? [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: widget.formKey,
+      child: SpacedRow(
+        horizontalSpace: MediaQuery.of(context).size.width * 0.05,
+        children: [
+          SpacedColumn(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            verticalSpace: MediaQuery.of(context).size.height * 0.05,
+            children: [
+              SpacedRow(
+                horizontalSpace: MediaQuery.of(context).size.width * 0.05,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _labelWithField(
+                    "Start Break Time",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.clock,
+                      isReadOnly: true,
+                      hintText: "Select time",
+                      onTap: () async {
+                        final res = await showCustomTimePicker(context);
+                        logger("date: $res");
+                      },
+                    ),
+                  ),
+                  _labelWithField(
+                    "End Break Time",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.clock,
+                      isReadOnly: true,
+                      hintText: "Select time",
+                      onTap: () async {
+                        final res = await showCustomTimePicker(context);
+                        logger("date: $res");
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SpacedRow(
+                horizontalSpace: MediaQuery.of(context).size.width * 0.05,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _labelWithField(
+                    "Strict Break Time",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.clock,
+                      isReadOnly: true,
+                      hintText: "Select time",
+                      onTap: () async {
+                        final res = await showCustomTimePicker(context);
+                        logger("date: $res");
+                      },
+                    ),
+                  ),
+                  _labelWithField(
+                    "Earliest Start Time",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.clock,
+                      isReadOnly: true,
+                      hintText: "Select time",
+                      onTap: () async {
+                        final res = await showCustomTimePicker(context);
+                        logger("date: $res");
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SpacedRow(
+                horizontalSpace: MediaQuery.of(context).size.width * 0.05,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _labelWithField(
+                    "Auto Logout Finish Time",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.clock,
+                      isReadOnly: true,
+                      hintText: "Select time",
+                      onTap: () async {
+                        final res = await showCustomTimePicker(context);
+                        logger("date: $res");
+                      },
+                    ),
+                  ),
+                  _labelWithField(
+                    "Break Not Available After",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.clock,
+                      isReadOnly: true,
+                      hintText: "Select time",
+                      onTap: () async {
+                        final res = await showCustomTimePicker(context);
+                        logger("date: $res");
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SpacedRow(
+                horizontalSpace: MediaQuery.of(context).size.width * 0.05,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _labelWithField(
+                    "Special Rate",
+                    TextInputWidget(
+                      width: 300,
+                      rightIcon: HeroIcons.pound,
+                      hintText: "Enter Amount",
+                    ),
+                  ),
+                  _labelWithField(
+                    "Department",
+                    DropdownWidgetV2(
+                      dropdownBtnWidth: 300,
+                      dropdownOptionsWidth: 300,
+                      items: departments.map((e) => e.name),
+                      onChanged: (value) {},
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SpacedColumn(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            verticalSpace: MediaQuery.of(context).size.height * 0.05,
+            children: [
+              SpacedRow(
+                horizontalSpace: MediaQuery.of(context).size.width * .05,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _labelWithField(
+                    "Number of Staff",
+                    TextInputWidget(
+                      width: 300,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  _labelWithField(
+                    "Maximum Staff",
+                    TextInputWidget(
+                      width: 300,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              SpacedRow(
+                horizontalSpace: MediaQuery.of(context).size.width * .05,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _labelWithField(
+                    "Qualification",
+                    DropdownWidgetV2(
+                      hasSearchBox: true,
+                      dropdownBtnWidth: 300,
+                      dropdownOptionsWidth: 300,
+                      items: qualifications.map((e) => e.title),
+                      onChanged: (index) {},
+                    ),
+                  ),
+                  _labelWithField(
+                    "Min Level",
+                    DropdownWidgetV2(
+                      hasSearchBox: true,
+                      dropdownBtnWidth: 300,
+                      dropdownOptionsWidth: 300,
+                      items: qualificationLevels.map((e) => e.level),
+                      onChanged: (index) {},
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
