@@ -56,6 +56,8 @@ class ScheduleState {
   final List<PropertiesMd> filteredLocations;
   List<PropertiesMd> get getFilteredLocations => filteredLocations;
 
+  bool get isUserView => sidebarType == SidebarType.user;
+
   const ScheduleState({
     required this.interval,
     required this.sidebarType,
@@ -74,7 +76,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: kDebugMode ? CalendarView.day : CalendarView.day,
+      calendarView: kDebugMode ? CalendarView.week : CalendarView.day,
       interval: 60,
       largestAppointmentCountDay: 1,
       largestAppointmentCountWeek: 1,
@@ -347,14 +349,12 @@ class SCCopyAllAllocationAction {
   final int? targetLocationId;
   final int? targetShiftId;
   final int? locationId;
-  final bool isUserView;
 
   const SCCopyAllAllocationAction({
     required this.allocation,
     required this.targetDate,
     this.locationId,
     required this.fetchAction,
-    required this.isUserView,
     this.targetLocationId,
     this.targetShiftId,
     this.targetUserId,
@@ -371,6 +371,18 @@ class SCRemoveAllocationAction<T> {
   });
 }
 
-// class SCPublishAllocationsAction {
-//   final AppointmentIdMd allocation;
-// }
+class SCOnCreateNewTap {
+  final CalendarTapDetails calendarTapDetails;
+
+  SCOnCreateNewTap(this.calendarTapDetails);
+}
+
+class SCOnCopyAllocationTap {
+  final CalendarTapDetails calendarTapDetails;
+  Map<String, dynamic> selectedAppointment;
+  final BuildContext context;
+  final SCFetchShiftsWeekAction fetchShiftsWeekAction;
+
+  SCOnCopyAllocationTap(this.calendarTapDetails, this.selectedAppointment,
+      this.context, this.fetchShiftsWeekAction);
+}
