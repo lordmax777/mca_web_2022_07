@@ -13,6 +13,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
+import '../create_shift_popup.dart';
 import '../models/data_source.dart';
 import '../schdule_appointment_drawer.dart';
 import '../scheduling_page.dart';
@@ -96,6 +97,18 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   }
                   break;
                 case CalendarElement.calendarCell:
+
+                  //Copy appointment if selected
+                  if (isCopyMode) {
+                    appStore.dispatch(SCOnCopyAllocationTap(
+                      calendarTapDetails,
+                      selectedAppointment,
+                      context,
+                      fetcher,
+                    ));
+                  }
+
+                  //Create shift
                   if (offset != null) {
                     double left = offset.dx;
                     double top = offset.dy - 60;
@@ -108,28 +121,12 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                             RelativeRect.fromLTRB(left, top, right, bottom),
                         items: getPopupCreateMenus());
                     logger(createTapResult);
-                    switch (createTapResult) {
-                      case "contract":
-                        //
-                        break;
-                      case "shift":
-                        //
-                        break;
-                      case "client":
-                        //
-                        break;
-                    }
+                    if (createTapResult == null) return;
+                    final shiftRes =
+                        await showCreateShiftPopup(context, createTapResult);
+                    logger(shiftRes);
                   } else {
                     showError("There was an unexpected error!");
-                  }
-                  if (isCopyMode) {
-                    //Copy appointment if selected
-                    appStore.dispatch(SCOnCopyAllocationTap(
-                      calendarTapDetails,
-                      selectedAppointment,
-                      context,
-                      fetcher,
-                    ));
                   }
                   break;
                 default:

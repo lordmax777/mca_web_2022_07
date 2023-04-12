@@ -65,6 +65,7 @@ class GeneralController extends GetxController {
       fetch(GetUsersListAction()),
       fetch(GetAllLocationsAction()),
       fetch(GetPropertiesAction()),
+      fetch(GetChecklistTemplatesAction()),
     ]);
   }
 }

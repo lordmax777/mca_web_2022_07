@@ -129,7 +129,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
                 ),
               )
             : null,
-        searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
+        // searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
         searchController: searchController,
         itemPadding: EdgeInsets.zero,
         decoration: const InputDecoration(

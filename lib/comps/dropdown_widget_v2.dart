@@ -7,11 +7,10 @@ class DropdownWidgetV2<T> extends StatefulWidget {
   /// DpItem.name => returns the selected name from items list
   ///
   /// DpItem.item => returns the selected item from objItems list with type of T
-  List<T>? objItems;
 
   ///Pass the first item of the items list. This param is deprecated
   final dynamic value;
-  final List items;
+  final Iterable items;
   final HeroIcons? leftIcon;
   String? hintText;
   bool isValueNull = false;
@@ -33,7 +32,6 @@ class DropdownWidgetV2<T> extends StatefulWidget {
       {Key? key,
       required this.items,
       this.onChanged,
-      this.objItems,
       this.customItemIcons,
       this.validator,
       this.isRequired = false,
@@ -50,7 +48,6 @@ class DropdownWidgetV2<T> extends StatefulWidget {
       : super(key: key) {
     if (value == null) isValueNull = true;
     hintText ??= "Options";
-    objItems ??= [];
   }
 
   @override
@@ -118,7 +115,7 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
                 ),
               )
             : null,
-        searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
+        // searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
         searchController: searchController,
         itemPadding: EdgeInsets.zero,
         decoration: const InputDecoration(

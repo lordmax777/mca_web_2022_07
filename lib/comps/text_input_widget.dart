@@ -80,7 +80,8 @@ class _TextInputWidgetState extends State<TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      margin: const EdgeInsets.only(top: 7),
       width: widget.width,
       child: TextFormField(
         onChanged: widget.onChanged,
@@ -91,7 +92,9 @@ class _TextInputWidgetState extends State<TextInputWidget> {
         maxLines: widget.maxLines,
         mouseCursor: widget.disableAll
             ? SystemMouseCursors.forbidden
-            : SystemMouseCursors.text,
+            : (widget.isReadOnly ?? false)
+                ? SystemMouseCursors.click
+                : SystemMouseCursors.text,
         controller: widget.controller,
         readOnly: widget.isReadOnly ?? widget.disableAll,
         cursorColor: ThemeColors.MAIN_COLOR,
