@@ -82,10 +82,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               allowScroll: !kDebugMode,
               allowNavigation: !kDebugMode,
             ),
-            onTap: (calendarTapDetails) async {
+            onTap: (calendarTapDetails, offset) async {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   if (isCopyMode) {
+                    //Copy appointment if selected
                     appStore.dispatch(SCOnCopyAllocationTap(
                       calendarTapDetails,
                       selectedAppointment,
@@ -95,7 +96,34 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   }
                   break;
                 case CalendarElement.calendarCell:
+                  if (offset != null) {
+                    double left = offset.dx;
+                    double top = offset.dy - 60;
+                    double right = MediaQuery.of(context).size.width - left;
+                    double bottom = MediaQuery.of(context).size.height - top;
+
+                    final createTapResult = await showMenu<String>(
+                        context: context,
+                        position:
+                            RelativeRect.fromLTRB(left, top, right, bottom),
+                        items: getPopupCreateMenus());
+                    logger(createTapResult);
+                    switch (createTapResult) {
+                      case "contract":
+                        //
+                        break;
+                      case "shift":
+                        //
+                        break;
+                      case "client":
+                        //
+                        break;
+                    }
+                  } else {
+                    showError("There was an unexpected error!");
+                  }
                   if (isCopyMode) {
+                    //Copy appointment if selected
                     appStore.dispatch(SCOnCopyAllocationTap(
                       calendarTapDetails,
                       selectedAppointment,

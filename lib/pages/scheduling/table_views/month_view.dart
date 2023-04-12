@@ -64,7 +64,7 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
               endHour: 1,
             ),
             headerHeight: 0,
-            onTap: (calendarTapDetails) {
+            onTap: (calendarTapDetails, offset) {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   logger("appointment");

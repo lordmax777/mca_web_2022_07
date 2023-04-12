@@ -56,7 +56,6 @@ class DailyViewCalendar extends StatelessWidget {
             onSelectionChanged: (calendarSelectionDetails) async {
               // openEndDrawer(const Drawer());
             },
-            onTap: (calendarTapDetails) {},
             initialSelectedDate: day,
             initialDisplayDate: day,
             todayHighlightColor: Colors.transparent,

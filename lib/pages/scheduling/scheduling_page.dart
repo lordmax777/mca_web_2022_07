@@ -449,3 +449,53 @@ List<SimplePopupMenu> getPopupAppointmentMenus(
   }
   return menus;
 }
+
+List<PopupMenuEntry<String>> getPopupCreateMenus() {
+  return [
+    PopupMenuItem(
+      value: "contract",
+      child: SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 8,
+        children: const [
+          HeroIcon(
+            HeroIcons.contract,
+            color: ThemeColors.gray2,
+            size: 18,
+          ),
+          Text("Contract/Quote"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: "shift",
+      child: SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 8,
+        children: const [
+          HeroIcon(
+            HeroIcons.clock,
+            color: ThemeColors.gray2,
+            size: 18,
+          ),
+          Text("Shift"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: "client",
+      child: SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 8,
+        children: const [
+          HeroIcon(
+            HeroIcons.user,
+            color: ThemeColors.gray2,
+            size: 18,
+          ),
+          Text("Client"),
+        ],
+      ),
+    ),
+  ];
+}
