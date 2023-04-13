@@ -1,25 +1,28 @@
+import 'package:collection/collection.dart';
+import 'package:mca_web_2022_07/pages/scheduling/schdule_appointment_drawer.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import '../../../manager/models/property_md.dart';
-import '../../../manager/models/shift_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 
 class ScheduleLocationTab extends StatefulWidget {
   final AppState state;
-  final void Function(PropertiesMd) onLocationSelected;
-  final void Function(UserRes) onUserSelected;
-  final List<PropertiesMd> selectedLocations;
-  final List<UserRes> selectedUsers;
+  final void Function(int locId) onPropertySelected;
+  final void Function(int userId) onUserSelected;
+  final List<CustomProperty> selectedProperties;
+  final bool isAppSelected;
+  final List<PropertiesMd> allProperties;
+  final List<UserRes> allUsers;
   const ScheduleLocationTab({
     Key? key,
     required this.state,
-    required this.onLocationSelected,
+    required this.onPropertySelected,
     required this.onUserSelected,
-    required this.selectedLocations,
-    required this.selectedUsers,
+    required this.selectedProperties,
+    required this.allProperties,
+    required this.allUsers,
+    required this.isAppSelected,
   }) : super(key: key);
 
   @override
@@ -33,9 +36,16 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
 
   ScheduleState get scheduleState => widget.state.scheduleState;
 
+  List<UserRes> get allUsers => widget.allUsers;
+
+  List<PropertiesMd> get allProperties => widget.allProperties;
+
   bool get isUserView => scheduleState.sidebarType == SidebarType.user;
+
   final List<PropertiesMd> filteredLocations = [];
+
   final List<UserRes> filteredUsers = [];
+
   bool filterNotFound = true;
 
   @override
@@ -50,13 +60,13 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
         if (_searchController.text.isNotEmpty) {
           if (isUserView) {
             filteredLocations.clear();
-            filteredLocations.addAll(locations.where((element) {
+            filteredLocations.addAll(allProperties.where((element) {
               return element.title!
                   .toLowerCase()
                   .contains((_searchController.text.toLowerCase()));
             }).toList());
             if (filteredLocations.isEmpty) {
-              filteredLocations.addAll(locations.where((element) {
+              filteredLocations.addAll(allProperties.where((element) {
                 return element.locationName!
                     .toLowerCase()
                     .contains((_searchController.text.toLowerCase()));
@@ -67,7 +77,7 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
             }
           } else {
             filteredUsers.clear();
-            filteredUsers.addAll(users.where((element) {
+            filteredUsers.addAll(allUsers.where((element) {
               return element.fullname
                   .toLowerCase()
                   .contains((_searchController.text.toLowerCase()));
@@ -93,9 +103,6 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
     super.dispose();
   }
 
-  List<PropertiesMd> get locations => state.generalState.properties.data ?? [];
-  List<UserRes> get users => state.usersState.usersList.data ?? [];
-
   @override
   Widget build(BuildContext context) {
     final locs = <PropertiesMd>[];
@@ -103,8 +110,8 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
     locs.addAll(filteredLocations);
     usrs.addAll(filteredUsers);
     if (filterNotFound) {
-      locs.addAll(locations);
-      usrs.addAll(users);
+      locs.addAll(allProperties);
+      usrs.addAll(allUsers);
     }
 
     return Padding(
@@ -121,7 +128,7 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
         const SizedBox(height: 16),
         if (isUserView)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.59,
+            height: MediaQuery.of(context).size.height * (0.59),
             child: ListView.builder(
               itemBuilder: (context, index) =>
                   _itemBuilder(context, index, locs: locs),
@@ -130,7 +137,7 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
           ),
         if (!isUserView)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.59,
+            height: MediaQuery.of(context).size.height * (0.59),
             child: ListView.builder(
               itemBuilder: (context, index) =>
                   _itemBuilder(context, index, usrs: usrs),
@@ -144,11 +151,12 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
   Widget _itemBuilder(BuildContext context, int index,
       {List<PropertiesMd>? locs, List<UserRes>? usrs}) {
     if (locs != null) {
-      final location = locs[index];
-      final bool isSelected = widget.selectedLocations.contains(location);
+      final property = locs[index];
+      final bool isSelected = widget.selectedProperties
+          .any((element) => element.propertyId == property.id);
 
       void onTap() {
-        widget.onLocationSelected(location);
+        widget.onPropertySelected(property.id!);
         setState(() {});
       }
 
@@ -163,22 +171,30 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
         title: SpacedRow(
           horizontalSpace: 8,
           children: [
-            const HeroIcon(
-              HeroIcons.pin,
-              size: 24.0,
-              color: ThemeColors.gray2,
+            const CircleAvatar(
+              backgroundColor: ThemeColors.blue7,
+              maxRadius: 18.0,
+              child: HeroIcon(
+                HeroIcons.pin,
+                size: 18.0,
+                color: ThemeColors.white,
+              ),
             ),
-            Text("${location.title ?? ""} - ${location.locationName ?? ""}"),
+            SizedBox(
+                width: 350,
+                child: Text(
+                    "${property.title ?? ""} - ${property.locationName ?? ""}")),
           ],
         ),
         onTap: onTap,
       );
     } else {
       final user = usrs![index];
-      final bool isSelected = widget.selectedUsers.contains(user);
+      final bool isSelected =
+          widget.selectedProperties.any((element) => element.userId == user.id);
 
       void onTap() {
-        widget.onUserSelected(user);
+        widget.onUserSelected(user.id);
         setState(() {});
       }
 
@@ -193,12 +209,21 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
         title: SpacedRow(
           horizontalSpace: 8,
           children: [
-            const HeroIcon(
-              HeroIcons.pin,
-              size: 24.0,
-              color: ThemeColors.gray2,
+            CircleAvatar(
+              backgroundColor: user.userRandomBgColor,
+              maxRadius: 18.0,
+              child: KText(
+                fontSize: 14.0,
+                isSelectable: false,
+                fontWeight: FWeight.bold,
+                textColor: user.foregroundColor,
+                text:
+                    "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"
+                        .toUpperCase(),
+              ),
             ),
-            Text("${user.firstName ?? ""} ${user.lastName ?? ""}"),
+            SizedBox(
+                width: 350, child: Text("${user.firstName} ${user.lastName}")),
           ],
         ),
         onTap: onTap,

@@ -495,8 +495,10 @@ class CalendarViewHelper {
       DateTime? date,
       List<dynamic>? appointments,
       CalendarElement element,
-      CalendarResource? resource) {
-    calendar.onTap!(CalendarTapDetails(appointments, date, element, resource));
+      CalendarResource? resource,
+      {Offset? offset}) {
+    calendar.onTap!(
+        CalendarTapDetails(appointments, date, element, resource), offset);
   }
 
   /// Method that raise the calendar long press callback with given parameters.

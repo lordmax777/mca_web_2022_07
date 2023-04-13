@@ -64,7 +64,7 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
               endHour: 1,
             ),
             headerHeight: 0,
-            onTap: (calendarTapDetails) {
+            onTap: (calendarTapDetails, offset) {
               switch (calendarTapDetails.targetElement) {
                 case CalendarElement.appointment:
                   logger("appointment");
@@ -280,7 +280,6 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
       logger("$isAll", hint: "isAll");
       if (isAll) {
         appStore.dispatch(SCCopyAllAllocationAction(
-          isUserView: false,
           fetchAction: fetcher,
           allocation: ap,
           targetDate: date,

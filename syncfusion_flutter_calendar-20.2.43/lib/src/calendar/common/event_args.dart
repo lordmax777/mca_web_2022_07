@@ -469,7 +469,7 @@ typedef ViewChangedCallback = void Function(
 /// * [SfCalendar.onTap], which matches this signature.
 /// * [SfCalendar], which uses this signature in one of it's callback.
 typedef CalendarTapCallback = void Function(
-    CalendarTapDetails calendarTapDetails);
+    CalendarTapDetails calendarTapDetails, Offset? position);
 
 /// Signature for callback that reports that a calendar element long pressed
 /// on view.

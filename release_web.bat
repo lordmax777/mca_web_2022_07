@@ -6,7 +6,7 @@ set day=%DATE:~7,2%
 set hour=%TIME:~0,2%
 set minute=%TIME:~3,2%
 set second=%TIME:~6,2%
-set version=%0.1.0%
+set version=%0.1.1%
 set date=%year%-%month%-%day% %hour%:%minute%:%second% %version%
 
 call flutter clean

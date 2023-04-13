@@ -27,8 +27,10 @@ class UserRes {
   String fullname;
 
   @JsonKey(ignore: true)
-  Color userRandomBgColor = Color.fromRGBO(
-      Random().nextInt(255), Random().nextInt(255), Random().nextInt(255), 1.0);
+  late Color userRandomBgColor;
+
+  @JsonKey(ignore: true)
+  late Color foregroundColor;
 
   @override
   UserRes({
@@ -52,7 +54,13 @@ class UserRes {
     required this.groupAdmin,
     required this.locationAdmin,
     this.locationId,
-  });
+  }) {
+    userRandomBgColor = Color.fromRGBO(Random().nextInt(255),
+        Random().nextInt(255), Random().nextInt(255), 1.0);
+    foregroundColor = userRandomBgColor.computeLuminance() > 0.5
+        ? Colors.black
+        : Colors.white;
+  }
 
   factory UserRes.all() {
     return UserRes(

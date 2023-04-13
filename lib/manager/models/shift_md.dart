@@ -16,6 +16,7 @@ class ShiftMd {
   final String date;
   final int locationId;
   final int? userId;
+  //Property id
   final int shiftId;
   final bool published;
   final String? special_start_time;
@@ -52,6 +53,26 @@ class ShiftMd {
       date: json['date'],
     );
   }
+
+  factory ShiftMd.empty({
+    int? locId,
+    int? uId,
+  }) {
+    return ShiftMd(
+      id: -1,
+      locationId: locId ?? 0,
+      userId: uId ?? 0,
+      shiftId: 0,
+      published: false,
+      special_start_time: null,
+      special_finish_time: null,
+      special_rate: null,
+      user_order: null,
+      date: '',
+    );
+  }
+
+  bool get isEmpty => id == -1;
 
   Map<String, dynamic> toJson() {
     return {

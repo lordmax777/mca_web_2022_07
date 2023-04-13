@@ -6327,7 +6327,8 @@ class _SfCalendarState extends State<SfCalendar>
               isMonthLabel
                   ? CalendarElement.header
                   : CalendarElement.viewHeader,
-              null);
+              null,
+              offset: details.globalPosition);
         },
         onLongPressStart: (LongPressStartDetails details) {
           _removeDatePicker();
@@ -6483,7 +6484,8 @@ class _SfCalendarState extends State<SfCalendar>
                     currentAppointments, widget.dataSource)
                 : currentAppointments,
             CalendarElement.viewHeader,
-            null);
+            null,
+            offset: offset);
       } else {
         CalendarViewHelper.raiseCalendarLongPressCallback(
             widget,
@@ -6511,7 +6513,8 @@ class _SfCalendarState extends State<SfCalendar>
               DateTime(currentDate.year, currentDate.month, currentDate.day),
               null,
               CalendarElement.calendarCell,
-              null);
+              null,
+              offset: offset);
         } else {
           CalendarViewHelper.raiseCalendarLongPressCallback(
               widget,
@@ -6546,7 +6549,8 @@ class _SfCalendarState extends State<SfCalendar>
                         selectedAppointment, widget.dataSource)
                     : selectedAppointment,
                 CalendarElement.appointment,
-                null);
+                null,
+                offset: offset);
           } else {
             CalendarViewHelper.raiseCalendarLongPressCallback(
                 widget,
@@ -8376,7 +8380,8 @@ class _SfCalendarState extends State<SfCalendar>
     final List<dynamic> resourceAppointments =
         _getSelectedResourceAppointments(tappedResource);
     CalendarViewHelper.raiseCalendarTapCallback(widget, null,
-        resourceAppointments, CalendarElement.resourceHeader, tappedResource);
+        resourceAppointments, CalendarElement.resourceHeader, tappedResource,
+        offset: details.globalPosition);
   }
 
   /// Filter and returns the appointment collection for the given resource from
@@ -8875,7 +8880,8 @@ class _SfCalendarState extends State<SfCalendar>
         selectedAppointments.isNotEmpty
             ? CalendarElement.appointment
             : CalendarElement.agenda,
-        null);
+        null,
+        offset: details.globalPosition);
   }
 
   //// Handles the onLongPress callback for agenda view.

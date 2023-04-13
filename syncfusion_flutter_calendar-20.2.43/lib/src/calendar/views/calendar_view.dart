@@ -8907,7 +8907,8 @@ class _CalendarViewState extends State<_CalendarView>
                 : CalendarElement.appointment;
         if (canRaiseTap) {
           CalendarViewHelper.raiseCalendarTapCallback(widget.calendar,
-              selectedDate, selectedAppointments, selectedElement, null);
+              selectedDate, selectedAppointments, selectedElement, null,
+              offset: tapDetails?.globalPosition);
         } else if (canRaiseLongPress) {
           CalendarViewHelper.raiseCalendarLongPressCallback(widget.calendar,
               selectedDate, selectedAppointments, selectedElement, null);
@@ -9174,7 +9175,8 @@ class _CalendarViewState extends State<_CalendarView>
                 selectedDate,
                 null,
                 CalendarElement.calendarCell,
-                selectedResource);
+                selectedResource,
+                offset: tapDetails?.globalPosition);
           } else if (canRaiseLongPress) {
             CalendarViewHelper.raiseCalendarLongPressCallback(
                 widget.calendar,
@@ -9198,7 +9200,8 @@ class _CalendarViewState extends State<_CalendarView>
                       appointmentView.appointment!, widget.calendar.dataSource)
                 ],
                 CalendarElement.appointment,
-                selectedResource);
+                selectedResource,
+                offset: tapDetails?.globalPosition);
           } else if (canRaiseLongPress) {
             CalendarViewHelper.raiseCalendarLongPressCallback(
                 widget.calendar,
@@ -9774,7 +9777,8 @@ class _CalendarViewState extends State<_CalendarView>
               _selectionPainter!.selectedDate,
               selectedAppointments,
               targetElement,
-              null);
+              null,
+              offset: tapDetails?.globalPosition);
         } else if (canRaiseLongPress) {
           CalendarViewHelper.raiseCalendarLongPressCallback(
               widget.calendar,
@@ -9804,7 +9808,8 @@ class _CalendarViewState extends State<_CalendarView>
               selectedDate,
               selectedAppointments,
               CalendarElement.appointment,
-              null);
+              null,
+              offset: tapDetails?.globalPosition);
         } else if (canRaiseLongPress) {
           CalendarViewHelper.raiseCalendarLongPressCallback(
               widget.calendar,
@@ -9819,7 +9824,8 @@ class _CalendarViewState extends State<_CalendarView>
           targetElement == CalendarElement.allDayPanel) {
         if (canRaiseTap) {
           CalendarViewHelper.raiseCalendarTapCallback(
-              widget.calendar, selectedDate, null, targetElement, null);
+              widget.calendar, selectedDate, null, targetElement, null,
+              offset: tapDetails?.globalPosition);
         } else if (canRaiseLongPress) {
           CalendarViewHelper.raiseCalendarLongPressCallback(
               widget.calendar, selectedDate, null, targetElement, null);
@@ -10025,7 +10031,8 @@ class _CalendarViewState extends State<_CalendarView>
     }
 
     CalendarViewHelper.raiseCalendarTapCallback(
-        widget.calendar, tappedDate, null, CalendarElement.viewHeader, null);
+        widget.calendar, tappedDate, null, CalendarElement.viewHeader, null,
+        offset: details.globalPosition);
   }
 
   //// Handles the on long press callback for view header

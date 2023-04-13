@@ -1,9 +1,8 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
-import 'package:mix/mix.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -13,23 +12,6 @@ import '../../models/shift_md.dart';
 import '../../models/users_list.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
-
-int _findLargestAppointmentCountDayInIsolate(Map<String, dynamic> args) {
-  print("Isolate START");
-  final List<ShiftMd> list = args['list'] as List<ShiftMd>;
-  int largestAppointmentCountDay = args['largestAppointmentCountDay'] as int;
-  for (var e in list) {
-    int max = 0;
-    for (var a in list) {
-      if (e.userId == a.userId) {
-        max++;
-      }
-    }
-    largestAppointmentCountDay = max;
-  }
-
-  return largestAppointmentCountDay;
-}
 
 class ScheduleMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -55,6 +37,10 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onRemoveAllocation(store.state, action, next);
       case SCCopyAllAllocationAction:
         return _onCopyAllAllocation(store.state, action, next);
+      case SCOnCreateNewTap:
+        return _onCreateNewTap(store.state, action, next);
+      case SCOnCopyAllocationTap:
+        return _onCopyAllocationTap(store.state, action, next);
       default:
         return next(action);
     }
@@ -609,6 +595,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
   void _onCopyAllAllocation(AppState state, SCCopyAllAllocationAction action,
       NextDispatcher next) async {
+    final bool isUserView = state.scheduleState.isUserView;
     final allocation = action.allocation;
     String target() => DateFormat('yyyy-MM-dd').format(action.targetDate);
     String date() =>
@@ -616,7 +603,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final stateValue = state.scheduleState.shifts;
     stateValue.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateValue));
-    bool isUserView = action.isUserView;
     //To copy all shifts, use action.isAll and shiftId must be 0
     //To copy single shift, use !action.isAll and shiftId must be the id of the shift
     final ApiResponse res = await restClient()
@@ -666,6 +652,98 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     } else {
       await appStore.dispatch(action.fetchAction);
       showError("Removed successfully", titleMsg: "Success");
+    }
+  }
+
+  void _onCreateNewTap(
+      AppState state, SCOnCreateNewTap action, NextDispatcher next) async {}
+
+  void _onCopyAllocationTap(
+      AppState state, SCOnCopyAllocationTap action, NextDispatcher next) async {
+    final calendarTapDetails = action.calendarTapDetails;
+
+    var resource = (calendarTapDetails.resource?.id);
+
+    int? userId;
+    int? shiftId;
+
+    if (resource is UserRes) {
+      userId = resource.id;
+    } else if (resource is PropertiesMd) {
+      shiftId = resource.id;
+    }
+
+    if (shiftId == null && userId == null) {
+      return;
+    }
+
+    final DateTime date = calendarTapDetails.date!;
+    bool isAll = false;
+    final selectedAppointment = action.selectedAppointment;
+    if (selectedAppointment.isEmpty) {
+      return;
+    }
+    AppointmentIdMd? ap = selectedAppointment['copy'];
+    if (ap == null) {
+      ap = selectedAppointment['copyAll'];
+      isAll = true;
+    }
+    if (ap == null) {
+      return;
+    }
+    if (ap.allocation.dateTimeDate == null) {
+      return;
+    }
+    if (date.isBefore(ap.allocation.dateTimeDate!)) {
+      showError("Cannot copy to a date before the current date");
+      return;
+    }
+
+    bool? canCopy = false;
+    canCopy = await showDialog<bool>(
+      context: action.context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Copy"),
+          content: Text(
+              "Are you sure you want to copy to ${DateFormat('dd MMM yyyy').format(date)}?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                return Get.back(result: false);
+              },
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () async {
+                return Get.back(result: true);
+              },
+              child: const Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+    canCopy ??= false;
+    if (canCopy) {
+      logger("$isAll", hint: "isAll");
+      if (isAll) {
+        appStore.dispatch(SCCopyAllAllocationAction(
+          fetchAction: action.fetchShiftsWeekAction,
+          allocation: ap,
+          targetUserId: userId,
+          targetShiftId: shiftId,
+          targetDate: date,
+        ));
+      } else {
+        appStore.dispatch(SCCopyAllocationAction(
+          fetchAction: action.fetchShiftsWeekAction,
+          allocation: ap,
+          targetUserId: userId,
+          targetShiftId: shiftId,
+          targetDate: date,
+        ));
+      }
     }
   }
 }
