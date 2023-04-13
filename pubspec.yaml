@@ -56,6 +56,7 @@ dependencies:
     path: syncfusion_flutter_calendar-20.2.43
   syncfusion_flutter_datepicker: ^20.4.48
   month_year_picker: ^0.2.0+3
+  adaptive_scrollbar: ^2.1.2
 
 dev_dependencies:
   flutter_test:
