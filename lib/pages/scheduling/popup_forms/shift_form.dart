@@ -1,4 +1,5 @@
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 
 import '../../../comps/modals/custom_date_picker.dart';
@@ -42,8 +43,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         verticalSpace: 32,
         children: [
           SpacedRow(
-            horizontalSpace: MediaQuery.of(context).size.width * 0.05,
-            mainAxisSize: MainAxisSize.min,
+            horizontalSpace: 32,
             children: [
               labelWithField(
                 "Title",
@@ -78,8 +78,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             ],
           ),
           SpacedRow(
-            horizontalSpace: MediaQuery.of(context).size.width * 0.05,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               labelWithField(
                 "Date",
@@ -135,7 +134,123 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             ],
           ),
           SpacedRow(
-            horizontalSpace: MediaQuery.of(context).size.width * 0.05,
+            horizontalSpace: 32,
+            children: [
+              labelWithField(
+                "Warehouse",
+                DropdownWidgetV2(
+                  hasSearchBox: true,
+                  dropdownBtnWidth: 300,
+                  dropdownOptionsWidth: 300,
+                  items: warehouses.map((e) => e.name),
+                  onChanged: (index) {},
+                ),
+              ),
+              labelWithField(
+                "Checklist Template",
+                DropdownWidgetV2(
+                  hasSearchBox: true,
+                  dropdownBtnWidth: 300,
+                  dropdownOptionsWidth: 300,
+                  items: checklistTemplates.map((e) => e.name),
+                  onChanged: (index) {},
+                ),
+              ),
+              labelWithField(
+                "Paid Hours",
+                TextInputWidget(
+                  width: 300,
+                  hintText: "0.00",
+                  rightIcon: HeroIcons.dollar,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              labelWithField(
+                "Split Time",
+                toggle(false, (val) {}),
+              ),
+            ],
+          ),
+          SpacedRow(
+            horizontalSpace: 32,
+            // mainAxisSize: MainAxisSize.min,
+            children: [
+              labelWithField(
+                "Warehouse",
+                DropdownWidgetV2(
+                  hasSearchBox: true,
+                  dropdownBtnWidth: 300,
+                  dropdownOptionsWidth: 300,
+                  items: warehouses.map((e) => e.name),
+                  onChanged: (index) {},
+                ),
+              ),
+              labelWithField(
+                "Checklist Template",
+                DropdownWidgetV2(
+                  hasSearchBox: true,
+                  dropdownBtnWidth: 300,
+                  dropdownOptionsWidth: 300,
+                  items: checklistTemplates.map((e) => e.name),
+                  onChanged: (index) {},
+                ),
+              ),
+              labelWithField(
+                "Paid Hours",
+                TextInputWidget(
+                  width: 300,
+                  hintText: "0.00",
+                  rightIcon: HeroIcons.dollar,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              labelWithField(
+                "Split Time",
+                toggle(false, (val) {}),
+              ),
+            ],
+          ),
+          SpacedRow(
+            horizontalSpace: 32,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              labelWithField(
+                "Warehouse",
+                DropdownWidgetV2(
+                  hasSearchBox: true,
+                  dropdownBtnWidth: 300,
+                  dropdownOptionsWidth: 300,
+                  items: warehouses.map((e) => e.name),
+                  onChanged: (index) {},
+                ),
+              ),
+              labelWithField(
+                "Checklist Template",
+                DropdownWidgetV2(
+                  hasSearchBox: true,
+                  dropdownBtnWidth: 300,
+                  dropdownOptionsWidth: 300,
+                  items: checklistTemplates.map((e) => e.name),
+                  onChanged: (index) {},
+                ),
+              ),
+              labelWithField(
+                "Paid Hours",
+                TextInputWidget(
+                  width: 300,
+                  hintText: "0.00",
+                  rightIcon: HeroIcons.dollar,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              labelWithField(
+                "Split Time",
+                toggle(false, (val) {}),
+              ),
+            ],
+          ),
+          SpacedRow(
+            horizontalSpace: 32,
             mainAxisSize: MainAxisSize.min,
             children: [
               labelWithField(

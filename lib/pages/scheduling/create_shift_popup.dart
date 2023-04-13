@@ -1,8 +1,10 @@
+import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_form.dart';
 import '../../../theme/theme.dart';
+import '../../comps/custom_scrollbar.dart';
 
 Future<T?> showCreateShiftPopup<T>(BuildContext context, String type) {
   return showDialog<T>(
@@ -120,7 +122,8 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
       child: StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) => AlertDialog(
-          contentPadding: const EdgeInsets.all(36),
+          contentPadding:
+              const EdgeInsets.only(top: 36, bottom: 0, right: 36, left: 36),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
@@ -161,29 +164,17 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
               ),
             ],
           ),
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           content: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: TabBarView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: _tabController,
-                      children: [
-                        ShiftDetailsForm(state, _shiftDetailsFormKey),
-                        StaffAndTimingForm(state, _staffTimingFormKey),
-                        const Center(child: Text('Site details')),
-                      ],
-                    ),
-                  ),
-                ],
-              )),
+            width: MediaQuery.of(context).size.width * 0.95,
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: CustomScrollbar(child: _getTabChild(state)),
+          ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [
+            Divider(
+              height: 0,
+            ),
             ButtonLarge(
                 text: 'Cancel',
                 onPressed: () {
@@ -198,5 +189,16 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
         ),
       ),
     );
+  }
+
+  Widget _getTabChild(AppState state) {
+    switch (_tabController.index) {
+      case 0:
+        return ShiftDetailsForm(state, _shiftDetailsFormKey);
+      case 1:
+        return StaffAndTimingForm(state, _staffTimingFormKey);
+      default:
+        return SizedBox();
+    }
   }
 }

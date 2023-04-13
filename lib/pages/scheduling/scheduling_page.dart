@@ -42,10 +42,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      appStore.dispatch(SCFetchShiftsAction(date: day));
-      appStore.dispatch(SCFetchShiftsWeekAction(
-          startDate: firstDayOfWeek, endDate: lastDayOfWeek));
-      appStore.dispatch(SCFetchShiftsMonthAction(startDate: firstDayOfMonth));
+      // appStore.dispatch(SCFetchShiftsAction(date: day));
+      // appStore.dispatch(SCFetchShiftsWeekAction(
+      //     startDate: firstDayOfWeek, endDate: lastDayOfWeek));
+      // appStore.dispatch(SCFetchShiftsMonthAction(startDate: firstDayOfMonth));
     });
   }
 
@@ -386,7 +386,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 ErrorWrapper(
                     height: CalendarConstants.tableHeight(context),
                     errors: [
-                      scheduleState.shifts.error,
+                      // scheduleState.shifts.error,
                     ],
                     child: SizedBox(
                         height: CalendarConstants.tableHeight(context),
