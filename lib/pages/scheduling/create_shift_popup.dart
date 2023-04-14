@@ -172,7 +172,7 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
           ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [
-            Divider(
+            const Divider(
               height: 0,
             ),
             ButtonLarge(
