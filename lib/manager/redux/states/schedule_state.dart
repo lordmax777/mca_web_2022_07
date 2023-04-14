@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import '../../../utils/helpers.dart';
 import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 import '../../models/shift_md.dart';
@@ -33,12 +32,8 @@ class ResourceIdMd {
 
 @immutable
 class ScheduleState {
-  final int interval;
-  final int largestAppointmentCountDay;
-  final int largestAppointmentCountWeek;
-
   final StateValue<Map<CalendarView, List<Appointment>>> shifts;
-  List<Appointment> get getShifts => shifts.data?[CalendarView.day] ?? [];
+  List<Appointment> get getDayShifts => shifts.data?[CalendarView.day] ?? [];
   List<Appointment> get getWeekShifts => shifts.data?[CalendarView.week] ?? [];
   List<Appointment> get getMonthShifts =>
       shifts.data?[CalendarView.month] ?? [];
@@ -59,7 +54,6 @@ class ScheduleState {
   bool get isUserView => sidebarType == SidebarType.user;
 
   const ScheduleState({
-    required this.interval,
     required this.sidebarType,
     required this.shifts,
     required this.backupShifts,
@@ -70,16 +64,11 @@ class ScheduleState {
     required this.calendarView,
     required this.filteredUsers,
     required this.filteredLocations,
-    required this.largestAppointmentCountDay,
-    required this.largestAppointmentCountWeek,
   });
 
   factory ScheduleState.initial() {
     return ScheduleState(
       calendarView: kDebugMode ? CalendarView.week : CalendarView.day,
-      interval: 60,
-      largestAppointmentCountDay: 1,
-      largestAppointmentCountWeek: 1,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
       backupShifts: [],
@@ -95,9 +84,6 @@ class ScheduleState {
 
   ScheduleState copyWith({
     CalendarView? calendarView,
-    int? interval,
-    int? largestAppointmentCountDay,
-    int? largestAppointmentCountWeek,
     StateValue<Map<CalendarView, List<Appointment>>>? shifts,
     List<UserRes>? userResources,
     List<PropertiesMd>? locationResources,
@@ -112,7 +98,6 @@ class ScheduleState {
       calendarView: calendarView ?? this.calendarView,
       userResources: userResources ?? this.userResources,
       shifts: shifts ?? this.shifts,
-      interval: interval ?? this.interval,
       sidebarType: sidebarType ?? this.sidebarType,
       filteredUsers: filteredUsers ?? this.filteredUsers,
       filteredLocations: filteredLocations ?? this.filteredLocations,
@@ -120,17 +105,12 @@ class ScheduleState {
       backupShiftsWeek: backupShiftsWeek ?? this.backupShiftsWeek,
       locationResources: locationResources ?? this.locationResources,
       backupShiftsMonth: backupShiftsMonth ?? this.backupShiftsMonth,
-      largestAppointmentCountDay:
-          largestAppointmentCountDay ?? this.largestAppointmentCountDay,
-      largestAppointmentCountWeek:
-          largestAppointmentCountWeek ?? this.largestAppointmentCountWeek,
     );
   }
 }
 
 class UpdateScheduleState {
   final CalendarView? calendarView;
-  final int? interval;
   final StateValue<Map<CalendarView, List<Appointment>>>? shifts;
   final List<UserRes>? userResources;
   final SidebarType? sidebarType;
@@ -140,12 +120,9 @@ class UpdateScheduleState {
   final List<Appointment>? backupShiftsWeek;
   final List<Appointment>? backupShiftsMonth;
   final List<PropertiesMd>? locationResources;
-  final int? largestAppointmentCountDay;
-  final int? largestAppointmentCountWeek;
 
   UpdateScheduleState({
     this.calendarView,
-    this.interval,
     this.shifts,
     this.userResources,
     this.sidebarType,
@@ -155,8 +132,6 @@ class UpdateScheduleState {
     this.backupShiftsWeek,
     this.locationResources,
     this.backupShiftsMonth,
-    this.largestAppointmentCountWeek,
-    this.largestAppointmentCountDay,
   });
 }
 

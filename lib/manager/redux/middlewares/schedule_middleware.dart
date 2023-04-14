@@ -51,8 +51,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final isUserView = state.sidebarType == SidebarType.user;
     final appointmentDragEndDetails = action.details;
     final stateVal = state.shifts;
-    List<Appointment> appointments = state.getShifts;
-    final interval = state.interval;
+    List<Appointment> appointments = state.getDayShifts;
     dynamic toUser = (action.details.targetResource?.id);
 
     final appointment = appointmentDragEndDetails.appointment as Appointment;
@@ -261,7 +260,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       next(UpdateScheduleState(
         shifts: stateVal,
         backupShifts: appointments,
-        largestAppointmentCountDay: largestAppointmentCountDay,
       ));
     } else {
       stateVal.error.isLoading = false;
@@ -364,7 +362,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
       next(UpdateScheduleState(
         shifts: stateVal,
-        largestAppointmentCountWeek: largestAppointmentCountWeek,
         backupShiftsWeek: appointments,
       ));
     } else {
@@ -525,20 +522,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       AppState state, SCChangeCalendarView action, NextDispatcher next) async {
     final view = action.view;
     SidebarType sidebarType = state.scheduleState.sidebarType;
-    int interval = state.scheduleState.interval;
     if (view == CalendarView.day) {
       sidebarType = SidebarType.user;
-      interval = 60;
-    }
-    if (view == CalendarView.week) {
-      interval = 60;
     }
     appStore.dispatch(SCAddFilter(location: PropertiesMd.all()));
     appStore.dispatch(SCAddFilter(user: UserRes.all()));
     next(UpdateScheduleState(
       calendarView: view,
       sidebarType: sidebarType,
-      interval: interval,
       filteredUsers: [],
       filteredLocations: [],
     ));

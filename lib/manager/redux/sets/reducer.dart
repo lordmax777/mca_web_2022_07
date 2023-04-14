@@ -33,7 +33,6 @@ ScheduleState _updateScheduleState(
   return state.copyWith(
     calendarView: action.calendarView ?? state.calendarView,
     sidebarType: action.sidebarType ?? state.sidebarType,
-    interval: action.interval ?? state.interval,
     shifts: action.shifts ?? state.shifts,
     userResources: action.userResources ?? state.userResources,
     filteredUsers: action.filteredUsers ?? state.filteredUsers,
@@ -42,10 +41,6 @@ ScheduleState _updateScheduleState(
     backupShiftsWeek: action.backupShiftsWeek ?? state.backupShiftsWeek,
     backupShiftsMonth: action.backupShiftsMonth ?? state.backupShiftsMonth,
     locationResources: action.locationResources ?? state.locationResources,
-    largestAppointmentCountDay:
-        action.largestAppointmentCountDay ?? state.largestAppointmentCountDay,
-    largestAppointmentCountWeek:
-        action.largestAppointmentCountWeek ?? state.largestAppointmentCountWeek,
   );
 }
 

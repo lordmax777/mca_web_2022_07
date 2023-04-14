@@ -22,7 +22,7 @@ class DailyViewCalendar extends StatelessWidget {
         converter: (store) => store.state,
         builder: (_, state) {
           final scheduleState = state.scheduleState;
-          final interval = scheduleState.interval;
+          const interval = 60;
           return SfCalendar(
             view: CalendarView.timelineDay,
             resourceViewHeaderBuilder: (context, details) {
@@ -110,57 +110,6 @@ class DailyViewCalendar extends StatelessWidget {
     );
   }
 
-  int visibleResourceCount(ScheduleState scheduleState) {
-    final len = scheduleState.userResources.length;
-    final count = scheduleState.largestAppointmentCountDay;
-    switch (len) {
-      // case 0:
-      //   return 0;
-      // case 1:
-      // case 2:
-      // case 3:
-      // case 4:
-      // case 5:
-      // case 6:
-      // case 7:
-      // case 8:
-      //   return len;
-      default:
-        switch (count) {
-          case 0:
-          case 1:
-            return 9;
-          case 2:
-          case 3:
-            return 3;
-          case 4:
-            return 3;
-          case 5:
-            return 2;
-          default:
-            return 1;
-        }
-    }
-    switch (len) {
-      case 0:
-        return 0;
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-        return len;
-      default:
-        if (scheduleState.largestAppointmentCountDay == 0) {
-          return 9;
-        }
-        return 650 ~/ (36 * scheduleState.largestAppointmentCountDay);
-    }
-  }
-
   Widget _userWidget(UserRes user) {
     return Container(
         decoration: const BoxDecoration(
@@ -225,7 +174,7 @@ class DailyViewCalendar extends StatelessWidget {
 
   CalendarDataSource getDataSource(ScheduleState state) {
     dynamic users = state.userResources;
-    return ShiftDataSource(state.getShifts,
+    return ShiftDataSource(state.getDayShifts,
         users.map<CalendarResource>((e) => CalendarResource(id: e)).toList());
   }
 }
