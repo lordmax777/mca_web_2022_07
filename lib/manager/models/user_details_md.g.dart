@@ -123,7 +123,7 @@ UserDetailsAccountMd _$UserDetailsAccountMdFromJson(Map json) =>
       location_admin: json['location_admin'] as bool,
       login_methods: json['login_methods'] as String,
       login_required: json['login_required'] as bool,
-      role: (json['role'] as List<dynamic>).map((e) => e as String).toList(),
+      role: json['role'] as String,
       locked: json['locked'],
     );
 

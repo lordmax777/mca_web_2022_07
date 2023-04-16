@@ -260,10 +260,10 @@ class GetUserDetailsDetailAction {
               .toString(),
         ),
         roleCode: CodeMap(
-          code: userDetailsMd.account.role.first.toString(),
+          code: userDetailsMd.account.role.toString(),
           name: general.roles
               .firstWhereOrNull(
-                  (element) => element.code == userDetailsMd.account.role.first)
+                  (element) => element.code == userDetailsMd.account.role)
               ?.name
               .toString(),
         ),
@@ -992,7 +992,6 @@ class GetUserDetailsStatusAction {
     if (res.success) {
       final r = res.data['status'];
       final StatussMd list = StatussMd.fromJson(r);
-
       stateValue.error.isError = false;
       stateValue.data = list;
 

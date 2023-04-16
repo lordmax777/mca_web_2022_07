@@ -133,7 +133,7 @@ class UserDetailsAccountMd {
   bool location_admin;
   dynamic locked;
   String login_methods;
-  List<String> role;
+  String role;
   String locale;
 
   @override
