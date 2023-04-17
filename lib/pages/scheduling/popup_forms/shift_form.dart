@@ -23,6 +23,7 @@ class ShiftDetailsForm extends StatefulWidget {
 class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   AppState get state => widget.state;
   CreateShiftData get data => widget.data;
+  bool get isCreate => data.property == null;
 
   List<ListClients> get clients =>
       state.generalState.paramList.data?.clients ?? [];
@@ -56,45 +57,30 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   final List<UserRes> addedChildren = [];
 
-  final List<PlutoColumn> cols = [
-    // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
-    PlutoColumn(
-      title: "Items & Description",
-      field: "items",
-      type: PlutoColumnType.text(),
-    ),
-    PlutoColumn(
-      title: "Ordered",
-      field: "ordered",
-      type: PlutoColumnType.number(),
-    ),
-    PlutoColumn(
-      title: "Rate",
-      field: "rate",
-      type: PlutoColumnType.number(),
-    ),
-    PlutoColumn(
-      title: "Amount",
-      field: "amount",
-      type: PlutoColumnType.number(),
-    ),
-    PlutoColumn(
-      title: "Inc in fixed price",
-      field: "inc_in_fixed_price",
-      type: PlutoColumnType.text(),
-    ),
-  ];
-
-  PlutoRow _buildRow() {
-    return PlutoRow(
-      cells: {
-        "items": PlutoCell(value: ""),
-        "ordered": PlutoCell(value: 0),
-        "rate": PlutoCell(value: 0),
-        "amount": PlutoCell(value: 0),
-        "inc_in_fixed_price": PlutoCell(value: ""),
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (isCreate) return;
+      final property = data.property!;
+      logger(property.toJson(), hint: "property");
+      title.text = property.title ?? "";
+      selectedClientId = property.clientId;
+      selectedLocationId = property.locationId;
+      isActive = property.active ?? false;
+      date = data.date;
+      //TODO: property.days
+      if (property.startTime != null) {
+        startTime = property.startTime?.formattedTime;
+      }
+      if (property.finishTime != null) {
+        endTime = property.finishTime?.formattedTime;
+      }
+      selectedWarehouseId = property.warehouseId;
+      // selectedChecklistTemplateId = property.checklistTemplateId;
+      paidHours.text = property.minPaidTime?.toString() ?? "0";
+      isSplitTime = property.splitTime ?? false;
+    });
   }
 
   @override
@@ -222,6 +208,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       rightIcon: HeroIcons.clock,
                       isReadOnly: true,
                       hintText: "Select end time",
+                      controller: TextEditingController(
+                        text: endTime?.format(context) ?? "",
+                      ),
                       onTap: () async {
                         final res = await showCustomTimePicker(context);
                         if (res == null) return;
@@ -359,58 +348,63 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       },
                     ),
                     Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.only(top: 8),
-                        itemCount: filteredUsers.length,
-                        itemBuilder: (context, index) {
-                          final user = filteredUsers[index];
-                          final bool isAdded = addedUsers
-                              .any((element) => element.id == user.id);
-                          final bool isUnavailable = unavUsers.users
-                              .any((element) => element.userId == user.id);
-                          return ListTile(
-                              onTap: null,
-                              leading: CircleAvatar(
-                                backgroundColor: user.userRandomBgColor,
-                                child: Text(user.first2LettersOfName,
-                                    style:
-                                        TextStyle(color: user.foregroundColor)),
-                              ),
-                              title: Text(user.fullname,
-                                  style: TextStyle(
-                                      color: isUnavailable
-                                          ? Colors.grey
-                                          : Colors.black)),
-                              subtitle: isUnavailable
-                                  ? const Text("Unavailable",
-                                      style: TextStyle(color: Colors.red))
-                                  : null,
-                              trailing: isUnavailable
-                                  ? null
-                                  : IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          if (isAdded) {
-                                            addedChildren.removeWhere(
-                                                (element) =>
-                                                    element.id == user.id);
-                                            addedUsers.removeWhere((element) =>
-                                                element.id == user.id);
-                                          } else {
-                                            addedChildren.add(user);
-                                            addedUsers.add(user);
-                                          }
-                                          ss(() {});
-                                        });
-                                      },
-                                      icon: isAdded
-                                          ? const Icon(Icons.remove,
-                                              color: Colors.red)
-                                          : const Icon(Icons.add,
-                                              color: Colors.green),
-                                    ));
-                        },
-                      ),
+                      child: filteredUsers.isEmpty
+                          ? const Center(child: Text("Not found"))
+                          : ListView.builder(
+                              padding: const EdgeInsets.only(top: 8),
+                              itemCount: filteredUsers.length,
+                              itemBuilder: (context, index) {
+                                final user = filteredUsers[index];
+                                final bool isAdded = addedUsers
+                                    .any((element) => element.id == user.id);
+                                final bool isUnavailable = unavUsers.users.any(
+                                    (element) => element.userId == user.id);
+                                return ListTile(
+                                    onTap: null,
+                                    leading: CircleAvatar(
+                                      backgroundColor: user.userRandomBgColor,
+                                      child: Text(user.first2LettersOfName,
+                                          style: TextStyle(
+                                              color: user.foregroundColor)),
+                                    ),
+                                    title: Text(user.fullname,
+                                        style: TextStyle(
+                                            color: isUnavailable
+                                                ? Colors.grey
+                                                : Colors.black)),
+                                    subtitle: isUnavailable
+                                        ? const Text("Unavailable",
+                                            style: TextStyle(color: Colors.red))
+                                        : null,
+                                    trailing: isUnavailable
+                                        ? null
+                                        : IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                if (isAdded) {
+                                                  addedChildren.removeWhere(
+                                                      (element) =>
+                                                          element.id ==
+                                                          user.id);
+                                                  addedUsers.removeWhere(
+                                                      (element) =>
+                                                          element.id ==
+                                                          user.id);
+                                                } else {
+                                                  addedChildren.add(user);
+                                                  addedUsers.add(user);
+                                                }
+                                                ss(() {});
+                                              });
+                                            },
+                                            icon: isAdded
+                                                ? const Icon(Icons.remove,
+                                                    color: Colors.red)
+                                                : const Icon(Icons.add,
+                                                    color: Colors.green),
+                                          ));
+                              },
+                            ),
                     ),
                   ],
                 ),
@@ -483,6 +477,47 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           ],
         ),
       ),
+    );
+  }
+
+  final List<PlutoColumn> cols = [
+    // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
+    PlutoColumn(
+      title: "Items & Description",
+      field: "items",
+      type: PlutoColumnType.text(),
+    ),
+    PlutoColumn(
+      title: "Ordered",
+      field: "ordered",
+      type: PlutoColumnType.number(),
+    ),
+    PlutoColumn(
+      title: "Rate",
+      field: "rate",
+      type: PlutoColumnType.number(),
+    ),
+    PlutoColumn(
+      title: "Amount",
+      field: "amount",
+      type: PlutoColumnType.number(),
+    ),
+    PlutoColumn(
+      title: "Inc in fixed price",
+      field: "inc_in_fixed_price",
+      type: PlutoColumnType.text(),
+    ),
+  ];
+
+  PlutoRow _buildRow() {
+    return PlutoRow(
+      cells: {
+        "items": PlutoCell(value: ""),
+        "ordered": PlutoCell(value: 0),
+        "rate": PlutoCell(value: 0),
+        "amount": PlutoCell(value: 0),
+        "inc_in_fixed_price": PlutoCell(value: ""),
+      },
     );
   }
 

@@ -95,6 +95,17 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                       fetcher,
                     ));
                   }
+                  final AppointmentIdMd? id =
+                      calendarTapDetails.appointments?.first.id;
+                  if (id == null) return;
+                  final shiftRes = await showCreateShiftPopup(
+                      context,
+                      CreateShiftData(
+                        date: calendarTapDetails.date!,
+                        type: ScheduleCreatePopupMenus.job,
+                        property: id.property,
+                      ));
+                  //TODO: Handle shiftRes
                   break;
                 case CalendarElement.calendarCell:
 
@@ -115,11 +126,12 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     double right = MediaQuery.of(context).size.width - left;
                     double bottom = MediaQuery.of(context).size.height - top;
 
-                    final createTapResult = await showMenu<String>(
-                        context: context,
-                        position:
-                            RelativeRect.fromLTRB(left, top, right, bottom),
-                        items: getPopupCreateMenus());
+                    final createTapResult =
+                        await showMenu<ScheduleCreatePopupMenus>(
+                            context: context,
+                            position:
+                                RelativeRect.fromLTRB(left, top, right, bottom),
+                            items: getPopupCreateMenus());
                     logger(createTapResult, hint: 'Type');
                     logger(calendarTapDetails.date, hint: "Date");
                     if (calendarTapDetails.date == null) return;
@@ -130,6 +142,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                           date: calendarTapDetails.date!,
                           type: createTapResult,
                         ));
+                    //TODO: Handle shiftRes
+
                   } else {
                     showError("There was an unexpected error!");
                   }

@@ -450,10 +450,14 @@ List<SimplePopupMenu> getPopupAppointmentMenus(
   return menus;
 }
 
-List<PopupMenuEntry<String>> getPopupCreateMenus() {
+enum ScheduleCreatePopupMenus {
+  job,
+}
+
+List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus() {
   return [
     PopupMenuItem(
-      value: "job",
+      value: ScheduleCreatePopupMenus.job,
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 8,

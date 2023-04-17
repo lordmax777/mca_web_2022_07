@@ -3,6 +3,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_form.dart';
+import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../theme/theme.dart';
 import '../../manager/model_exporter.dart';
 
@@ -17,9 +18,9 @@ class UnavailableUserLoad {
 }
 
 class CreateShiftData {
-  final String type;
+  final ScheduleCreatePopupMenus type;
   final DateTime date;
-  final PropertyMd? property;
+  final PropertiesMd? property;
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
 
   CreateShiftData({required this.type, required this.date, this.property});
@@ -30,7 +31,7 @@ Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
     context: context,
     builder: (_) {
       switch (data.type) {
-        case "job":
+        case ScheduleCreatePopupMenus.job:
           return _CreateJob(data);
         default:
           return const Center(child: Text("Invalid type"));
@@ -117,6 +118,7 @@ class _CreateJobState extends State<_CreateJob>
     with SingleTickerProviderStateMixin {
   CreateShiftData get data => widget.data;
   DateTime get date => data.date;
+  bool get isCreate => data.property == null;
 
   late final TabController _tabController;
 
@@ -171,7 +173,7 @@ class _CreateJobState extends State<_CreateJob>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Create Job',
+                    isCreate ? 'Create Job' : 'Edit Job',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   IconButton(
@@ -220,7 +222,7 @@ class _CreateJobState extends State<_CreateJob>
                     }
                   });
                 }),
-            ButtonLarge(text: 'Create/Save', onPressed: () {}),
+            ButtonLarge(text: isCreate ? 'Create' : "Save", onPressed: () {}),
           ],
         ),
       ),

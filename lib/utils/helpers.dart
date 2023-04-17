@@ -13,6 +13,23 @@ extension DateTimeExtensions on DateTime {
   String get formatDateForApi => "$year-$month-$day";
 }
 
+extension TimeExtensionsString on String {
+  TimeOfDay? get formattedTime {
+    dynamic time = split(" ");
+    if (time.length == 1) {
+      time = split(":").map((e) => int.tryParse(e)).toList();
+      if (time.any((element) => element == null)) return null;
+      return TimeOfDay(hour: time[0], minute: time[1]);
+    }
+    time.removeLast();
+    time = time.join(" ");
+    time = time.split(":");
+    time = time.map((e) => int.tryParse(e)).toList();
+    if (time.any((element) => element == null)) return null;
+    return TimeOfDay(hour: time[0], minute: time[1]);
+  }
+}
+
 extension TimeExtensions on TextEditingController {
   List<int>? get formattedTime {
     dynamic time = text.split(" ");
