@@ -32,14 +32,11 @@ class _CustomScrollbarState extends State<CustomScrollbar> {
             controller: horizontalScrollController,
             position: ScrollbarPosition.bottom,
             child: SingleChildScrollView(
-              controller: horizontalScrollController,
-              scrollDirection: Axis.horizontal,
+              controller: verticalScrollController,
               child: SingleChildScrollView(
-                controller: verticalScrollController,
-                child: SizedBox(
-                    width: MediaQuery.of(context).size.width * .95,
-                    height: MediaQuery.of(context).size.height * .95,
-                    child: widget.child),
+                controller: horizontalScrollController,
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(child: widget.child),
               ),
             )));
   }

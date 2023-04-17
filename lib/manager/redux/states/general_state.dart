@@ -135,6 +135,20 @@ class UpdateGeneralStateAction {
   });
 }
 
+class OpenDrawerAction {
+  OpenDrawerAction(this.widget);
+  final Widget widget;
+  void call(Store<AppState> store, dynamic action, NextDispatcher next) async {
+    store.dispatch(UpdateGeneralStateAction(endDrawer: widget));
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (Constants.scaffoldKey.currentState != null) {
+      if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
+        Constants.scaffoldKey.currentState!.openEndDrawer();
+      }
+    }
+  }
+}
+
 class GetAllParamListAction {}
 
 class GetWarehousesAction {

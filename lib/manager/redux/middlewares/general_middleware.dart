@@ -21,6 +21,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
     switch (action.runtimeType) {
+      case OpenDrawerAction:
+        return (action as OpenDrawerAction).call(store, action, next);
       case GetAllParamListAction:
         return _getAllParamList(store.state, action, next);
       case GetAllLocationsAction:

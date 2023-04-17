@@ -41,14 +41,20 @@ Future<bool> onWillPop(BuildContext context) async {
       false;
 }
 
-Widget labelWithField(String label, Widget child) {
+Widget labelWithField(String label, Widget child, {Widget? customLabel}) {
   return SpacedColumn(
     verticalSpace: 0,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        label,
-        style: ThemeText.md1,
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: ThemeText.md1,
+          ),
+          if (customLabel != null) customLabel,
+        ],
       ),
       child
     ],
@@ -122,8 +128,8 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
       child: StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) => AlertDialog(
-          contentPadding:
-              const EdgeInsets.only(top: 36, bottom: 0, right: 36, left: 36),
+          contentPadding: const EdgeInsets.all(0),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
@@ -164,11 +170,9 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
               ),
             ],
           ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.95,
-            height: MediaQuery.of(context).size.height * 0.7,
-            child: CustomScrollbar(child: _getTabChild(state)),
+            width: MediaQuery.of(context).size.width * 0.85,
+            child: _getTabChild(state),
           ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [

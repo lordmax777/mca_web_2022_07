@@ -32,6 +32,14 @@ class UserRes {
   @JsonKey(ignore: true)
   late Color foregroundColor;
 
+  String get first2LettersOfName {
+    try {
+      return firstName[0] + lastName[0];
+    } catch (e) {
+      return "??";
+    }
+  }
+
   @override
   UserRes({
     required this.username,
