@@ -1,9 +1,6 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:collection/collection.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
-
 import '../../../comps/modals/custom_date_picker.dart';
 import '../../../comps/modals/custom_time_picker.dart';
 import '../../../manager/model_exporter.dart';
@@ -14,8 +11,9 @@ import '../create_shift_popup.dart';
 class ShiftDetailsForm extends StatefulWidget {
   final AppState state;
   final GlobalKey<FormState> formKey;
+  final CreateShiftData data;
 
-  const ShiftDetailsForm(this.state, this.formKey, {Key? key})
+  const ShiftDetailsForm(this.state, this.formKey, this.data, {Key? key})
       : super(key: key);
 
   @override
@@ -24,6 +22,7 @@ class ShiftDetailsForm extends StatefulWidget {
 
 class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   AppState get state => widget.state;
+  CreateShiftData get data => widget.data;
 
   List<ListClients> get clients =>
       state.generalState.paramList.data?.clients ?? [];
@@ -36,8 +35,25 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   List<ChecklistTemplateMd> get checklistTemplates =>
       state.generalState.checklistTemplates.data ?? [];
   List<UserRes> get users => state.usersState.usersList.data ?? [];
+  UnavailableUserLoad get unavUsers => data.unavailableUsers;
 
   //Ephemeral state
+  final TextEditingController title = TextEditingController();
+  int? selectedClientId;
+  int? selectedLocationId;
+  bool isActive = false;
+
+  DateTime? date;
+  bool isAllDay = false;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
+  int isScheduleLater = 0;
+
+  int? selectedWarehouseId;
+  int? selectedChecklistTemplateId;
+  TextEditingController paidHours = TextEditingController(text: "0");
+  bool isSplitTime = false;
+
   final List<UserRes> addedChildren = [];
 
   @override
@@ -59,6 +75,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                     "Title",
                     TextInputWidget(
                       width: 300,
+                      controller: title,
                     ),
                   ),
                   labelWithField(
@@ -68,7 +85,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       dropdownBtnWidth: 300,
                       dropdownOptionsWidth: 300,
                       items: clients.map((e) => e.name),
-                      onChanged: (index) {},
+                      value: clients
+                          .firstWhereOrNull(
+                              (element) => element.id == selectedClientId)
+                          ?.name,
+                      onChanged: (index) {
+                        setState(() {
+                          selectedClientId = clients[index].id;
+                        });
+                      },
                     ),
                   ),
                   labelWithField(
@@ -78,12 +103,24 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       dropdownBtnWidth: 300,
                       dropdownOptionsWidth: 300,
                       items: locations.map((e) => e.name),
-                      onChanged: (index) {},
+                      value: locations
+                          .firstWhereOrNull(
+                              (element) => element.id == selectedLocationId)
+                          ?.name,
+                      onChanged: (index) {
+                        setState(() {
+                          selectedLocationId = locations[index].id;
+                        });
+                      },
                     ),
                   ),
                   labelWithField(
                     "Active",
-                    toggle(false, (val) {}),
+                    toggle(isActive, (val) {
+                      setState(() {
+                        isActive = val;
+                      });
+                    }),
                   ),
                 ],
               ),
@@ -97,15 +134,26 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       rightIcon: HeroIcons.calendar,
                       isReadOnly: true,
                       hintText: "Select date",
+                      controller: TextEditingController(
+                        text: date?.formattedDate ?? "",
+                      ),
                       onTap: () async {
                         final date = await showCustomDatePicker(context);
-                        logger("date: $date");
+                        if (date == null) return;
+
+                        setState(() {
+                          this.date = date;
+                        });
                       },
                     ),
                   ),
                   labelWithField(
                     "All day",
-                    toggle(false, (val) {}),
+                    toggle(isAllDay, (val) {
+                      setState(() {
+                        isAllDay = val;
+                      });
+                    }),
                   ),
                   labelWithField(
                     "Start Time",
@@ -114,9 +162,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       rightIcon: HeroIcons.clock,
                       isReadOnly: true,
                       hintText: "Select start time",
+                      controller: TextEditingController(
+                        text: startTime?.format(context) ?? "",
+                      ),
                       onTap: () async {
                         final res = await showCustomTimePicker(context);
-                        logger("date: $res");
+                        if (res == null) return;
+                        setState(() {
+                          startTime = res;
+                        });
                       },
                     ),
                   ),
@@ -129,17 +183,28 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       hintText: "Select end time",
                       onTap: () async {
                         final res = await showCustomTimePicker(context);
-                        logger("date: $res");
+                        if (res == null) return;
+                        setState(() {
+                          endTime = res;
+                        });
                       },
                     ),
                   ),
                   labelWithField(
                     "Schedule Later",
-                    radio(false, (val) {}),
+                    radio(0, isScheduleLater, (val) {
+                      setState(() {
+                        isScheduleLater = val;
+                      });
+                    }),
                   ),
                   labelWithField(
                     "Repeat",
-                    radio(false, (val) {}),
+                    radio(1, isScheduleLater, (val) {
+                      setState(() {
+                        isScheduleLater = val;
+                      });
+                    }),
                   ),
                 ],
               ),
@@ -153,7 +218,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       dropdownBtnWidth: 300,
                       dropdownOptionsWidth: 300,
                       items: warehouses.map((e) => e.name),
-                      onChanged: (index) {},
+                      value: warehouses
+                          .firstWhereOrNull(
+                              (element) => element.id == selectedWarehouseId)
+                          ?.name,
+                      onChanged: (index) {
+                        setState(() {
+                          selectedWarehouseId = warehouses[index].id;
+                        });
+                      },
                     ),
                   ),
                   labelWithField(
@@ -163,7 +236,16 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       dropdownBtnWidth: 300,
                       dropdownOptionsWidth: 300,
                       items: checklistTemplates.map((e) => e.name),
-                      onChanged: (index) {},
+                      value: checklistTemplates
+                          .firstWhereOrNull((element) =>
+                              element.id == selectedChecklistTemplateId)
+                          ?.name,
+                      onChanged: (index) {
+                        setState(() {
+                          selectedChecklistTemplateId =
+                              checklistTemplates[index].id;
+                        });
+                      },
                     ),
                   ),
                   labelWithField(
@@ -173,129 +255,21 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       hintText: "0.00",
                       rightIcon: HeroIcons.dollar,
                       keyboardType: TextInputType.number,
+                      controller: paidHours,
                     ),
                   ),
                   labelWithField(
                     "Split Time",
-                    toggle(false, (val) {}),
-                  ),
-                ],
-              ),
-              SpacedRow(
-                horizontalSpace: 64,
-                children: [
-                  labelWithField(
-                    "Warehouse",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: warehouses.map((e) => e.name),
-                      onChanged: (index) {},
-                    ),
-                  ),
-                  labelWithField(
-                    "Checklist Template",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: checklistTemplates.map((e) => e.name),
-                      onChanged: (index) {},
-                    ),
-                  ),
-                  labelWithField(
-                    "Paid Hours",
-                    TextInputWidget(
-                      width: 300,
-                      hintText: "0.00",
-                      rightIcon: HeroIcons.dollar,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  labelWithField(
-                    "Split Time",
-                    toggle(false, (val) {}),
-                  ),
-                ],
-              ),
-              SpacedRow(
-                horizontalSpace: 64,
-                children: [
-                  labelWithField(
-                    "Warehouse",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: warehouses.map((e) => e.name),
-                      onChanged: (index) {},
-                    ),
-                  ),
-                  labelWithField(
-                    "Checklist Template",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: checklistTemplates.map((e) => e.name),
-                      onChanged: (index) {},
-                    ),
-                  ),
-                  labelWithField(
-                    "Paid Hours",
-                    TextInputWidget(
-                      width: 300,
-                      hintText: "0.00",
-                      rightIcon: HeroIcons.dollar,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  labelWithField(
-                    "Split Time",
-                    toggle(false, (val) {}),
-                  ),
-                ],
-              ),
-              SpacedRow(
-                horizontalSpace: 64,
-                children: [
-                  labelWithField(
-                    "Warehouse",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: warehouses.map((e) => e.name),
-                      onChanged: (index) {},
-                    ),
-                  ),
-                  labelWithField(
-                    "Checklist Template",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: checklistTemplates.map((e) => e.name),
-                      onChanged: (index) {},
-                    ),
-                  ),
-                  labelWithField(
-                    "Paid Hours",
-                    TextInputWidget(
-                      width: 300,
-                      hintText: "0.00",
-                      rightIcon: HeroIcons.dollar,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  labelWithField(
-                    "Split Time",
-                    toggle(false, (val) {}),
+                    toggle(isSplitTime, (val) {
+                      setState(() {
+                        isSplitTime = val;
+                      });
+                    }),
                   ),
                 ],
               ),
               _team(),
+              _products(),
             ],
           ),
         ),
@@ -396,9 +370,11 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     return labelWithField(
       customLabel: IconButton(
           tooltip: "Add team member",
-          onPressed: () {
-            onAddTeamMember();
-          },
+          onPressed: unavUsers.isLoaded
+              ? () {
+                  onAddTeamMember();
+                }
+              : null,
           icon: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
@@ -423,12 +399,14 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         ),
         child: Row(
           children: [
-            if (addedChildren.isEmpty)
+            if (!unavUsers.isLoaded)
+              const Center(child: Text("Please wait loading..."))
+            else if (addedChildren.isEmpty)
               TextButton(
-                child: const Text("Add team member"),
                 onPressed: () {
                   onAddTeamMember();
                 },
+                child: const Text("Add team member"),
               ),
             ...addedChildren
                 .map(
@@ -451,5 +429,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         ),
       ),
     );
+  }
+
+  Widget _products() {
+    return Container();
   }
 }

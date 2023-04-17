@@ -120,11 +120,16 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                         position:
                             RelativeRect.fromLTRB(left, top, right, bottom),
                         items: getPopupCreateMenus());
-                    logger(createTapResult);
+                    logger(createTapResult, hint: 'Type');
+                    logger(calendarTapDetails.date, hint: "Date");
+                    if (calendarTapDetails.date == null) return;
                     if (createTapResult == null) return;
-                    final shiftRes =
-                        await showCreateShiftPopup(context, createTapResult);
-                    logger(shiftRes);
+                    final shiftRes = await showCreateShiftPopup(
+                        context,
+                        CreateShiftData(
+                          date: calendarTapDetails.date!,
+                          type: createTapResult,
+                        ));
                   } else {
                     showError("There was an unexpected error!");
                   }

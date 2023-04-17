@@ -1,20 +1,39 @@
-import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_form.dart';
 import '../../../theme/theme.dart';
-import '../../comps/custom_scrollbar.dart';
+import '../../manager/model_exporter.dart';
 
-Future<T?> showCreateShiftPopup<T>(BuildContext context, String type) {
+class UnavailableUserLoad {
+  bool isLoaded = false;
+  List<UnavailableUserMd> _users = [];
+  List<UnavailableUserMd> get users => _users;
+  set users(List<UnavailableUserMd> users) {
+    _users = users;
+    isLoaded = true;
+  }
+}
+
+class CreateShiftData {
+  final String type;
+  final DateTime date;
+  final PropertyMd? property;
+  final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
+
+  CreateShiftData({required this.type, required this.date, this.property});
+}
+
+Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
   return showDialog<T>(
     context: context,
     builder: (_) {
-      switch (type) {
-        case "shift":
-          return const _CreateShiftPopup();
+      switch (data.type) {
+        case "job":
+          return _CreateJob(data);
         default:
-          return const _CreateShiftPopup();
+          return const Center(child: Text("Invalid type"));
       }
     },
   );
@@ -75,25 +94,30 @@ Widget toggle(bool value, Function(bool) onToggle) {
   );
 }
 
-Widget radio(bool value, Function(bool) onToggle) {
+Widget radio(int value, int groupVal, Function(int) onToggle) {
   return Radio(
     value: value,
-    groupValue: value,
-    onChanged: (bool? value) {
-      onToggle(value!);
+    groupValue: groupVal,
+    onChanged: (int? value) {
+      if (value == null) return;
+      onToggle(value);
     },
   );
 }
 
-class _CreateShiftPopup extends StatefulWidget {
-  const _CreateShiftPopup({Key? key}) : super(key: key);
+class _CreateJob extends StatefulWidget {
+  final CreateShiftData data;
+  const _CreateJob(this.data, {Key? key}) : super(key: key);
 
   @override
-  State<_CreateShiftPopup> createState() => _CreateShiftPopupState();
+  State<_CreateJob> createState() => _CreateJobState();
 }
 
-class _CreateShiftPopupState extends State<_CreateShiftPopup>
+class _CreateJobState extends State<_CreateJob>
     with SingleTickerProviderStateMixin {
+  CreateShiftData get data => widget.data;
+  DateTime get date => data.date;
+
   late final TabController _tabController;
 
   final ScrollController verticalScrollController = ScrollController();
@@ -113,6 +137,14 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      //GetUnavailableUsersAction
+      final unavUsers =
+          await appStore.dispatch(GetUnavailableUsersAction(date));
+      setState(() {
+        widget.data.unavailableUsers.users = unavUsers;
+      });
+    });
   }
 
   @override
@@ -139,7 +171,7 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Create Shift',
+                    'Create Job',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   IconButton(
@@ -198,11 +230,11 @@ class _CreateShiftPopupState extends State<_CreateShiftPopup>
   Widget _getTabChild(AppState state) {
     switch (_tabController.index) {
       case 0:
-        return ShiftDetailsForm(state, _shiftDetailsFormKey);
+        return ShiftDetailsForm(state, _shiftDetailsFormKey, data);
       case 1:
         return StaffAndTimingForm(state, _staffTimingFormKey);
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 }

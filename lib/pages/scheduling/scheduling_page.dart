@@ -453,47 +453,17 @@ List<SimplePopupMenu> getPopupAppointmentMenus(
 List<PopupMenuEntry<String>> getPopupCreateMenus() {
   return [
     PopupMenuItem(
-      value: "contract",
+      value: "job",
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 8,
         children: const [
           HeroIcon(
-            HeroIcons.contract,
+            HeroIcons.briefcase,
             color: ThemeColors.gray2,
             size: 18,
           ),
-          Text("Contract/Quote"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: "shift",
-      child: SpacedRow(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        horizontalSpace: 8,
-        children: const [
-          HeroIcon(
-            HeroIcons.clock,
-            color: ThemeColors.gray2,
-            size: 18,
-          ),
-          Text("Shift"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: "client",
-      child: SpacedRow(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        horizontalSpace: 8,
-        children: const [
-          HeroIcon(
-            HeroIcons.user,
-            color: ThemeColors.gray2,
-            size: 18,
-          ),
-          Text("Client"),
+          Text("New Job"),
         ],
       ),
     ),

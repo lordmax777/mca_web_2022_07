@@ -1,5 +1,4 @@
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -156,19 +155,35 @@ class _ShiftDetails extends StatelessWidget {
           _chbx(controller.shiftChecklistOn,
               controller.updateShiftChecklistAvailable, "Checklist Available"),
           const SizedBox(height: 12),
-          DropdownWidget1<ChecklistTemplateMd>(
+          DropdownWidgetV2(
             hintText: "Checklist Template",
+            hasSearchBox: true,
             isRequired: true,
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
-            hasSearchBox: true,
-            value: controller.shiftChecklistTemplate.name,
-            onChangedWithObj: controller.updateShiftChecklistTemplate,
-            objItems: appStore.state.generalState.checklistTemplates.data ?? [],
             items: (appStore.state.generalState.checklistTemplates.data ?? [])
-                .map((e) => e.name)
-                .toList(),
+                .map((e) => e.name),
+            onChanged: (index) {
+              controller.updateShiftChecklistTemplate(DpItem(
+                  appStore
+                      .state.generalState.checklistTemplates.data![index].name,
+                  appStore.state.generalState.checklistTemplates.data![index]));
+            },
+            value: controller.shiftChecklistTemplate.name,
           ),
+          // DropdownWidget1<ChecklistTemplateMd>(
+          //   hintText: "Checklist Template",
+          //   isRequired: true,
+          //   dropdownBtnWidth: dpWidth,
+          //   dropdownOptionsWidth: dpWidth,
+          //   hasSearchBox: true,
+          //   value: controller.shiftChecklistTemplate.name,
+          //   onChangedWithObj: controller.updateShiftChecklistTemplate,
+          //   objItems: appStore.state.generalState.checklistTemplates.data ?? [],
+          //   items: (appStore.state.generalState.checklistTemplates.data ?? [])
+          //       .map((e) => e.name)
+          //       .toList(),
+          // ),
         ]);
   }
 }

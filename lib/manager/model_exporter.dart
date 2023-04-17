@@ -22,3 +22,4 @@ export 'models/checklist_template_md.dart';
 export 'models/property_md.dart';
 export 'models/shift_staff_req_md.dart';
 export 'models/shift_qualif_req_md.dart';
+export 'models/unavailable_user_md.dart';

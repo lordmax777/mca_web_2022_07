@@ -515,6 +515,9 @@ abstract class RestClient {
     @Field() int? target_user,
     @Field() int? target_shift,
   });
+
+  @GET("/api/fe/availability/{date}")
+  Future<HttpResponse> getUnavailableUserList(@Path() String date);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

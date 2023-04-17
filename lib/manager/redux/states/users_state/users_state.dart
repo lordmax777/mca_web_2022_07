@@ -1457,6 +1457,12 @@ class GetDeleteUserPreferredShiftAction {
   }
 }
 
+class GetUnavailableUsersAction {
+  final DateTime date;
+
+  GetUnavailableUsersAction(this.date);
+}
+
 abstract class DispatcherAction {
   void dispatch();
 }

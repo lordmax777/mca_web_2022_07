@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import '../../rest/rest_client.dart';
 import '../states/users_state/users_state.dart';
 
 class UsersMiddleware extends MiddlewareClass<AppState> {
@@ -84,6 +87,8 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
       case GetDeleteUserPreferredShiftAction:
         return GetDeleteUserPreferredShiftAction.fetch(
             store.state, action, next);
+      case GetUnavailableUsersAction:
+        return _getUnavailableUsersAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -132,6 +137,29 @@ Future<void> showError(dynamic msg,
       );
     },
   );
+}
+
+Future<List<UnavailableUserMd>> _getUnavailableUsersAction(AppState state,
+    GetUnavailableUsersAction action, NextDispatcher next) async {
+  try {
+    final date = action.date;
+    final ApiResponse res = await restClient()
+        .getUnavailableUserList(date.formatDateForApi)
+        .nocodeErrorHandler();
+    if (res.success) {
+      final data = res.data;
+      //handle empty case
+      if (data == null) return [];
+      //handle with data case
+      final List<UnavailableUserMd> users = data
+          .map<UnavailableUserMd>((e) => UnavailableUserMd.fromJson(e))
+          .toList();
+      return users;
+    }
+    return [];
+  } catch (e) {
+    return [];
+  }
 }
 
 Future<void> closeLoading() async {

@@ -10,6 +10,7 @@ import 'currency_format.dart';
 
 extension DateTimeExtensions on DateTime {
   String get formattedDate => "$day/$month/$year";
+  String get formatDateForApi => "$year-$month-$day";
 }
 
 extension TimeExtensions on TextEditingController {
