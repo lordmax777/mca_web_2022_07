@@ -89,219 +89,230 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       child: Padding(
         padding:
             const EdgeInsets.only(top: 36, bottom: 36, right: 36, left: 36),
-        child: Form(
-          key: widget.formKey,
-          child: SpacedColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            verticalSpace: 48,
-            children: [
-              SpacedRow(
-                horizontalSpace: 64,
+        child: Stack(
+          children: [
+            Form(
+              key: widget.formKey,
+              child: SpacedColumn(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                verticalSpace: 48,
                 children: [
-                  labelWithField(
-                    "Title",
-                    TextInputWidget(
-                      width: 300,
-                      controller: title,
-                    ),
-                  ),
-                  labelWithField(
-                    "Client",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: clients.map((e) => e.name),
-                      value: clients
-                          .firstWhereOrNull(
-                              (element) => element.id == selectedClientId)
-                          ?.name,
-                      onChanged: (index) {
-                        setState(() {
-                          selectedClientId = clients[index].id;
-                        });
-                      },
-                    ),
-                  ),
-                  labelWithField(
-                    "Location",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: locations.map((e) => e.name),
-                      value: locations
-                          .firstWhereOrNull(
-                              (element) => element.id == selectedLocationId)
-                          ?.name,
-                      onChanged: (index) {
-                        setState(() {
-                          selectedLocationId = locations[index].id;
-                        });
-                      },
-                    ),
-                  ),
-                  labelWithField(
-                    "Active",
-                    toggle(isActive, (val) {
-                      setState(() {
-                        isActive = val;
-                      });
-                    }),
-                  ),
-                ],
-              ),
-              SpacedRow(
-                horizontalSpace: 64,
-                children: [
-                  labelWithField(
-                    "Date",
-                    TextInputWidget(
-                      width: 300,
-                      rightIcon: HeroIcons.calendar,
-                      isReadOnly: true,
-                      hintText: "Select date",
-                      controller: TextEditingController(
-                        text: date?.formattedDate ?? "",
+                  SpacedRow(
+                    horizontalSpace: 64,
+                    children: [
+                      labelWithField(
+                        "Title",
+                        TextInputWidget(
+                          width: 300,
+                          controller: title,
+                        ),
                       ),
-                      onTap: () async {
-                        final date = await showCustomDatePicker(context);
-                        if (date == null) return;
+                      labelWithField(
+                        "Client",
+                        DropdownWidgetV2(
+                          hasSearchBox: true,
+                          dropdownBtnWidth: 300,
+                          dropdownOptionsWidth: 300,
+                          items: clients.map((e) => e.name),
+                          value: clients
+                              .firstWhereOrNull(
+                                  (element) => element.id == selectedClientId)
+                              ?.name,
+                          onChanged: (index) {
+                            setState(() {
+                              selectedClientId = clients[index].id;
+                            });
+                          },
+                        ),
+                      ),
+                      labelWithField(
+                        "Location",
+                        DropdownWidgetV2(
+                          hasSearchBox: true,
+                          dropdownBtnWidth: 300,
+                          dropdownOptionsWidth: 300,
+                          items: locations.map((e) => e.name),
+                          value: locations
+                              .firstWhereOrNull(
+                                  (element) => element.id == selectedLocationId)
+                              ?.name,
+                          onChanged: (index) {
+                            setState(() {
+                              selectedLocationId = locations[index].id;
+                            });
+                          },
+                        ),
+                      ),
+                      labelWithField(
+                        "Active",
+                        toggle(isActive, (val) {
+                          setState(() {
+                            isActive = val;
+                          });
+                        }),
+                      ),
+                    ],
+                  ),
+                  SpacedRow(
+                    horizontalSpace: 64,
+                    children: [
+                      labelWithField(
+                        "Date",
+                        TextInputWidget(
+                          width: 300,
+                          rightIcon: HeroIcons.calendar,
+                          isReadOnly: true,
+                          hintText: "Select date",
+                          controller: TextEditingController(
+                            text: date?.formattedDate ?? "",
+                          ),
+                          onTap: () async {
+                            final date = await showCustomDatePicker(context);
+                            if (date == null) return;
 
-                        setState(() {
-                          this.date = date;
-                        });
-                      },
-                    ),
-                  ),
-                  labelWithField(
-                    "All day",
-                    toggle(isAllDay, (val) {
-                      setState(() {
-                        isAllDay = val;
-                      });
-                    }),
-                  ),
-                  labelWithField(
-                    "Start Time",
-                    TextInputWidget(
-                      width: 300,
-                      rightIcon: HeroIcons.clock,
-                      isReadOnly: true,
-                      hintText: "Select start time",
-                      controller: TextEditingController(
-                        text: startTime?.format(context) ?? "",
+                            setState(() {
+                              this.date = date;
+                            });
+                          },
+                        ),
                       ),
-                      onTap: () async {
-                        final res = await showCustomTimePicker(context);
-                        if (res == null) return;
-                        setState(() {
-                          startTime = res;
-                        });
-                      },
-                    ),
-                  ),
-                  labelWithField(
-                    "End Time",
-                    TextInputWidget(
-                      width: 300,
-                      rightIcon: HeroIcons.clock,
-                      isReadOnly: true,
-                      hintText: "Select end time",
-                      controller: TextEditingController(
-                        text: endTime?.format(context) ?? "",
+                      labelWithField(
+                        "All day",
+                        toggle(isAllDay, (val) {
+                          setState(() {
+                            isAllDay = val;
+                          });
+                        }),
                       ),
-                      onTap: () async {
-                        final res = await showCustomTimePicker(context);
-                        if (res == null) return;
-                        setState(() {
-                          endTime = res;
-                        });
-                      },
-                    ),
+                      labelWithField(
+                        "Start Time",
+                        TextInputWidget(
+                          width: 300,
+                          rightIcon: HeroIcons.clock,
+                          isReadOnly: true,
+                          hintText: "Select start time",
+                          controller: TextEditingController(
+                            text: startTime?.format(context) ?? "",
+                          ),
+                          onTap: () async {
+                            final res = await showCustomTimePicker(context);
+                            if (res == null) return;
+                            setState(() {
+                              startTime = res;
+                            });
+                          },
+                        ),
+                      ),
+                      labelWithField(
+                        "End Time",
+                        TextInputWidget(
+                          width: 300,
+                          rightIcon: HeroIcons.clock,
+                          isReadOnly: true,
+                          hintText: "Select end time",
+                          controller: TextEditingController(
+                            text: endTime?.format(context) ?? "",
+                          ),
+                          onTap: () async {
+                            final res = await showCustomTimePicker(context);
+                            if (res == null) return;
+                            setState(() {
+                              endTime = res;
+                            });
+                          },
+                        ),
+                      ),
+                      labelWithField(
+                        "Schedule Later",
+                        radio(0, isScheduleLater, (val) {
+                          setState(() {
+                            isScheduleLater = val;
+                          });
+                        }),
+                      ),
+                      labelWithField(
+                        "Repeat",
+                        radio(1, isScheduleLater, (val) {
+                          setState(() {
+                            isScheduleLater = val;
+                          });
+                        }),
+                      ),
+                    ],
                   ),
-                  labelWithField(
-                    "Schedule Later",
-                    radio(0, isScheduleLater, (val) {
-                      setState(() {
-                        isScheduleLater = val;
-                      });
-                    }),
+                  SpacedRow(
+                    horizontalSpace: 64,
+                    children: [
+                      labelWithField(
+                        "Warehouse",
+                        DropdownWidgetV2(
+                          hasSearchBox: true,
+                          dropdownBtnWidth: 300,
+                          dropdownOptionsWidth: 300,
+                          items: warehouses.map((e) => e.name),
+                          value: warehouses
+                              .firstWhereOrNull((element) =>
+                                  element.id == selectedWarehouseId)
+                              ?.name,
+                          onChanged: (index) {
+                            setState(() {
+                              selectedWarehouseId = warehouses[index].id;
+                            });
+                          },
+                        ),
+                      ),
+                      labelWithField(
+                        "Checklist Template",
+                        DropdownWidgetV2(
+                          hasSearchBox: true,
+                          dropdownBtnWidth: 300,
+                          dropdownOptionsWidth: 300,
+                          items: checklistTemplates.map((e) => e.name),
+                          value: checklistTemplates
+                              .firstWhereOrNull((element) =>
+                                  element.id == selectedChecklistTemplateId)
+                              ?.name,
+                          onChanged: (index) {
+                            setState(() {
+                              selectedChecklistTemplateId =
+                                  checklistTemplates[index].id;
+                            });
+                          },
+                        ),
+                      ),
+                      labelWithField(
+                        "Paid Hours",
+                        TextInputWidget(
+                          width: 300,
+                          hintText: "0.00",
+                          rightIcon: HeroIcons.dollar,
+                          keyboardType: TextInputType.number,
+                          controller: paidHours,
+                        ),
+                      ),
+                      labelWithField(
+                        "Split Time",
+                        toggle(isSplitTime, (val) {
+                          setState(() {
+                            isSplitTime = val;
+                          });
+                        }),
+                      ),
+                    ],
                   ),
-                  labelWithField(
-                    "Repeat",
-                    radio(1, isScheduleLater, (val) {
-                      setState(() {
-                        isScheduleLater = val;
-                      });
-                    }),
-                  ),
+                  _team(),
+                  _products(),
                 ],
               ),
-              SpacedRow(
-                horizontalSpace: 64,
-                children: [
-                  labelWithField(
-                    "Warehouse",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: warehouses.map((e) => e.name),
-                      value: warehouses
-                          .firstWhereOrNull(
-                              (element) => element.id == selectedWarehouseId)
-                          ?.name,
-                      onChanged: (index) {
-                        setState(() {
-                          selectedWarehouseId = warehouses[index].id;
-                        });
-                      },
-                    ),
-                  ),
-                  labelWithField(
-                    "Checklist Template",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      dropdownBtnWidth: 300,
-                      dropdownOptionsWidth: 300,
-                      items: checklistTemplates.map((e) => e.name),
-                      value: checklistTemplates
-                          .firstWhereOrNull((element) =>
-                              element.id == selectedChecklistTemplateId)
-                          ?.name,
-                      onChanged: (index) {
-                        setState(() {
-                          selectedChecklistTemplateId =
-                              checklistTemplates[index].id;
-                        });
-                      },
-                    ),
-                  ),
-                  labelWithField(
-                    "Paid Hours",
-                    TextInputWidget(
-                      width: 300,
-                      hintText: "0.00",
-                      rightIcon: HeroIcons.dollar,
-                      keyboardType: TextInputType.number,
-                      controller: paidHours,
-                    ),
-                  ),
-                  labelWithField(
-                    "Split Time",
-                    toggle(isSplitTime, (val) {
-                      setState(() {
-                        isSplitTime = val;
-                      });
-                    }),
-                  ),
-                ],
-              ),
-              _team(),
-              _products(),
-            ],
-          ),
+            ),
+            if (!unavUsers.isLoaded)
+              Positioned.fill(
+                child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey.withOpacity(.4),
+                    child: const CircularProgressIndicator()),
+              )
+          ],
         ),
       ),
     );
