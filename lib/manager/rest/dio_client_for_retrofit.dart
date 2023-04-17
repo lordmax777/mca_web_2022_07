@@ -92,9 +92,11 @@ class DioClientForRetrofit {
     }
     // _dio.interceptors.add(tokenInterceptor);
     BaseOptions options = BaseOptions(
-        headers: headers,
-        responseType: responseType,
-        receiveDataWhenStatusError: true);
+      headers: headers,
+      responseType: responseType,
+      connectTimeout: 30000,
+      receiveTimeout: 30000,
+    );
     dio.options = options;
     return dio;
   }
@@ -102,25 +104,21 @@ class DioClientForRetrofit {
 
 final loggerInterceptor =
     InterceptorsWrapper(onRequest: (RequestOptions options, handler) {
-  final talker = TalkerController.to.talker;
   String headers = "";
   options.headers.forEach((key, value) {
     headers += "| $key: $value";
   });
   Logger.d("| [DIO] Request: ${options.method} ${options.uri}");
-  Logger.d(
-      "| [DIO] Options: ${options.data != null ? options.data.toString() : ''}");
+  Logger.d("| [DIO] Options: ${options.data?.toString() ?? ''}");
   Logger.d("| [DIO] Headers: $headers");
 
   handler.next(options); //continue
 }, onResponse: (Response response, handler) async {
-  final talker = TalkerController.to.talker;
   Logger.i(
       "| [DIO] Response [code ${response.statusCode}]: ${response.data}"); //:
   handler.next(response);
   // return response; // continue
 }, onError: (DioError error, handler) async {
-  final talker = TalkerController.to.talker;
   Logger.e("| [DIO] Error: ${error.error}: ${error.response?.toString()}");
   handler.next(error); //continue
 });

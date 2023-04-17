@@ -29,11 +29,11 @@ class UsersListPage extends StatelessWidget {
               context.navigateTo(UserDetailsRoute());
             },
           ),
-          ErrorWrapper(errors: [
-            state.authState.authRes.error,
-            state.usersState.usersList.error,
-            state.generalState.paramList.error,
-          ], child: _Body(state: state))
+          (state.usersState.usersList.data ?? []).isEmpty
+              ? const Center(
+                  child: Text('User list is Empty'),
+                )
+              : _Body(state: state)
         ]),
       ),
     );

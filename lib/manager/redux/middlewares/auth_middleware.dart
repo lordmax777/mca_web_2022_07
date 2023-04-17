@@ -134,42 +134,12 @@ Future fetch(action) async {
               .contains("The access token provided has expired.");
           if (eee) {
             talker.error('Token Expired');
-            // showDialog(
-            //   context: appRouter.navigatorKey.currentContext!,
-            //   // barrierDismissible: false,
-            //   builder: (context) {
-            //     return PopupLayout(
-            //       borderRadius: 16.0,
-            //       backgroundColor: Colors.white,
-            //       children: [
-            //         SizedBox(
-            //             width: 300,
-            //             height: 200,
-            //             child: SpacedColumn(
-            //               verticalSpace: 32,
-            //               mainAxisAlignment: MainAxisAlignment.center,
-            //               children: const [
-            //                 CircularProgressIndicator(),
-            //                 Text(
-            //                   "Please wait! Loading!",
-            //                   style: TextStyle(
-            //                       fontSize: 20, fontWeight: FontWeight.w600),
-            //                   textAlign: TextAlign.center,
-            //                 ),
-            //               ],
-            //             )),
-            //       ],
-            //     );
-            //   },
-            // );
-            //Get Token Again and Fetch the failed action
             await appStore.dispatch(GetAccessTokenAction(
                 domain: Constants.domain,
                 username: Constants.username,
                 password: Constants.password));
 
             return await appStore.dispatch(action);
-            // await appRouter.pop();
           }
         }
       }

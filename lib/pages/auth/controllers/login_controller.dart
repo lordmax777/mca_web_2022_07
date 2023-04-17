@@ -16,8 +16,8 @@ class LoginController extends GetxController {
   static LoginController get to => Get.find();
 
   final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final passwordController = TextEditingController();
+  final nameController = TextEditingController(text: '38195841');
+  final passwordController = TextEditingController(text: "F00tba11");
 
   Future<void> login() async {
     if (formKey.currentState!.validate()) {
@@ -29,11 +29,12 @@ class LoginController extends GetxController {
 
       final isLoggedIn = GeneralController.to.isLoggedIn;
 
+      await closeLoading();
       if (isLoggedIn) {
         await HiveController.to.setAppDbVersion();
         appRouter.popAndPushAll([appInitRoute]);
-        await closeLoading();
       } else {
+        await closeLoading();
         showError("Login Failed: ${res.rawError!.data['error_description']}");
       }
     }
