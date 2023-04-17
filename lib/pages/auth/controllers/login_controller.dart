@@ -16,8 +16,8 @@ class LoginController extends GetxController {
   static LoginController get to => Get.find();
 
   final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController(text: '38195841');
-  final passwordController = TextEditingController(text: "F00tba11");
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   Future<void> login() async {
     if (formKey.currentState!.validate()) {
