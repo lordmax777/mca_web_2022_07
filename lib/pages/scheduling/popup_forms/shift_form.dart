@@ -56,6 +56,47 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   final List<UserRes> addedChildren = [];
 
+  final List<PlutoColumn> cols = [
+    // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
+    PlutoColumn(
+      title: "Items & Description",
+      field: "items",
+      type: PlutoColumnType.text(),
+    ),
+    PlutoColumn(
+      title: "Ordered",
+      field: "ordered",
+      type: PlutoColumnType.number(),
+    ),
+    PlutoColumn(
+      title: "Rate",
+      field: "rate",
+      type: PlutoColumnType.number(),
+    ),
+    PlutoColumn(
+      title: "Amount",
+      field: "amount",
+      type: PlutoColumnType.number(),
+    ),
+    PlutoColumn(
+      title: "Inc in fixed price",
+      field: "inc_in_fixed_price",
+      type: PlutoColumnType.text(),
+    ),
+  ];
+
+  PlutoRow _buildRow() {
+    return PlutoRow(
+      cells: {
+        "items": PlutoCell(value: ""),
+        "ordered": PlutoCell(value: 0),
+        "rate": PlutoCell(value: 0),
+        "amount": PlutoCell(value: 0),
+        "inc_in_fixed_price": PlutoCell(value: ""),
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollbar(
@@ -399,10 +440,10 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               child: const HeroIcon(HeroIcons.add))),
       "Team",
       Container(
-        width: addedChildren.isEmpty ? 300 : null,
+        width: addedChildren.isEmpty ? 200 : null,
+        height: 60,
         padding: const EdgeInsets.symmetric(
           horizontal: 12,
-          vertical: 12,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
@@ -434,6 +475,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         icon: const Icon(Icons.remove, color: Colors.red),
                       ),
                       Text(e.fullname),
+                      if (addedChildren.last != e) const SizedBox(width: 10),
                     ],
                   ),
                 )
@@ -445,6 +487,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   Widget _products() {
-    return Container();
+    return labelWithField(
+      "Products and Services",
+      SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: 400,
+        child: UsersListTable(rows: [
+          ...List.generate(10, (index) => _buildRow()),
+        ], onSmReady: (e) {}, cols: cols),
+      ),
+    );
   }
 }
