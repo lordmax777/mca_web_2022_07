@@ -325,6 +325,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                           final user = filteredUsers[index];
                           final bool isAdded = addedUsers
                               .any((element) => element.id == user.id);
+                          final bool isUnavailable = unavUsers.users
+                              .any((element) => element.userId == user.id);
                           return ListTile(
                               onTap: null,
                               leading: CircleAvatar(
@@ -333,28 +335,39 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                     style:
                                         TextStyle(color: user.foregroundColor)),
                               ),
-                              title: Text(user.fullname),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (isAdded) {
-                                      addedChildren.removeWhere(
-                                          (element) => element.id == user.id);
-                                      addedUsers.removeWhere(
-                                          (element) => element.id == user.id);
-                                    } else {
-                                      addedChildren.add(user);
-                                      addedUsers.add(user);
-                                    }
-                                    ss(() {});
-                                  });
-                                },
-                                icon: isAdded
-                                    ? const Icon(Icons.remove,
-                                        color: Colors.red)
-                                    : const Icon(Icons.add,
-                                        color: Colors.green),
-                              ));
+                              title: Text(user.fullname,
+                                  style: TextStyle(
+                                      color: isUnavailable
+                                          ? Colors.grey
+                                          : Colors.black)),
+                              subtitle: isUnavailable
+                                  ? const Text("Unavailable",
+                                      style: TextStyle(color: Colors.red))
+                                  : null,
+                              trailing: isUnavailable
+                                  ? null
+                                  : IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          if (isAdded) {
+                                            addedChildren.removeWhere(
+                                                (element) =>
+                                                    element.id == user.id);
+                                            addedUsers.removeWhere((element) =>
+                                                element.id == user.id);
+                                          } else {
+                                            addedChildren.add(user);
+                                            addedUsers.add(user);
+                                          }
+                                          ss(() {});
+                                        });
+                                      },
+                                      icon: isAdded
+                                          ? const Icon(Icons.remove,
+                                              color: Colors.red)
+                                          : const Icon(Icons.add,
+                                              color: Colors.green),
+                                    ));
                         },
                       ),
                     ),
