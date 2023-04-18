@@ -88,6 +88,9 @@ ListAllMd _$ListAllMdFromJson(Map<String, dynamic> json) => ListAllMd(
       clients: (json['clients'] as List<dynamic>)
           .map((e) => ListClients.fromJson(e as Map<String, dynamic>))
           .toList(),
+      services: (json['services'] as List<dynamic>)
+          .map((e) => ListServices.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
@@ -117,6 +120,7 @@ Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
       'color_schemas': instance.color_schemas,
       'taxes': instance.taxes,
       'clients': instance.clients,
+      'services': instance.services,
     };
 
 ListCurrency _$ListCurrencyFromJson(Map<String, dynamic> json) => ListCurrency(
@@ -201,6 +205,7 @@ ListLocation _$ListLocationFromJson(Map<String, dynamic> json) => ListLocation(
       id: json['id'] as int,
       name: json['name'] as String,
       active: json['active'] as bool,
+      service: json['service'] as bool?,
     );
 
 Map<String, dynamic> _$ListLocationToJson(ListLocation instance) =>
@@ -208,6 +213,7 @@ Map<String, dynamic> _$ListLocationToJson(ListLocation instance) =>
       'id': instance.id,
       'name': instance.name,
       'active': instance.active,
+      'service': instance.service,
     };
 
 ListQualification _$ListQualificationFromJson(Map<String, dynamic> json) =>
@@ -284,6 +290,8 @@ ListShift _$ListShiftFromJson(Map<String, dynamic> json) => ListShift(
       name: json['name'] as String,
       location_id: json['location_id'] as int,
       active: json['active'] as bool,
+      client_id: json['client_id'] as int?,
+      warehouse_id: json['warehouse_id'] as int?,
     );
 
 Map<String, dynamic> _$ListShiftToJson(ListShift instance) => <String, dynamic>{
@@ -291,6 +299,8 @@ Map<String, dynamic> _$ListShiftToJson(ListShift instance) => <String, dynamic>{
       'name': instance.name,
       'location_id': instance.location_id,
       'active': instance.active,
+      'client_id': instance.client_id,
+      'warehouse_id': instance.warehouse_id,
     };
 
 ListSpecialRate _$ListSpecialRateFromJson(Map<String, dynamic> json) =>
@@ -497,5 +507,20 @@ Map<String, dynamic> _$ListClientsToJson(ListClients instance) =>
       'company': instance.company,
       'contact': instance.contact,
       'notes': instance.notes,
+      'active': instance.active,
+    };
+
+ListServices _$ListServicesFromJson(Map<String, dynamic> json) => ListServices(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      location_id: json['location_id'] as int,
+      active: json['active'] as bool,
+    );
+
+Map<String, dynamic> _$ListServicesToJson(ListServices instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'location_id': instance.location_id,
       'active': instance.active,
     };

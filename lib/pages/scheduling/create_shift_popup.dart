@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
@@ -41,6 +42,7 @@ Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
 }
 
 Future<bool> onWillPop(BuildContext context) async {
+  if (kDebugMode) return true;
   return (await showDialog(
         context: context,
         builder: (context) => AlertDialog(

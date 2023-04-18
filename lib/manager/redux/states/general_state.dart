@@ -20,22 +20,25 @@ import '../sets/app_state.dart';
 @immutable
 class GeneralState {
   final StateValue<ListAllMd> paramList;
-  final List<LocationsMd> locationList;
+  List<ListClients> get clients => paramList.data?.clients ?? <ListClients>[];
+  List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
+  List<ListLocation> get locations =>
+      paramList.data?.locations ?? <ListLocation>[];
+  List<ListStorageItem> get storage_items =>
+      paramList.data?.storage_items ?? <ListStorageItem>[];
+
   final DrawerStates drawerStates;
   final Widget? endDrawer;
   final StateValue<List<WarehouseMd>> warehouses;
-  final StateValue<List<LocationItemMd>> locationItems;
   final StateValue<List<StorageItemMd>> storageItems;
   final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
   final StateValue<List<PropertiesMd>> properties;
 
   GeneralState({
     required this.paramList,
-    required this.locationList,
     required this.warehouses,
     required this.drawerStates,
     required this.endDrawer,
-    required this.locationItems,
     required this.storageItems,
     required this.checklistTemplates,
     required this.properties,
@@ -58,11 +61,6 @@ class GeneralState {
   factory GeneralState.initial() {
     return GeneralState(
       endDrawer: null,
-      locationList: [],
-      locationItems: StateValue(
-        error: ErrorModel(),
-        data: [],
-      ),
       storageItems: StateValue(
         error: ErrorModel(),
         data: [],
@@ -91,9 +89,7 @@ class GeneralState {
     StateValue<ListAllMd>? paramList,
     DrawerStates? drawerStates,
     Widget? endDrawer,
-    List<LocationsMd>? locationList,
     StateValue<List<WarehouseMd>>? warehouses,
-    StateValue<List<LocationItemMd>>? locationItems,
     StateValue<List<StorageItemMd>>? storageItems,
     StateValue<List<ChecklistTemplateMd>>? checklistTemplates,
     StateValue<List<PropertiesMd>>? properties,
@@ -102,9 +98,7 @@ class GeneralState {
       paramList: paramList ?? this.paramList,
       drawerStates: drawerStates ?? this.drawerStates,
       warehouses: warehouses ?? this.warehouses,
-      locationList: locationList ?? this.locationList,
       endDrawer: endDrawer,
-      locationItems: locationItems ?? this.locationItems,
       storageItems: storageItems ?? this.storageItems,
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
       properties: properties ?? this.properties,
@@ -118,7 +112,6 @@ class UpdateGeneralStateAction {
   Widget? endDrawer;
   List<LocationsMd>? locationList;
   StateValue<List<WarehouseMd>>? warehouses;
-  StateValue<List<LocationItemMd>>? locationItems;
   StateValue<List<StorageItemMd>>? storageItems;
   StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
   StateValue<List<PropertiesMd>>? properties;
@@ -128,7 +121,6 @@ class UpdateGeneralStateAction {
     this.endDrawer,
     this.locationList,
     this.warehouses,
-    this.locationItems,
     this.storageItems,
     this.checklistTemplates,
     this.properties,
@@ -191,39 +183,39 @@ class GetWarehousesAction {
 }
 
 class GetAllLocationsAction {
-  static Future<StateValue<List<LocationItemMd>>> fetch(
-      AppState state, GetAllLocationsAction action, NextDispatcher next) async {
-    StateValue<List<LocationItemMd>> stateValue = StateValue(
-        data: [],
-        error:
-            ErrorModel<GetAllLocationsAction>(isLoading: true, action: action));
-
-    next(UpdateGeneralStateAction(locationItems: stateValue));
-
-    final ApiResponse res =
-        await restClient().getLocationsOrSingle().nocodeErrorHandler();
-
-    stateValue.error.errorCode = res.resCode;
-    stateValue.error.errorMessage = res.resMessage;
-    stateValue.error.isLoading = false;
-    stateValue.error.rawError = res.rawError;
-
-    if (res.success) {
-      final List<LocationItemMd> list = res.data
-          .map<LocationItemMd>((e) => LocationItemMd.fromJson(e))
-          .toList();
-      list.sort((a, b) => a.name!.compareTo(b.name!));
-
-      stateValue.error.isError = false;
-      stateValue.data = list;
-      LocationsController.to.setList(list);
-    } else {
-      stateValue.error.retries =
-          state.generalState.locationItems.error.retries + 1;
-    }
-    next(UpdateGeneralStateAction(locationItems: stateValue));
-    return stateValue;
-  }
+  // static Future<StateValue<List<LocationItemMd>>> fetch(
+  //     AppState state, GetAllLocationsAction action, NextDispatcher next) async {
+  //   StateValue<List<LocationItemMd>> stateValue = StateValue(
+  //       data: [],
+  //       error:
+  //           ErrorModel<GetAllLocationsAction>(isLoading: true, action: action));
+  //
+  //   next(UpdateGeneralStateAction(locationItems: stateValue));
+  //
+  //   final ApiResponse res =
+  //       await restClient().getLocationsOrSingle().nocodeErrorHandler();
+  //
+  //   stateValue.error.errorCode = res.resCode;
+  //   stateValue.error.errorMessage = res.resMessage;
+  //   stateValue.error.isLoading = false;
+  //   stateValue.error.rawError = res.rawError;
+  //
+  //   if (res.success) {
+  //     final List<LocationItemMd> list = res.data
+  //         .map<LocationItemMd>((e) => LocationItemMd.fromJson(e))
+  //         .toList();
+  //     list.sort((a, b) => a.name!.compareTo(b.name!));
+  //
+  //     stateValue.error.isError = false;
+  //     stateValue.data = list;
+  //     LocationsController.to.setList(list);
+  //   } else {
+  //     stateValue.error.retries =
+  //         state.generalState.locationItems.error.retries + 1;
+  //   }
+  //   next(UpdateGeneralStateAction(locationItems: stateValue));
+  //   return stateValue;
+  // }
 }
 
 class GetAllStorageItemsAction {

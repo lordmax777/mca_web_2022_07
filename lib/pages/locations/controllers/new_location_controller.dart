@@ -212,7 +212,7 @@ class NewLocationController extends GetxController {
 
     if (response.success) {
       LocationsController.to.searchController.clear();
-      await appStore.dispatch(GetAllLocationsAction());
+      await appStore.dispatch(GetAllParamListAction());
       await closeLoading();
       appRouter.navigate(const LocationsListRoute());
     } else {

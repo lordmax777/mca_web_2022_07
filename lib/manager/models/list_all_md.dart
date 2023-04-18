@@ -33,6 +33,7 @@ class ListAllMd {
   List<ColorSchemas> color_schemas;
   List<ListTaxes> taxes;
   List<ListClients> clients;
+  List<ListServices> services;
 
   static ListAllMd init() {
     return ListAllMd(
@@ -62,6 +63,7 @@ class ListAllMd {
       color_schemas: [],
       taxes: [],
       clients: [],
+      services: [],
     );
   }
 
@@ -93,6 +95,7 @@ class ListAllMd {
     required this.color_schemas,
     required this.taxes,
     required this.clients,
+    required this.services,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -220,12 +223,14 @@ class ListLocation {
   int id;
   String name;
   bool active;
+  bool? service;
 
   @override
   ListLocation({
     required this.id,
     required this.name,
     required this.active,
+    this.service,
   });
 
   factory ListLocation.fromJson(Map<String, dynamic> json) =>
@@ -332,15 +337,21 @@ class ListRequestType {
 
 @JsonSerializable()
 class ListShift {
-  // "id": 57,
-  // "name": "Flat 1",
-  // "location_id": 41,
-  // "active": false
+//{
+//             "id": 57,
+//             "name": "Flat 1",
+//             "location_id": 41,
+//             "client_id": 5,
+//             "warehouse_id": 4,
+//             "active": false
+//},
 
   int id;
   String name;
   int location_id;
   bool active;
+  int? client_id;
+  int? warehouse_id;
 
   @override
   ListShift({
@@ -348,6 +359,8 @@ class ListShift {
     required this.name,
     required this.location_id,
     required this.active,
+    this.client_id,
+    this.warehouse_id,
   });
   factory ListShift.fromJson(Map<String, dynamic> json) =>
       _$ListShiftFromJson(json);
@@ -705,4 +718,31 @@ class ListClients {
       _$ListClientsFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListClientsToJson(this);
+}
+
+@JsonSerializable()
+class ListServices {
+// {
+//             "id": 66,
+//             "name": "FLAT",
+//             "location_id": 45,
+//             "active": true
+//         }
+  int id;
+  String name;
+  int location_id;
+  bool active;
+
+  @override
+  ListServices({
+    required this.id,
+    required this.name,
+    required this.location_id,
+    required this.active,
+  });
+
+  factory ListServices.fromJson(Map<String, dynamic> json) =>
+      _$ListServicesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ListServicesToJson(this);
 }

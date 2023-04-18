@@ -24,6 +24,7 @@ class DropdownWidgetV2<T> extends StatefulWidget {
   final bool hasSearchBox;
   final String? Function(String?)? validator;
   final Map<int, HeroIcons>? customItemIcons;
+  final String? tooltipWhileDisabled;
 
   /// Dropdown-button-width, Dropdown-Options-Width
   ///  are changeable.
@@ -44,10 +45,11 @@ class DropdownWidgetV2<T> extends StatefulWidget {
       this.hintText,
       this.dropdownMaxHeight = 400.0,
       this.dropdownBtnColor,
-      this.showDropdownIcon = true})
+      this.showDropdownIcon = true,
+      this.tooltipWhileDisabled})
       : super(key: key) {
     if (value == null) isValueNull = true;
-    hintText ??= "Options";
+    hintText ??= "";
   }
 
   @override
@@ -61,6 +63,11 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
   bool isError = false;
 
   bool isOpen = false;
+
+  String? get tooltip =>
+      widget.tooltipWhileDisabled != null && widget.disableAll
+          ? widget.tooltipWhileDisabled
+          : null;
 
   @override
   void dispose() {
@@ -78,111 +85,125 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    itemList.clear();
+    logger("items: ${widget.items}");
+    setState(() {
+      itemList.addAll(widget.items);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 14),
       width: widget.dropdownBtnWidth,
-      child: DropdownButtonFormField2(
-        validator: widget.validator ??
-            (value) {
-              if (widget.isRequired) {
-                if (value == null) {
-                  setState(() {
-                    isError = true;
-                  });
-                  return "This field is required";
+      child: Tooltip(
+        message: tooltip ?? "",
+        child: DropdownButtonFormField2(
+          validator: widget.validator ??
+              (value) {
+                if (widget.isRequired) {
+                  if (value == null) {
+                    setState(() {
+                      isError = true;
+                    });
+                    return "This field is required";
+                  }
                 }
-              }
-              setState(() {
-                isError = false;
-              });
-              return null;
-            },
-        onMenuStateChange: (open) {
-          setState(() {
-            isOpen = open;
-          });
-        },
-        searchInnerWidget: widget.hasSearchBox
-            ? Padding(
-                padding: const EdgeInsets.only(top: 8.0, right: 8.0, left: 8.0),
-                child: TextInputWidget(
-                  width: MediaQuery.of(context).size.width,
-                  hintText: 'Search',
-                  labelText: 'Search',
-                  defaultBorderColor: ThemeColors.gray10,
-                  controller: searchController,
-                ),
-              )
-            : null,
-        // searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
-        searchController: searchController,
-        itemPadding: EdgeInsets.zero,
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.zero,
-          border: InputBorder.none,
-        ),
-        onChanged: widget.disableAll
-            ? null
-            : (val) {
-                widget.onChanged?.call(itemList.indexOf(val));
+                setState(() {
+                  isError = false;
+                });
+                return null;
               },
-        isExpanded: true,
-        focusColor: ThemeColors.transparent,
-        autofocus: true,
-        dropdownDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: [
-            BoxShadow(
-                color: ThemeColors.black.withOpacity(0.2),
-                offset: const Offset(0, 1),
-                blurRadius: 4)
-          ],
-        ),
-        barrierColor: ThemeColors.black.withOpacity(0.1),
-        buttonPadding: EdgeInsets.zero,
-        value: widget.value != null ? (widget.value as String) : null,
-        dropdownWidth: widget.dropdownOptionsWidth,
-        dropdownMaxHeight: widget.dropdownMaxHeight,
-        customButton: MouseRegion(
-          cursor: widget.disableAll
-              ? SystemMouseCursors.forbidden
-              : (widget.items.isNotEmpty
-                  ? SystemMouseCursors.click
-                  : SystemMouseCursors.basic),
-          child: Container(
-            height: 56,
-            padding: const EdgeInsets.only(left: 15.0),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: isError
-                    ? ThemeColors.red3
-                    : isOpen
-                        ? ThemeColors.MAIN_COLOR
-                        : (widget.dropdownBtnColor ?? ThemeColors.gray10),
-                width: isOpen
-                    ? 1.0
-                    : (widget.dropdownBtnColor == null ? 1.0 : 0.0),
+          onMenuStateChange: (open) {
+            setState(() {
+              isOpen = open;
+            });
+          },
+          searchInnerWidget: widget.hasSearchBox
+              ? Padding(
+                  padding:
+                      const EdgeInsets.only(top: 8.0, right: 8.0, left: 8.0),
+                  child: TextInputWidget(
+                    width: MediaQuery.of(context).size.width,
+                    hintText: 'Search',
+                    labelText: 'Search',
+                    defaultBorderColor: ThemeColors.gray10,
+                    controller: searchController,
+                  ),
+                )
+              : null,
+          // searchInnerWidgetHeight: widget.hasSearchBox ? 56 : null,
+          searchController: searchController,
+          itemPadding: EdgeInsets.zero,
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.zero,
+            border: InputBorder.none,
+          ),
+          onChanged: widget.disableAll
+              ? null
+              : (val) {
+                  widget.onChanged?.call(itemList.indexOf(val));
+                },
+          isExpanded: true,
+          focusColor: ThemeColors.transparent,
+          autofocus: true,
+          dropdownDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                  color: ThemeColors.black.withOpacity(0.2),
+                  offset: const Offset(0, 1),
+                  blurRadius: 4)
+            ],
+          ),
+          barrierColor: ThemeColors.black.withOpacity(0.1),
+          buttonPadding: EdgeInsets.zero,
+          value: widget.value != null ? (widget.value as String) : null,
+          dropdownWidth: widget.dropdownOptionsWidth,
+          dropdownMaxHeight: widget.dropdownMaxHeight,
+          customButton: MouseRegion(
+            cursor: widget.disableAll
+                ? SystemMouseCursors.forbidden
+                : (widget.items.isNotEmpty
+                    ? SystemMouseCursors.click
+                    : SystemMouseCursors.basic),
+            child: Container(
+              height: 56,
+              padding: const EdgeInsets.only(left: 15.0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: isError
+                      ? ThemeColors.red3
+                      : isOpen
+                          ? ThemeColors.MAIN_COLOR
+                          : (widget.dropdownBtnColor ?? ThemeColors.gray10),
+                  width: isOpen
+                      ? 1.0
+                      : (widget.dropdownBtnColor == null ? 1.0 : 0.0),
+                ),
+                borderRadius: BorderRadius.circular(18.0),
+                color: (widget.disableAll
+                    ? ThemeColors.gray12
+                    : (widget.dropdownBtnColor ?? ThemeColors.white)),
               ),
-              borderRadius: BorderRadius.circular(18.0),
-              color: (widget.disableAll
-                  ? ThemeColors.gray12
-                  : (widget.dropdownBtnColor ?? ThemeColors.white)),
-            ),
-            child: SpacedRow(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              horizontalSpace: 15,
-              children: [
-                if (widget.isValueNull)
-                  ..._buildHint()
-                else
-                  ..._buildSelectedItem(context)
-              ],
+              child: SpacedRow(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                horizontalSpace: 15,
+                children: [
+                  if (widget.isValueNull)
+                    ..._buildHint()
+                  else
+                    ..._buildSelectedItem(context)
+                ],
+              ),
             ),
           ),
+          // itemHeight: 56.h,
+          items: _getItems(),
         ),
-        // itemHeight: 56.h,
-        items: _getItems(),
       ),
     );
   }
@@ -243,27 +264,28 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SpacedRow(
-                  horizontalSpace: 4.0,
-                  children: [
-                    KText(
-                      text: widget.hintText!,
-                      isSelectable: false,
-                      style: ThemeText.bold14,
-                      fontSize: 14.0,
-                      textColor: widget.disableAll
-                          ? ThemeColors.gray8
-                          : ThemeColors.gray2,
-                    ),
-                    if (widget.isRequired)
+                if (widget.hintText != null && widget.hintText!.isNotEmpty)
+                  SpacedRow(
+                    horizontalSpace: 4.0,
+                    children: [
                       KText(
-                        text: "*",
+                        text: widget.hintText!,
                         isSelectable: false,
-                        fontSize: 16.0,
-                        textColor: ThemeColors.red3,
+                        style: ThemeText.bold14,
+                        fontSize: 14.0,
+                        textColor: widget.disableAll
+                            ? ThemeColors.gray8
+                            : ThemeColors.gray2,
                       ),
-                  ],
-                ),
+                      if (widget.isRequired)
+                        KText(
+                          text: "*",
+                          isSelectable: false,
+                          fontSize: 16.0,
+                          textColor: ThemeColors.red3,
+                        ),
+                    ],
+                  ),
                 KText(
                   text: widget.value.toString(),
                   isSelectable: false,
@@ -337,5 +359,26 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
     }
 
     return menuItems;
+  }
+}
+
+class CustomDropdownButton extends StatelessWidget {
+  final List<String> items;
+  final String? value;
+  const CustomDropdownButton({Key? key, this.value, required this.items})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      items: items.map((e) {
+        return DropdownMenuItem<String>(
+          value: e,
+          child: Text(e),
+        );
+      }).toList(),
+      value: value,
+      onChanged: (value) {},
+    );
   }
 }

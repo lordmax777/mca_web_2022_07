@@ -25,8 +25,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return (action as OpenDrawerAction).call(store, action, next);
       case GetAllParamListAction:
         return _getAllParamList(store.state, action, next);
-      case GetAllLocationsAction:
-        return GetAllLocationsAction.fetch(store.state, action, next);
+      // case GetAllLocationsAction:
+      //   return GetAllLocationsAction.fetch(store.state, action, next);
       case GetWarehousesAction:
         return GetWarehousesAction.fetch(store.state, action, next);
       case GetAllStorageItemsAction:

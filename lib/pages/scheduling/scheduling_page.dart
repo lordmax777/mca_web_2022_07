@@ -386,7 +386,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 ErrorWrapper(
                     height: CalendarConstants.tableHeight(context),
                     errors: [
-                      // scheduleState.shifts.error,
+                      scheduleState.shifts.error,
                     ],
                     child: SizedBox(
                         height: CalendarConstants.tableHeight(context),

@@ -25,10 +25,35 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   CreateShiftData get data => widget.data;
   bool get isCreate => data.property == null;
 
-  List<ListClients> get clients =>
-      state.generalState.paramList.data?.clients ?? [];
-  List<ListLocation> get locations =>
-      state.generalState.paramList.data?.locations ?? [];
+  List<ListClients> get clients => state.generalState.clients;
+
+  List<ListLocation> get locations {
+    if (selectedClientId == null) {
+      return [];
+    }
+    if (selectedClientShifts.isEmpty) return [];
+    logger(state.generalState.locations
+        .where((element) => selectedClientShifts
+            .any((shift) => shift.location_id == element.id))
+        .toList()
+        .length);
+    return state.generalState.locations
+        .where((element) => selectedClientShifts
+            .any((shift) => shift.location_id == element.id))
+        .toList();
+  }
+
+  // using this we find the locations which can be used by the selected client
+  List<ListShift> get selectedClientShifts {
+    if (selectedClientId == null) {
+      return [];
+    }
+    return state.generalState.shifts
+        .where((element) =>
+            element.client_id != null && element.client_id == selectedClientId)
+        .toList();
+  }
+
   List<ListStorage> get warehouses =>
       state.generalState.paramList.data?.storages ?? [];
   List<ListStorageItem> get products =>
@@ -36,13 +61,14 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   List<ChecklistTemplateMd> get checklistTemplates =>
       state.generalState.checklistTemplates.data ?? [];
   List<UserRes> get users => state.usersState.usersList.data ?? [];
+
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
 
   //Ephemeral state
   final TextEditingController title = TextEditingController();
   int? selectedClientId;
   int? selectedLocationId;
-  bool isActive = false;
+  bool isActive = true;
 
   DateTime? date;
   bool isAllDay = false;
@@ -85,6 +111,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   @override
   Widget build(BuildContext context) {
+    logger("ShiftDetailsForm build ${selectedClientShifts.map((e) => e.name)}");
     return CustomScrollbar(
       child: Padding(
         padding:
@@ -105,6 +132,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         TextInputWidget(
                           width: 300,
                           controller: title,
+                          hintText: "Enter title",
                         ),
                       ),
                       labelWithField(
@@ -129,6 +157,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         "Location",
                         DropdownWidgetV2(
                           hasSearchBox: true,
+                          tooltipWhileDisabled: "Select a client first",
+                          disableAll: selectedClientId == null,
                           dropdownBtnWidth: 300,
                           dropdownOptionsWidth: 300,
                           items: locations.map((e) => e.name),
@@ -320,7 +350,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   Widget _team() {
     void onAddTeamMember() {
-      //Show a dialog which will allow the user to select a team member from users list.
+      //Show a dialog which will allow the user to select team members from users list.
       // The content must contain a search box and a list of users.
       showDialog(
         context: context,
@@ -330,7 +360,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           return StatefulBuilder(builder: (context, ss) {
             return AlertDialog(
               contentPadding: const EdgeInsets.all(0),
-              title: const Text("Select a team member"),
+              title: const Text("Select team members"),
               content: SizedBox(
                 height: 400,
                 width: 400,
@@ -368,8 +398,11 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 final user = filteredUsers[index];
                                 final bool isAdded = addedUsers
                                     .any((element) => element.id == user.id);
-                                final bool isUnavailable = unavUsers.users.any(
-                                    (element) => element.userId == user.id);
+                                final UnavailableUserMd? unavUser =
+                                    unavUsers.users.firstWhereOrNull(
+                                        (element) => element.userId == user.id);
+                                final bool isUnavailable = unavUser != null &&
+                                    unavUser.userId == user.id;
                                 return ListTile(
                                     onTap: null,
                                     leading: CircleAvatar(
@@ -384,7 +417,10 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                                 ? Colors.grey
                                                 : Colors.black)),
                                     subtitle: isUnavailable
-                                        ? const Text("Unavailable",
+                                        ? Text(
+                                            unavUser.unavailable
+                                                .map((e) => e.reason)
+                                                .join(", "),
                                             style: TextStyle(color: Colors.red))
                                         : null,
                                     trailing: isUnavailable
@@ -428,7 +464,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
     return labelWithField(
       customLabel: IconButton(
-          tooltip: "Add team member",
+          tooltip: "Add team members",
           onPressed: unavUsers.isLoaded
               ? () {
                   onAddTeamMember();

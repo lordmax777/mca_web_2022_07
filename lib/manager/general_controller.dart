@@ -57,14 +57,13 @@ class GeneralController extends GetxController {
     await getCompanyInfo();
     // await fetch(GetAllParamListAction());
     // await fetch(GetUsersListAction());
-    // await fetch(GetAllLocationsAction());
     // await fetch(GetPropertiesAction());
     // await fetch(GetChecklistTemplatesAction());
     // return;
     await Future.wait([
       fetch(GetAllParamListAction()),
       fetch(GetUsersListAction()),
-      fetch(GetAllLocationsAction()),
+      // fetch(GetAllLocationsAction()),
       fetch(GetPropertiesAction()),
       fetch(GetChecklistTemplatesAction()),
     ]);
