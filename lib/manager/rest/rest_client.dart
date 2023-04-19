@@ -539,6 +539,18 @@ abstract class RestClient {
     @Field() required int payingDays,
     @Field() required bool active,
   });
+
+  @GET("/api/fe/clients/{id}/contract/{cid}/shifts/{sid}")
+
+  /// at least one of the parameters must be specified as not 0
+  ///
+  /// id = client id
+  ///
+  /// cid = contract id
+  ///
+  /// sid = shift id
+  Future<HttpResponse> getClientContracts(
+      @Path() int id, @Path() int cid, @Path() int sid);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

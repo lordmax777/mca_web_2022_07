@@ -10,11 +10,12 @@ class UsersListTable extends StatelessWidget {
   final List<PlutoRow> rows;
   final void Function(PlutoGridStateManager) onSmReady;
   final void Function(PlutoGridOnSelectedEvent)? onOneTapSelect;
-
+  final Color? gridBorderColor;
   const UsersListTable(
       {Key? key,
       required this.rows,
       this.onOneTapSelect,
+      this.gridBorderColor,
       required this.onSmReady,
       required this.cols})
       : super(key: key);
@@ -68,9 +69,9 @@ class UsersListTable extends StatelessWidget {
             style: PlutoGridStyleConfig(
               columnHeight: 48.0,
               rowHeight: 48.0,
-              borderColor: ThemeColors.transparent,
-              gridBorderColor: ThemeColors.transparent,
-              activatedBorderColor: ThemeColors.transparent,
+              borderColor: gridBorderColor ?? ThemeColors.transparent,
+              gridBorderColor: gridBorderColor ?? ThemeColors.transparent,
+              activatedBorderColor: gridBorderColor ?? ThemeColors.transparent,
               activatedColor: ThemeColors.blue12.withOpacity(0.5),
               columnTextStyle: ThemeText.tableColumnTextStyle,
               enableRowColorAnimation: true,
@@ -84,6 +85,12 @@ class UsersListTable extends StatelessWidget {
         mode: PlutoGridMode.selectWithOneTap,
         onSelected: onOneTapSelect,
         onLoaded: (e) => onSmReady(e.stateManager),
+        noRowsWidget: const Center(
+          child: Text(
+            "No data found",
+            style: ThemeText.lg,
+          ),
+        ),
       ),
     );
   }

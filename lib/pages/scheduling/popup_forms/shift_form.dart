@@ -1,9 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
+import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 import '../../../comps/custom_gmaps_widget.dart';
 import '../../../comps/modals/custom_date_picker.dart';
 import '../../../comps/modals/custom_time_picker.dart';
@@ -52,15 +55,20 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   final List<UserRes> addedChildren = [];
   final Map<int, double> addedChildrenRates = {};
 
+  late PlutoGridStateManager gridStateManager;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (isCreate) return;
       final property = data.property!;
-      logger(property.toJson(), hint: "property");
+      await onClientChanged(
+          appStore.state.generalState.clients
+              .indexWhere((element) => element.id == property.clientId),
+          clients: appStore.state.generalState.clients);
       title.text = property.title ?? "";
-      selectedClientId = property.clientId;
+      // selectedClientId = property.clientId;
       selectedLocationId = property.locationId;
       isActive = property.active ?? false;
       date = data.date;
@@ -99,6 +107,45 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         selectedLocationId = data.locationId;
       }
     });
+  }
+
+  Future<void> onClientChanged(int index,
+      {required List<ListClients> clients}) async {
+    setState(() {
+      selectedClientId = clients[index].id;
+      selectedLocationId = null;
+      tempAllowedLocationId = null;
+    });
+    if (selectedClientId == null) return;
+    final List<ClientContractMd> contracts = await getClientContracts();
+    gridStateManager.removeAllRows(notify: false);
+    gridStateManager.prependRows(
+      contracts
+          .expand((element) => element.shifts)
+          .expand((element) => element.items)
+          .map((e) {
+        return _buildRow(e);
+      }).toList(),
+    );
+  }
+
+  Future<List<ClientContractMd>> getClientContracts() async {
+    return await Get.showOverlay<List<ClientContractMd>>(
+        asyncFunction: () async {
+          final res = await restClient()
+              .getClientContracts(selectedClientId!, 0, 0)
+              .nocodeErrorHandler();
+          if (res.success) {
+            final List<ClientContractMd> contracts = [];
+            for (var item in res.data!) {
+              contracts.add(ClientContractMd.fromJson(item));
+            }
+            return contracts;
+          } else {
+            return [];
+          }
+        },
+        loadingWidget: const Center(child: CircularProgressIndicator()));
   }
 
   @override
@@ -191,11 +238,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                           ?.name ??
                                       ""),
                               onChanged: (index) {
-                                setState(() {
-                                  selectedClientId = clients[index].id;
-                                  selectedLocationId = null;
-                                  tempAllowedLocationId = null;
-                                });
+                                onClientChanged(index, clients: clients);
                               },
                             ),
                             childHelperWidget: addIcon(
@@ -852,6 +895,12 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   final List<PlutoColumn> cols = [
+    PlutoColumn(
+      title: "",
+      field: "id",
+      type: PlutoColumnType.text(),
+      hide: true,
+    ),
     // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
     PlutoColumn(
       title: "Items & Description",
@@ -880,13 +929,14 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     ),
   ];
 
-  PlutoRow _buildRow() {
+  PlutoRow _buildRow(ClientContractShiftItem contractShiftItem) {
     return PlutoRow(
       cells: {
-        "items": PlutoCell(value: ""),
+        "id": PlutoCell(value: contractShiftItem.itemId),
+        "items": PlutoCell(value: contractShiftItem.itemName),
         "ordered": PlutoCell(value: 0),
-        "rate": PlutoCell(value: 0),
-        "amount": PlutoCell(value: 0),
+        "rate": PlutoCell(value: contractShiftItem.price),
+        "amount": PlutoCell(value: contractShiftItem.auto),
         "inc_in_fixed_price": PlutoCell(value: ""),
       },
     );
@@ -897,10 +947,14 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       "Products and Services",
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
-        height: 400,
-        child: UsersListTable(rows: [
-          ...List.generate(10, (index) => _buildRow()),
-        ], onSmReady: (e) {}, cols: cols),
+        height: 300,
+        child: UsersListTable(
+            rows: [],
+            gridBorderColor: Colors.grey[300]!,
+            onSmReady: (e) {
+              gridStateManager = e;
+            },
+            cols: cols),
       ),
     );
   }
