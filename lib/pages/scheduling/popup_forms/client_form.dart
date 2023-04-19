@@ -336,11 +336,8 @@ class _ClientFormState extends State<ClientForm> {
                           )
                           .nocodeErrorHandler();
                       if (res.success) {
-                        appStore
-                            .dispatch(GetAllParamListAction())
-                            .then((value) {
-                          context.popRoute(res.data);
-                        });
+                        await appStore.dispatch(GetAllParamListAction());
+                        context.popRoute(res.data);
                       } else {
                         showError(
                           ApiHelpers.getRawDataErrorMessages(res).isEmpty
