@@ -342,14 +342,14 @@ class _ClientFormState extends State<ClientForm> {
                           context.popRoute(res.data);
                         });
                       } else {
-                        Get.showSnackbar(GetSnackBar(
-                          message: res.resMessage,
-                        ));
+                        showError(
+                          ApiHelpers.getRawDataErrorMessages(res).isEmpty
+                              ? "Error"
+                              : ApiHelpers.getRawDataErrorMessages(res),
+                        );
                       }
                     } catch (e) {
-                      Get.showSnackbar(GetSnackBar(
-                        message: e.toString(),
-                      ));
+                      showError("Unknown error");
                     }
                   },
                   loadingWidget: const Center(

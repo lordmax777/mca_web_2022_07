@@ -150,12 +150,54 @@ class GridTableHelpers {
   }
 }
 
+class ApiErrorResponseModel {
+  final String? message;
+  final Map? errors;
+
+  ApiErrorResponseModel({
+    this.message,
+    this.errors,
+  });
+
+  //from json
+  factory ApiErrorResponseModel.fromJson(Map<String, dynamic> json) {
+    return ApiErrorResponseModel(
+      message: json['message'],
+      errors: json['errors'],
+    );
+  }
+
+  //to json
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'errors': errors,
+    };
+  }
+
+  String getErrors() {
+    String msg = "";
+    if (errors != null) {
+      errors!.forEach((key, value) {
+        msg += "$key: $value";
+      });
+    }
+    return msg;
+  }
+}
+
 class ApiHelpers {
   static String getRawDataErrorMessages(ApiResponse res) {
     String msg = "Error";
     if (res.rawError != null) {
-      final list = jsonDecode(res.rawError!.data)['errors'].values;
-      msg = list.join(",\n");
+      try {
+        final list = jsonDecode(res.rawError!.data)['errors'];
+        ApiErrorResponseModel? error =
+            ApiErrorResponseModel.fromJson(jsonDecode(res.rawError!.data));
+        msg = error.getErrors();
+      } catch (e) {
+        msg = res.rawError!.data;
+      }
     }
     return msg;
   }
