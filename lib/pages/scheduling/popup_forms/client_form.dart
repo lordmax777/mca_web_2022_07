@@ -399,33 +399,35 @@ class _ClientFormState extends State<ClientForm> {
                   },
                 ),
               ),
-              ButtonSmall(
-                text: "Lookup Address",
-                onPressed: () {
-                  Get.showOverlay(
-                    asyncFunction: () async {
-                      try {
-                        await lookupAddress();
-                      } catch (e) {
-                        if (address.addressPostcode == null ||
-                            address.addressPostcode!.isEmpty) {
-                          showError("Postcode is required");
+              if (!isDeliverAtDifferentLocation)
+                ButtonSmall(
+                  text: "Lookup Address",
+                  onPressed: () {
+                    Get.showOverlay(
+                      asyncFunction: () async {
+                        try {
+                          await lookupAddress();
+                        } catch (e) {
+                          if (address.addressPostcode == null ||
+                              address.addressPostcode!.isEmpty) {
+                            showError("Postcode is required");
+                          }
                         }
-                      }
-                    },
-                    loadingWidget: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                },
-              ),
-              labelWithField(
-                  "Service Delivered at a different address",
-                  toggle(isDeliverAtDifferentLocation, (value) {
-                    setState(() {
-                      isDeliverAtDifferentLocation = value;
-                    });
-                  })),
+                      },
+                      loadingWidget: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  },
+                ),
+              if (isClient)
+                labelWithField(
+                    "Service Delivered at a different address",
+                    toggle(isDeliverAtDifferentLocation, (value) {
+                      setState(() {
+                        isDeliverAtDifferentLocation = value;
+                      });
+                    })),
               if (!isDeliverAtDifferentLocation)
                 labelWithField(
                     "Fixed IP Address",
@@ -485,74 +487,114 @@ class _ClientFormState extends State<ClientForm> {
                 }
               });
             }),
-        ButtonLarge(
-            text: "Save",
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                Get.showOverlay(
-                  asyncFunction: () async {
-                    if (isClient) {
-                      final ApiResponse createdClient =
-                          await createClient(fetchAllParams: false);
-                      if (createdClient.success) {
-                        final ApiResponse createdLocation =
-                            await createLocation();
-                        if (createdLocation.success) {
-                          context.popRoute(CreatedClientReturnValue(
-                              clientId: createdClient.data,
-                              locationId: createdLocation.data));
-                        } else {
-                          await appStore.dispatch(GetAllParamListAction());
-                          //Location already exists
-                          if (createdLocation.resCode == 409) {
+        if (isDeliverAtDifferentLocation)
+          ButtonLarge(
+              text: "Add Location",
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  final CreatedClientReturnValue? data = await showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) => ClientForm(
+                            state: state,
+                            type: ClientFormType.location,
+                          ));
+                  if (data != null && data.locationId != null) {
+                    Get.showOverlay(
+                      asyncFunction: () async {
+                        try {
+                          final ApiResponse createdClient =
+                              await createClient();
+                          if (createdClient.success) {
+                            context.popRoute(CreatedClientReturnValue(
+                                clientId: createdClient.data,
+                                locationId: data.locationId));
+                          } else {
+                            showError(
+                                createdClient.resMessage ?? "Unknown Error");
+                          }
+                        } catch (e) {
+                          showError(e.toString());
+                        }
+                      },
+                      loadingWidget: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                }
+              })
+        else
+          ButtonLarge(
+              text: "Save",
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Get.showOverlay(
+                    asyncFunction: () async {
+                      if (isClient) {
+                        final ApiResponse createdClient =
+                            await createClient(fetchAllParams: false);
+                        if (createdClient.success) {
+                          final ApiResponse createdLocation =
+                              await createLocation();
+                          if (createdLocation.success) {
                             context.popRoute(CreatedClientReturnValue(
                                 clientId: createdClient.data,
                                 locationId: createdLocation.data));
-                            return;
+                          } else {
+                            await appStore.dispatch(GetAllParamListAction());
+                            //Location already exists
+                            if (createdLocation.resCode == 409) {
+                              context.popRoute(CreatedClientReturnValue(
+                                  clientId: createdClient.data,
+                                  locationId: createdLocation.data));
+                              return;
+                            }
+                            showError(ApiHelpers.getRawDataErrorMessages(
+                                        createdLocation)
+                                    .isEmpty
+                                ? "Error"
+                                : ApiHelpers.getRawDataErrorMessages(
+                                    createdLocation));
                           }
-                          showError(ApiHelpers.getRawDataErrorMessages(
-                                      createdLocation)
-                                  .isEmpty
-                              ? "Error"
-                              : ApiHelpers.getRawDataErrorMessages(
-                                  createdLocation));
+                        } else {
+                          showError(
+                            ApiHelpers.getRawDataErrorMessages(createdClient)
+                                    .isEmpty
+                                ? "Error"
+                                : ApiHelpers.getRawDataErrorMessages(
+                                    createdClient),
+                          );
                         }
-                      } else {
-                        showError(
-                          ApiHelpers.getRawDataErrorMessages(createdClient)
-                                  .isEmpty
-                              ? "Error"
-                              : ApiHelpers.getRawDataErrorMessages(
-                                  createdClient),
-                        );
                       }
-                    }
-                    if (isLocation) {
-                      final ApiResponse createdLoc = await createLocation();
-                      if (createdLoc.success) {
-                        context.popRoute(CreatedClientReturnValue(
-                            locationId: createdLoc.data));
-                      } else {
-                        //Location already exists
-                        if (createdLoc.resCode == 409) {
+                      if (isLocation) {
+                        final ApiResponse createdLoc = await createLocation();
+                        if (createdLoc.success) {
                           context.popRoute(CreatedClientReturnValue(
                               locationId: createdLoc.data));
-                          return;
+                        } else {
+                          //Location already exists
+                          if (createdLoc.resCode == 409) {
+                            context.popRoute(CreatedClientReturnValue(
+                                locationId: createdLoc.data));
+                            return;
+                          }
+                          showError(
+                            ApiHelpers.getRawDataErrorMessages(createdLoc)
+                                    .isEmpty
+                                ? "Error"
+                                : ApiHelpers.getRawDataErrorMessages(
+                                    createdLoc),
+                          );
                         }
-                        showError(
-                          ApiHelpers.getRawDataErrorMessages(createdLoc).isEmpty
-                              ? "Error"
-                              : ApiHelpers.getRawDataErrorMessages(createdLoc),
-                        );
                       }
-                    }
-                  },
-                  loadingWidget: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-            }),
+                    },
+                    loadingWidget: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              }),
       ],
     );
   }
@@ -586,6 +628,7 @@ class _ClientFormState extends State<ClientForm> {
     if (res.success) {
       if (fetchAllParams) {
         await appStore.dispatch(GetAllParamListAction());
+        appStore.dispatch(GetLocationAddressesAction());
       }
     }
     return res;

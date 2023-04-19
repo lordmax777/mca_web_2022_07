@@ -592,7 +592,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         ],
                       ),
                       _team(users),
-                      _products(),
+                      if (selectedClientId != null) _products(),
                     ],
                   ),
                 ),
