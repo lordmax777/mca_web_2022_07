@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import '../theme/theme.dart';
 
-class DropdownWidgetV2<T> extends StatefulWidget {
+// ignore: must_be_immutable
+class DropdownWidgetV2 extends StatefulWidget {
   final ValueChanged<int>? onChanged;
 
   /// DpItem.name => returns the selected name from items list
@@ -9,8 +12,8 @@ class DropdownWidgetV2<T> extends StatefulWidget {
   /// DpItem.item => returns the selected item from objItems list with type of T
 
   ///Pass the first item of the items list. This param is deprecated
-  final dynamic value;
-  final Iterable items;
+  final CustomDropdownValue? value;
+  final List<CustomDropdownValue> items;
   final HeroIcons? leftIcon;
   String? hintText;
   bool isValueNull = false;
@@ -22,7 +25,7 @@ class DropdownWidgetV2<T> extends StatefulWidget {
   final bool isRequired;
   final bool disableAll;
   final bool hasSearchBox;
-  final String? Function(String?)? validator;
+  final String? Function(CustomDropdownValue?)? validator;
   final Map<int, HeroIcons>? customItemIcons;
   final String? tooltipWhileDisabled;
 
@@ -48,16 +51,19 @@ class DropdownWidgetV2<T> extends StatefulWidget {
       this.showDropdownIcon = true,
       this.tooltipWhileDisabled})
       : super(key: key) {
-    if (value == null) isValueNull = true;
+    // if (value == null) {
+    isValueNull = value == null || value!.name.isEmpty ? true : false;
+    // }
+    ;
     hintText ??= "";
   }
 
   @override
-  State<DropdownWidgetV2> createState() => _DropdownWidgetV2State<T>();
+  State<DropdownWidgetV2> createState() => _DropdownWidgetV2State();
 }
 
-class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
-  List itemList = [];
+class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
+  List<CustomDropdownValue> itemList = [];
   final TextEditingController searchController = TextEditingController();
 
   bool isError = false;
@@ -85,10 +91,9 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didUpdateWidget(covariant DropdownWidgetV2 oldWidget) {
+    super.didUpdateWidget(oldWidget);
     itemList.clear();
-    logger("items: ${widget.items}");
     setState(() {
       itemList.addAll(widget.items);
     });
@@ -101,7 +106,7 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
       width: widget.dropdownBtnWidth,
       child: Tooltip(
         message: tooltip ?? "",
-        child: DropdownButtonFormField2(
+        child: DropdownButtonFormField2<CustomDropdownValue>(
           validator: widget.validator ??
               (value) {
                 if (widget.isRequired) {
@@ -145,7 +150,7 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
           onChanged: widget.disableAll
               ? null
               : (val) {
-                  widget.onChanged?.call(itemList.indexOf(val));
+                  widget.onChanged?.call(itemList.indexOf(val!));
                 },
           isExpanded: true,
           focusColor: ThemeColors.transparent,
@@ -161,7 +166,11 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
           ),
           barrierColor: ThemeColors.black.withOpacity(0.1),
           buttonPadding: EdgeInsets.zero,
-          value: widget.value != null ? (widget.value as String) : null,
+          value: widget.value != null
+              ? widget.value!.name.isNotEmpty
+                  ? widget.value
+                  : null
+              : null,
           dropdownWidth: widget.dropdownOptionsWidth,
           dropdownMaxHeight: widget.dropdownMaxHeight,
           customButton: MouseRegion(
@@ -264,28 +273,28 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.hintText != null && widget.hintText!.isNotEmpty)
-                  SpacedRow(
-                    horizontalSpace: 4.0,
-                    children: [
-                      KText(
-                        text: widget.hintText!,
-                        isSelectable: false,
-                        style: ThemeText.bold14,
-                        fontSize: 14.0,
-                        textColor: widget.disableAll
-                            ? ThemeColors.gray8
-                            : ThemeColors.gray2,
-                      ),
-                      if (widget.isRequired)
-                        KText(
-                          text: "*",
-                          isSelectable: false,
-                          fontSize: 16.0,
-                          textColor: ThemeColors.red3,
-                        ),
-                    ],
-                  ),
+                // if (widget.hintText != null && widget.hintText!.isNotEmpty)
+                //   SpacedRow(
+                //     horizontalSpace: 4.0,
+                //     children: [
+                //       KText(
+                //         text: widget.hintText!,
+                //         isSelectable: false,
+                //         style: ThemeText.bold14,
+                //         fontSize: 14.0,
+                //         textColor: widget.disableAll
+                //             ? ThemeColors.gray8
+                //             : ThemeColors.gray2,
+                //       ),
+                //       if (widget.isRequired)
+                //         KText(
+                //           text: "*",
+                //           isSelectable: false,
+                //           fontSize: 16.0,
+                //           textColor: ThemeColors.red3,
+                //         ),
+                //     ],
+                //   ),
                 KText(
                   text: widget.value.toString(),
                   isSelectable: false,
@@ -310,17 +319,17 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
     ];
   }
 
-  List<DropdownMenuItem<String>> _getItems() {
-    List listValues = itemList;
-    List<DropdownMenuItem<String>> menuItems = [];
+  List<DropdownMenuItem<CustomDropdownValue>> _getItems() {
+    List<CustomDropdownValue> listValues = itemList;
+    List<DropdownMenuItem<CustomDropdownValue>> menuItems = [];
     int len = listValues.length;
     for (int i = 0; i < len; i++) {
       menuItems.add(
-        DropdownMenuItem<String>(
+        DropdownMenuItem<CustomDropdownValue>(
           onTap: () {
             searchController.clear();
           },
-          value: listValues[i].toString(),
+          value: listValues[i],
           child: Container(
             decoration: BoxDecoration(
               // borderRadius: BorderRadius.circular(14),
@@ -362,23 +371,286 @@ class _DropdownWidgetV2State<T> extends State<DropdownWidgetV2> {
   }
 }
 
-class CustomDropdownButton extends StatelessWidget {
-  final List<String> items;
-  final String? value;
-  const CustomDropdownButton({Key? key, this.value, required this.items})
-      : super(key: key);
+class CustomDropdownValue {
+  final String name;
+  CustomDropdownValue({required this.name});
+
+  @override
+  String toString() {
+    return name;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is CustomDropdownValue && other.name == name;
+  }
+
+  @override
+  int get hashCode => name.hashCode + Random().nextInt(100);
+}
+
+class CustomDropdownViewOptions {
+  final double? dropdownBtnWidth;
+  final double? dropdownOptionsMaxHeight;
+  final HeroIcons? leftIcon;
+  final Color? dropdownBtnColor;
+  final bool showDropdownIcon;
+
+  const CustomDropdownViewOptions({
+    this.dropdownBtnWidth = 125,
+    this.dropdownOptionsMaxHeight = 400,
+    this.leftIcon,
+    this.dropdownBtnColor,
+    this.showDropdownIcon = true,
+  });
+}
+
+class CustomDropdownStateOptions {
+  final bool disableAll;
+  final bool hasSearchBox;
+  final bool isRequired;
+  final String? tooltipOnDisabledState;
+  final String? Function(String?)? validator;
+
+  const CustomDropdownStateOptions({
+    this.disableAll = false,
+    this.hasSearchBox = false,
+    this.isRequired = false,
+    this.tooltipOnDisabledState,
+    this.validator,
+  });
+}
+
+class CustomDropdownButton extends StatefulWidget {
+  final List<CustomDropdownValue> items;
+  final CustomDropdownValue? value;
+  final void Function(int) onSelected;
+  final String? hintText;
+  final CustomDropdownViewOptions? viewOptions;
+  final CustomDropdownStateOptions? stateOptions;
+
+  const CustomDropdownButton({
+    Key? key,
+    this.value,
+    required this.items,
+    required this.onSelected,
+    this.hintText,
+    this.viewOptions = const CustomDropdownViewOptions(),
+    this.stateOptions = const CustomDropdownStateOptions(),
+  }) : super(key: key);
+
+  @override
+  State<CustomDropdownButton> createState() => _CustomDropdownButtonState();
+}
+
+class _CustomDropdownButtonState extends State<CustomDropdownButton> {
+  CustomDropdownStateOptions get stateOptions => widget.stateOptions!;
+  CustomDropdownViewOptions get viewOptions => widget.viewOptions!;
+  List<CustomDropdownValue> items = [];
+  CustomDropdownValue? get value =>
+      widget.value != null && items.isNotEmpty && widget.value!.name.isNotEmpty
+          ? widget.value
+          : null;
+
+  final TextEditingController searchController = TextEditingController();
+
+  bool isError = false;
+
+  String? get tooltip => stateOptions.tooltipOnDisabledState != null &&
+          stateOptions.tooltipOnDisabledState!.isNotEmpty
+      ? stateOptions.tooltipOnDisabledState
+      : null;
+
+  @override
+  void initState() {
+    super.initState();
+    items = widget.items;
+    if (stateOptions.hasSearchBox) {
+      searchController.addListener(searchListener);
+    }
+  }
+
+  void searchListener() {
+    final String text = searchController.text.toLowerCase();
+    setState(() {
+      items = widget.items
+          .where((element) => element.name.toLowerCase().contains(text))
+          .toList();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomDropdownButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    searchController.removeListener(searchListener);
+    searchController.addListener(searchListener);
+    setState(() {
+      items = widget.items;
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      items: items.map((e) {
-        return DropdownMenuItem<String>(
-          value: e,
-          child: Text(e),
-        );
-      }).toList(),
-      value: value,
-      onChanged: (value) {},
+    return PopupMenuButton(
+      splashRadius: 0,
+      enableFeedback: false,
+      position: PopupMenuPosition.under,
+      tooltip: tooltip ?? "",
+      onSelected: (value) {
+        widget.onSelected(items.indexOf(value as CustomDropdownValue));
+      },
+      onCanceled: () {
+        searchController.clear();
+        items = widget.items;
+      },
+      offset: const Offset(-10, 10),
+      itemBuilder: getItems,
+      child: MouseRegion(
+        cursor: stateOptions.disableAll
+            ? SystemMouseCursors.forbidden
+            : (items.isNotEmpty
+                ? SystemMouseCursors.click
+                : SystemMouseCursors.basic),
+        child: Container(
+          height: 56,
+          width: viewOptions.dropdownBtnWidth! + 2,
+          margin: const EdgeInsets.only(top: 7),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: isError
+                  ? ThemeColors.red3
+                  : (viewOptions.dropdownBtnColor ?? ThemeColors.gray10),
+              width: (viewOptions.dropdownBtnColor == null ? 1.0 : 0.0),
+            ),
+            borderRadius: BorderRadius.circular(18.0),
+            color: (stateOptions.disableAll
+                ? ThemeColors.gray12
+                : (viewOptions.dropdownBtnColor ?? ThemeColors.white)),
+          ),
+          child: SpacedRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            horizontalSpace: 15,
+            children: [
+              if (value == null)
+                ..._buildHint()
+              else
+                ..._buildSelectedItem(context)
+            ],
+          ),
+        ),
+      ),
     );
+  }
+
+  List<PopupMenuEntry<CustomDropdownValue>> getItems(BuildContext context) {
+    final List<PopupMenuEntry<CustomDropdownValue>> menuItems = [];
+    logger("items ${items.map((e) => e.name).toList()}}");
+    int len = items.length;
+    if (items.isNotEmpty) {
+      if (stateOptions.hasSearchBox) len += 1;
+      for (int i = 0; i < len; i++) {
+        if (stateOptions.hasSearchBox && i == 0) {
+          menuItems.add(
+            PopupMenuItem<CustomDropdownValue>(
+                enabled: false,
+                height: 56,
+                child: SizedBox(
+                    width: viewOptions.dropdownBtnWidth!,
+                    child: TextInputWidget(
+                      width: MediaQuery.of(context).size.width,
+                      hintText: 'Search',
+                      labelText: 'Search',
+                      defaultBorderColor: ThemeColors.gray10,
+                      controller: searchController,
+                    ))),
+          );
+          continue;
+        }
+        final item = items[i - 1];
+        final isSelected = value == item;
+        menuItems.add(
+          PopupMenuItem<CustomDropdownValue>(
+              height: 56,
+              textStyle: TextStyle(
+                fontSize: 16,
+                color: isSelected ? ThemeColors.MAIN_COLOR : ThemeColors.black,
+              ),
+              value: item,
+              child: SizedBox(
+                  width: viewOptions.dropdownBtnWidth!,
+                  child: Text(item.name))),
+        );
+      }
+    }
+    return menuItems;
+  }
+
+  List<Widget> _buildHint() {
+    return [
+      if (viewOptions.leftIcon != null)
+        HeroIcon(viewOptions.leftIcon!, color: ThemeColors.gray10),
+      SizedBox(
+        width: viewOptions.leftIcon != null
+            ? viewOptions.dropdownBtnWidth! - (55 + 55)
+            : viewOptions.showDropdownIcon
+                ? viewOptions.dropdownBtnWidth! - 60
+                : viewOptions.dropdownBtnWidth! - 30,
+        child: SpacedRow(
+          horizontalSpace: 4.0,
+          children: [
+            KText(
+              text: widget.hintText!,
+              isSelectable: false,
+              fontSize: 16.0,
+              textColor: ThemeColors.gray8,
+            ),
+            if (stateOptions.isRequired)
+              KText(
+                text: "*",
+                isSelectable: false,
+                fontSize: 16.0,
+                textColor: ThemeColors.red3,
+              ),
+          ],
+        ),
+      ),
+      if (viewOptions.showDropdownIcon)
+        const Align(
+            alignment: Alignment.centerRight,
+            child: HeroIcon(
+              HeroIcons.down,
+              color: ThemeColors.gray2,
+              size: 15,
+            )),
+    ];
+  }
+
+  List<Widget> _buildSelectedItem(BuildContext ctx) {
+    return [
+      if (widget.value != null)
+        KText(
+          text: widget.value?.name.toString(),
+          isSelectable: false,
+          fontSize: 14.0,
+          fontWeight: FWeight.bold,
+          textColor: ThemeColors.gray2,
+        ),
+      const Spacer(),
+      if (viewOptions.showDropdownIcon)
+        const HeroIcon(
+          HeroIcons.up,
+          color: ThemeColors.gray2,
+          size: 15,
+        ),
+    ];
   }
 }

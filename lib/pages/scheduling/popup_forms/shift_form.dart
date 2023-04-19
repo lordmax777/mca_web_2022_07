@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import '../../../comps/modals/custom_date_picker.dart';
 import '../../../comps/modals/custom_time_picker.dart';
@@ -23,6 +25,7 @@ class ShiftDetailsForm extends StatefulWidget {
 class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   AppState get state => widget.state;
   CreateShiftData get data => widget.data;
+
   bool get isCreate => data.property == null;
 
   List<ListClients> get clients => state.generalState.clients;
@@ -32,11 +35,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       return [];
     }
     if (selectedClientShifts.isEmpty) return [];
-    logger(state.generalState.locations
-        .where((element) => selectedClientShifts
-            .any((shift) => shift.location_id == element.id))
-        .toList()
-        .length);
+
     return state.generalState.locations
         .where((element) => selectedClientShifts
             .any((shift) => shift.location_id == element.id))
@@ -78,7 +77,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   int? selectedWarehouseId;
   int? selectedChecklistTemplateId;
-  TextEditingController paidHours = TextEditingController(text: "0");
+  TextEditingController paidHoursHour = TextEditingController(text: "0");
+  TextEditingController paidHoursMinute = TextEditingController(text: "0");
   bool isSplitTime = false;
 
   final List<UserRes> addedChildren = [];
@@ -104,14 +104,16 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       }
       selectedWarehouseId = property.warehouseId;
       // selectedChecklistTemplateId = property.checklistTemplateId;
-      paidHours.text = property.minPaidTime?.toString() ?? "0";
+      paidHoursHour.text =
+          property.minPaidTime?.inHours.toInt().toString() ?? "0";
+      paidHoursMinute.text =
+          property.minPaidTime?.inMinutes.toInt().toString() ?? "0";
       isSplitTime = property.splitTime ?? false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    logger("ShiftDetailsForm build ${selectedClientShifts.map((e) => e.name)}");
     return CustomScrollbar(
       child: Padding(
         padding:
@@ -139,16 +141,22 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         "Client",
                         DropdownWidgetV2(
                           hasSearchBox: true,
+                          hintText: "Select a client",
                           dropdownBtnWidth: 300,
                           dropdownOptionsWidth: 300,
-                          items: clients.map((e) => e.name),
-                          value: clients
-                              .firstWhereOrNull(
-                                  (element) => element.id == selectedClientId)
-                              ?.name,
+                          items: clients
+                              .map((e) => CustomDropdownValue(name: e.name))
+                              .toList(),
+                          value: CustomDropdownValue(
+                              name: clients
+                                      .firstWhereOrNull((element) =>
+                                          element.id == selectedClientId)
+                                      ?.name ??
+                                  ""),
                           onChanged: (index) {
                             setState(() {
                               selectedClientId = clients[index].id;
+                              selectedLocationId = null;
                             });
                           },
                         ),
@@ -157,15 +165,20 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         "Location",
                         DropdownWidgetV2(
                           hasSearchBox: true,
+                          hintText: "Select a location",
                           tooltipWhileDisabled: "Select a client first",
                           disableAll: selectedClientId == null,
                           dropdownBtnWidth: 300,
                           dropdownOptionsWidth: 300,
-                          items: locations.map((e) => e.name),
-                          value: locations
-                              .firstWhereOrNull(
-                                  (element) => element.id == selectedLocationId)
-                              ?.name,
+                          items: locations
+                              .map((e) => CustomDropdownValue(name: e.name))
+                              .toList(),
+                          value: CustomDropdownValue(
+                              name: locations
+                                      .firstWhereOrNull((element) =>
+                                          element.id == selectedLocationId)
+                                      ?.name ??
+                                  ""),
                           onChanged: (index) {
                             setState(() {
                               selectedLocationId = locations[index].id;
@@ -198,6 +211,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                           ),
                           onTap: () async {
                             final date = await showCustomDatePicker(context);
+                            //date cannot be before today only if we are creating a new
+                            if (isCreate) {
+                              if (date != null &&
+                                  date.isBefore(DateTime.now())) {
+                                showError("Date cannot be before today");
+                                return;
+                              }
+                            }
+
                             if (date == null) return;
 
                             setState(() {
@@ -211,6 +233,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         toggle(isAllDay, (val) {
                           setState(() {
                             isAllDay = val;
+                            if (isAllDay) {
+                              startTime = const TimeOfDay(hour: 0, minute: 0);
+                              endTime = const TimeOfDay(hour: 23, minute: 59);
+                            } else {
+                              startTime = null;
+                              endTime = null;
+                            }
                           });
                         }),
                       ),
@@ -225,10 +254,19 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             text: startTime?.format(context) ?? "",
                           ),
                           onTap: () async {
-                            final res = await showCustomTimePicker(context);
+                            final res = await showCustomTimePicker(context,
+                                initialTime: startTime);
                             if (res == null) return;
                             setState(() {
                               startTime = res;
+                              if (endTime ==
+                                      const TimeOfDay(hour: 23, minute: 59) &&
+                                  startTime ==
+                                      const TimeOfDay(hour: 0, minute: 0)) {
+                                isAllDay = true;
+                              } else {
+                                isAllDay = false;
+                              }
                             });
                           },
                         ),
@@ -244,10 +282,19 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             text: endTime?.format(context) ?? "",
                           ),
                           onTap: () async {
-                            final res = await showCustomTimePicker(context);
+                            final res = await showCustomTimePicker(context,
+                                initialTime: endTime);
                             if (res == null) return;
                             setState(() {
                               endTime = res;
+                              if (endTime ==
+                                      const TimeOfDay(hour: 23, minute: 59) &&
+                                  startTime ==
+                                      const TimeOfDay(hour: 0, minute: 0)) {
+                                isAllDay = true;
+                              } else {
+                                isAllDay = false;
+                              }
                             });
                           },
                         ),
@@ -273,51 +320,183 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                   SpacedRow(
                     horizontalSpace: 64,
                     children: [
-                      labelWithField(
-                        "Warehouse",
-                        DropdownWidgetV2(
-                          hasSearchBox: true,
-                          dropdownBtnWidth: 300,
-                          dropdownOptionsWidth: 300,
-                          items: warehouses.map((e) => e.name),
-                          value: warehouses
-                              .firstWhereOrNull((element) =>
-                                  element.id == selectedWarehouseId)
-                              ?.name,
-                          onChanged: (index) {
-                            setState(() {
-                              selectedWarehouseId = warehouses[index].id;
-                            });
-                          },
-                        ),
-                      ),
-                      labelWithField(
-                        "Checklist Template",
-                        DropdownWidgetV2(
-                          hasSearchBox: true,
-                          dropdownBtnWidth: 300,
-                          dropdownOptionsWidth: 300,
-                          items: checklistTemplates.map((e) => e.name),
-                          value: checklistTemplates
-                              .firstWhereOrNull((element) =>
-                                  element.id == selectedChecklistTemplateId)
-                              ?.name,
-                          onChanged: (index) {
-                            setState(() {
-                              selectedChecklistTemplateId =
-                                  checklistTemplates[index].id;
-                            });
-                          },
-                        ),
-                      ),
+                      // labelWithField(
+                      //   "Warehouse",
+                      //   DropdownWidgetV2(
+                      //     hasSearchBox: true,
+                      //     dropdownBtnWidth: 300,
+                      //     dropdownOptionsWidth: 300,
+                      //     items: warehouses.map((e) => e.name),
+                      //     value: warehouses
+                      //         .firstWhereOrNull((element) =>
+                      //             element.id == selectedWarehouseId)
+                      //         ?.name,
+                      //     onChanged: (index) {
+                      //       setState(() {
+                      //         selectedWarehouseId = warehouses[index].id;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
+                      // labelWithField(
+                      //   "Checklist Template",
+                      //   DropdownWidgetV2(
+                      //     hasSearchBox: true,
+                      //     dropdownBtnWidth: 300,
+                      //     dropdownOptionsWidth: 300,
+                      //     items: checklistTemplates.map((e) => e.name),
+                      //     value: checklistTemplates
+                      //         .firstWhereOrNull((element) =>
+                      //             element.id == selectedChecklistTemplateId)
+                      //         ?.name,
+                      //     onChanged: (index) {
+                      //       setState(() {
+                      //         selectedChecklistTemplateId =
+                      //             checklistTemplates[index].id;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
                       labelWithField(
                         "Paid Hours",
-                        TextInputWidget(
-                          width: 300,
-                          hintText: "0.00",
-                          rightIcon: HeroIcons.dollar,
-                          keyboardType: TextInputType.number,
-                          controller: paidHours,
+                        Row(
+                          children: [
+                            TextInputWidget(
+                              width: 60,
+                              hintText: "Hour",
+                              labelText: "Hour",
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                decimal: false,
+                                signed: true,
+                              ),
+                              controller: paidHoursHour,
+                              inputFormatters: <TextInputFormatter>[
+                                //allow numbers only
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d{0,2}')),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        width: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    child: const Icon(
+                                      Icons.arrow_drop_up,
+                                      size: 18.0,
+                                    ),
+                                    onTap: () {
+                                      if (paidHoursHour.text.isEmpty) {
+                                        paidHoursHour.text = "0";
+                                      }
+                                      int currentValue =
+                                          int.parse(paidHoursHour.text);
+                                      setState(() {
+                                        currentValue++;
+                                        paidHoursHour.text = (currentValue)
+                                            .toString(); // incrementing value
+                                      });
+                                    },
+                                  ),
+                                ),
+                                InkWell(
+                                  child: const Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 18.0,
+                                  ),
+                                  onTap: () {
+                                    if (paidHoursHour.text.isEmpty) return;
+                                    int currentValue =
+                                        int.parse(paidHoursHour.text);
+                                    setState(() {
+                                      if (currentValue == 0) return;
+                                      currentValue--;
+                                      paidHoursHour.text =
+                                          (currentValue > 0 ? currentValue : 0)
+                                              .toString(); // decrementing value
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 16),
+                            TextInputWidget(
+                              width: 70,
+                              labelText: "Minute",
+                              hintText: "Minute",
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                decimal: false,
+                                signed: false,
+                              ),
+                              controller: paidHoursMinute,
+                              inputFormatters: <TextInputFormatter>[
+                                //allow numbers only and do not allow any character
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d{0,2}')),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        width: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    child: const Icon(
+                                      Icons.arrow_drop_up,
+                                      size: 18.0,
+                                    ),
+                                    onTap: () {
+                                      if (paidHoursMinute.text.isEmpty) {
+                                        paidHoursMinute.text = "0";
+                                      }
+                                      int currentValue =
+                                          int.parse(paidHoursMinute.text);
+                                      setState(() {
+                                        currentValue++;
+                                        paidHoursMinute.text = (currentValue)
+                                            .toString(); // incrementing value
+                                      });
+                                    },
+                                  ),
+                                ),
+                                InkWell(
+                                  child: const Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 18.0,
+                                  ),
+                                  onTap: () {
+                                    if (paidHoursMinute.text.isEmpty) return;
+                                    int currentValue =
+                                        int.parse(paidHoursMinute.text);
+                                    setState(() {
+                                      if (currentValue == 0) return;
+                                      currentValue--;
+                                      paidHoursMinute.text =
+                                          (currentValue > 0 ? currentValue : 0)
+                                              .toString(); // decrementing value
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                       labelWithField(
@@ -421,7 +600,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                             unavUser.unavailable
                                                 .map((e) => e.reason)
                                                 .join(", "),
-                                            style: TextStyle(color: Colors.red))
+                                            style: const TextStyle(
+                                                color: Colors.red))
                                         : null,
                                     trailing: isUnavailable
                                         ? null

@@ -8,6 +8,19 @@ import '../manager/redux/states/general_state.dart';
 import '../manager/rest/nocode_helpers.dart';
 import 'currency_format.dart';
 
+extension TimeExtensionsForNum on num {
+  double get inHours {
+    //thi is in minutes and convert to hours
+    return this / 60;
+  }
+
+  double get inMinutes {
+    // Find the decimals of this.inHours and return the minutes
+    logger(this.inHours % 1 * 60);
+    return (this.inHours % 1) * 60;
+  }
+}
+
 extension DateTimeExtensions on DateTime {
   String get formattedDate => "$day/$month/$year";
   String get formatDateForApi => "$year-$month-$day";

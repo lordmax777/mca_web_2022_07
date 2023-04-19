@@ -9,7 +9,7 @@ import '../../../theme/theme.dart';
 import '../../manager/model_exporter.dart';
 
 class UnavailableUserLoad {
-  bool isLoaded = false;
+  bool isLoaded = kDebugMode ? true : false;
   List<UnavailableUserMd> _users = [];
   List<UnavailableUserMd> get users => _users;
   set users(List<UnavailableUserMd> users) {

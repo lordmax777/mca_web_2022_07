@@ -162,14 +162,16 @@ class _ShiftDetails extends StatelessWidget {
             dropdownBtnWidth: dpWidth,
             dropdownOptionsWidth: dpWidth,
             items: (appStore.state.generalState.checklistTemplates.data ?? [])
-                .map((e) => e.name),
+                .map((e) => CustomDropdownValue(name: e.name))
+                .toList(),
             onChanged: (index) {
               controller.updateShiftChecklistTemplate(DpItem(
                   appStore
                       .state.generalState.checklistTemplates.data![index].name,
                   appStore.state.generalState.checklistTemplates.data![index]));
             },
-            value: controller.shiftChecklistTemplate.name,
+            value: CustomDropdownValue(
+                name: controller.shiftChecklistTemplate.name ?? ""),
           ),
           // DropdownWidget1<ChecklistTemplateMd>(
           //   hintText: "Checklist Template",
