@@ -33,6 +33,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   final TextEditingController title = TextEditingController();
   int? selectedClientId;
   int? selectedLocationId;
+  int? tempAllowedLocationId;
   bool isActive = true;
 
   DateTime? date;
@@ -79,16 +80,22 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   void onCreateNewClientTap(AppState state, ClientFormType type) async {
-    final int? newClientId = await showDialog(
+    final CreatedClientReturnValue? data = await showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) => ClientForm(
               state: state,
               type: type,
             ));
-    if (newClientId == null) return;
+    if (data == null) return;
     setState(() {
-      selectedClientId = newClientId;
+      if (data.clientId != null) {
+        selectedClientId = data.clientId;
+      }
+      if (data.locationId != null) {
+        tempAllowedLocationId = data.locationId;
+        selectedLocationId = data.locationId;
+      }
     });
   }
 
@@ -97,15 +104,16 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
-        List<ListStorage> warehouses = [
-          ...(state.generalState.paramList.data?.storages ?? [])
-        ];
-        List<ListStorageItem> products = [
-          ...(state.generalState.paramList.data?.storage_items ?? [])
-        ];
-        List<ChecklistTemplateMd> checklistTemplates = [
-          ...(state.generalState.checklistTemplates.data ?? [])
-        ];
+        // List<ListStorage> warehouses = [
+        //   ...(state.generalState.paramList.data?.storages ?? [])
+        // ];
+        // List<ListStorageItem> products = [
+        //   ...(state.generalState.paramList.data?.storage_items ?? [])
+        // ];
+        // List<ChecklistTemplateMd> checklistTemplates = [
+        //   ...(state.generalState.checklistTemplates.data ?? [])
+        // ];
+        //
         List<UserRes> users = [...(state.usersState.usersList.data ?? [])];
 
         List<ListClients> clients = [...(state.generalState.clients)];
@@ -132,6 +140,12 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           ...(state.generalState.locations
               .where((element) => selectedClientShifts
                   .any((shift) => shift.location_id == element.id))
+              .toList()),
+          //find and add the location which is equal to tempAllowedLocationId
+          ...(state.generalState.locations
+              .where((element) =>
+                  element.id == tempAllowedLocationId &&
+                  !locations.contains(element))
               .toList())
         ];
 
@@ -178,6 +192,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 setState(() {
                                   selectedClientId = clients[index].id;
                                   selectedLocationId = null;
+                                  tempAllowedLocationId = null;
                                 });
                               },
                             ),
@@ -213,13 +228,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 });
                               },
                             ),
-                            childHelperWidget: addIcon(
-                              tooltip: "Create new location",
-                              onPressed: () {
-                                onCreateNewClientTap(
-                                    state, ClientFormType.location);
-                              },
-                            ),
+                            childHelperWidget: selectedClientId != null
+                                ? addIcon(
+                                    tooltip: "Create new location",
+                                    onPressed: () {
+                                      onCreateNewClientTap(
+                                          state, ClientFormType.location);
+                                    },
+                                  )
+                                : null,
                           ),
                           labelWithField(
                             "Active",
