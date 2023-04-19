@@ -1,6 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
+import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 
 import '../../../manager/models/list_all_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
@@ -308,9 +313,49 @@ class _ClientFormState extends State<ClientForm> {
                     phoneNumber: phoneNumber.text,
                     payingDays: payingDays!,
                     countryId: countryId!,
-                    paymentMethodId: paymentMethodId ?? 0,
+                    paymentMethodId: paymentMethodId ?? 1,
                     isActive: isActive);
-                context.popRoute(client);
+                Get.showOverlay(
+                  asyncFunction: () async {
+                    try {
+                      final ApiResponse res = await restClient()
+                          .createClient(
+                            0,
+                            name: contactName.text,
+                            company: companyName.text,
+                            phone: phoneNumber.text,
+                            email: email.text,
+                            addressLine1: address.addressLine1!,
+                            addressCity: address.addressCity!,
+                            addressPostcode: address.addressPostcode!,
+                            addressCountry: countryId!,
+                            currencyId: currencyId!,
+                            paymentMethodId: paymentMethodId ?? 1,
+                            payingDays: payingDays!,
+                            active: isActive,
+                          )
+                          .nocodeErrorHandler();
+                      if (res.success) {
+                        appStore
+                            .dispatch(GetAllParamListAction())
+                            .then((value) {
+                          context.popRoute(res.data);
+                        });
+                      } else {
+                        Get.showSnackbar(GetSnackBar(
+                          message: res.resMessage,
+                        ));
+                      }
+                    } catch (e) {
+                      Get.showSnackbar(GetSnackBar(
+                        message: e.toString(),
+                      ));
+                    }
+                  },
+                  loadingWidget: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
             }),
       ],

@@ -2249,6 +2249,62 @@ class _RestClient implements RestClient {
     return httpResponse;
   }
 
+  @override
+  Future<HttpResponse<dynamic>> createClient(
+    id, {
+    required name,
+    required company,
+    required phone,
+    required email,
+    required addressLine1,
+    required addressCity,
+    required addressPostcode,
+    required addressCountry,
+    notes,
+    required currencyId,
+    required paymentMethodId,
+    required payingDays,
+    required active,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'name': name,
+      'company': company,
+      'phone': phone,
+      'email': email,
+      'addressLine1': addressLine1,
+      'addressCity': addressCity,
+      'addressPostcode': addressPostcode,
+      'addressCountry': addressCountry,
+      'notes': notes,
+      'currencyId': currencyId,
+      'paymentMethodId': paymentMethodId,
+      'payingDays': payingDays,
+      'active': active,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/clients/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

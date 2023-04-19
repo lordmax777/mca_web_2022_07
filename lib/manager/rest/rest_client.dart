@@ -518,6 +518,27 @@ abstract class RestClient {
 
   @GET("/api/fe/availability/{date}")
   Future<HttpResponse> getUnavailableUserList(@Path() String date);
+
+  @POST("/api/fe/clients/{id}")
+  @FormUrlEncoded()
+  Future<HttpResponse> createClient(
+    ///0 to create new, id to update
+    @Path() int id, {
+    @Field() required String name,
+    @Field() required String company,
+    @Field() required String phone,
+    @Field() required String email,
+    @Field() required String addressLine1,
+    @Field() required String addressCity,
+    @Field() required String addressPostcode,
+    //country code
+    @Field() required String addressCountry,
+    @Field() String? notes,
+    @Field() required int currencyId,
+    @Field() required int paymentMethodId,
+    @Field() required int payingDays,
+    @Field() required bool active,
+  });
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

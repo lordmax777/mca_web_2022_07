@@ -235,7 +235,7 @@ class _CreateJobState extends State<_CreateJob>
   Widget _getTabChild(AppState state) {
     switch (_tabController.index) {
       case 0:
-        return ShiftDetailsForm(state, _shiftDetailsFormKey, data);
+        return ShiftDetailsForm(_shiftDetailsFormKey, data);
       case 1:
         return StaffAndTimingForm(state, _staffTimingFormKey);
       default:
