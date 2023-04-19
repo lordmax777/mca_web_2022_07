@@ -119,6 +119,13 @@ Widget radio(int value, int groupVal, Function(int) onToggle) {
   );
 }
 
+Widget checkbox(bool value, Function(bool) onToggle) {
+  return CustomCheckboxWidget(
+    isChecked: value,
+    onChanged: onToggle,
+  );
+}
+
 class _CreateJob extends StatefulWidget {
   final CreateShiftData data;
   const _CreateJob(this.data, {Key? key}) : super(key: key);

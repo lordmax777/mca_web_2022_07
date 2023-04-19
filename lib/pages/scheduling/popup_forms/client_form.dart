@@ -23,7 +23,9 @@ class CreatedClientReturnValue {
 
 class ClientAddressForm {
   String? addressLine1;
+  String? addressLine2;
   String? addressCity;
+  String? addressCounty;
   String? addressPostcode;
   String? addressCountryId;
   double? latitude;
@@ -32,6 +34,7 @@ class ClientAddressForm {
 
   ClientAddressForm({
     this.addressLine1,
+    this.addressLine2,
     this.addressCity,
     this.addressPostcode = kDebugMode ? "NW1 8PR" : null,
     this.addressCountryId,
@@ -81,8 +84,9 @@ class _ClientFormState extends State<ClientForm> {
   int? currencyId;
   int? paymentMethodId;
   int? payingDays;
-  bool isActive = true;
   bool isFixedIpAddress = false;
+
+  bool isDeliverAtDifferentLocation = false;
 
   @override
   void dispose() {
@@ -127,6 +131,7 @@ class _ClientFormState extends State<ClientForm> {
       String? addrs;
 
       for (var element in res.addressComponents) {
+        logger("element: $element");
         if (element.types.contains(Component.country)) {
           countryCode = element.shortName;
           countryName = element.longName;
@@ -157,11 +162,13 @@ class _ClientFormState extends State<ClientForm> {
     }
   }
 
+  final fieldWidth = 400.0;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       contentPadding:
-          const EdgeInsets.only(left: 20, top: 20, bottom: 20, right: 2),
+          const EdgeInsets.only(left: 60, top: 20, bottom: 20, right: 50),
       title: Row(
         children: [
           if (type == ClientFormType.client)
@@ -198,7 +205,7 @@ class _ClientFormState extends State<ClientForm> {
                 labelWithField(
                   "Contact Name",
                   TextInputWidget(
-                    width: 300,
+                    width: fieldWidth,
                     controller: contactName,
                     hintText: "Enter name",
                     isRequired: true,
@@ -208,7 +215,7 @@ class _ClientFormState extends State<ClientForm> {
                 labelWithField(
                   "Company Name",
                   TextInputWidget(
-                    width: 300,
+                    width: fieldWidth,
                     isRequired: true,
                     controller: companyName,
                     hintText: "Enter company name",
@@ -217,7 +224,7 @@ class _ClientFormState extends State<ClientForm> {
               labelWithField(
                 "Phone Number",
                 TextInputWidget(
-                  width: 300,
+                  width: fieldWidth,
                   controller: phoneNumber,
                   isRequired: true,
                   inputFormatters: [
@@ -229,7 +236,7 @@ class _ClientFormState extends State<ClientForm> {
               labelWithField(
                 "Email",
                 TextInputWidget(
-                  width: 300,
+                  width: fieldWidth,
                   controller: email,
                   isRequired: true,
                   validator: (p0) {
@@ -248,64 +255,145 @@ class _ClientFormState extends State<ClientForm> {
               ),
               if (isClient)
                 labelWithField(
+                  "Payment terms",
+                  TextInputWidget(
+                    width: fieldWidth,
+                    isRequired: true,
+                    controller:
+                        TextEditingController(text: payingDays?.toString()),
+                    hintText: "Enter payment terms",
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    onChanged: (value) => payingDays = int.tryParse(value),
+                  ),
+                ),
+              if (isClient)
+                labelWithField(
+                  "Currency",
+                  DropdownWidgetV2(
+                    hintText: "Select currency",
+                    dropdownBtnWidth: fieldWidth,
+                    isRequired: true,
+                    dropdownOptionsWidth: fieldWidth,
+                    items: currencies
+                        .map((e) => CustomDropdownValue(name: e.sign))
+                        .toList(),
+                    value: CustomDropdownValue(
+                        name: currencies
+                            .firstWhereOrNull(
+                                (element) => element.id == currencyId)
+                            ?.sign),
+                    onChanged: (index) {
+                      setState(() {
+                        currencyId = currencies[index].id;
+                      });
+                    },
+                  ),
+                ),
+              if (isClient)
+                labelWithField(
+                  "Payment Method",
+                  DropdownWidgetV2(
+                    hasSearchBox: true,
+                    isRequired: true,
+                    hintText: "Select payment method",
+                    dropdownBtnWidth: fieldWidth,
+                    dropdownOptionsWidth: fieldWidth,
+                    items: paymentMethods
+                        .map((e) => CustomDropdownValue(name: e.name))
+                        .toList(),
+                    value: CustomDropdownValue(
+                        name: paymentMethods
+                            .firstWhereOrNull(
+                                (element) => element.id == paymentMethodId)
+                            ?.name),
+                    onChanged: (index) {
+                      setState(() {
+                        paymentMethodId = paymentMethods[index].id;
+                      });
+                    },
+                  ),
+                ),
+              if (isClient)
+                labelWithField(
                   "Notes",
                   TextInputWidget(
-                    width: 300,
+                    width: fieldWidth,
                     controller: notes,
                     maxLines: 4,
                     hintText: "Enter notes",
                   ),
                 ),
               labelWithField(
-                  "Current IP Address: ${currentIpAddress ?? ""}", null),
-              labelWithField(
-                "IP Addresses",
-                SpacedColumn(
-                  verticalSpace: 8,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextInputWidget(
-                      width: 300,
-                      maxLines: 3,
-                      isRequired: isFixedIpAddress,
-                      controller: ipAddress,
-                    ),
-                    KText(
-                        fontWeight: FWeight.medium,
-                        fontSize: 12.0,
-                        textColor: ThemeColors.gray8,
-                        isSelectable: false,
-                        text:
-                            'Multiple IP addresses can be separated by a comma(,)'),
-                  ],
+                "Address Line 1",
+                TextInputWidget(
+                  width: fieldWidth,
+                  controller: TextEditingController(text: address.addressLine1),
+                  hintText: "Enter address line 1",
+                  isRequired: true,
+                  onChanged: (value) => address.addressLine1 = value,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  labelWithField(
-                      "Fixed IP Address",
-                      toggle(isFixedIpAddress, (value) {
-                        setState(() {
-                          isFixedIpAddress = value;
-                        });
-                      })),
-                  // labelWithField(
-                  //     "Anywhere",
-                  //     toggle(isAnywhere, (value) {
-                  //       setState(() {
-                  //         isAnywhere = value;
-                  //       });
-                  //     })),
-                ],
+              labelWithField(
+                "Address Line 2",
+                TextInputWidget(
+                  width: fieldWidth,
+                  controller: TextEditingController(text: address.addressLine2),
+                  hintText: "Enter address line 2",
+                  isRequired: true,
+                  onChanged: (value) => address.addressLine2 = value,
+                ),
+              ),
+              labelWithField(
+                "City",
+                TextInputWidget(
+                  width: fieldWidth,
+                  controller: TextEditingController(text: address.addressCity),
+                  hintText: "Enter city",
+                  isRequired: true,
+                  onChanged: (value) => address.addressCity = value,
+                ),
+              ),
+              labelWithField(
+                "City",
+                TextInputWidget(
+                  width: fieldWidth,
+                  controller: TextEditingController(text: address.addressCity),
+                  hintText: "Enter city",
+                  isRequired: true,
+                  onChanged: (value) => address.addressCity = value,
+                ),
+              ),
+              labelWithField(
+                "County",
+                TextInputWidget(
+                  width: fieldWidth,
+                  controller:
+                      TextEditingController(text: address.addressCounty),
+                  hintText: "Enter county",
+                  isRequired: true,
+                  onChanged: (value) => address.addressCounty = value,
+                ),
+              ),
+              labelWithField(
+                "Postcode",
+                TextInputWidget(
+                  width: fieldWidth,
+                  controller:
+                      TextEditingController(text: address.addressPostcode),
+                  hintText: "Enter postcode",
+                  isRequired: true,
+                  onChanged: (value) => address.addressPostcode = value,
+                ),
               ),
               labelWithField(
                 "Country",
                 DropdownWidgetV2(
                   hasSearchBox: true,
                   hintText: "Select country",
-                  dropdownBtnWidth: 300,
-                  dropdownOptionsWidth: 300,
+                  dropdownBtnWidth: fieldWidth,
+                  dropdownOptionsWidth: fieldWidth,
                   isRequired: true,
                   items: countries
                       .map((e) => CustomDropdownValue(name: e.name))
@@ -321,17 +409,6 @@ class _ClientFormState extends State<ClientForm> {
                       address.addressCountryId = countries[index].code;
                     });
                   },
-                ),
-              ),
-              labelWithField(
-                "Postcode",
-                TextInputWidget(
-                  width: 300,
-                  controller:
-                      TextEditingController(text: address.addressPostcode),
-                  hintText: "Enter postcode",
-                  isRequired: true,
-                  onChanged: (value) => address.addressPostcode = value,
                 ),
               ),
               ButtonSmall(
@@ -355,94 +432,57 @@ class _ClientFormState extends State<ClientForm> {
                 },
               ),
               labelWithField(
-                "City",
-                TextInputWidget(
-                  width: 300,
-                  controller: TextEditingController(text: address.addressCity),
-                  hintText: "Enter city",
-                  isRequired: true,
-                  onChanged: (value) => address.addressCity = value,
-                ),
-              ),
-              labelWithField(
-                "Address",
-                TextInputWidget(
-                  width: 300,
-                  controller: TextEditingController(text: address.addressLine1),
-                  hintText: "Enter address",
-                  isRequired: true,
-                  onChanged: (value) => address.addressLine1 = value,
-                ),
-              ),
-              if (isClient)
-                labelWithField(
-                  "Currency",
-                  DropdownWidgetV2(
-                    hintText: "Select currency",
-                    dropdownBtnWidth: 300,
-                    isRequired: true,
-                    dropdownOptionsWidth: 300,
-                    items: currencies
-                        .map((e) => CustomDropdownValue(name: e.sign))
-                        .toList(),
-                    value: CustomDropdownValue(
-                        name: currencies
-                            .firstWhereOrNull(
-                                (element) => element.id == currencyId)
-                            ?.sign),
-                    onChanged: (index) {
-                      setState(() {
-                        currencyId = currencies[index].id;
-                      });
-                    },
-                  ),
-                ),
-              if (isClient)
-                labelWithField(
-                  "Payment Method",
-                  DropdownWidgetV2(
-                    hasSearchBox: true,
-                    isRequired: true,
-                    hintText: "Select payment method",
-                    dropdownBtnWidth: 300,
-                    dropdownOptionsWidth: 300,
-                    items: paymentMethods
-                        .map((e) => CustomDropdownValue(name: e.name))
-                        .toList(),
-                    value: CustomDropdownValue(
-                        name: paymentMethods
-                            .firstWhereOrNull(
-                                (element) => element.id == paymentMethodId)
-                            ?.name),
-                    onChanged: (index) {
-                      setState(() {
-                        paymentMethodId = paymentMethods[index].id;
-                      });
-                    },
-                  ),
-                ),
-              if (isClient)
-                labelWithField(
-                  "Paying Days",
-                  TextInputWidget(
-                    width: 300,
-                    isRequired: true,
-                    controller:
-                        TextEditingController(text: payingDays?.toString()),
-                    hintText: "Enter paying days",
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    onChanged: (value) => payingDays = int.tryParse(value),
-                  ),
-                ),
-              labelWithField(
-                  "Active",
-                  toggle(isActive, (p0) {
+                  "Service Delivered at a different address",
+                  toggle(isDeliverAtDifferentLocation, (value) {
                     setState(() {
-                      isActive = p0;
+                      isDeliverAtDifferentLocation = value;
                     });
                   })),
+              if (!isDeliverAtDifferentLocation)
+                labelWithField(
+                    "Fixed IP Address",
+                    toggle(isFixedIpAddress, (value) {
+                      setState(() {
+                        isFixedIpAddress = value;
+                      });
+                    })),
+              if (!isDeliverAtDifferentLocation)
+                Column(
+                  children: [
+                    labelWithField(
+                        "Current IP Address: ${currentIpAddress ?? ""}", null),
+                    if (currentIpAddress != null)
+                      ButtonSmall(
+                        text: "Use Current IP Address",
+                        onPressed: () {
+                          ipAddress.text = currentIpAddress!;
+                        },
+                      ),
+                  ],
+                ),
+              if (!isDeliverAtDifferentLocation)
+                labelWithField(
+                  "IP Addresses",
+                  SpacedColumn(
+                    verticalSpace: 8,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextInputWidget(
+                        width: fieldWidth,
+                        maxLines: 3,
+                        isRequired: isFixedIpAddress,
+                        controller: ipAddress,
+                      ),
+                      KText(
+                          fontWeight: FWeight.medium,
+                          fontSize: 12.0,
+                          textColor: ThemeColors.gray8,
+                          isSelectable: false,
+                          text:
+                              'Multiple IP addresses can be separated by a comma(,)'),
+                    ],
+                  ),
+                ),
             ]),
           ),
         ),
@@ -540,9 +580,9 @@ class _ClientFormState extends State<ClientForm> {
           phoneLandline: "",
           phoneFax: "",
           name: "${address.addressLine1} ${address.addressPostcode}",
-          addressLine2: "",
-          addressCounty: "",
-          active: isActive,
+          addressLine2: address.addressLine2,
+          addressCounty: address.addressCounty,
+          active: true,
           latitude: address.latitude.toString(),
           longitude: address.latitude.toString(),
           fixedipaddress: isFixedIpAddress,
@@ -567,6 +607,7 @@ class _ClientFormState extends State<ClientForm> {
     final ApiResponse res = await restClient()
         .createClient(
           0,
+          active: true,
           name: contactName.text,
           company: companyName.text,
           phone: phoneNumber.text,
@@ -578,7 +619,6 @@ class _ClientFormState extends State<ClientForm> {
           currencyId: currencyId!,
           paymentMethodId: paymentMethodId ?? 1,
           payingDays: payingDays!,
-          active: isActive,
         )
         .nocodeErrorHandler();
     if (res.success) {
