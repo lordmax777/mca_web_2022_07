@@ -231,9 +231,6 @@ class _CreateJobState extends State<_CreateJob>
           ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [
-            const Divider(
-              height: 1,
-            ),
             ButtonLarge(
                 text: 'Cancel',
                 onPressed: () {

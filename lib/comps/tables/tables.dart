@@ -11,10 +11,16 @@ class UsersListTable extends StatelessWidget {
   final void Function(PlutoGridStateManager) onSmReady;
   final void Function(PlutoGridOnSelectedEvent)? onOneTapSelect;
   final Color? gridBorderColor;
+  final bool enableEditing;
+  final PlutoGridMode mode;
+  final void Function(PlutoGridOnChangedEvent)? onChanged;
   const UsersListTable(
       {Key? key,
       required this.rows,
       this.onOneTapSelect,
+      this.onChanged,
+      this.mode = PlutoGridMode.selectWithOneTap,
+      this.enableEditing = false,
       this.gridBorderColor,
       required this.onSmReady,
       required this.cols})
@@ -40,8 +46,10 @@ class UsersListTable extends StatelessWidget {
       col.backgroundColor = ThemeColors.gray12;
       col.enableDropToResize = false;
       col.enableColumnDrag = false;
-      col.enableAutoEditing = false;
-      col.enableEditingMode = false;
+      if (!enableEditing) {
+        col.enableAutoEditing = false;
+        col.enableEditingMode = false;
+      }
       col.renderer ??= (ctx) {
         return KText(
           text: ctx.cell.value,
@@ -82,8 +90,9 @@ class UsersListTable extends StatelessWidget {
                     : PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
-        mode: PlutoGridMode.selectWithOneTap,
+        mode: mode,
         onSelected: onOneTapSelect,
+        onChanged: onChanged,
         onLoaded: (e) => onSmReady(e.stateManager),
         noRowsWidget: const Center(
           child: Text(

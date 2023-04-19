@@ -22,7 +22,7 @@ class TokenHandler {
         logger("The Difference is $diff minutes");
         final StateValue<AuthRes> res =
             await appStore.dispatch(GetRefreshTokenAction(doInitFunc: false));
-        options.headers["Authorization"] = "Bearer ${res.data!.access_token}";
+        options.headers["Authorization"] = "Bearer ${res.data?.access_token}";
         tokenExpireTime = res.data!.expires_in ~/ 100;
         logger("Token Expired and Renewed at ${now.toIso8601String()}");
       }

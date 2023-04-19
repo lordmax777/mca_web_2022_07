@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -10,6 +11,7 @@ import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 import '../../../comps/custom_gmaps_widget.dart';
 import '../../../comps/modals/custom_date_picker.dart';
 import '../../../comps/modals/custom_time_picker.dart';
+import '../../../manager/general_controller.dart';
 import '../../../manager/model_exporter.dart';
 import '../../../theme/theme.dart';
 import '../create_shift_popup.dart';
@@ -32,6 +34,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   bool get isCreate => data.property == null;
 
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
+  CompanyMd get company => GeneralController.to.companyInfo;
 
   //Ephemeral state
   final TextEditingController title = TextEditingController();
@@ -635,7 +638,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         ],
                       ),
                       _team(users),
-                      if (selectedClientId != null) _products(),
+                      if (selectedClientId != null) _products(state),
                     ],
                   ),
                 ),
@@ -899,40 +902,45 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     );
   }
 
-  final List<PlutoColumn> cols = [
-    PlutoColumn(
-      title: "",
-      field: "id",
-      type: PlutoColumnType.text(),
-      hide: true,
-    ),
-    // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
-    PlutoColumn(
-      title: "Items & Description",
-      field: "items",
-      type: PlutoColumnType.text(),
-    ),
-    PlutoColumn(
-      title: "Ordered",
-      field: "ordered",
-      type: PlutoColumnType.number(),
-    ),
-    PlutoColumn(
-      title: "Rate",
-      field: "rate",
-      type: PlutoColumnType.number(),
-    ),
-    PlutoColumn(
-      title: "Amount",
-      field: "amount",
-      type: PlutoColumnType.number(),
-    ),
-    PlutoColumn(
-      title: "Inc in fixed price",
-      field: "inc_in_fixed_price",
-      type: PlutoColumnType.text(),
-    ),
-  ];
+  List<PlutoColumn> cols(AppState state) => [
+        PlutoColumn(
+          title: "",
+          field: "id",
+          type: PlutoColumnType.text(),
+          hide: true,
+        ),
+        // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
+        PlutoColumn(
+          title: "Items & Description",
+          field: "items",
+          type: PlutoColumnType.select(
+            enableColumnFilter: true,
+            state.generalState.storage_items.map((e) => e.name).toList(),
+          ),
+        ),
+        PlutoColumn(
+          title: "Ordered",
+          field: "ordered",
+          type: PlutoColumnType.number(),
+        ),
+        PlutoColumn(
+          title: "Rate",
+          field: "rate",
+          type: PlutoColumnType.currency(),
+        ),
+        PlutoColumn(
+          title: "Amount",
+          field: "amount",
+          type: PlutoColumnType.currency(),
+        ),
+        PlutoColumn(
+          enableEditingMode: false,
+          enableAutoEditing: false,
+          title: "Inc in fixed price",
+          field: "inc_in_fixed_price",
+          type: PlutoColumnType.text(),
+        ),
+      ];
 
   PlutoRow _buildRow(ClientContractShiftItem contractShiftItem) {
     return PlutoRow(
@@ -948,20 +956,40 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     );
   }
 
-  Widget _products() {
+  Widget _products(AppState state) {
     return labelWithField(
-      "Products and Services",
-      SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: 300,
-        child: UsersListTable(
-            rows: [],
-            gridBorderColor: Colors.grey[300]!,
-            onSmReady: (e) {
-              gridStateManager = e;
-            },
-            cols: cols),
-      ),
-    );
+        "Products and Services",
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: 300,
+          child: UsersListTable(
+              enableEditing: true,
+              onChanged: (p0) {
+                //TODO: implement
+              },
+              mode: PlutoGridMode.normal,
+              rows: [],
+              gridBorderColor: Colors.grey[300]!,
+              onSmReady: (e) {
+                gridStateManager = e;
+              },
+              cols: cols(state)),
+        ),
+        customLabel: selectedClientId == null
+            ? null
+            : addIcon(
+                tooltip: "Add product",
+                onPressed: () {
+                  gridStateManager.insertRows(0, [
+                    _buildRow(ClientContractShiftItem(
+                        itemId: -1,
+                        itemName: "",
+                        amount: 0,
+                        price: 0,
+                        notes: "",
+                        auto: false))
+                  ]);
+                },
+                icon: HeroIcons.add));
   }
 }
