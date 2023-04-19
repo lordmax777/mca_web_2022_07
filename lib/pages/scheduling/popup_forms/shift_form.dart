@@ -50,6 +50,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   bool isSplitTime = false;
 
   final List<UserRes> addedChildren = [];
+  final Map<int, double> addedChildrenRates = {};
 
   @override
   void initState() {
@@ -780,15 +781,66 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                   (e) => Row(
                     children: [
                       IconButton(
+                        padding: const EdgeInsets.all(0),
+                        tooltip:
+                            "${addedChildrenRates[e.id] == null ? "Add" : "Remove"} Special Rate",
                         onPressed: () {
+                          setState(() {
+                            if (addedChildrenRates[e.id] == null) {
+                              addedChildrenRates[e.id] = 0;
+                            } else {
+                              addedChildrenRates.remove(e.id);
+                            }
+                          });
+                        },
+                        icon: const HeroIcon(HeroIcons.dollar),
+                      ),
+                      if (addedChildrenRates[e.id] != null)
+                        TextField(
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                            labelText: "Rate",
+                            constraints: BoxConstraints(
+                              maxWidth: 70,
+                            ),
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              final rate = double.tryParse(value);
+                              if (rate == null) return;
+                              addedChildrenRates[e.id] = rate;
+                            });
+                          },
+                        ),
+                      const SizedBox(width: 10),
+                      InputChip(
+                        label: Text(e.fullname),
+                        onSelected: (val) {},
+                        deleteIcon: const Icon(Icons.remove),
+                        labelStyle: TextStyle(color: e.foregroundColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        deleteButtonTooltipMessage: "Remove",
+                        deleteIconColor: e.foregroundColor,
+                        onDeleted: () {
                           setState(() {
                             addedChildren.remove(e);
                           });
                         },
-                        icon: const Icon(Icons.remove, color: Colors.red),
+                        backgroundColor: e.userRandomBgColor,
                       ),
-                      Text(e.fullname),
-                      if (addedChildren.last != e) const SizedBox(width: 10),
+                      if (addedChildren.last != e) const SizedBox(width: 16),
+                      if (addedChildren.last != e)
+                        Container(
+                          width: 1,
+                          height: 60,
+                          color: Colors.grey,
+                        ),
                     ],
                   ),
                 )
