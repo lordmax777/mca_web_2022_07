@@ -68,7 +68,8 @@ Widget labelWithField(String label, Widget child, {Widget? customLabel}) {
     verticalSpace: 0,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Row(
+      SpacedRow(
+        horizontalSpace: 8,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(

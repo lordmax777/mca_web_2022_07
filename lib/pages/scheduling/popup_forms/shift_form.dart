@@ -8,6 +8,7 @@ import '../../../comps/modals/custom_time_picker.dart';
 import '../../../manager/model_exporter.dart';
 import '../../../theme/theme.dart';
 import '../create_shift_popup.dart';
+import 'client_form.dart';
 
 // Shift details form
 class ShiftDetailsForm extends StatefulWidget {
@@ -112,6 +113,16 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     });
   }
 
+  void onCreateNewClientTap() async {
+    final CreatedClient? newClient = await showDialog(
+        context: context,
+        builder: (context) => WillPopScope(
+            onWillPop: () => onWillPop(context),
+            child: ClientForm(state: state)));
+    if (newClient == null) return;
+    logger(newClient.contactName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollbar(
@@ -139,6 +150,17 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       ),
                       labelWithField(
                         "Client",
+                        customLabel: Tooltip(
+                          message: "Create new client",
+                          child: InkWell(
+                            onTap: () {
+                              onCreateNewClientTap();
+                            },
+                            child: const HeroIcon(
+                              HeroIcons.add,
+                            ),
+                          ),
+                        ),
                         DropdownWidgetV2(
                           hasSearchBox: true,
                           hintText: "Select a client",
@@ -214,7 +236,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             //date cannot be before today only if we are creating a new
                             if (isCreate) {
                               if (date != null &&
-                                  date.isBefore(DateTime.now())) {
+                                  date.isBefore(DateTime.now()
+                                      .subtract(const Duration(days: 1)))) {
                                 showError("Date cannot be before today");
                                 return;
                               }

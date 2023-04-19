@@ -26,6 +26,10 @@ class GeneralState {
       paramList.data?.locations ?? <ListLocation>[];
   List<ListStorageItem> get storage_items =>
       paramList.data?.storage_items ?? <ListStorageItem>[];
+  List<ListCurrency> get currencies =>
+      paramList.data?.currencies ?? <ListCurrency>[];
+  List<ListCountry> get countries =>
+      paramList.data?.countries ?? <ListCountry>[];
 
   final DrawerStates drawerStates;
   final Widget? endDrawer;
