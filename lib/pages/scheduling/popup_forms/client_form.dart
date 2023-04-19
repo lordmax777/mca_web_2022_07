@@ -3,11 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_webservice/geocoding.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 
+import '../../../manager/model_exporter.dart';
 import '../../../manager/models/list_all_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../theme/theme.dart';
@@ -65,6 +67,7 @@ class _ClientFormState extends State<ClientForm> {
   ClientFormType get type => widget.type;
   bool get isClient => type == ClientFormType.client;
   bool get isLocation => type == ClientFormType.location;
+  CompanyMd get company => GeneralController.to.companyInfo;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -104,10 +107,13 @@ class _ClientFormState extends State<ClientForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      onIpLookup();
       if (kDebugMode) {
         await lookupAddress();
       }
+      onIpLookup();
+      currencyId = currencies
+          .firstWhereOrNull((element) => element.code == company.currency?.code)
+          ?.id;
     });
   }
 

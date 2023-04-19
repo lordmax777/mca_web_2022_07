@@ -663,7 +663,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Colors.grey[300]!,
+                color:
+                    ThemeColors.MAIN_COLOR.withOpacity(.5), //Colors.grey[300]!,
               ),
             ),
             child: HeroIcon(
@@ -823,8 +824,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                 .map(
                   (e) => Row(
                     children: [
-                      IconButton(
-                        padding: const EdgeInsets.all(0),
+                      addIcon(
                         tooltip:
                             "${addedChildrenRates[e.id] == null ? "Add" : "Remove"} Special Rate",
                         onPressed: () {
@@ -836,7 +836,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             }
                           });
                         },
-                        icon: const HeroIcon(HeroIcons.dollar),
+                        icon: addedChildrenRates[e.id] == null
+                            ? HeroIcons.dollar
+                            : HeroIcons.bin,
                       ),
                       if (addedChildrenRates[e.id] != null)
                         TextField(
@@ -872,6 +874,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         deleteIconColor: e.foregroundColor,
                         onDeleted: () {
                           setState(() {
+                            if (addedChildrenRates[e.id] != null) {
+                              addedChildrenRates.remove(e.id);
+                            }
                             addedChildren.remove(e);
                           });
                         },
@@ -937,7 +942,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         "ordered": PlutoCell(value: 0),
         "rate": PlutoCell(value: contractShiftItem.price),
         "amount": PlutoCell(value: contractShiftItem.auto),
-        "inc_in_fixed_price": PlutoCell(value: ""),
+        "inc_in_fixed_price":
+            PlutoCell(value: contractShiftItem.auto ? "N" : "Y"),
       },
     );
   }
