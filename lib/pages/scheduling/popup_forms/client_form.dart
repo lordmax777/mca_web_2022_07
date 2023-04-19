@@ -121,7 +121,8 @@ class _ClientFormState extends State<ClientForm> {
   }
 
   Future<void> lookupAddress() async {
-    final res = await getAddressFromPostCode(address.addressPostcode!);
+    final res = await getAddressFromPostCode(address.addressPostcode!,
+        countryCode: address.addressCountryId);
     if (res != null) {
       String long = res.geometry.location.lng.toString();
       String lat = res.geometry.location.lat.toString();
@@ -340,18 +341,7 @@ class _ClientFormState extends State<ClientForm> {
                   width: fieldWidth,
                   controller: TextEditingController(text: address.addressLine2),
                   hintText: "Enter address line 2",
-                  isRequired: true,
                   onChanged: (value) => address.addressLine2 = value,
-                ),
-              ),
-              labelWithField(
-                "City",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller: TextEditingController(text: address.addressCity),
-                  hintText: "Enter city",
-                  isRequired: true,
-                  onChanged: (value) => address.addressCity = value,
                 ),
               ),
               labelWithField(
@@ -371,7 +361,6 @@ class _ClientFormState extends State<ClientForm> {
                   controller:
                       TextEditingController(text: address.addressCounty),
                   hintText: "Enter county",
-                  isRequired: true,
                   onChanged: (value) => address.addressCounty = value,
                 ),
               ),

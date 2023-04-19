@@ -31,6 +31,7 @@ class CreateShiftData {
 Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
   return showDialog<T>(
     context: context,
+    barrierDismissible: false,
     builder: (_) {
       switch (data.type) {
         case ScheduleCreatePopupMenus.job:
