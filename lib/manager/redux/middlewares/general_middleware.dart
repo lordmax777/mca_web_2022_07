@@ -137,6 +137,12 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       for (var e in r['clients']) {
         l.clients.add(ListClients.fromJson(e));
       }
+      for (var e in r['services']) {
+        l.services.add(ListServices.fromJson(e));
+      }
+      for (var e in r['payment_methods']) {
+        l.payment_methods.add(ListPaymentMethods.fromJson(e));
+      }
 
       final userColor = l.color_schemas
           .firstWhere((element) =>

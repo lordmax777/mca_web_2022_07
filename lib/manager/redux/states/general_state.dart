@@ -30,6 +30,8 @@ class GeneralState {
       paramList.data?.currencies ?? <ListCurrency>[];
   List<ListCountry> get countries =>
       paramList.data?.countries ?? <ListCountry>[];
+  List<ListPaymentMethods> get paymentMethods =>
+      paramList.data?.payment_methods ?? <ListPaymentMethods>[];
 
   final DrawerStates drawerStates;
   final Widget? endDrawer;

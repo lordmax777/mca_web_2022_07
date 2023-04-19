@@ -64,7 +64,8 @@ Future<bool> onWillPop(BuildContext context) async {
       false;
 }
 
-Widget labelWithField(String label, Widget child, {Widget? customLabel}) {
+Widget labelWithField(String label, Widget? child,
+    {Widget? customLabel, Widget? childHelperWidget}) {
   return SpacedColumn(
     verticalSpace: 0,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +81,15 @@ Widget labelWithField(String label, Widget child, {Widget? customLabel}) {
           if (customLabel != null) customLabel,
         ],
       ),
-      child
+      if (child != null)
+        SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          horizontalSpace: 8,
+          children: [
+            child,
+            if (childHelperWidget != null) childHelperWidget,
+          ],
+        )
     ],
   );
 }
@@ -90,11 +99,11 @@ Widget toggle(bool value, Function(bool) onToggle) {
     padding: const EdgeInsets.only(top: 8.0),
     child: ToggleCheckboxWidget(
         value: value,
-        width: 64.0,
-        height: 32.0,
-        toggleSize: 26.0,
+        width: 36.0,
+        height: 18.0,
+        toggleSize: 16.0,
         padding: 1.0,
-        inactiveColor: ThemeColors.gray11,
+        inactiveColor: ThemeColors.gray10,
         onToggle: onToggle),
   );
 }

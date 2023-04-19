@@ -9,7 +9,7 @@ Future<DateTime?> showCustomDatePicker(
     initialDate: initialTime ?? DateTime.now(),
     firstDate: DateTime(2000),
     lastDate: DateTime(2030),
-    cancelText: "Clear/Close".toUpperCase(),
+    cancelText: "Close".toUpperCase(),
     builder: (context, child) {
       return Theme(
         data: ThemeData.light(useMaterial3: true).copyWith(

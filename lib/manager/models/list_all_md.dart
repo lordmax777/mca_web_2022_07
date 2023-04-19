@@ -7,33 +7,34 @@ part 'list_all_md.g.dart';
 
 @JsonSerializable()
 class ListAllMd {
-  List<ListCurrency> currencies;
-  List<ListCountry> countries;
-  List<ListEthnic> ethnics;
-  List<ListHandoverType> handover_types;
-  List<ListGroup> groups;
-  List<ListJobTitle> jobtitles;
-  List<ListLocation> locations;
-  List<ListQualification> qualifications;
-  List<ListQualificationLevel> qualification_levels;
-  List<ListReligion> religions;
-  List<ListRequestType> request_types;
-  List<ListShift> shifts;
-  List<ListSpecialRate> special_rates;
-  List<ListStatus> statuses;
-  List<ListStorage> storages;
-  List<ListStorageItem> storage_items;
-  List<ListVisa> visas;
-  List<ListRole> roles;
-  List<LoginMethods> login_methods;
-  List<MaritalStatuses> marital_statuses;
-  List<ContractStarts> contract_starts;
-  List<ContractTypes> contract_types;
-  List<HolidayCalculationTypes> holiday_calculation_types;
-  List<ColorSchemas> color_schemas;
-  List<ListTaxes> taxes;
-  List<ListClients> clients;
-  List<ListServices> services;
+  final List<ListCurrency> currencies;
+  final List<ListCountry> countries;
+  final List<ListEthnic> ethnics;
+  final List<ListHandoverType> handover_types;
+  final List<ListGroup> groups;
+  final List<ListJobTitle> jobtitles;
+  final List<ListLocation> locations;
+  final List<ListQualification> qualifications;
+  final List<ListQualificationLevel> qualification_levels;
+  final List<ListReligion> religions;
+  final List<ListRequestType> request_types;
+  final List<ListShift> shifts;
+  final List<ListSpecialRate> special_rates;
+  final List<ListStatus> statuses;
+  final List<ListStorage> storages;
+  final List<ListStorageItem> storage_items;
+  final List<ListVisa> visas;
+  final List<ListRole> roles;
+  final List<LoginMethods> login_methods;
+  final List<MaritalStatuses> marital_statuses;
+  final List<ContractStarts> contract_starts;
+  final List<ContractTypes> contract_types;
+  final List<HolidayCalculationTypes> holiday_calculation_types;
+  final List<ColorSchemas> color_schemas;
+  final List<ListTaxes> taxes;
+  final List<ListClients> clients;
+  final List<ListServices> services;
+  final List<ListPaymentMethods> payment_methods;
 
   static ListAllMd init() {
     return ListAllMd(
@@ -64,6 +65,7 @@ class ListAllMd {
       taxes: [],
       clients: [],
       services: [],
+      payment_methods: [],
     );
   }
 
@@ -96,6 +98,7 @@ class ListAllMd {
     required this.taxes,
     required this.clients,
     required this.services,
+    required this.payment_methods,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -745,4 +748,30 @@ class ListServices {
       _$ListServicesFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListServicesToJson(this);
+}
+
+@JsonSerializable()
+class ListPaymentMethods {
+//yment_methods": [
+//         {
+//             "id": 1,
+//             "name": "Cash",
+//             "active": true
+//         },
+//         {
+  int id;
+  String name;
+  bool active;
+
+  @override
+  ListPaymentMethods({
+    required this.id,
+    required this.name,
+    required this.active,
+  });
+
+  factory ListPaymentMethods.fromJson(Map<String, dynamic> json) =>
+      _$ListPaymentMethodsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ListPaymentMethodsToJson(this);
 }

@@ -7,7 +7,7 @@ Future<TimeOfDay?> showCustomTimePicker(
   return showTimePicker(
     context: context,
     initialTime: initialTime ?? const TimeOfDay(hour: 0, minute: 0),
-    cancelText: "Clear/Close".toUpperCase(),
+    cancelText: "Close".toUpperCase(),
     builder: (context, child) {
       return Theme(
         data: ThemeData.light(useMaterial3: true).copyWith(

@@ -78,11 +78,14 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     });
   }
 
-  void onCreateNewClientTap(AppState state) async {
+  void onCreateNewClientTap(AppState state, ClientFormType type) async {
     final int? newClientId = await showDialog(
         barrierDismissible: false,
         context: context,
-        builder: (context) => ClientForm(state: state));
+        builder: (context) => ClientForm(
+              state: state,
+              type: type,
+            ));
     if (newClientId == null) return;
     setState(() {
       selectedClientId = newClientId;
@@ -157,17 +160,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                           ),
                           labelWithField(
                             "Client",
-                            customLabel: Tooltip(
-                              message: "Create new client",
-                              child: InkWell(
-                                onTap: () {
-                                  onCreateNewClientTap(state);
-                                },
-                                child: const HeroIcon(
-                                  HeroIcons.add,
-                                ),
-                              ),
-                            ),
                             DropdownWidgetV2(
                               hasSearchBox: true,
                               hintText: "Select a client",
@@ -187,6 +179,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                   selectedClientId = clients[index].id;
                                   selectedLocationId = null;
                                 });
+                              },
+                            ),
+                            childHelperWidget: addIcon(
+                              tooltip: "Create new client",
+                              onPressed: () {
+                                onCreateNewClientTap(
+                                    state, ClientFormType.client);
                               },
                             ),
                           ),
@@ -212,6 +211,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 setState(() {
                                   selectedLocationId = locations[index].id;
                                 });
+                              },
+                            ),
+                            childHelperWidget: addIcon(
+                              tooltip: "Create new location",
+                              onPressed: () {
+                                onCreateNewClientTap(
+                                    state, ClientFormType.location);
                               },
                             ),
                           ),
@@ -408,8 +414,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                   controller: paidHoursHour,
                                   inputFormatters: <TextInputFormatter>[
                                     //allow numbers only
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'^\d+\.?\d{0,2}')),
+                                    FilteringTextInputFormatter.digitsOnly
                                   ],
                                 ),
                                 Column(
@@ -478,8 +483,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                   controller: paidHoursMinute,
                                   inputFormatters: <TextInputFormatter>[
                                     //allow numbers only and do not allow any character
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'^\d+\.?\d{0,2}')),
+                                    FilteringTextInputFormatter.digitsOnly
                                   ],
                                 ),
                                 Column(
@@ -568,6 +572,21 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         );
       },
     );
+  }
+
+  Widget addIcon({String? tooltip, VoidCallback? onPressed}) {
+    return IconButton(
+        tooltip: tooltip,
+        onPressed: onPressed,
+        icon: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.grey[300]!,
+              ),
+            ),
+            child: const HeroIcon(HeroIcons.add)));
   }
 
   Widget _team(List<UserRes> users) {
@@ -686,22 +705,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     }
 
     return labelWithField(
-      customLabel: IconButton(
+      customLabel: addIcon(
           tooltip: "Add team members",
           onPressed: unavUsers.isLoaded
               ? () {
                   onAddTeamMember();
                 }
-              : null,
-          icon: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.grey[300]!,
-                ),
-              ),
-              child: const HeroIcon(HeroIcons.add))),
+              : null),
       "Team",
       Container(
         width: addedChildren.isEmpty ? 200 : null,

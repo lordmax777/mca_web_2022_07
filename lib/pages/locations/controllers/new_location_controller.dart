@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dart_ipify/dart_ipify.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
@@ -18,6 +17,7 @@ import 'package:google_maps_webservice/geocoding.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
+import '../../../utils/global_functions.dart';
 
 class NewLocationController extends GetxController {
   static NewLocationController get to {
@@ -111,7 +111,7 @@ class NewLocationController extends GetxController {
     super.onReady();
     logger('NewLocationController onReady');
     _onIpLookup();
-    const r = true;
+    const r = kDebugMode;
     if (r) {
       nameController.text = "Test Location Name 1111";
       _status.value = CodeMap<bool>(name: "Active", code: true);
@@ -170,8 +170,8 @@ class NewLocationController extends GetxController {
   }
 
   Future<void> _onIpLookup() async {
-    final ip = await Ipify.ipv4();
-    if (ip.isNotEmpty) {
+    final ip = await getIpAddress();
+    if (ip != null) {
       setIpAddress = ip;
       update(['general']);
     }
