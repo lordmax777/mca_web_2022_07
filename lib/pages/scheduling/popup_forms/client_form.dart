@@ -131,7 +131,6 @@ class _ClientFormState extends State<ClientForm> {
       String? addrs;
 
       for (var element in res.addressComponents) {
-        logger("element: $element");
         if (element.types.contains(Component.country)) {
           countryCode = element.shortName;
           countryName = element.longName;
