@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -42,7 +43,7 @@ Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
 }
 
 Future<bool> onWillPop(BuildContext context) async {
-  if (kDebugMode) return true;
+  // if (kDebugMode) return true;
   return (await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -50,11 +51,11 @@ Future<bool> onWillPop(BuildContext context) async {
           content: const Text('Are you sure you want to discard changes?'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => context.popRoute(false),
               child: const Text('No'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => context.popRoute(true),
               child: const Text('Yes'),
             ),
           ],
@@ -130,8 +131,8 @@ class _CreateJobState extends State<_CreateJob>
 
   final List<Tab> _tabs = const [
     Tab(text: "Shift details"),
-    Tab(text: "Staff & Timing"),
-    Tab(text: "Site details"),
+    // Tab(text: "Staff & Timing"),
+    // Tab(text: "Site details"),
   ];
 
   final _shiftDetailsFormKey = GlobalKey<FormState>();
@@ -236,8 +237,8 @@ class _CreateJobState extends State<_CreateJob>
     switch (_tabController.index) {
       case 0:
         return ShiftDetailsForm(_shiftDetailsFormKey, data);
-      case 1:
-        return StaffAndTimingForm(state, _staffTimingFormKey);
+      // case 1:
+      //   return StaffAndTimingForm(state, _staffTimingFormKey);
       default:
         return const SizedBox();
     }

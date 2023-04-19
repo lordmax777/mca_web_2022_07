@@ -80,10 +80,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   void onCreateNewClientTap(AppState state) async {
     final int? newClientId = await showDialog(
+        barrierDismissible: false,
         context: context,
-        builder: (context) => WillPopScope(
-            onWillPop: () => onWillPop(context),
-            child: ClientForm(state: state)));
+        builder: (context) => ClientForm(state: state));
     if (newClientId == null) return;
     setState(() {
       selectedClientId = newClientId;
