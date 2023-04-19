@@ -1,6 +1,6 @@
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
 
-class LocationItemMd {
+class LocationAddress {
   int? id;
   String? name;
   bool? anywhere;
@@ -12,7 +12,7 @@ class LocationItemMd {
   List<IpAddress>? ipaddress;
   List<Members>? members;
 
-  LocationItemMd(
+  LocationAddress(
       {this.id,
       this.name,
       this.anywhere,
@@ -24,7 +24,7 @@ class LocationItemMd {
       this.ipaddress,
       this.members});
 
-  LocationItemMd.fromJson(Map<String, dynamic> json) {
+  LocationAddress.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     anywhere = json['anywhere'];
@@ -66,8 +66,8 @@ class LocationItemMd {
     return data;
   }
 
-  factory LocationItemMd.all() {
-    return LocationItemMd(name: "All");
+  factory LocationAddress.all() {
+    return LocationAddress(name: "All");
   }
 }
 

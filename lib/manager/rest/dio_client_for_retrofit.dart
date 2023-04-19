@@ -114,8 +114,13 @@ final loggerInterceptor =
 
   handler.next(options); //continue
 }, onResponse: (Response response, handler) async {
-  Logger.i(
-      "| [DIO] Response [code ${response.statusCode}]: ${response.data}"); //:
+  bool skip = false;
+  if (response.requestOptions.path == "/fe/lists") skip = true;
+
+  if (!skip) {
+    Logger.i(
+        "| [DIO] Response [code ${response.statusCode}]: ${response.data}"); //:
+  }
   handler.next(response);
   // return response; // continue
 }, onError: (DioError error, handler) async {

@@ -39,6 +39,7 @@ class GeneralState {
   final StateValue<List<StorageItemMd>> storageItems;
   final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
   final StateValue<List<PropertiesMd>> properties;
+  final List<LocationAddress> locationAddresses;
 
   GeneralState({
     required this.paramList,
@@ -48,6 +49,7 @@ class GeneralState {
     required this.storageItems,
     required this.checklistTemplates,
     required this.properties,
+    required this.locationAddresses,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -88,6 +90,7 @@ class GeneralState {
         error: ErrorModel(),
         data: [],
       ),
+      locationAddresses: [],
     );
   }
 
@@ -99,6 +102,7 @@ class GeneralState {
     StateValue<List<StorageItemMd>>? storageItems,
     StateValue<List<ChecklistTemplateMd>>? checklistTemplates,
     StateValue<List<PropertiesMd>>? properties,
+    List<LocationAddress>? locationAddresses,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -108,6 +112,7 @@ class GeneralState {
       storageItems: storageItems ?? this.storageItems,
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
       properties: properties ?? this.properties,
+      locationAddresses: locationAddresses ?? this.locationAddresses,
     );
   }
 }
@@ -121,6 +126,7 @@ class UpdateGeneralStateAction {
   StateValue<List<StorageItemMd>>? storageItems;
   StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
   StateValue<List<PropertiesMd>>? properties;
+  List<LocationAddress>? locationAddresses;
   UpdateGeneralStateAction({
     this.paramList,
     this.drawerStates,
@@ -130,6 +136,7 @@ class UpdateGeneralStateAction {
     this.storageItems,
     this.checklistTemplates,
     this.properties,
+    this.locationAddresses,
   });
 }
 
@@ -370,3 +377,5 @@ class GetPropertiesAction {
     return list;
   }
 }
+
+class GetLocationAddressesAction {}

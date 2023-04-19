@@ -60,10 +60,10 @@ class GeneralController extends GetxController {
     // await fetch(GetPropertiesAction());
     // await fetch(GetChecklistTemplatesAction());
     // return;
+    appStore.dispatch(GetLocationAddressesAction());
     await Future.wait([
       fetch(GetAllParamListAction()),
       fetch(GetUsersListAction()),
-      // fetch(GetAllLocationsAction()),
       fetch(GetPropertiesAction()),
       fetch(GetChecklistTemplatesAction()),
     ]);

@@ -7,7 +7,7 @@ import '../manager/models/location_item_md.dart';
 import '../theme/theme.dart';
 
 class CustomGMapsWidget extends StatefulWidget {
-  final LocationItemMd? location;
+  final LocationAddress? location;
   const CustomGMapsWidget({super.key, this.location});
 
   @override
@@ -21,7 +21,7 @@ class _CustomGMapsWidgetState extends State<CustomGMapsWidget> {
   @override
   void initState() {
     super.initState();
-    final List<LocationItemMd> locs = [...LocationsController.to.departments];
+    final List<LocationAddress> locs = [...LocationsController.to.departments];
     if (widget.location != null) {
       locs.clear();
       locs.add(widget.location!);
@@ -63,7 +63,7 @@ class _CustomGMapsWidgetState extends State<CustomGMapsWidget> {
   }
 }
 
-void showMapPopup({LocationItemMd? location}) {
+void showMapPopup({LocationAddress? location}) {
   showOverlayPopup(
     horizontalPadding: 24.0,
     paddingBottom: 24.0,

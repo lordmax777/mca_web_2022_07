@@ -110,6 +110,7 @@ GeneralState _updateGeneralStateAction(
     storageItems: action.storageItems ?? state.storageItems,
     checklistTemplates: action.checklistTemplates ?? state.checklistTemplates,
     properties: action.properties ?? state.properties,
+    locationAddresses: action.locationAddresses ?? state.locationAddresses,
   );
 }
 

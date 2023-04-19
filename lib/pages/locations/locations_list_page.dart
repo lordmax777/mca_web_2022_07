@@ -107,7 +107,7 @@ class _Body extends StatelessWidget {
     );
   }
 
-  PlutoRow _buildItem(LocationItemMd e) {
+  PlutoRow _buildItem(LocationAddress e) {
     return PlutoRow(cells: {
       "location_name": PlutoCell(value: e.name ?? "-"),
       "address":

@@ -14,14 +14,14 @@ extension SidebarTypeExt on SidebarType {
 
 class ResourceIdMd {
   final UserRes? user;
-  final LocationItemMd? location;
+  final LocationAddress? location;
 
   ResourceIdMd({this.user, this.location});
 
   // implement copyWith
   ResourceIdMd copyWith({
     UserRes? user,
-    LocationItemMd? location,
+    LocationAddress? location,
   }) {
     return ResourceIdMd(
       user: user ?? this.user,

@@ -115,11 +115,11 @@ class LocationsController extends GetxController {
     ];
   }
 
-  final RxList<LocationItemMd> _deps = <LocationItemMd>[].obs;
-  void removeDepsWhere(LocationItemMd w) =>
+  final RxList<LocationAddress> _deps = <LocationAddress>[].obs;
+  void removeDepsWhere(LocationAddress w) =>
       _deps.removeWhere((e) => e.id == w.id);
-  List<LocationItemMd> get departments => _deps;
-  setList(List<LocationItemMd> d) {
+  List<LocationAddress> get departments => _deps;
+  setList(List<LocationAddress> d) {
     final dd = [...d];
     dd.sort((a, b) => a.name!.compareTo(b.name!));
     _deps.value = dd;
@@ -152,7 +152,7 @@ class LocationsController extends GetxController {
   void setSm(PlutoGridStateManager sm) {
     gridStateManager = sm;
     inactiveRows.addAll(gridStateManager.refRows.where((element) =>
-        !(element.cells["action"]!.value as LocationItemMd).active!));
+        !(element.cells["action"]!.value as LocationAddress).active!));
     if (!isShowInactive) {
       gridStateManager.removeRows(inactiveRows);
     }
@@ -239,7 +239,7 @@ class LocationsController extends GetxController {
   }
 
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
-    final LocationItemMd loc = ctx.cell.value;
+    final LocationAddress loc = ctx.cell.value;
     final newContr = NewLocationController.to;
     newContr.setId = loc.id ?? -1;
     newContr.nameController.text = loc.name ?? "";
@@ -273,7 +273,7 @@ class LocationsController extends GetxController {
   }
 
   Future<void> _onShowMap(PlutoColumnRendererContext ctx) async {
-    final LocationItemMd loc = ctx.row.cells['action']!.value;
+    final LocationAddress loc = ctx.row.cells['action']!.value;
     showMapPopup(location: loc);
   }
 

@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
+import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
@@ -11,6 +12,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
 
 import '../../general_controller.dart';
+import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../sets/state_value.dart';
@@ -35,6 +37,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return GetChecklistTemplatesAction.fetch(store.state, action, next);
       case GetPropertiesAction:
         return GetPropertiesAction.fetch(store.state, action, next);
+      case GetLocationAddressesAction:
+        return _getLocationAddresses(store.state, action, next);
       default:
         return next(action);
     }
@@ -172,5 +176,25 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       next(UpdateGeneralStateAction(paramList: stateValue));
     }
     return stateValue;
+  }
+}
+
+Future<void> _getLocationAddresses(AppState state,
+    GetLocationAddressesAction action, NextDispatcher next) async {
+  try {
+    final ApiResponse res =
+        await restClient().getLocationsOrSingle().nocodeErrorHandler();
+
+    if (res.success) {
+      final r = res.data;
+      final List<LocationAddress> list = [];
+      for (var e in r) {
+        list.add(LocationAddress.fromJson(e));
+      }
+      LocationsController.to.setList(list);
+      next(UpdateGeneralStateAction(locationAddresses: list));
+    }
+  } catch (e) {
+    print(e);
   }
 }

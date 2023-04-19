@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import '../../../comps/custom_gmaps_widget.dart';
 import '../../../comps/modals/custom_date_picker.dart';
 import '../../../comps/modals/custom_time_picker.dart';
 import '../../../manager/model_exporter.dart';
@@ -229,12 +230,30 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               },
                             ),
                             childHelperWidget: selectedClientId != null
-                                ? addIcon(
-                                    tooltip: "Create new location",
-                                    onPressed: () {
-                                      onCreateNewClientTap(
-                                          state, ClientFormType.location);
-                                    },
+                                ? Row(
+                                    children: [
+                                      addIcon(
+                                        tooltip: "Create new location",
+                                        onPressed: () {
+                                          onCreateNewClientTap(
+                                              state, ClientFormType.location);
+                                        },
+                                      ),
+                                      if (selectedLocationId != null)
+                                        addIcon(
+                                          tooltip: "View on map",
+                                          onPressed: () {
+                                            final loc = state
+                                                .generalState.locationAddresses
+                                                .firstWhereOrNull((element) =>
+                                                    element.id ==
+                                                    selectedLocationId);
+                                            if (loc == null) return;
+                                            showMapPopup(location: loc);
+                                          },
+                                          icon: HeroIcons.location,
+                                        )
+                                    ],
                                   )
                                 : null,
                           ),
@@ -591,7 +610,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     );
   }
 
-  Widget addIcon({String? tooltip, VoidCallback? onPressed}) {
+  Widget addIcon({String? tooltip, VoidCallback? onPressed, HeroIcons? icon}) {
     return IconButton(
         tooltip: tooltip,
         onPressed: onPressed,
@@ -603,7 +622,10 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                 color: Colors.grey[300]!,
               ),
             ),
-            child: const HeroIcon(HeroIcons.add)));
+            child: HeroIcon(
+              icon ?? HeroIcons.add,
+              color: ThemeColors.MAIN_COLOR,
+            )));
   }
 
   Widget _team(List<UserRes> users) {
