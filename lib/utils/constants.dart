@@ -1,3 +1,5 @@
+import 'package:mca_web_2022_07/utils/global_functions.dart';
+
 import '../manager/router/router.dart';
 import '../theme/theme.dart';
 
@@ -34,6 +36,9 @@ class Constants {
   //Google Maps API Key
   static const String googleMapApiKey =
       "AIzaSyAJppOsTzcnks6yfcR9WmJk-Cjqfw3zIww";
+
+  //String constants
+  static String propertyName = "Property";
 
   //Drawer
   static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -74,7 +79,7 @@ class Constants {
           "name": const LocationsListRoute(),
         },
         {
-          "title": "Properties",
+          "title": propertyName.toPlural.capitalize,
           "name": const PropertiesRoute(),
         },
         {

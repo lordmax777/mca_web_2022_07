@@ -27,7 +27,7 @@ class PropertiesController extends GetxController {
   List<PlutoColumn> columns(BuildContext context) {
     return [
       PlutoColumn(
-          title: "Property Name",
+          title: "${Constants.propertyName.capitalize} Name",
           field: "name",
           type: PlutoColumnType.text(),
           renderer: (rendererContext) =>

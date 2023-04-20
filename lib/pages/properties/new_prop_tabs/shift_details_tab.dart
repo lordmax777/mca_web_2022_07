@@ -62,7 +62,7 @@ class _ShiftDetails extends StatelessWidget {
         children: [
           TextInputWidget(
             width: dpWidth,
-            labelText: "Property Name",
+            labelText: "${Constants.propertyName.capitalize} Name",
             isRequired: true,
             controller: controller.shiftNameController,
           ),

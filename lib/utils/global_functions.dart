@@ -1,5 +1,6 @@
 import 'package:get_ip_address/get_ip_address.dart' as getIp;
 import 'package:google_maps_webservice/geocoding.dart';
+import 'package:plural_noun/plural_noun.dart';
 
 import 'constants.dart' as constants;
 
@@ -28,5 +29,17 @@ Future<GeocodingResult?> getAddressFromPostCode(String postcode,
     return response.results.first;
   } else {
     return null;
+  }
+}
+
+extension StringExtensions on String {
+  String get toPlural {
+    final PluralRules pluralRules = PluralRules();
+    final plural = pluralRules.convertToPluralNoun(this);
+    return plural;
+  }
+
+  String get capitalize {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }

@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/pages/properties/new_property_page.dart';
+import 'package:mca_web_2022_07/utils/global_functions.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/models/property_md.dart';
 import '../../theme/theme.dart';
@@ -18,7 +19,7 @@ class PropertiesPage extends StatelessWidget {
       converter: (store) => store.state,
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
-          const PagesTitleWidget(title: 'Properties'),
+          PagesTitleWidget(title: Constants.propertyName.toPlural.capitalize),
           ErrorWrapper(errors: [
             state.generalState.paramList.error,
             state.generalState.properties.error,
@@ -63,7 +64,7 @@ class _Body extends StatelessWidget {
         children: [
           TextInputWidget(
               controller: c.searchController,
-              hintText: 'Search properties...',
+              hintText: 'Search ${Constants.propertyName.toPlural}...',
               defaultBorderColor: ThemeColors.gray11,
               width: 360,
               leftIcon: HeroIcons.search),
@@ -78,7 +79,7 @@ class _Body extends StatelessWidget {
                   labelPosition: CheckboxLabelPosition.left,
                 ),
                 ButtonMedium(
-                  text: "New Property",
+                  text: "New ${Constants.propertyName.capitalize}",
                   icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
                   onPressed: () {
                     context.pushRoute(NewPropertyRoute());

@@ -111,6 +111,7 @@ GeneralState _updateGeneralStateAction(
     checklistTemplates: action.checklistTemplates ?? state.checklistTemplates,
     properties: action.properties ?? state.properties,
     locationAddresses: action.locationAddresses ?? state.locationAddresses,
+    clientInfos: action.clientInfos ?? state.clientInfos,
   );
 }
 

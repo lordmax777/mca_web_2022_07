@@ -86,11 +86,14 @@ class _Title extends StatelessWidget {
 
   Widget _getLogo() {
     final companyImage = GeneralController.to.companyInfo.logo;
-    Widget image = Image.asset('assets/images/mca-logo.png');
+    Widget image = Image.asset('', errorBuilder: (context, error, stackTrace) {
+      return const Center(child: Icon(Icons.error_outline));
+    });
 
-    if (companyImage != null) {
-      image = Image.memory(base64Decode(companyImage));
-    }
+    image = Image.memory(base64Decode(companyImage),
+        errorBuilder: (context, error, stackTrace) {
+      return const Center(child: Icon(Icons.error_outline));
+    });
 
     return CircleAvatar(
       backgroundColor: ThemeColors.white,

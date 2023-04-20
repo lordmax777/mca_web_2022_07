@@ -48,9 +48,11 @@ enum ClientFormType { client, location }
 class ClientForm extends StatefulWidget {
   final AppState state;
   final ClientFormType type;
-  const ClientForm(
-      {Key? key, required this.state, this.type = ClientFormType.client})
-      : super(key: key);
+  const ClientForm({
+    Key? key,
+    required this.state,
+    this.type = ClientFormType.client,
+  }) : super(key: key);
 
   @override
   State<ClientForm> createState() => _ClientFormState();
@@ -229,35 +231,61 @@ class _ClientFormState extends State<ClientForm> {
                 ),
               labelWithField(
                 "Phone Number",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller: phoneNumber,
-                  isRequired: true,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
+                SpacedColumn(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  verticalSpace: 8,
+                  children: [
+                    TextInputWidget(
+                      width: fieldWidth,
+                      controller: phoneNumber,
+                      isRequired: isClient,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      hintText: "Enter phone number",
+                    ),
+                    if (isLocation)
+                      KText(
+                          fontWeight: FWeight.medium,
+                          fontSize: 12.0,
+                          textColor: ThemeColors.gray8,
+                          isSelectable: false,
+                          text: 'Leave blank to use client\'s phone number'),
                   ],
-                  hintText: "Enter phone number",
                 ),
               ),
-              labelWithField(
-                "Email",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller: email,
-                  isRequired: true,
-                  validator: (p0) {
-                    if (p0 != null) {
-                      //validate using Regex
-                      if (!RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(p0)) {
-                        return "Invalid email";
-                      }
-                    }
+              SpacedColumn(
+                verticalSpace: 8,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  labelWithField(
+                    "Email",
+                    TextInputWidget(
+                      width: fieldWidth,
+                      controller: email,
+                      isRequired: isClient,
+                      validator: (p0) {
+                        if (p0 != null) {
+                          //validate using Regex
+                          if (!RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(p0)) {
+                            return "Invalid email";
+                          }
+                        }
 
-                    return null;
-                  },
-                  hintText: "Enter email",
-                ),
+                        return null;
+                      },
+                      hintText: "Enter email",
+                    ),
+                  ),
+                  if (isLocation)
+                    KText(
+                        fontWeight: FWeight.medium,
+                        fontSize: 12.0,
+                        textColor: ThemeColors.gray8,
+                        isSelectable: false,
+                        text: 'Leave blank to use client\'s email'),
+                ],
               ),
               if (isClient)
                 labelWithField(

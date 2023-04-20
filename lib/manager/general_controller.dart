@@ -5,6 +5,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
+import 'package:mca_web_2022_07/utils/constants.dart';
 
 import 'redux/states/users_state/users_state.dart';
 
@@ -15,9 +16,13 @@ class GeneralController extends GetxController {
   LoggedInUserMd get loggedInUserValue => loggedInUser.value;
   set setLoggedInUser(LoggedInUserMd value) => loggedInUser.value = value;
 
-  final Rx<CompanyMd> _companyInfo = Rx<CompanyMd>(CompanyMd());
+  final Rx<CompanyMd> _companyInfo = Rx<CompanyMd>(CompanyMd.init());
   CompanyMd get companyInfo => _companyInfo.value;
-  set setCompanyInfo(CompanyMd value) => _companyInfo.value = value;
+  set setCompanyInfo(CompanyMd value) {
+    _companyInfo.value = value;
+    //Set special_word constant
+    Constants.propertyName = value.special_word;
+  }
 
   bool get isLoggedIn =>
       loggedInUserValue.username != null &&
@@ -61,6 +66,7 @@ class GeneralController extends GetxController {
     // await fetch(GetChecklistTemplatesAction());
     // return;
     appStore.dispatch(GetLocationAddressesAction());
+    appStore.dispatch(GetClientInfosAction());
     await Future.wait([
       fetch(GetAllParamListAction()),
       fetch(GetUsersListAction()),

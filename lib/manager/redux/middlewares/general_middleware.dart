@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
@@ -39,6 +41,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return GetPropertiesAction.fetch(store.state, action, next);
       case GetLocationAddressesAction:
         return _getLocationAddresses(store.state, action, next);
+      case GetClientInfosAction:
+        return _getClientInfosAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -179,7 +183,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   }
 }
 
-Future<void> _getLocationAddresses(AppState state,
+Future<List<LocationAddress>> _getLocationAddresses(AppState state,
     GetLocationAddressesAction action, NextDispatcher next) async {
   try {
     final ApiResponse res =
@@ -193,8 +197,33 @@ Future<void> _getLocationAddresses(AppState state,
       }
       LocationsController.to.setList(list);
       next(UpdateGeneralStateAction(locationAddresses: list));
+      return list;
     }
+    return [];
   } catch (e) {
-    print(e);
+    Logger.e(e.toString(), tag: "GetLocationAddressesAction");
+    return [];
+  }
+}
+
+Future<List<ClientInfoMd>> _getClientInfosAction(
+    AppState state, GetClientInfosAction action, NextDispatcher next) async {
+  try {
+    final ApiResponse res =
+        await restClient().getLocationsOrSingle().nocodeErrorHandler();
+
+    if (res.success) {
+      final r = res.data;
+      final List<ClientInfoMd> list = [];
+      for (var e in r) {
+        list.add(ClientInfoMd.fromJson(e));
+      }
+      next(UpdateGeneralStateAction(clientInfos: list));
+      return list;
+    }
+    return [];
+  } catch (e) {
+    Logger.e(e.toString(), tag: "GetClientInfosAction");
+    return [];
   }
 }

@@ -26,7 +26,8 @@ class NewPropertyPage extends StatelessWidget {
               verticalSpace: 16.0,
               children: [
                 property == null
-                    ? const PageGobackWidget(text: "New Property")
+                    ? PageGobackWidget(
+                        text: "New ${Constants.propertyName.capitalize}")
                     : PageGobackWidget(text: property!.title),
                 _Body(property: property),
               ],

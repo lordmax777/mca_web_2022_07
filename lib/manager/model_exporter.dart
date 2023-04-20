@@ -24,3 +24,4 @@ export 'models/shift_staff_req_md.dart';
 export 'models/shift_qualif_req_md.dart';
 export 'models/unavailable_user_md.dart';
 export 'models/client_contract_md.dart';
+export 'models/client_info_md.dart';

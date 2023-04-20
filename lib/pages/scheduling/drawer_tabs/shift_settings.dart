@@ -42,10 +42,10 @@ class _ScheduleShiftSettingsTabState extends State<ScheduleShiftSettingsTab> {
   Widget build(BuildContext context) {
     logger('selectedProperties ${widget.selectedProperty.toJson()}');
     if (selectedProperties.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Please select a property to view shift settings',
-          style: TextStyle(fontSize: 20),
+          'Please select a ${Constants.propertyName.capitalize} to view shift settings',
+          style: const TextStyle(fontSize: 20),
         ),
       );
     }

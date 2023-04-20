@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:mca_web_2022_07/pages/scheduling/schdule_appointment_drawer.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:mca_web_2022_07/utils/global_functions.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
@@ -122,7 +123,7 @@ class _ScheduleLocationTabState extends State<ScheduleLocationTab> {
             controller: _searchController,
             defaultBorderColor: ThemeColors.gray11,
             hintText: isUserView
-                ? "Search by location or property ..."
+                ? "Search by location or ${Constants.propertyName.capitalize} ..."
                 : "Search by user name ...",
             leftIcon: HeroIcons.search),
         const SizedBox(height: 16),

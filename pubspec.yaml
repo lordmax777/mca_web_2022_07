@@ -55,6 +55,7 @@ dependencies:
   month_year_picker: ^0.2.0+3
   adaptive_scrollbar: ^2.1.2
   get_ip_address: ^0.0.5
+  plural_noun: ^0.1.2
 
 dev_dependencies:
   flutter_test:

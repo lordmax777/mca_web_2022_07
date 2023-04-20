@@ -551,6 +551,10 @@ abstract class RestClient {
   /// sid = shift id
   Future<HttpResponse> getClientContracts(
       @Path() int id, @Path() int cid, @Path() int sid);
+
+  // id = 0 to get all
+  @GET("/api/fe/clients/{id}")
+  Future<HttpResponse> getClients(@Path() int id);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(
