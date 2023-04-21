@@ -48,10 +48,12 @@ enum ClientFormType { client, location }
 class ClientForm extends StatefulWidget {
   final AppState state;
   final ClientFormType type;
+  final int? selectedClientId;
   const ClientForm({
     Key? key,
     required this.state,
     this.type = ClientFormType.client,
+    this.selectedClientId,
   }) : super(key: key);
 
   @override
@@ -70,6 +72,11 @@ class _ClientFormState extends State<ClientForm> {
   bool get isClient => type == ClientFormType.client;
   bool get isLocation => type == ClientFormType.location;
   CompanyMd get company => GeneralController.to.companyInfo;
+  int? get selectedClientIndex => widget.selectedClientId;
+  String? get clientEmail =>
+      state.generalState.clientInfos[selectedClientIndex!].email;
+  String? get clientPhone =>
+      state.generalState.clientInfos[selectedClientIndex!].phone;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -562,6 +569,13 @@ class _ClientFormState extends State<ClientForm> {
           ButtonLarge(
               text: "Save",
               onPressed: () {
+                logger(phoneNumber.text.isEmpty && selectedClientIndex != null
+                    ? clientPhone
+                    : phoneNumber.text);
+                logger(phoneNumber.text.isEmpty && selectedClientIndex != null
+                    ? clientEmail
+                    : phoneNumber.text);
+                return;
                 if (_formKey.currentState!.validate()) {
                   Get.showOverlay(
                     asyncFunction: () async {
@@ -641,6 +655,12 @@ class _ClientFormState extends State<ClientForm> {
           sendChecklist: true,
           anywhere: false,
           radius: 100.toString(),
+          phoneMobile: phoneNumber.text.isEmpty && selectedClientIndex != null
+              ? clientPhone
+              : phoneNumber.text,
+          email: phoneNumber.text.isEmpty && selectedClientIndex != null
+              ? clientEmail
+              : phoneNumber.text,
           phoneLandline: "",
           phoneFax: "",
           name: "${address.addressLine1} ${address.addressPostcode}",
@@ -653,8 +673,6 @@ class _ClientFormState extends State<ClientForm> {
           addressCity: address.addressCity!,
           addressCountry: address.addressCountryId!,
           addressLine1: address.addressLine1!,
-          phoneMobile: phoneNumber.text,
-          email: email.text,
           addressPostcode: address.addressPostcode!,
           ipaddress: ipAddress.text,
         )
@@ -688,7 +706,7 @@ class _ClientFormState extends State<ClientForm> {
         .nocodeErrorHandler();
     if (res.success) {
       if (fetchAllParams) {
-        await appStore.dispatch(GetAllParamListAction());
+        await appStore.dispatch(GetClientInfosAction());
       }
     }
     return res;

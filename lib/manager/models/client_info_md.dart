@@ -41,17 +41,17 @@ class ClientInfoMd {
   final String? email;
   final String? phone;
   final String? fax;
-  final String startDate;
+  final String? startDate;
   final String? endDate;
-  final double creditLimit;
-  final String? invoices;
-  final String? payments;
+  final num? creditLimit;
+  final dynamic invoices;
+  final dynamic payments;
   final Address address;
   final String? companyRegNumber;
   final String? VATnumber;
-  final bool VATcalc;
+  final bool? VATcalc;
   final String currencyId;
-  final String paymentMethodId;
+  final String? paymentMethodId;
   final int payingDays;
 
   ClientInfoMd({
@@ -64,7 +64,7 @@ class ClientInfoMd {
     this.email,
     this.phone,
     this.fax,
-    required this.startDate,
+    this.startDate,
     this.endDate,
     required this.creditLimit,
     this.invoices,
@@ -72,36 +72,41 @@ class ClientInfoMd {
     required this.address,
     this.companyRegNumber,
     this.VATnumber,
-    required this.VATcalc,
+    this.VATcalc,
     required this.currencyId,
-    required this.paymentMethodId,
+    this.paymentMethodId,
     required this.payingDays,
   });
 
   factory ClientInfoMd.fromJson(Map<String, dynamic> json) {
-    return ClientInfoMd(
-      id: json['id'],
-      name: json['name'],
-      contact: json['contact'],
-      company: json['company'],
-      active: json['active'],
-      notes: json['notes'],
-      email: json['email'],
-      phone: json['phone'],
-      fax: json['fax'],
-      startDate: json['startDate'],
-      endDate: json['endDate'],
-      creditLimit: json['creditLimit'],
-      invoices: json['invoices'],
-      payments: json['payments'],
-      address: Address.fromJson(json['address']),
-      companyRegNumber: json['companyRegNumber'],
-      VATnumber: json['VATnumber'],
-      VATcalc: json['VATcalc'],
-      currencyId: json['currencyId'],
-      paymentMethodId: json['paymentMethodId'],
-      payingDays: json['payingDays'],
-    );
+    try {
+      return ClientInfoMd(
+        id: json['id'],
+        name: json['name'],
+        contact: json['contact'],
+        company: json['company'],
+        active: json['active'],
+        notes: json['notes'],
+        email: json['email'],
+        phone: json['phone'],
+        fax: json['fax'],
+        startDate: json['startDate'],
+        endDate: json['endDate'],
+        creditLimit: json['creditLimit'],
+        invoices: json['invoices'],
+        payments: json['payments'],
+        address: Address.fromJson(json['address']),
+        companyRegNumber: json['companyRegNumber'],
+        VATnumber: json['VATnumber'],
+        VATcalc: json['VATcalc'],
+        currencyId: json['currencyId'],
+        paymentMethodId: json['paymentMethodId'],
+        payingDays: json['payingDays'],
+      );
+    } on TypeError catch (e) {
+      print('ClientInfoMd.fromJson: ${e.stackTrace}');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {

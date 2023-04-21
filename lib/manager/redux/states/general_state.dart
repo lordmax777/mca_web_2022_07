@@ -20,7 +20,6 @@ import '../sets/app_state.dart';
 @immutable
 class GeneralState {
   final StateValue<ListAllMd> paramList;
-  List<ListClients> get clients => paramList.data?.clients ?? <ListClients>[];
   List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
   List<ListLocation> get locations =>
       paramList.data?.locations ?? <ListLocation>[];

@@ -210,7 +210,7 @@ Future<List<ClientInfoMd>> _getClientInfosAction(
     AppState state, GetClientInfosAction action, NextDispatcher next) async {
   try {
     final ApiResponse res =
-        await restClient().getLocationsOrSingle().nocodeErrorHandler();
+        await restClient().getClients(action.id ?? 0).nocodeErrorHandler();
 
     if (res.success) {
       final r = res.data;

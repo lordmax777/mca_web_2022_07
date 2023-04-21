@@ -67,9 +67,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       if (isCreate) return;
       final property = data.property!;
       await onClientChanged(
-          appStore.state.generalState.clients
+          appStore.state.generalState.clientInfos
               .indexWhere((element) => element.id == property.clientId),
-          clients: appStore.state.generalState.clients);
+          clients: appStore.state.generalState.clientInfos);
       title.text = property.title ?? "";
       // selectedClientId = property.clientId;
       selectedLocationId = property.locationId;
@@ -99,6 +99,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         builder: (context) => ClientForm(
               state: state,
               type: type,
+              selectedClientId: selectedClientId,
             ));
     if (data == null) return;
     setState(() {
@@ -113,23 +114,23 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   Future<void> onClientChanged(int index,
-      {required List<ListClients> clients}) async {
+      {required List<ClientInfoMd> clients}) async {
     setState(() {
       selectedClientId = clients[index].id;
       selectedLocationId = null;
       tempAllowedLocationId = null;
     });
     if (selectedClientId == null) return;
-    final List<ClientContractMd> contracts = await getClientContracts();
-    gridStateManager.removeAllRows(notify: false);
-    gridStateManager.prependRows(
-      contracts
-          .expand((element) => element.shifts)
-          .expand((element) => element.items)
-          .map((e) {
-        return _buildRow(e);
-      }).toList(),
-    );
+    // final List<ClientContractMd> contracts = await getClientContracts();
+    // gridStateManager.removeAllRows(notify: false);
+    // gridStateManager.prependRows(
+    //   contracts
+    //       .expand((element) => element.shifts)
+    //       .expand((element) => element.items)
+    //       .map((e) {
+    //     return _buildRow(e);
+    //   }).toList(),
+    // );
   }
 
   Future<List<ClientContractMd>> getClientContracts() async {
@@ -168,7 +169,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         //
         List<UserRes> users = [...(state.usersState.usersList.data ?? [])];
 
-        List<ListClients> clients = [...(state.generalState.clients)];
+        List<ClientInfoMd> clients = [...(state.generalState.clientInfos)];
 
         // using this we find the locations which can be used by the selected client
         List<ListShift> selectedClientShifts = [];
