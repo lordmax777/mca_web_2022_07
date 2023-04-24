@@ -555,6 +555,10 @@ abstract class RestClient {
   // id = 0 to get all
   @GET("/api/fe/clients/{id}")
   Future<HttpResponse> getClients(@Path() int id);
+
+  // id = 0 to get all
+  @GET("/api/fe/quotes/{id}")
+  Future<HttpResponse> getQuotes(@Path() int id);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

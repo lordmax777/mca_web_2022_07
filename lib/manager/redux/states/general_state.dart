@@ -53,6 +53,7 @@ class GeneralState {
   final StateValue<List<PropertiesMd>> properties;
   final List<LocationAddress> locationAddresses;
   final List<ClientInfoMd> clientInfos;
+  final List<QuoteInfoMd> quotes;
 
   GeneralState({
     required this.paramList,
@@ -64,6 +65,7 @@ class GeneralState {
     required this.properties,
     required this.locationAddresses,
     required this.clientInfos,
+    required this.quotes,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -106,6 +108,7 @@ class GeneralState {
       ),
       locationAddresses: [],
       clientInfos: [],
+      quotes: [],
     );
   }
 
@@ -119,6 +122,7 @@ class GeneralState {
     StateValue<List<PropertiesMd>>? properties,
     List<LocationAddress>? locationAddresses,
     List<ClientInfoMd>? clientInfos,
+    List<QuoteInfoMd>? quotes,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -130,21 +134,23 @@ class GeneralState {
       properties: properties ?? this.properties,
       locationAddresses: locationAddresses ?? this.locationAddresses,
       clientInfos: clientInfos ?? this.clientInfos,
+      quotes: quotes ?? this.quotes,
     );
   }
 }
 
 class UpdateGeneralStateAction {
-  StateValue<ListAllMd>? paramList;
-  DrawerStates? drawerStates;
-  Widget? endDrawer;
-  List<LocationsMd>? locationList;
-  StateValue<List<WarehouseMd>>? warehouses;
-  StateValue<List<StorageItemMd>>? storageItems;
-  StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
-  StateValue<List<PropertiesMd>>? properties;
-  List<LocationAddress>? locationAddresses;
-  List<ClientInfoMd>? clientInfos;
+  final StateValue<ListAllMd>? paramList;
+  final DrawerStates? drawerStates;
+  final Widget? endDrawer;
+  final List<LocationsMd>? locationList;
+  final StateValue<List<WarehouseMd>>? warehouses;
+  final StateValue<List<StorageItemMd>>? storageItems;
+  final StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
+  final StateValue<List<PropertiesMd>>? properties;
+  final List<LocationAddress>? locationAddresses;
+  final List<ClientInfoMd>? clientInfos;
+  final List<QuoteInfoMd>? quotes;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -157,6 +163,7 @@ class UpdateGeneralStateAction {
     this.properties,
     this.locationAddresses,
     this.clientInfos,
+    this.quotes,
   });
 }
 
@@ -404,4 +411,10 @@ class GetClientInfosAction {
   final int? id;
 
   GetClientInfosAction({this.id});
+}
+
+class GetQuotesAction {
+  final int? id;
+
+  GetQuotesAction({this.id});
 }

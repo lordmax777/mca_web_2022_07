@@ -46,7 +46,7 @@ class _McaWebAppState extends State<McaWebApp> {
         scrollBehavior: CustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [SchedulingRoute()])
+          if (kDebugMode) const HomeRoute(children: [QuotesListRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

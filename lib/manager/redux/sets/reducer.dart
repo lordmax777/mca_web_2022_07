@@ -112,6 +112,7 @@ GeneralState _updateGeneralStateAction(
     properties: action.properties ?? state.properties,
     locationAddresses: action.locationAddresses ?? state.locationAddresses,
     clientInfos: action.clientInfos ?? state.clientInfos,
+    quotes: action.quotes ?? state.quotes,
   );
 }
 

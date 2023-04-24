@@ -77,7 +77,7 @@ class Constants {
         },
         {
           "title": "Quotes",
-          "name": const QuotesListPage(),
+          "name": const QuotesListRoute(),
         },
         {
           "title": "Locations",

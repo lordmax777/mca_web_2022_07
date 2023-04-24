@@ -19,7 +19,6 @@ import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../sets/state_value.dart';
 import '../states/general_state.dart';
-import 'auth_middleware.dart';
 
 class GeneralMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -43,6 +42,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getLocationAddresses(store.state, action, next);
       case GetClientInfosAction:
         return _getClientInfosAction(store.state, action, next);
+      case GetQuotesAction:
+        return _getQuotesAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -227,6 +228,28 @@ Future<List<ClientInfoMd>> _getClientInfosAction(
     return [];
   } catch (e) {
     Logger.e(e.toString(), tag: "GetClientInfosAction");
+    return [];
+  }
+}
+
+Future<List<QuoteInfoMd>> _getQuotesAction(
+    AppState state, GetQuotesAction action, NextDispatcher next) async {
+  try {
+    final ApiResponse res =
+        await restClient().getQuotes(action.id ?? 0).nocodeErrorHandler();
+
+    if (res.success) {
+      final r = res.data['quotes'];
+      final List<QuoteInfoMd> list = [];
+      for (var e in r) {
+        list.add(QuoteInfoMd.fromJson(e));
+      }
+      next(UpdateGeneralStateAction(quotes: list));
+      return list;
+    }
+    return [];
+  } catch (e) {
+    Logger.e(e.toString(), tag: "GetQuotesAction");
     return [];
   }
 }
