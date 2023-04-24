@@ -24,7 +24,16 @@ class GeneralState {
   List<ListLocation> get locations =>
       paramList.data?.locations ?? <ListLocation>[];
   List<StorageItemMd> get storage_items =>
-      storageItems.data ?? <StorageItemMd>[];
+      (storageItems.data ?? <StorageItemMd>[])
+        ..sort((a, b) {
+          // sort by this.service == true
+          if (a.service == true && b.service == false) {
+            return -1;
+          } else if (a.service == false && b.service == true) {
+            return 1;
+          }
+          return 0;
+        });
   List<ListCurrency> get currencies =>
       paramList.data?.currencies ?? <ListCurrency>[];
   List<ListCountry> get countries =>

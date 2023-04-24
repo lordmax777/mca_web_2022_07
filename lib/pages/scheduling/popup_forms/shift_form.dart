@@ -935,17 +935,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           ),
         ),
         PlutoColumn(
-          title: "Warehouse",
-          field: "warehouse",
-          enableAutoEditing: true,
-          enableEditingMode: !isCreate,
-          type: PlutoColumnType.select(
-            state.generalState.storages.map((e) => e.name).toList(),
-            enableColumnFilter: true,
-            defaultValue: "None",
-          ),
-        ),
-        PlutoColumn(
           title: "Customer's price (${company.currency.sign})",
           field: "customer_price",
           enableAutoEditing: true,
@@ -965,15 +954,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               ),
             );
           },
-        ),
-        PlutoColumn(
-          title: "Tax (%)",
-          field: "tax",
-          enableAutoEditing: true,
-          type: PlutoColumnType.select(
-            state.generalState.taxes.map((e) => e.rate.toString()).toList(),
-            defaultValue: "0",
-          ),
         ),
         PlutoColumn(
           title: "Included in service (All)",
@@ -1003,19 +983,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         ),
       ];
 
-  PlutoRow _buildRow(StorageItemMd contractShiftItem) {
+  PlutoRow _buildRow(StorageItemMd contractShiftItem, {bool checked = false}) {
     return PlutoRow(
+      checked: checked,
       cells: {
         "id": PlutoCell(value: contractShiftItem.id),
         "title": PlutoCell(value: contractShiftItem.name),
-        "warehouse": PlutoCell(value: "None"),
         "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
-        "tax": PlutoCell(
-            value: appStore.state.generalState.taxes
-                    .firstWhereOrNull(
-                        (element) => element.id == contractShiftItem.taxId)
-                    ?.rate ??
-                0),
         "delete_action": PlutoCell(value: ""),
         "include_in_service": PlutoCell(value: "Included in service"),
       },
@@ -1050,8 +1024,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                   addIcon(
                       tooltip: "Add product",
                       onPressed: () {
-                        gridStateManager
-                            .insertRows(0, [_buildRow(StorageItemMd.init())]);
+                        gridStateManager.insertRows(0,
+                            [_buildRow(StorageItemMd.init(), checked: true)]);
                       },
                       icon: HeroIcons.add),
                 ],
