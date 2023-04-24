@@ -14,6 +14,7 @@ class UsersListTable extends StatelessWidget {
   final bool enableEditing;
   final PlutoGridMode mode;
   final void Function(PlutoGridOnChangedEvent)? onChanged;
+  final String? noRowsText;
   const UsersListTable(
       {Key? key,
       required this.rows,
@@ -23,6 +24,7 @@ class UsersListTable extends StatelessWidget {
       this.enableEditing = false,
       this.gridBorderColor,
       required this.onSmReady,
+      this.noRowsText,
       required this.cols})
       : super(key: key);
 
@@ -94,9 +96,9 @@ class UsersListTable extends StatelessWidget {
         onSelected: onOneTapSelect,
         onChanged: onChanged,
         onLoaded: (e) => onSmReady(e.stateManager),
-        noRowsWidget: const Center(
+        noRowsWidget: Center(
           child: Text(
-            "No data found",
+            noRowsText ?? "No data found",
             style: ThemeText.lg,
           ),
         ),

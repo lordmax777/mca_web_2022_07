@@ -23,14 +23,16 @@ class GeneralState {
   List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
   List<ListLocation> get locations =>
       paramList.data?.locations ?? <ListLocation>[];
-  List<ListStorageItem> get storage_items =>
-      paramList.data?.storage_items ?? <ListStorageItem>[];
+  List<StorageItemMd> get storage_items =>
+      storageItems.data ?? <StorageItemMd>[];
   List<ListCurrency> get currencies =>
       paramList.data?.currencies ?? <ListCurrency>[];
   List<ListCountry> get countries =>
       paramList.data?.countries ?? <ListCountry>[];
   List<ListPaymentMethods> get paymentMethods =>
       paramList.data?.payment_methods ?? <ListPaymentMethods>[];
+  List<WarehouseMd> get storages => warehouses.data ?? <WarehouseMd>[];
+  List<ListTaxes> get taxes => paramList.data?.taxes ?? <ListTaxes>[];
 
   final DrawerStates drawerStates;
   final Widget? endDrawer;
@@ -260,7 +262,7 @@ class GetAllStorageItemsAction {
       final List<StorageItemMd> list = res.data['storageitems']
           .map<StorageItemMd>((e) => StorageItemMd.fromJson(e))
           .toList();
-      list.sort((a, b) => a.name!.compareTo(b.name!));
+      list.sort((a, b) => a.name.compareTo(b.name));
 
       stateValue.error.isError = false;
       stateValue.data = list;

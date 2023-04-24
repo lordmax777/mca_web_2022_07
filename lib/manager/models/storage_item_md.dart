@@ -1,40 +1,53 @@
 class StorageItemMd {
-  int? id;
-  String? name;
-  bool? active;
-  bool? service;
-  num? incomingPrice;
-  num? outgoingPrice;
-  int? taxId;
+  final int id;
+  final String name;
+  final bool active;
+  final bool service;
+  final num incomingPrice;
+  final num outgoingPrice;
+  final int taxId;
 
   StorageItemMd(
-      {this.id,
-      this.name,
-      this.active,
-      this.service,
-      this.incomingPrice,
-      this.outgoingPrice,
-      this.taxId});
+      {required this.id,
+      required this.name,
+      required this.active,
+      required this.service,
+      required this.incomingPrice,
+      required this.outgoingPrice,
+      required this.taxId});
 
-  StorageItemMd.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    active = json['active'];
-    service = json['service'];
-    incomingPrice = json['incomingPrice'];
-    outgoingPrice = json['outgoingPrice'];
-    taxId = json['taxId'];
+  //init
+  factory StorageItemMd.init() {
+    return StorageItemMd(
+      id: 0,
+      name: '',
+      active: false,
+      service: false,
+      incomingPrice: 0,
+      outgoingPrice: 0,
+      taxId: 0,
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['active'] = active;
-    data['service'] = service;
-    data['incomingPrice'] = incomingPrice;
-    data['outgoingPrice'] = outgoingPrice;
-    data['taxId'] = taxId;
-    return data;
+  factory StorageItemMd.fromJson(Map<String, dynamic> json) {
+    return StorageItemMd(
+      id: json['id'],
+      name: json['name'],
+      active: json['active'],
+      service: json['service'],
+      incomingPrice: json['incomingPrice'],
+      outgoingPrice: json['outgoingPrice'],
+      taxId: json['taxId'],
+    );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'active': active,
+        'service': service,
+        'incomingPrice': incomingPrice,
+        'outgoingPrice': outgoingPrice,
+        'taxId': taxId,
+      };
 }

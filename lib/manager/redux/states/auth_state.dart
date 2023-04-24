@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import '../../model_exporter.dart';
 
+
+
+
+
+
+
 @immutable
 class AuthState {
   final StateValue<AuthRes?> authRes;

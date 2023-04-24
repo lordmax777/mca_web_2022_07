@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
@@ -64,6 +65,11 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      //TODO: Remove this
+      if (kDebugMode) {
+        await onClientChanged(0,
+            clients: appStore.state.generalState.clientInfos);
+      }
       if (isCreate) return;
       final property = data.property!;
       await onClientChanged(
@@ -658,7 +664,11 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     );
   }
 
-  Widget addIcon({String? tooltip, VoidCallback? onPressed, HeroIcons? icon}) {
+  Widget addIcon(
+      {String? tooltip,
+      VoidCallback? onPressed,
+      HeroIcons? icon,
+      Color? color}) {
     return IconButton(
         tooltip: tooltip,
         onPressed: onPressed,
@@ -667,13 +677,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color:
-                    ThemeColors.MAIN_COLOR.withOpacity(.5), //Colors.grey[300]!,
+                color: (color ?? ThemeColors.MAIN_COLOR)
+                    .withOpacity(.5), //Colors.grey[300]!,
               ),
             ),
             child: HeroIcon(
               icon ?? HeroIcons.add,
-              color: ThemeColors.MAIN_COLOR,
+              color: (color ?? ThemeColors.MAIN_COLOR),
             )));
   }
 
@@ -912,47 +922,76 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         ),
         // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
         PlutoColumn(
-          title: "Items & Description",
-          field: "items",
+          title: "Title",
+          field: "title",
+          enableAutoEditing: true,
           type: PlutoColumnType.select(
-            enableColumnFilter: true,
             state.generalState.storage_items.map((e) => e.name).toList(),
+            enableColumnFilter: true,
+            defaultValue: "Select an item",
           ),
         ),
         PlutoColumn(
-          title: "Ordered",
-          field: "ordered",
-          type: PlutoColumnType.number(),
+          title: "Warehouse",
+          field: "warehouse",
+          enableAutoEditing: true,
+          enableEditingMode: !isCreate,
+          type: PlutoColumnType.select(
+            state.generalState.storages.map((e) => e.name).toList(),
+            enableColumnFilter: true,
+            defaultValue: "None",
+          ),
         ),
         PlutoColumn(
-          title: "Rate",
-          field: "rate",
+          title: "Customer's price (${company.currency.sign})",
+          field: "customer_price",
+          enableAutoEditing: true,
           type: PlutoColumnType.currency(),
         ),
         PlutoColumn(
-          title: "Amount",
-          field: "amount",
-          type: PlutoColumnType.currency(),
+          title: "Tax (%)",
+          field: "tax",
+          enableAutoEditing: true,
+          type: PlutoColumnType.select(
+            state.generalState.taxes.map((e) => e.rate.toString()).toList(),
+            defaultValue: "0",
+          ),
         ),
         PlutoColumn(
+          title: "",
+          field: "delete_action",
           enableEditingMode: false,
-          enableAutoEditing: false,
-          title: "Inc in fixed price",
-          field: "inc_in_fixed_price",
+          width: 40,
           type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return addIcon(
+              tooltip: "Delete",
+              onPressed: () {
+                gridStateManager.removeRows([
+                  rendererContext.row,
+                ]);
+              },
+              icon: HeroIcons.bin,
+              color: ThemeColors.red3,
+            );
+          },
         ),
       ];
 
-  PlutoRow _buildRow(ClientContractShiftItem contractShiftItem) {
+  PlutoRow _buildRow(StorageItemMd contractShiftItem) {
     return PlutoRow(
       cells: {
-        "id": PlutoCell(value: contractShiftItem.itemId),
-        "items": PlutoCell(value: contractShiftItem.itemName),
-        "ordered": PlutoCell(value: 0),
-        "rate": PlutoCell(value: contractShiftItem.price),
-        "amount": PlutoCell(value: contractShiftItem.auto),
-        "inc_in_fixed_price":
-            PlutoCell(value: contractShiftItem.auto ? "N" : "Y"),
+        "id": PlutoCell(value: contractShiftItem.id),
+        "title": PlutoCell(value: contractShiftItem.name),
+        "warehouse": PlutoCell(value: "None"),
+        "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
+        "tax": PlutoCell(
+            value: appStore.state.generalState.taxes
+                    .firstWhereOrNull(
+                        (element) => element.id == contractShiftItem.taxId)
+                    ?.rate ??
+                0),
+        "delete_action": PlutoCell(value: ""),
       },
     );
   }
@@ -965,12 +1004,11 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           height: 300,
           child: UsersListTable(
               enableEditing: true,
-              onChanged: (p0) {
-                //TODO: implement
-              },
+              onChanged: _handleOnChanged,
               mode: PlutoGridMode.normal,
               rows: [],
               gridBorderColor: Colors.grey[300]!,
+              noRowsText: "No product or service added yet",
               onSmReady: (e) {
                 gridStateManager = e;
               },
@@ -978,19 +1016,48 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         ),
         customLabel: selectedClientId == null
             ? null
-            : addIcon(
-                tooltip: "Add product",
-                onPressed: () {
-                  gridStateManager.insertRows(0, [
-                    _buildRow(ClientContractShiftItem(
-                        itemId: -1,
-                        itemName: "",
-                        amount: 0,
-                        price: 0,
-                        notes: "",
-                        auto: false))
-                  ]);
-                },
-                icon: HeroIcons.add));
+            : Row(
+                children: [
+                  addIcon(
+                      tooltip: "Add product",
+                      onPressed: () {
+                        gridStateManager
+                            .insertRows(0, [_buildRow(StorageItemMd.init())]);
+                      },
+                      icon: HeroIcons.add),
+                  // DropdownWidgetV2(
+                  //   items: state.generalState.storage_items
+                  //       .map((e) => CustomDropdownValue(name: e.name))
+                  //       .toList(),
+                  //   onChanged: (value) {
+                  //     gridStateManager.insertRows(0,
+                  //         [_buildRow(state.generalState.storage_items[value])]);
+                  //   },
+                  //   dropdownOptionsWidth: 300,
+                  //   dropdownBtnWidth: 300,
+                  //   hintText: "Search an Item",
+                  //   hasSearchBox: true,
+                  // )
+                ],
+              ));
+  }
+
+  void _handleOnChanged(PlutoGridOnChangedEvent event) {
+    switch (event.column.field) {
+      case "title":
+        final item = appStore.state.generalState.storage_items.firstWhereOrNull(
+            (element) => element.name == event.row.cells["title"]?.value);
+        if (item != null) {
+          gridStateManager.rows[event.rowIdx].cells["customer_price"]?.value =
+              item.outgoingPrice;
+
+          gridStateManager.rows[event.rowIdx].cells["tax"]?.value = appStore
+              .state.generalState.taxes
+              .firstWhereOrNull((element) => element.id == item.taxId)
+              ?.rate
+              .toString();
+        }
+        break;
+    }
   }
 }
