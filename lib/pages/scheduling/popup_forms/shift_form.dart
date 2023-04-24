@@ -764,7 +764,10 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                                 color: Colors.red))
                                         : null,
                                     trailing: isUnavailable
-                                        ? null
+                                        ? const Chip(
+                                            label: Text("Unavailable"),
+                                            labelStyle:
+                                                TextStyle(color: Colors.grey))
                                         : IconButton(
                                             onPressed: () {
                                               setState(() {
@@ -992,7 +995,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                 gridStateManager.removeRows([
                   rendererContext.row,
                 ]);
-                // onTableChangeDone();
               },
               icon: HeroIcons.bin,
               color: ThemeColors.red3,
@@ -1070,7 +1072,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               .firstWhereOrNull((element) => element.id == item.taxId)
               ?.rate
               .toString();
-          // onTableChangeDone();
         }
         break;
     }
