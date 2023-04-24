@@ -1999,8 +1999,8 @@ class _RestClient implements RestClient {
     id,
     required name,
     required taxId,
-    required incomingPrice,
-    required outgoingPrice,
+    incomingPrice,
+    outgoingPrice,
     required service,
     required active,
   }) async {

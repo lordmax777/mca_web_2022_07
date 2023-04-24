@@ -29,6 +29,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                 elevation: 4.0,
                 child: SizedBox(
                   width: c.maxWidth,
+                  height: 200,
                   child: ListView(
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(8.0),
@@ -63,8 +64,8 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                     FocusScope.of(context).unfocus();
                   },
                 ),
-                border: OutlineInputBorder(),
-                labelText: "Search and product",
+                border: const OutlineInputBorder(),
+                labelText: "Search a product",
               ),
             );
           },

@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart'
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import '../../../comps/autocomplete_input_field.dart';
 import '../../../comps/custom_gmaps_widget.dart';
 import '../../../comps/modals/custom_date_picker.dart';
@@ -164,16 +165,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) {
-        // List<ListStorage> warehouses = [
-        //   ...(state.generalState.paramList.data?.storages ?? [])
-        // ];
-        // List<ListStorageItem> products = [
-        //   ...(state.generalState.paramList.data?.storage_items ?? [])
-        // ];
-        // List<ChecklistTemplateMd> checklistTemplates = [
-        //   ...(state.generalState.checklistTemplates.data ?? [])
-        // ];
-        //
         List<UserRes> users = [...(state.usersState.usersList.data ?? [])];
 
         List<ClientInfoMd> clients = [...(state.generalState.clientInfos)];
@@ -999,6 +990,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   Widget _products(AppState state) {
+    logger(state.generalState.storage_items.length);
     return labelWithField(
         "Products and Services",
         SizedBox(
@@ -1024,9 +1016,18 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             : Row(
                 children: [
                   addIcon(
-                      tooltip: "Add product",
-                      onPressed: () {
-                        //TODO:
+                      tooltip: "Add service/product",
+                      onPressed: () async {
+                        final resId = await showDialog<int>(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) =>
+                                StorageItemForm(state: state));
+                        logger(resId);
+                        if (resId == null) return;
+                        final item = state.generalState.storage_items
+                            .firstWhereOrNull((element) => element.id == resId);
+                        if (item == null) return;
                       },
                       icon: HeroIcons.add),
                   const SizedBox(width: 10),
@@ -1041,7 +1042,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                         displayStringForOption: (option) {
                           return option.name;
                         },
-                        options: (p0) => state.generalState.storage_items),
+                        options: (p0) => state.generalState.storage_items
+                            .where((element) => element.name.contains(p0.text))
+                            .toList()),
                   ),
                 ],
               ));

@@ -464,8 +464,8 @@ abstract class RestClient {
     @Path() int? id,
     @Field() required String name,
     @Field() required int taxId,
-    @Field() required String incomingPrice, // Our price
-    @Field() required String outgoingPrice, // Customer price
+    @Field() String? incomingPrice, // Our price
+    @Field() String? outgoingPrice, // Customer price
     @Field() required bool service,
     @Field() required bool active,
   });

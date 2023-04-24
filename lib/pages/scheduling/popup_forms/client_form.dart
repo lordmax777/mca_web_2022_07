@@ -129,9 +129,11 @@ class _ClientFormState extends State<ClientForm> {
   Future<void> onIpLookup() async {
     final ip = await getIpAddress();
     if (ip != null) {
-      setState(() {
-        currentIpAddress = ip;
-      });
+      if (mounted) {
+        setState(() {
+          currentIpAddress = ip;
+        });
+      }
     }
   }
 
@@ -158,13 +160,15 @@ class _ClientFormState extends State<ClientForm> {
           addrs = element.longName;
         }
       }
-      setState(() {
-        address.addressCountryId = countryCode;
-        address.addressCity = city;
-        address.latitude = double.tryParse(lat);
-        address.longitude = double.tryParse(long);
-        address.addressLine1 = addrs;
-      });
+      if (mounted) {
+        setState(() {
+          address.addressCountryId = countryCode;
+          address.addressCity = city;
+          address.latitude = double.tryParse(lat);
+          address.longitude = double.tryParse(long);
+          address.addressLine1 = addrs;
+        });
+      }
       showError(
           "Location Found\n"
           "Country: $countryName\n"
