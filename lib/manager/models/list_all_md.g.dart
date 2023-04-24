@@ -94,6 +94,9 @@ ListAllMd _$ListAllMdFromJson(Map<String, dynamic> json) => ListAllMd(
       payment_methods: (json['payment_methods'] as List<dynamic>)
           .map((e) => ListPaymentMethods.fromJson(e as Map<String, dynamic>))
           .toList(),
+      work_repeats: (json['work_repeats'] as List<dynamic>)
+          .map((e) => ListWorkRepeats.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
@@ -125,6 +128,7 @@ Map<String, dynamic> _$ListAllMdToJson(ListAllMd instance) => <String, dynamic>{
       'clients': instance.clients,
       'services': instance.services,
       'payment_methods': instance.payment_methods,
+      'work_repeats': instance.work_repeats,
     };
 
 ListCurrency _$ListCurrencyFromJson(Map<String, dynamic> json) => ListCurrency(
@@ -541,4 +545,18 @@ Map<String, dynamic> _$ListPaymentMethodsToJson(ListPaymentMethods instance) =>
       'id': instance.id,
       'name': instance.name,
       'active': instance.active,
+    };
+
+ListWorkRepeats _$ListWorkRepeatsFromJson(Map<String, dynamic> json) =>
+    ListWorkRepeats(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      days: json['days'] as int,
+    );
+
+Map<String, dynamic> _$ListWorkRepeatsToJson(ListWorkRepeats instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'days': instance.days,
     };

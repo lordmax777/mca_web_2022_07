@@ -1,9 +1,7 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
@@ -46,7 +44,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   int? tempAllowedLocationId;
   bool isActive = true;
 
-  DateTime? date;
+  DateTime? startDate;
+  DateTime? endDate;
   bool isAllDay = false;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
@@ -72,31 +71,30 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         await onClientChanged(0,
             clients: appStore.state.generalState.clientInfos);
       }
+
+      startDate = data.date;
       if (isCreate) return;
-      final property = data.property!;
-      await onClientChanged(
-          appStore.state.generalState.clientInfos
-              .indexWhere((element) => element.id == property.clientId),
-          clients: appStore.state.generalState.clientInfos);
-      title.text = property.title ?? "";
-      // selectedClientId = property.clientId;
-      selectedLocationId = property.locationId;
-      isActive = property.active ?? false;
-      date = data.date;
-      //TODO: property.days
-      if (property.startTime != null) {
-        startTime = property.startTime?.formattedTime;
-      }
-      if (property.finishTime != null) {
-        endTime = property.finishTime?.formattedTime;
-      }
-      selectedWarehouseId = property.warehouseId;
-      // selectedChecklistTemplateId = property.checklistTemplateId;
-      paidHoursHour.text =
-          property.minPaidTime?.inHours.toInt().toString() ?? "0";
-      paidHoursMinute.text =
-          property.minPaidTime?.inMinutes.toInt().toString() ?? "0";
-      isSplitTime = property.splitTime ?? false;
+      //   final property = data.property!;
+      //   await onClientChanged(
+      //       appStore.state.generalState.clientInfos
+      //           .indexWhere((element) => element.id == property.clientId),
+      //       clients: appStore.state.generalState.clientInfos);
+      //   title.text = property.title ?? "";
+      //   selectedLocationId = property.locationId;
+      //   isActive = property.active ?? false;
+      //   if (property.startTime != null) {
+      //     startTime = property.startTime?.formattedTime;
+      //   }
+      //   if (property.finishTime != null) {
+      //     endTime = property.finishTime?.formattedTime;
+      //   }
+      //   selectedWarehouseId = property.warehouseId;
+      //   // selectedChecklistTemplateId = property.checklistTemplateId;
+      //   paidHoursHour.text =
+      //       property.minPaidTime?.inHours.toInt().toString() ?? "0";
+      //   paidHoursMinute.text =
+      //       property.minPaidTime?.inMinutes.toInt().toString() ?? "0";
+      //   isSplitTime = property.splitTime ?? false;
     });
   }
 
@@ -198,6 +196,10 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                   element.id == tempAllowedLocationId &&
                   !locations.contains(element))
               .toList())
+        ];
+
+        final List<ListWorkRepeats> workRepeats = [
+          ...state.generalState.workRepeats
         ];
 
         return CustomScrollbar(
@@ -324,7 +326,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               isReadOnly: true,
                               hintText: "Select date",
                               controller: TextEditingController(
-                                text: date?.formattedDate ?? "",
+                                text: startDate?.formattedDate ?? "",
                               ),
                               onTap: () async {
                                 final date =
@@ -342,7 +344,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 if (date == null) return;
 
                                 setState(() {
-                                  this.date = date;
+                                  startDate = date;
                                 });
                               },
                             ),
@@ -799,7 +801,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
     return labelWithField(
       customLabel: addIcon(
-          tooltip: "Add team members",
+          tooltip: "Create team members",
           onPressed: unavUsers.isLoaded
               ? () {
                   onAddTeamMember();
@@ -807,18 +809,20 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               : null),
       "Team",
       Container(
-        width: addedChildren.isEmpty ? 200 : null,
-        height: 60,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-        ),
+        width: addedChildren.isEmpty
+            ? 200
+            : MediaQuery.of(context).size.width * .8,
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: Colors.grey[300]!,
           ),
         ),
-        child: Row(
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             if (!unavUsers.isLoaded)
               const Center(child: Text("Please wait loading..."))
@@ -831,74 +835,78 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               ),
             ...addedChildren
                 .map(
-                  (e) => Row(
-                    children: [
-                      addIcon(
-                        tooltip:
-                            "${addedChildrenRates[e.id] == null ? "Add" : "Remove"} Special Rate",
-                        onPressed: () {
-                          setState(() {
-                            if (addedChildrenRates[e.id] == null) {
-                              addedChildrenRates[e.id] = 0;
-                            } else {
-                              addedChildrenRates.remove(e.id);
-                            }
-                          });
-                        },
-                        icon: addedChildrenRates[e.id] == null
-                            ? HeroIcons.dollar
-                            : HeroIcons.bin,
+                  (e) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.grey[300]!,
                       ),
-                      if (addedChildrenRates[e.id] != null)
-                        TextField(
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            border: OutlineInputBorder(),
-                            labelText: "Rate",
-                            constraints: BoxConstraints(
-                              maxWidth: 70,
-                            ),
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          onChanged: (value) {
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    height: 60,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        addIcon(
+                          tooltip:
+                              "${addedChildrenRates[e.id] == null ? "Add" : "Remove"} Special Rate",
+                          onPressed: () {
                             setState(() {
-                              final rate = double.tryParse(value);
-                              if (rate == null) return;
-                              addedChildrenRates[e.id] = rate;
+                              if (addedChildrenRates[e.id] == null) {
+                                addedChildrenRates[e.id] = 0;
+                              } else {
+                                addedChildrenRates.remove(e.id);
+                              }
                             });
                           },
+                          icon: addedChildrenRates[e.id] == null
+                              ? HeroIcons.dollar
+                              : HeroIcons.bin,
                         ),
-                      const SizedBox(width: 10),
-                      InputChip(
-                        label: Text(e.fullname),
-                        onSelected: (val) {},
-                        deleteIcon: const Icon(Icons.remove),
-                        labelStyle: TextStyle(color: e.foregroundColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        if (addedChildrenRates[e.id] != null)
+                          TextField(
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              border: OutlineInputBorder(),
+                              labelText: "Rate",
+                              constraints: BoxConstraints(
+                                maxWidth: 70,
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                final rate = double.tryParse(value);
+                                if (rate == null) return;
+                                addedChildrenRates[e.id] = rate;
+                              });
+                            },
+                          ),
+                        const SizedBox(width: 10),
+                        InputChip(
+                          label: Text(e.fullname),
+                          onSelected: (val) {},
+                          deleteIcon: const Icon(Icons.remove),
+                          labelStyle: TextStyle(color: e.foregroundColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          deleteButtonTooltipMessage: "Remove",
+                          deleteIconColor: e.foregroundColor,
+                          onDeleted: () {
+                            setState(() {
+                              if (addedChildrenRates[e.id] != null) {
+                                addedChildrenRates.remove(e.id);
+                              }
+                              addedChildren.remove(e);
+                            });
+                          },
+                          backgroundColor: e.userRandomBgColor,
                         ),
-                        deleteButtonTooltipMessage: "Remove",
-                        deleteIconColor: e.foregroundColor,
-                        onDeleted: () {
-                          setState(() {
-                            if (addedChildrenRates[e.id] != null) {
-                              addedChildrenRates.remove(e.id);
-                            }
-                            addedChildren.remove(e);
-                          });
-                        },
-                        backgroundColor: e.userRandomBgColor,
-                      ),
-                      if (addedChildren.last != e) const SizedBox(width: 16),
-                      if (addedChildren.last != e)
-                        Container(
-                          width: 1,
-                          height: 60,
-                          color: Colors.grey,
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 )
                 .toList(),
@@ -995,7 +1003,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   Widget _products(AppState state) {
-    logger(state.generalState.storage_items.length);
     return labelWithField(
         "Products and Services",
         SizedBox(
@@ -1021,18 +1028,19 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             : Row(
                 children: [
                   addIcon(
-                      tooltip: "Add service/product",
+                      tooltip: "Create service/product",
                       onPressed: () async {
                         final resId = await showDialog<int>(
                             barrierDismissible: false,
                             context: context,
                             builder: (context) =>
                                 StorageItemForm(state: state));
-                        logger(resId);
                         if (resId == null) return;
-                        final item = state.generalState.storage_items
+                        final item = appStore.state.generalState.storage_items
                             .firstWhereOrNull((element) => element.id == resId);
                         if (item == null) return;
+                        gridStateManager
+                            .insertRows(0, [_buildRow(item, checked: true)]);
                       },
                       icon: HeroIcons.add),
                   const SizedBox(width: 10),
@@ -1057,7 +1065,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               ));
   }
 
-  void _handleOnChanged(PlutoGridOnChangedEvent event) {
+  void _handleOnChanged(PlutoGridOnChangedEvent event) async {
     switch (event.column.field) {
       case "title":
         final item = appStore.state.generalState.storage_items.firstWhereOrNull(
@@ -1065,12 +1073,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         if (item != null) {
           gridStateManager.rows[event.rowIdx].cells["customer_price"]?.value =
               item.outgoingPrice;
-
-          gridStateManager.rows[event.rowIdx].cells["tax"]?.value = appStore
-              .state.generalState.taxes
-              .firstWhereOrNull((element) => element.id == item.taxId)
-              ?.rate
-              .toString();
         }
         break;
     }

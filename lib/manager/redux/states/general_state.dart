@@ -42,6 +42,8 @@ class GeneralState {
       paramList.data?.payment_methods ?? <ListPaymentMethods>[];
   List<WarehouseMd> get storages => warehouses.data ?? <WarehouseMd>[];
   List<ListTaxes> get taxes => paramList.data?.taxes ?? <ListTaxes>[];
+  List<ListWorkRepeats> get workRepeats =>
+      paramList.data?.work_repeats ?? <ListWorkRepeats>[];
 
   final DrawerStates drawerStates;
   final Widget? endDrawer;

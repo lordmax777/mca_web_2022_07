@@ -29,7 +29,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                 elevation: 4.0,
                 child: SizedBox(
                   width: c.maxWidth,
-                  height: 200,
+                  height: 300,
                   child: ListView(
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(8.0),
@@ -71,7 +71,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
           },
           optionsBuilder: options,
           onSelected: onSelected,
-          optionsMaxHeight: 50.0,
+          optionsMaxHeight: 80.0,
         );
       }),
     );

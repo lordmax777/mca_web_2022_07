@@ -35,6 +35,7 @@ class ListAllMd {
   final List<ListClients> clients;
   final List<ListServices> services;
   final List<ListPaymentMethods> payment_methods;
+  final List<ListWorkRepeats> work_repeats;
 
   static ListAllMd init() {
     return ListAllMd(
@@ -66,6 +67,7 @@ class ListAllMd {
       clients: [],
       services: [],
       payment_methods: [],
+      work_repeats: [],
     );
   }
 
@@ -99,6 +101,7 @@ class ListAllMd {
     required this.clients,
     required this.services,
     required this.payment_methods,
+    required this.work_repeats,
   });
 
   factory ListAllMd.fromJson(Map<String, dynamic> json) =>
@@ -109,11 +112,11 @@ class ListAllMd {
 
 @JsonSerializable()
 class ListCurrency {
-  int id;
-  String code;
-  String sign;
-  bool front;
-  int digits;
+  final int id;
+  final String code;
+  final String sign;
+  final bool front;
+  final int digits;
 
   @override
   ListCurrency({
@@ -132,8 +135,8 @@ class ListCurrency {
 
 @JsonSerializable()
 class ListCountry {
-  String code;
-  String name;
+  final String code;
+  final String name;
 
   @override
   ListCountry({
@@ -149,8 +152,8 @@ class ListCountry {
 
 @JsonSerializable()
 class ListEthnic {
-  int id;
-  String name;
+  final int id;
+  final String name;
 
   @override
   ListEthnic({
@@ -166,9 +169,9 @@ class ListEthnic {
 
 @JsonSerializable()
 class ListHandoverType {
-  int id;
-  String title;
-  bool active;
+  final int id;
+  final String title;
+  final bool active;
 
   @override
   ListHandoverType({
@@ -185,9 +188,9 @@ class ListHandoverType {
 
 @JsonSerializable()
 class ListGroup {
-  int id;
-  String name;
-  bool active;
+  final int id;
+  final String name;
+  final bool active;
 
   @override
   ListGroup({
@@ -204,9 +207,9 @@ class ListGroup {
 
 @JsonSerializable()
 class ListJobTitle {
-  int id;
-  String name;
-  bool active;
+  final int id;
+  final String name;
+  final bool active;
 
   @override
   ListJobTitle({
@@ -223,10 +226,10 @@ class ListJobTitle {
 
 @JsonSerializable()
 class ListLocation {
-  int id;
-  String name;
-  bool active;
-  bool? service;
+  final int id;
+  final String name;
+  final bool active;
+  final bool? service;
 
   @override
   ListLocation({
@@ -244,11 +247,11 @@ class ListLocation {
 
 @JsonSerializable()
 class ListQualification {
-  int id;
-  String title;
-  String comments;
-  bool expire;
-  bool levels;
+  final int id;
+  final String title;
+  final String comments;
+  final bool expire;
+  final bool levels;
 
   @override
   ListQualification({
@@ -270,9 +273,10 @@ class ListQualificationLevel {
   // "id": 1,
   // "level": "EL3",
   // "rank": 1
-  int id;
-  String level;
-  int rank;
+  final int id;
+  final String level;
+  final int rank;
+
   @override
   ListQualificationLevel({
     required this.id,
@@ -288,8 +292,9 @@ class ListQualificationLevel {
 
 @JsonSerializable()
 class ListReligion {
-  int id;
-  String name;
+  final int id;
+  final String name;
+
   @override
   ListReligion({
     required this.id,
@@ -312,14 +317,14 @@ class ListRequestType {
   // "both_time": 0,
   // "entitlement": -1,
   // "allocation_required": false
-  int id;
-  String name;
-  String comments;
-  int full_day;
-  bool paid;
-  int both_time;
-  int entitlement;
-  bool allocation_required;
+  final int id;
+  final String name;
+  final String comments;
+  final int full_day;
+  final bool paid;
+  final int both_time;
+  final int entitlement;
+  final bool allocation_required;
 
   @override
   ListRequestType({
@@ -349,12 +354,12 @@ class ListShift {
 //             "active": false
 //},
 
-  int id;
-  String name;
-  int location_id;
-  bool active;
-  int? client_id;
-  int? warehouse_id;
+  final int id;
+  final String name;
+  final int location_id;
+  final bool active;
+  final int? client_id;
+  final int? warehouse_id;
 
   @override
   ListShift({
@@ -381,14 +386,13 @@ class ListSpecialRate {
   //     "split_time": true,
   //     "shift_id": 297
 
-  int id;
-  String name;
-  double rate;
-  int? min_work_time;
-
-  int? paid_time;
-  bool split_time;
-  int shift_id;
+  final int id;
+  final String name;
+  final double rate;
+  final int? min_work_time;
+  final int? paid_time;
+  final bool split_time;
+  final int shift_id;
 
   @override
   ListSpecialRate({
@@ -417,13 +421,13 @@ class ListStatus {
   // "multi": false,
   // "active": true
 
-  int id;
-  String name;
-  bool start;
-  int pair;
-  int level;
-  bool multi;
-  bool active;
+  final int id;
+  final String name;
+  final bool start;
+  final int pair;
+  final int level;
+  final bool multi;
+  final bool active;
 
   @override
   ListStatus({
@@ -450,12 +454,11 @@ class ListStorage {
   // "contact_email": null,
   // "send_report": false
 
-  int id;
-  String name;
-
-  String? contact_name;
-  String? contact_email;
-  bool send_report;
+  final int id;
+  final String name;
+  final String? contact_name;
+  final String? contact_email;
+  final bool send_report;
 
   @override
   ListStorage({
@@ -479,10 +482,10 @@ class ListStorageItem {
   //   "service": false,
   //   "active": true
 
-  int id;
-  String name;
-  bool service;
-  bool active;
+  final int id;
+  final String name;
+  final bool service;
+  final bool active;
 
   @override
   ListStorageItem({
@@ -504,9 +507,9 @@ class ListVisa {
   //       "name": "No visa required",
   //       "active": true
 
-  int id;
-  String name;
-  bool active;
+  final int id;
+  final String name;
+  final bool active;
 
   @override
   ListVisa({
@@ -526,8 +529,8 @@ class ListRole {
   // "code": "ROLE_SYSADMIN",
   //   "name": "Sysadmin"
 
-  String code;
-  String name;
+  final String code;
+  final String name;
 
   @override
   ListRole({
@@ -546,8 +549,8 @@ class LoginMethods {
   // "code": "ROLE_SYSADMIN",
   //   "name": "Sysadmin"
 
-  int id;
-  String name;
+  final int id;
+  final String name;
 
   @override
   LoginMethods({
@@ -563,8 +566,8 @@ class LoginMethods {
 
 @JsonSerializable()
 class MaritalStatuses {
-  String code;
-  String name;
+  final String code;
+  final String name;
 
   @override
   MaritalStatuses({
@@ -580,8 +583,8 @@ class MaritalStatuses {
 
 @JsonSerializable()
 class ContractStarts {
-  int id;
-  String name;
+  final int id;
+  final String name;
 
   @override
   ContractStarts({
@@ -597,8 +600,8 @@ class ContractStarts {
 
 @JsonSerializable()
 class ContractTypes {
-  int id;
-  String name;
+  final int id;
+  final String name;
 
   @override
   ContractTypes({
@@ -638,11 +641,11 @@ class ColorSchemas {
   //  "colour2": "#8b9dc3",
   //  "colour3": "#f0f0f0"
   // },
-  int id;
-  String name;
-  String colour1;
-  String colour2;
-  String colour3;
+  final int id;
+  final String name;
+  final String colour1;
+  final String colour2;
+  final String colour3;
 
   @override
   ColorSchemas({
@@ -666,9 +669,9 @@ class ListTaxes {
 //             "rate": 0,
 //             "active": true
 //         }
-  int id;
-  int rate;
-  bool active;
+  final int id;
+  final int rate;
+  final bool active;
 
   static ListTaxes? byRate(int r) =>
       appStore.state.generalState.paramList.data!.taxes
@@ -700,12 +703,12 @@ class ListClients {
 //             "notes": "",
 //             "active": true
 //         }
-  int id;
-  String name;
-  String company;
-  String? contact;
-  String notes;
-  bool active;
+  final int id;
+  final String name;
+  final String company;
+  final String? contact;
+  final String notes;
+  final bool active;
 
   @override
   ListClients({
@@ -731,10 +734,10 @@ class ListServices {
 //             "location_id": 45,
 //             "active": true
 //         }
-  int id;
-  String name;
-  int location_id;
-  bool active;
+  final int id;
+  final String name;
+  final int location_id;
+  final bool active;
 
   @override
   ListServices({
@@ -759,9 +762,9 @@ class ListPaymentMethods {
 //             "active": true
 //         },
 //         {
-  int id;
-  String name;
-  bool active;
+  final int id;
+  final String name;
+  final bool active;
 
   @override
   ListPaymentMethods({
@@ -774,4 +777,29 @@ class ListPaymentMethods {
       _$ListPaymentMethodsFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListPaymentMethodsToJson(this);
+}
+
+@JsonSerializable()
+class ListWorkRepeats {
+//{
+//             "id": 1,
+//             "name": "Once",
+//             "days": 0
+//         },
+
+  final int id;
+  final String name;
+  final int days;
+
+  @override
+  ListWorkRepeats({
+    required this.id,
+    required this.name,
+    required this.days,
+  });
+
+  factory ListWorkRepeats.fromJson(Map<String, dynamic> json) =>
+      _$ListWorkRepeatsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ListWorkRepeatsToJson(this);
 }

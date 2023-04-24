@@ -2016,6 +2016,7 @@ class _RestClient implements RestClient {
       'service': service,
       'active': active,
     };
+    _data.removeWhere((k, v) => v == null);
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
       method: 'POST',

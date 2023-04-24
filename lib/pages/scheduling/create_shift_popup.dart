@@ -242,7 +242,7 @@ class _CreateJobState extends State<_CreateJob>
                     }
                   });
                 }),
-            ButtonLarge(text: isCreate ? 'Create' : "Save", onPressed: () {}),
+            ButtonLarge(text: 'Publish', onPressed: () {}),
           ],
         ),
       ),
