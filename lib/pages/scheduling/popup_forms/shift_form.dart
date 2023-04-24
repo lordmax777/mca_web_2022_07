@@ -919,12 +919,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         PlutoColumn(
           title: "Title",
           field: "title",
-          enableAutoEditing: true,
-          type: PlutoColumnType.select(
-            state.generalState.storage_items.map((e) => e.name).toList(),
-            enableColumnFilter: true,
-            defaultValue: "Select an item",
-          ),
+          enableEditingMode: false,
+          type: PlutoColumnType.text(),
         ),
         PlutoColumn(
           title: "Customer's price (${company.currency.sign})",
@@ -934,7 +930,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           footerRenderer: (context) {
             final double total = context.stateManager.rows
                 .where((element) => element.checked ?? false)
-                .map((e) => e.cells["customer_price"]?.value ?? 0)
+                .map((e) =>
+                    (e.cells["customer_price"]?.value ?? 0) *
+                    (e.cells["quantity"]?.value ?? 0))
                 .fold(0, (a, b) {
               return a + b;
             });
@@ -947,6 +945,12 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               ),
             );
           },
+        ),
+        PlutoColumn(
+          title: "Quantity",
+          field: "quantity",
+          enableAutoEditing: true,
+          type: PlutoColumnType.number(),
         ),
         PlutoColumn(
           title: "Included in service (All)",
@@ -983,6 +987,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
         "id": PlutoCell(value: contractShiftItem.id),
         "title": PlutoCell(value: contractShiftItem.name),
         "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
+        "quantity": PlutoCell(value: 1),
         "delete_action": PlutoCell(value: ""),
         "include_in_service": PlutoCell(value: "Included in service"),
       },
@@ -1043,7 +1048,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                           return option.name;
                         },
                         options: (p0) => state.generalState.storage_items
-                            .where((element) => element.name.contains(p0.text))
+                            .where((element) => element.name
+                                .toLowerCase()
+                                .contains(p0.text.toLowerCase()))
                             .toList()),
                   ),
                 ],

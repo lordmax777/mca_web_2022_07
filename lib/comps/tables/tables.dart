@@ -51,6 +51,29 @@ class UsersListTable extends StatelessWidget {
       if (!enableEditing) {
         col.enableAutoEditing = false;
         col.enableEditingMode = false;
+      } else {
+        if (col.enableEditingMode == true) {
+          col.cellPadding = const EdgeInsets.symmetric(horizontal: 8);
+          col.renderer = (ctx) {
+            return MouseRegion(
+              cursor: SystemMouseCursors.text,
+              child: Container(
+                height: 32,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  color: ThemeColors.gray12,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: ThemeColors.gray9,
+                    width: 1,
+                  ),
+                ),
+                child: defaultTextWidget(ctx.cell.value.toString()),
+              ),
+            );
+          };
+        }
       }
       col.renderer ??= (ctx) {
         return KText(
