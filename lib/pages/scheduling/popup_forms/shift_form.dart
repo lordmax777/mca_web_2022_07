@@ -947,6 +947,21 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           field: "customer_price",
           enableAutoEditing: true,
           type: PlutoColumnType.currency(),
+          footerRenderer: (context) {
+            final double total = context.stateManager.rows
+                .where((element) => element.checked ?? false)
+                .map((e) => e.cells["customer_price"]?.value ?? 0)
+                .fold(0, (a, b) {
+              return a + b;
+            });
+            return Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(
+                "Total: ${total.getPriceMap().formattedVer}",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            );
+          },
         ),
         PlutoColumn(
           title: "Tax (%)",
@@ -956,6 +971,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             state.generalState.taxes.map((e) => e.rate.toString()).toList(),
             defaultValue: "0",
           ),
+        ),
+        PlutoColumn(
+          title: "Included in service (All)",
+          field: "include_in_service",
+          enableRowChecked: true,
+          enableEditingMode: false,
+          type: PlutoColumnType.text(),
         ),
         PlutoColumn(
           title: "",
@@ -970,6 +992,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                 gridStateManager.removeRows([
                   rendererContext.row,
                 ]);
+                // onTableChangeDone();
               },
               icon: HeroIcons.bin,
               color: ThemeColors.red3,
@@ -992,6 +1015,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                     ?.rate ??
                 0),
         "delete_action": PlutoCell(value: ""),
+        "include_in_service": PlutoCell(value: "Included in service"),
       },
     );
   }
@@ -1011,6 +1035,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               noRowsText: "No product or service added yet",
               onSmReady: (e) {
                 gridStateManager = e;
+                gridStateManager.addListener(() {
+                  onTableChangeDone();
+                });
               },
               cols: cols(state)),
         ),
@@ -1025,19 +1052,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             .insertRows(0, [_buildRow(StorageItemMd.init())]);
                       },
                       icon: HeroIcons.add),
-                  // DropdownWidgetV2(
-                  //   items: state.generalState.storage_items
-                  //       .map((e) => CustomDropdownValue(name: e.name))
-                  //       .toList(),
-                  //   onChanged: (value) {
-                  //     gridStateManager.insertRows(0,
-                  //         [_buildRow(state.generalState.storage_items[value])]);
-                  //   },
-                  //   dropdownOptionsWidth: 300,
-                  //   dropdownBtnWidth: 300,
-                  //   hintText: "Search an Item",
-                  //   hasSearchBox: true,
-                  // )
                 ],
               ));
   }
@@ -1056,8 +1070,13 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               .firstWhereOrNull((element) => element.id == item.taxId)
               ?.rate
               .toString();
+          // onTableChangeDone();
         }
         break;
     }
+  }
+
+  void onTableChangeDone() {
+    setState(() {});
   }
 }
