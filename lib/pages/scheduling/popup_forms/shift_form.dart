@@ -7,6 +7,7 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart'
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
+import 'package:mca_web_2022_07/pages/properties/new_prop_tabs/shift_details_tab.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import '../../../comps/autocomplete_input_field.dart';
 import '../../../comps/custom_gmaps_widget.dart';
@@ -50,6 +51,11 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   int isScheduleLater = 0;
+
+  bool get isRepeat => isScheduleLater == 1;
+
+  int? repeatTypeIndex;
+  final List<int> repeatDays = [];
 
   int? selectedWarehouseId;
   int? selectedChecklistTemplateId;
@@ -429,6 +435,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             radio(0, isScheduleLater, (val) {
                               setState(() {
                                 isScheduleLater = val;
+                                repeatTypeIndex = null;
                               });
                             }),
                           ),
@@ -437,51 +444,78 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             radio(1, isScheduleLater, (val) {
                               setState(() {
                                 isScheduleLater = val;
+                                repeatTypeIndex = 0;
                               });
                             }),
                           ),
                         ],
                       ),
+                      if (isRepeat)
+                        SpacedRow(
+                          horizontalSpace: 64,
+                          children: [
+                            labelWithField(
+                              "Repeats",
+                              DropdownWidgetV2(
+                                hintText: "Select a repeat",
+                                dropdownBtnWidth: 300,
+                                dropdownOptionsWidth: 300,
+                                isRequired: true,
+                                items: workRepeats
+                                    .map((e) =>
+                                        CustomDropdownValue(name: e.name))
+                                    .toList(),
+                                value: repeatTypeIndex != null
+                                    ? CustomDropdownValue(
+                                        name:
+                                            workRepeats[repeatTypeIndex!].name)
+                                    : null,
+                                onChanged: (index) {
+                                  setState(() {
+                                    repeatTypeIndex = index;
+                                  });
+                                },
+                              ),
+                            ),
+                            if (repeatTypeIndex != null)
+                              if (workRepeats[repeatTypeIndex!].id == 3)
+                                SpacedColumn(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        KText(
+                                            text: 'Days ',
+                                            textColor: ThemeColors.gray2,
+                                            fontSize: 14,
+                                            fontWeight: FWeight.bold),
+                                        KText(
+                                            text: '*',
+                                            textColor: ThemeColors.red3,
+                                            fontSize: 14,
+                                            fontWeight: FWeight.bold),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    for (var item
+                                        in Constants.daysOfTheWeek.entries)
+                                      chbx(repeatDays.contains(item.key),
+                                          (value) {
+                                        setState(() {
+                                          if (value) {
+                                            repeatDays.add(item.key);
+                                          } else {
+                                            repeatDays.remove(item.key);
+                                          }
+                                        });
+                                      }, item.value),
+                                  ],
+                                )
+                          ],
+                        ),
                       SpacedRow(
                         horizontalSpace: 64,
                         children: [
-                          // labelWithField(
-                          //   "Warehouse",
-                          //   DropdownWidgetV2(
-                          //     hasSearchBox: true,
-                          //     dropdownBtnWidth: 300,
-                          //     dropdownOptionsWidth: 300,
-                          //     items: warehouses.map((e) => e.name),
-                          //     value: warehouses
-                          //         .firstWhereOrNull((element) =>
-                          //             element.id == selectedWarehouseId)
-                          //         ?.name,
-                          //     onChanged: (index) {
-                          //       setState(() {
-                          //         selectedWarehouseId = warehouses[index].id;
-                          //       });
-                          //     },
-                          //   ),
-                          // ),
-                          // labelWithField(
-                          //   "Checklist Template",
-                          //   DropdownWidgetV2(
-                          //     hasSearchBox: true,
-                          //     dropdownBtnWidth: 300,
-                          //     dropdownOptionsWidth: 300,
-                          //     items: checklistTemplates.map((e) => e.name),
-                          //     value: checklistTemplates
-                          //         .firstWhereOrNull((element) =>
-                          //             element.id == selectedChecklistTemplateId)
-                          //         ?.name,
-                          //     onChanged: (index) {
-                          //       setState(() {
-                          //         selectedChecklistTemplateId =
-                          //             checklistTemplates[index].id;
-                          //       });
-                          //     },
-                          //   ),
-                          // ),
                           labelWithField(
                             "Paid Hours",
                             Row(
@@ -843,7 +877,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       ),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    height: 60,
+                    height: 50,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -869,6 +903,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               isDense: true,
                               border: OutlineInputBorder(),
                               labelText: "Rate",
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 12),
                               constraints: BoxConstraints(
                                 maxWidth: 70,
                               ),
@@ -885,25 +921,38 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                             },
                           ),
                         const SizedBox(width: 10),
-                        InputChip(
-                          label: Text(e.fullname),
-                          onSelected: (val) {},
-                          deleteIcon: const Icon(Icons.remove),
-                          labelStyle: TextStyle(color: e.foregroundColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: InputChip(
+                            label: Text(e.fullname),
+                            labelStyle: TextStyle(color: e.foregroundColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            deleteButtonTooltipMessage: "Remove",
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 0),
+                            deleteIcon: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: e.foregroundColor.withOpacity(.2),
+                                border: Border.all(
+                                  color: e.foregroundColor.withOpacity(.2),
+                                ),
+                              ),
+                              child: const Icon(Icons.close),
+                            ),
+                            deleteIconColor: e.foregroundColor,
+                            onDeleted: () {
+                              setState(() {
+                                if (addedChildrenRates[e.id] != null) {
+                                  addedChildrenRates.remove(e.id);
+                                }
+                                addedChildren.remove(e);
+                              });
+                            },
+                            backgroundColor: e.userRandomBgColor,
                           ),
-                          deleteButtonTooltipMessage: "Remove",
-                          deleteIconColor: e.foregroundColor,
-                          onDeleted: () {
-                            setState(() {
-                              if (addedChildrenRates[e.id] != null) {
-                                addedChildrenRates.remove(e.id);
-                              }
-                              addedChildren.remove(e);
-                            });
-                          },
-                          backgroundColor: e.userRandomBgColor,
                         ),
                       ],
                     ),
@@ -945,11 +994,22 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               return a + b;
             });
 
-            return Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Text(
-                "Total: ${total.getPriceMap().formattedVer}",
-                style: const TextStyle(fontWeight: FontWeight.bold),
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Total:",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      total.getPriceMap().formattedVer,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
             );
           },

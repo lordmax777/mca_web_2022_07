@@ -125,7 +125,7 @@ class _ShiftDetails extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               for (var item in Constants.daysOfTheWeek.entries)
-                _chbx(controller.shiftDays.containsKey(item.key), (value) {
+                chbx(controller.shiftDays.containsKey(item.key), (value) {
                   controller.updateShiftDays(item);
                 }, item.value),
             ],
@@ -152,7 +152,7 @@ class _ShiftDetails extends StatelessWidget {
                 Constants.userAccountStatusTypes.values.map((e) => e).toList(),
           ),
           const SizedBox(height: 32),
-          _chbx(controller.shiftChecklistOn,
+          chbx(controller.shiftChecklistOn,
               controller.updateShiftChecklistAvailable, "Checklist Available"),
           const SizedBox(height: 12),
           DropdownWidgetV2(
@@ -256,7 +256,7 @@ class _Timings extends StatelessWidget {
                     onTap: () => controller.updateTimeController(
                         context, controller.timingStartBreakTime),
                   ),
-                  _chbx(controller.timingStrictBreakTime.value,
+                  chbx(controller.timingStrictBreakTime.value,
                       controller.updateStrictBreakTime, "Strict Break Time"),
                 ],
               ),
@@ -408,7 +408,7 @@ class _Rates extends StatelessWidget {
               )
             ],
           ),
-          _chbx(controller.rateSplitTime.value, controller.updateRateSplitTime,
+          chbx(controller.rateSplitTime.value, controller.updateRateSplitTime,
               "Split Time"),
           1.hs,
         ]);
@@ -492,7 +492,7 @@ class _Rates extends StatelessWidget {
                     )
                   ],
                 ),
-                _chbx(rate.splitTime, (value) {
+                chbx(rate.splitTime, (value) {
                   rate.splitTime = value;
                   NewPropController.to.update(['rates']);
                 }, "Split Time"),
@@ -555,19 +555,24 @@ class _Rates extends StatelessWidget {
   }
 }
 
-Widget _chbx(bool value, ValueChanged<bool> onChanged, String text) {
-  return SpacedRow(
-    horizontalSpace: 8.0,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),
-      KText(
-        text: text,
-        textColor: ThemeColors.gray2,
-        fontSize: 14,
-        fontWeight: FWeight.bold,
-        isSelectable: false,
-      )
-    ],
+Widget chbx(bool value, ValueChanged<bool> onChanged, String text) {
+  return GestureDetector(
+    onTap: () {
+      onChanged(!value);
+    },
+    child: SpacedRow(
+      horizontalSpace: 8.0,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),
+        KText(
+          text: text,
+          textColor: ThemeColors.gray2,
+          fontSize: 14,
+          fontWeight: FWeight.bold,
+          isSelectable: false,
+        )
+      ],
+    ),
   );
 }
