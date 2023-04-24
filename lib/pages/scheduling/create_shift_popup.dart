@@ -35,6 +35,7 @@ Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
     builder: (_) {
       switch (data.type) {
         case ScheduleCreatePopupMenus.job:
+        case ScheduleCreatePopupMenus.quote:
           return _CreateJob(data);
         default:
           return const Center(child: Text("Invalid type"));

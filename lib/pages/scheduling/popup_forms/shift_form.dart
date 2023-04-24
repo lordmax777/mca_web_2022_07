@@ -17,6 +17,7 @@ import '../../../manager/general_controller.dart';
 import '../../../manager/model_exporter.dart';
 import '../../../theme/theme.dart';
 import '../create_shift_popup.dart';
+import '../scheduling_page.dart';
 import 'client_form.dart';
 
 // Shift details form
@@ -34,6 +35,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   CreateShiftData get data => widget.data;
 
   bool get isCreate => data.property == null;
+
+  ScheduleCreatePopupMenus get type => data.type;
 
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
   CompanyMd get company => GeneralController.to.companyInfo;
@@ -223,14 +226,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                       SpacedRow(
                         horizontalSpace: 64,
                         children: [
-                          labelWithField(
-                            "Title",
-                            TextInputWidget(
-                              width: 300,
-                              controller: title,
-                              hintText: "Enter title",
+                          if (type == ScheduleCreatePopupMenus.job)
+                            labelWithField(
+                              "Title",
+                              TextInputWidget(
+                                width: 300,
+                                controller: title,
+                                hintText: "Enter title",
+                              ),
                             ),
-                          ),
                           labelWithField(
                             "Client",
                             DropdownWidgetV2(
@@ -672,7 +676,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                           ),
                         ],
                       ),
-                      _team(users),
+                      if (type == ScheduleCreatePopupMenus.job) _team(users),
                       if (selectedClientId != null) _products(state),
                     ],
                   ),
@@ -1024,6 +1028,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           title: "Included in service (All)",
           field: "include_in_service",
           enableRowChecked: true,
+          enableSorting: false,
           enableEditingMode: false,
           type: PlutoColumnType.text(),
         ),
@@ -1031,6 +1036,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           title: "",
           field: "delete_action",
           enableEditingMode: false,
+          enableSorting: false,
           width: 40,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {

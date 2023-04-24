@@ -452,6 +452,7 @@ List<SimplePopupMenu> getPopupAppointmentMenus(
 
 enum ScheduleCreatePopupMenus {
   job,
+  quote,
 }
 
 List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus() {
