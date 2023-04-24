@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/router/route_guards.dart';
 import 'package:mca_web_2022_07/pages/home.dart';
 import 'package:mca_web_2022_07/pages/properties/new_property_page.dart';
+import 'package:mca_web_2022_07/pages/quotes/quotes_list_page.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
@@ -41,6 +42,7 @@ part 'router.gr.dart';
       AutoRoute(page: PropertiesPage, path: "properties"),
       AutoRoute(page: NewPropertyPage, path: "property"),
       AutoRoute(page: SchedulingPage, path: "schedule"),
+      AutoRoute(page: QuotesListPage, path: "quotes"),
     ]),
   ],
 )

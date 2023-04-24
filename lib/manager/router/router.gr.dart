@@ -150,6 +150,12 @@ class _$AppRouter extends RootStackRouter {
         child: const SchedulingPage(),
       );
     },
+    QuotesListRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const QuotesListPage(),
+      );
+    },
   };
 
   @override
@@ -241,6 +247,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               SchedulingRoute.name,
               path: 'schedule',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              QuotesListRoute.name,
+              path: 'quotes',
               parent: HomeRoute.name,
             ),
           ],
@@ -553,4 +564,16 @@ class SchedulingRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'SchedulingRoute';
+}
+
+/// generated route for
+/// [QuotesListPage]
+class QuotesListRoute extends PageRouteInfo<void> {
+  const QuotesListRoute()
+      : super(
+          QuotesListRoute.name,
+          path: 'quotes',
+        );
+
+  static const String name = 'QuotesListRoute';
 }

@@ -1,3 +1,4 @@
+import 'package:mca_web_2022_07/pages/quotes/quotes_list_page.dart';
 import 'package:mca_web_2022_07/utils/global_functions.dart';
 
 import '../manager/router/router.dart';
@@ -53,7 +54,7 @@ class Constants {
       "children": [
         {
           "title": "Scheduling",
-          "name": SchedulingRoute(),
+          "name": const SchedulingRoute(),
         }
       ]
     },
@@ -73,6 +74,10 @@ class Constants {
         {
           "title": "Qualifications and Skills",
           "name": const QualificationsRoute(),
+        },
+        {
+          "title": "Quotes",
+          "name": const QuotesListPage(),
         },
         {
           "title": "Locations",

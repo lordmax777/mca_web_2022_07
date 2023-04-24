@@ -13,7 +13,7 @@ class DefaultDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DrawerStates drawerState = state.generalState.drawerStates;
-    final String companyTitle = GeneralController.to.companyInfo.name ?? 'MCA';
+    final String companyTitle = GeneralController.to.companyInfo.name;
 
     return YSSidebar(
       title: companyTitle,
