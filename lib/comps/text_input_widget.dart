@@ -93,6 +93,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
         height: widget.heigth,
         alignment: Alignment.center,
         child: TextFormField(
+          autofillHints: widget.disableAll ? null : [AutofillHints.name],
           onChanged: widget.onChanged,
           validator: _getValidator(),
           obscureText: widget.isPassword ? _obscureText : false,

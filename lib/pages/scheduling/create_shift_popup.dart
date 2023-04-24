@@ -31,7 +31,7 @@ class CreateShiftData {
 Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
   return showDialog<T>(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: kDebugMode ? true : false,
     builder: (_) {
       switch (data.type) {
         case ScheduleCreatePopupMenus.job:
@@ -44,7 +44,7 @@ Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
 }
 
 Future<bool> onWillPop(BuildContext context) async {
-  // if (kDebugMode) return true;
+  if (kDebugMode) return true;
   return (await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -164,9 +164,11 @@ class _CreateJobState extends State<_CreateJob>
       //GetUnavailableUsersAction
       final unavUsers =
           await appStore.dispatch(GetUnavailableUsersAction(date));
-      setState(() {
-        widget.data.unavailableUsers.users = unavUsers;
-      });
+      if (mounted) {
+        setState(() {
+          widget.data.unavailableUsers.users = unavUsers;
+        });
+      }
     });
   }
 

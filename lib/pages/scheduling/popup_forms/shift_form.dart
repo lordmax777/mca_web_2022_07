@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart'
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
+import '../../../comps/autocomplete_input_field.dart';
 import '../../../comps/custom_gmaps_widget.dart';
 import '../../../comps/modals/custom_date_picker.dart';
 import '../../../comps/modals/custom_time_picker.dart';
@@ -946,6 +947,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                 .fold(0, (a, b) {
               return a + b;
             });
+
             return Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: Text(
@@ -1024,10 +1026,23 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                   addIcon(
                       tooltip: "Add product",
                       onPressed: () {
-                        gridStateManager.insertRows(0,
-                            [_buildRow(StorageItemMd.init(), checked: true)]);
+                        //TODO:
                       },
                       icon: HeroIcons.add),
+                  const SizedBox(width: 10),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomAutocompleteTextField<StorageItemMd>(
+                        listItemWidget: (p0) => Text(p0.name),
+                        onSelected: (p0) {
+                          gridStateManager
+                              .insertRows(0, [_buildRow(p0, checked: true)]);
+                        },
+                        displayStringForOption: (option) {
+                          return option.name;
+                        },
+                        options: (p0) => state.generalState.storage_items),
+                  ),
                 ],
               ));
   }

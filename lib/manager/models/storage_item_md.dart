@@ -17,10 +17,10 @@ class StorageItemMd {
       required this.taxId});
 
   //init
-  factory StorageItemMd.init() {
+  factory StorageItemMd.init({String? name}) {
     return StorageItemMd(
       id: 0,
-      name: '',
+      name: name ?? '',
       active: false,
       service: false,
       incomingPrice: 0,
