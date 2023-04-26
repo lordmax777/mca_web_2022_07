@@ -12,9 +12,7 @@ class _RestClient implements RestClient {
   _RestClient(
     this._dio, {
     this.baseUrl,
-  }) {
-    baseUrl ??= 'https://timesheet.skillfill.co.uk';
-  }
+  });
 
   final Dio _dio;
 

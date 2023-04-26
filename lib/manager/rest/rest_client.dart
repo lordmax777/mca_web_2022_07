@@ -7,7 +7,7 @@ import 'dio_client_for_retrofit.dart';
 
 part 'rest_client.g.dart';
 
-@RestApi(baseUrl: Constants.apiBaseUrlDev, parser: Parser.JsonSerializable)
+@RestApi(parser: Parser.JsonSerializable)
 abstract class RestClient {
   factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
@@ -559,8 +559,47 @@ abstract class RestClient {
   // id = 0 to get all
   @GET("/api/fe/quotes/{id}")
   Future<HttpResponse> getQuotes(@Path() int id);
+
+  // @POST("/api/fe/quotes/{id}")
+  // @FormUrlEncoded()
+  // Future<HttpResponse> createQuote(
+  //   ///0 to create new, id to update
+  //   @Path() int id, {
+  //   @Field() required String email,
+  //   @Field() required String name,
+  //   @Field() required String company,
+  //   @Field() required String phone,
+  //   @Field() required String addressLine1,
+  //   @Field() required String addressLine2,
+  //   @Field() required String addressCity,
+  //   @Field() required String addressCounty,
+  //   //country code
+  //   @Field() required String addressCountry,
+  //   @Field() required String addressPostcode,
+  //   @Field() required String workAddressLine1,
+  //   @Field() required String workAddressLine2,
+  //   @Field() required String workAddressCity,
+  //   @Field() required String workAddressCounty,
+  //   //country code
+  //   @Field() required String workAddressCountry,
+  //   @Field() required String workAddressPostcode,
+  //   @Field() String? notes,
+  //   @Field() required int currencyId,
+  //   @Field() required int paymentMethodId,
+  //   @Field() required int payingDays,
+  //   @Field() required bool active,
+  //   @Field() required String workStartDate,
+  //   @Field() required String altWorkStartDate,
+  //   @Field() required String workStartTime,
+  //   @Field() required String workFinishTime,
+  //   @Field() required int workRepeatId,
+  //   @Field() required String quoteComments,
+  //   @Field() required List<int> workDays,
+  // });
 }
 
-RestClient restClient() => RestClient(DioClientForRetrofit(
-        bearerToken: appStore.state.authState.authRes.data?.access_token)
-    .init());
+RestClient restClient() => RestClient(
+    DioClientForRetrofit(
+            bearerToken: appStore.state.authState.authRes.data?.access_token)
+        .init(),
+    baseUrl: Constants.apiBaseUrl);

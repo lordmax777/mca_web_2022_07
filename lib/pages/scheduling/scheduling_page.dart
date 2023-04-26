@@ -452,7 +452,18 @@ List<SimplePopupMenu> getPopupAppointmentMenus(
 
 enum ScheduleCreatePopupMenus {
   job,
-  quote,
+  quote;
+
+  String get label {
+    switch (this) {
+      case ScheduleCreatePopupMenus.job:
+        return "Job";
+      case ScheduleCreatePopupMenus.quote:
+        return "Quote";
+      default:
+        return "";
+    }
+  }
 }
 
 List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus() {

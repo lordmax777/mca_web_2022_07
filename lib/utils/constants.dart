@@ -19,6 +19,8 @@ class Constants {
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";
   static const String apiBaseUrlProd = "https://www.onlinetimeclock.co.uk";
 
+  static String get apiBaseUrl => isDebug ? apiBaseUrlDev : apiBaseUrlProd;
+
   //Auth
   static const String domain = "timesheet.skillfill.co.uk";
   static const String clientId =

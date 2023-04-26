@@ -43,38 +43,75 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   //Ephemeral state
   final TextEditingController title = TextEditingController();
-  int? selectedClientId;
-  int? selectedLocationId;
-  int? tempAllowedLocationId;
-  bool isActive = true;
+  int? get selectedClientId => data.selectedClientId;
+  set selectedClientId(int? id) => data.selectedClientId = id;
 
-  DateTime? startDate;
-  DateTime? endDate;
-  bool isAllDay = false;
-  TimeOfDay? startTime;
-  TimeOfDay? endTime;
-  int isScheduleLater = 0;
+  int? get selectedLocationId => data.selectedLocationId;
+  set selectedLocationId(int? id) => data.selectedLocationId = id;
+
+  int? get tempAllowedLocationId => data.tempAllowedLocationId;
+  set tempAllowedLocationId(int? id) => data.tempAllowedLocationId = id;
+
+  bool get isActive => data.isActive;
+  set isActive(bool value) => data.isActive = value;
+
+  DateTime? get startDate => data.startDate;
+  set startDate(DateTime? value) => data.startDate = value;
+
+  DateTime? get endDate => data.endDate;
+  set endDate(DateTime? value) => data.endDate = value;
+
+  bool get isAllDay => data.isAllDay;
+  set isAllDay(bool value) => data.isAllDay = value;
+
+  TimeOfDay? get startTime => data.startTime;
+  set startTime(TimeOfDay? value) => data.startTime = value;
+
+  TimeOfDay? get endTime => data.endTime;
+  set endTime(TimeOfDay? value) => data.endTime = value;
+
+  int get isScheduleLater => data.isScheduleLater;
+  set isScheduleLater(int value) => data.isScheduleLater = value;
 
   bool get isRepeat => isScheduleLater == 1;
 
-  int? repeatTypeIndex;
-  final List<int> repeatDays = [];
+  int? get repeatTypeIndex => data.repeatTypeIndex;
+  set repeatTypeIndex(int? value) => data.repeatTypeIndex = value;
+  List<int> get repeatDays => data.repeatDays;
+  set repeatDays(List<int> value) => data.repeatDays = value;
 
+  // NO NEED !
   int? selectedWarehouseId;
   int? selectedChecklistTemplateId;
+
   TextEditingController paidHoursHour = TextEditingController(text: "0");
   TextEditingController paidHoursMinute = TextEditingController(text: "0");
-  bool isSplitTime = false;
+  bool get isSplitTime => data.isSplitTime;
+  set isSplitTime(bool value) => data.isSplitTime = value;
 
-  final List<UserRes> addedChildren = [];
-  final Map<int, double> addedChildrenRates = {};
+  List<UserRes> get addedChildren => data.addedChildren;
+  set addedChildren(List<UserRes> value) => data.addedChildren = value;
+  Map<int, double> get addedChildrenRates => data.addedChildrenRates;
+  set addedChildrenRates(Map<int, double> value) =>
+      data.addedChildrenRates = value;
 
-  late PlutoGridStateManager gridStateManager;
+  PlutoGridStateManager get gridStateManager => data.gridStateManager;
+  set gridStateManager(PlutoGridStateManager value) =>
+      data.gridStateManager = value;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      title.addListener(() {
+        data.title = title.text;
+      });
+      paidHoursHour.addListener(() {
+        data.paidHour = int.tryParse(paidHoursHour.text) ?? 0;
+      });
+      paidHoursMinute.addListener(() {
+        data.paidMinute = int.tryParse(paidHoursMinute.text) ?? 0;
+      });
       //TODO: Remove this
       if (kDebugMode) {
         await onClientChanged(0,

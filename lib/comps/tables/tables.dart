@@ -15,10 +15,12 @@ class UsersListTable extends StatelessWidget {
   final PlutoGridMode mode;
   final void Function(PlutoGridOnChangedEvent)? onChanged;
   final String? noRowsText;
+  final PlutoGridColumnFilterConfig? columnFilter;
   const UsersListTable(
       {Key? key,
       required this.rows,
       this.onOneTapSelect,
+      this.columnFilter,
       this.onChanged,
       this.mode = PlutoGridMode.selectWithOneTap,
       this.enableEditing = false,
@@ -100,6 +102,7 @@ class UsersListTable extends StatelessWidget {
       height: _h,
       child: PlutoGrid(
         configuration: PlutoGridConfiguration(
+            columnFilter: columnFilter ?? const PlutoGridColumnFilterConfig(),
             style: PlutoGridStyleConfig(
               columnHeight: 48.0,
               rowHeight: 48.0,

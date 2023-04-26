@@ -420,3 +420,69 @@ class GetQuotesAction {
 
   GetQuotesAction({this.id});
 }
+
+class CreateQuoteAction {
+  final int id;
+  final String email;
+  final String name;
+  final String company;
+  final String phone;
+  final String addressLine1;
+  final String addressLine2;
+  final String addressCity;
+  final String addressCounty;
+  //country code
+  final String addressCountry;
+  final String addressPostcode;
+  final String workAddressLine1;
+  final String workAddressLine2;
+  final String workAddressCity;
+  final String workAddressCounty;
+  //country code
+  final String workAddressCountry;
+  final String workAddressPostcode;
+  final String? notes;
+  final int currencyId;
+  final int paymentMethodId;
+  final int payingDays;
+  final bool active;
+  final String workStartDate;
+  final String altWorkStartDate;
+  final String workStartTime;
+  final String workFinishTime;
+  final int workRepeatId;
+  final String quoteComments;
+  final List<int> workDays;
+
+  CreateQuoteAction({
+    this.id = 0,
+    required this.email,
+    required this.name,
+    required this.company,
+    required this.phone,
+    required this.addressLine1,
+    required this.addressLine2,
+    required this.addressCity,
+    required this.addressCounty,
+    required this.addressCountry,
+    required this.addressPostcode,
+    required this.workAddressLine1,
+    required this.workAddressLine2,
+    required this.workAddressCity,
+    required this.workAddressCounty,
+    required this.workAddressCountry,
+    required this.workAddressPostcode,
+    this.notes,
+    required this.currencyId,
+    required this.paymentMethodId,
+    required this.payingDays,
+    required this.active,
+    required this.workStartDate,
+    required this.altWorkStartDate,
+    required this.workStartTime,
+    required this.workFinishTime,
+    required this.workRepeatId,
+    required this.quoteComments,
+    required this.workDays,
+  });
+}

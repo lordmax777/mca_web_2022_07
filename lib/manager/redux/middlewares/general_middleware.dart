@@ -3,6 +3,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
+import 'package:mca_web_2022_07/manager/rest/dio_client_for_retrofit.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
@@ -12,13 +13,14 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
-
 import '../../general_controller.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../sets/state_value.dart';
 import '../states/general_state.dart';
+
+import 'package:dio/dio.dart' as dio;
 
 class GeneralMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -44,6 +46,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getClientInfosAction(store.state, action, next);
       case GetQuotesAction:
         return _getQuotesAction(store.state, action, next);
+      case CreateQuoteAction:
+        return _createQuoteAction(store.state, action, next);
       default:
         return next(action);
     }
@@ -251,5 +255,25 @@ Future<List<QuoteInfoMd>> _getQuotesAction(
   } catch (e) {
     Logger.e(e.toString(), tag: "GetQuotesAction");
     return [];
+  }
+}
+
+Future<void> _createQuoteAction(
+    AppState state, CreateQuoteAction action, NextDispatcher next) async {
+  try {
+    final dio.Dio apiClient = DioClientForRetrofit().init();
+    apiClient.options.baseUrl = Constants.apiBaseUrl;
+    final dio.FormData data = dio.FormData();
+    data.fields.add(MapEntry(
+      'email',
+      action.email,
+    ));
+
+    logger(
+        "CreateQuoteAction FORM: ${data.fields.map((e) => "${e.key}: ${e.value}").toList()}");
+
+    apiClient.post("/fe/quotes/${action.id}", data: data);
+  } catch (e) {
+    Logger.e(e.toString(), tag: "CreateQuoteAction");
   }
 }

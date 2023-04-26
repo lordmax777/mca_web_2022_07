@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_form.dart';
@@ -24,6 +25,28 @@ class CreateShiftData {
   final DateTime date;
   final PropertiesMd? property;
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
+
+  String title = "";
+  int? selectedClientId;
+  int? selectedLocationId;
+  int? tempAllowedLocationId;
+  bool isActive = true;
+  DateTime? startDate;
+  DateTime? endDate;
+  bool isAllDay = false;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
+  int isScheduleLater = 0;
+  int? repeatTypeIndex;
+  List<int> repeatDays = [];
+  int paidHour = 0;
+  int paidMinute = 0;
+  bool isSplitTime = false;
+
+  List<UserRes> addedChildren = [];
+  Map<int, double> addedChildrenRates = {};
+
+  late PlutoGridStateManager gridStateManager;
 
   CreateShiftData({required this.type, required this.date, this.property});
 }
@@ -141,6 +164,7 @@ class _CreateJobState extends State<_CreateJob>
   CreateShiftData get data => widget.data;
   DateTime get date => data.date;
   bool get isCreate => data.property == null;
+  ScheduleCreatePopupMenus get type => data.type;
 
   late final TabController _tabController;
 
@@ -163,12 +187,14 @@ class _CreateJobState extends State<_CreateJob>
     _tabController = TabController(length: _tabs.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //GetUnavailableUsersAction
-      final unavUsers =
-          await appStore.dispatch(GetUnavailableUsersAction(date));
-      if (mounted) {
-        setState(() {
-          widget.data.unavailableUsers.users = unavUsers;
-        });
+      if (type != ScheduleCreatePopupMenus.quote) {
+        final unavUsers =
+            await appStore.dispatch(GetUnavailableUsersAction(date));
+        if (mounted) {
+          setState(() {
+            widget.data.unavailableUsers.users = unavUsers;
+          });
+        }
       }
     });
   }
@@ -197,7 +223,7 @@ class _CreateJobState extends State<_CreateJob>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isCreate ? 'Create Job' : 'Edit Job',
+                    isCreate ? 'Create ${type.label}' : 'Edit ${type.label}',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   IconButton(
@@ -212,15 +238,16 @@ class _CreateJobState extends State<_CreateJob>
                   ),
                 ],
               ),
-              TabBar(
-                controller: _tabController,
-                tabs: _tabs,
-                labelColor: ThemeColors.MAIN_COLOR,
-                unselectedLabelColor: ThemeColors.gray7,
-                indicatorColor: ThemeColors.MAIN_COLOR,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: Theme.of(context).textTheme.headlineSmall,
-              ),
+              if (type != ScheduleCreatePopupMenus.quote)
+                TabBar(
+                  controller: _tabController,
+                  tabs: _tabs,
+                  labelColor: ThemeColors.MAIN_COLOR,
+                  unselectedLabelColor: ThemeColors.gray7,
+                  indicatorColor: ThemeColors.MAIN_COLOR,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
+                ),
               const Divider(
                 thickness: 1,
                 height: 1,
@@ -243,7 +270,33 @@ class _CreateJobState extends State<_CreateJob>
                     }
                   });
                 }),
-            ButtonLarge(text: 'Publish', onPressed: () {}),
+            ButtonLarge(
+                text: 'Publish',
+                onPressed: () async {
+                  // await appStore.dispatch(CreateQuoteAction(
+                  //   email: state.generalState
+                  //       .clientInfos[data.selectedClientId!].email!,
+                  //   name: state
+                  //       .generalState.clientInfos[data.selectedClientId!].name,
+                  //   company: state.generalState
+                  //       .clientInfos[data.selectedClientId!].company!,
+                  //   phone: state.generalState
+                  //       .clientInfos[data.selectedClientId!].phone!,
+                  //   addressLine1: state.generalState
+                  //       .clientInfos[data.selectedClientId!].address.line1!,
+                  //   addressLine2: state.generalState
+                  //       .clientInfos[data.selectedClientId!].address.line2!,
+                  //   addressCounty: state.generalState
+                  //       .clientInfos[data.selectedClientId!].address.county!,
+                  //   addressCity: state.generalState
+                  //       .clientInfos[data.selectedClientId!].address.city!,
+                  //   addressCountry: state.generalState
+                  //       .clientInfos[data.selectedClientId!].address.country!,
+                  //   addressPostcode: state.generalState
+                  //       .clientInfos[data.selectedClientId!].address.postcode!,
+                  //   active: data.isActive,
+                  // ));
+                }),
           ],
         ),
       ),
