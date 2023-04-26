@@ -102,6 +102,10 @@ class Constants {
           "name": const ChecklistTemplatesRoute(),
         },
         {
+          "title": "Approval",
+          "name": const ApprovalTemplateRoute(),
+        },
+        {
           "title": "Handover Types",
           "name": const HandoverTypesRoute(),
         },
