@@ -8,7 +8,6 @@ import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
-import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../theme/theme.dart';
 import '../../manager/model_exporter.dart';
@@ -125,8 +124,9 @@ class _CreateJob extends StatefulWidget {
 class _CreateJobState extends State<_CreateJob>
     with SingleTickerProviderStateMixin {
   CreateShiftDataType get data => widget.data;
+
   DateTime get date => data.date ?? DateTime.now();
-  bool get isCreate => data.property == null;
+  bool get isCreate => data.isCreate;
   ScheduleCreatePopupMenus get type => data.type;
 
   late final TabController _tabController;
@@ -150,16 +150,19 @@ class _CreateJobState extends State<_CreateJob>
     _tabController = TabController(length: _tabs.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //GetUnavailableUsersAction
-      if (type != ScheduleCreatePopupMenus.quote) {
-        final unavUsers =
-            await appStore.dispatch(GetUnavailableUsersAction(date));
-        if (mounted) {
-          setState(() {
-            widget.data.unavailableUsers.users = unavUsers;
-          });
-        }
+      switch (type) {
+        case ScheduleCreatePopupMenus.quote:
+          break;
+        default:
+          final unavUsers =
+              await appStore.dispatch(GetUnavailableUsersAction(date));
+          if (mounted) {
+            setState(() {
+              (data as CreateShiftData).unavailableUsers.users = unavUsers;
+            });
+          }
+          break;
       }
-      logger(data);
     });
   }
 
@@ -257,12 +260,13 @@ class _CreateJobState extends State<_CreateJob>
                       addressCountry: client.address.country,
                       addressPostcode: client.address.postcode,
                       active: data.isActive,
-                      altWorkStartDate: getDateFormat(data.altStartDate,
+                      altWorkStartDate: getDateFormat(
+                          (data as CreateShiftDataQuote).altStartDate,
                           dateSeparatorSymbol: "/"),
                       currencyId: int.parse(client.currencyId),
                       payingDays: client.payingDays,
                       paymentMethodId: int.parse(client.paymentMethodId!),
-                      quoteComments: data.comments,
+                      quoteComments: (data as CreateShiftDataQuote).comments,
                       workAddressCity: location?.address?.city,
                       workAddressCountry: location?.address?.country,
                       workAddressCounty: location?.address?.county,

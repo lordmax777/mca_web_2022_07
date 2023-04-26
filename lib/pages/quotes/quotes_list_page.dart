@@ -107,7 +107,7 @@ class _QuotesListPageState extends State<QuotesListPage>
               onTap: (value) {
                 _onAddQuoteTap(
                     successMessage: "Quote updated successfully",
-                    quoteId: rendererContext.row.cells['quote']!.value);
+                    quoteId: rendererContext.row.cells['quote']!.value.id);
               },
             );
           },
@@ -193,14 +193,6 @@ class _QuotesListPageState extends State<QuotesListPage>
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  @override
-  void reassemble() async {
-    super.reassemble();
-    if (kDebugMode) {
-      // await onReload();
-    }
   }
 
   void _onAddQuoteTap({

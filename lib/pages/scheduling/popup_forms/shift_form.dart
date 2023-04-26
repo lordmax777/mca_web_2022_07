@@ -35,11 +35,10 @@ class ShiftDetailsForm extends StatefulWidget {
 class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   CreateShiftDataType get data => widget.data;
 
-  bool get isCreate => data.property == null;
+  bool get isCreate => data.isCreate;
 
   ScheduleCreatePopupMenus get type => data.type;
 
-  UnavailableUserLoad get unavUsers => data.unavailableUsers;
   CompanyMd get company => GeneralController.to.companyInfo;
 
   //Ephemeral state
@@ -56,17 +55,18 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   bool get isActive => data.isActive;
   set isActive(bool value) => data.isActive = value;
 
-  DateTime? get startDate => data.startDate;
-  set startDate(DateTime? value) => data.startDate = value;
-
   DateTime? get endDate => data.endDate;
   set endDate(DateTime? value) => data.endDate = value;
 
-  DateTime? get altStartDate => data.altStartDate;
-  set altStartDate(DateTime? value) => data.altStartDate = value;
+  DateTime? get altStartDate => (data as CreateShiftDataQuote).altStartDate;
+  set altStartDate(DateTime? value) =>
+      (data as CreateShiftDataQuote).altStartDate = value;
 
   bool get isAllDay => data.isAllDay;
   set isAllDay(bool value) => data.isAllDay = value;
+
+  DateTime? get date => data.date;
+  set date(DateTime? value) => data.date = value;
 
   TimeOfDay? get startTime => data.startTime;
   set startTime(TimeOfDay? value) => data.startTime = value;
@@ -92,8 +92,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   TextEditingController paidHoursMinute = TextEditingController(text: "0");
   TextEditingController comments = TextEditingController();
 
-  bool get isSplitTime => data.isSplitTime;
-  set isSplitTime(bool value) => data.isSplitTime = value;
+  bool get isSplitTime => (data as CreateShiftData).isSplitTime;
+  set isSplitTime(bool value) => (data as CreateShiftData).isSplitTime = value;
 
   List<UserRes> get addedChildren => data.addedChildren;
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
@@ -119,28 +119,20 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       title.addListener(() {
-        data.title = title.text;
+        (data as CreateShiftData).title = title.text;
       });
       paidHoursHour.addListener(() {
-        data.paidHour = int.tryParse(paidHoursHour.text) ?? 0;
+        (data as CreateShiftData).paidHour =
+            int.tryParse(paidHoursHour.text) ?? 0;
       });
       paidHoursMinute.addListener(() {
-        data.paidMinute = int.tryParse(paidHoursMinute.text) ?? 0;
+        (data as CreateShiftData).paidMinute =
+            int.tryParse(paidHoursMinute.text) ?? 0;
       });
       comments.addListener(() {
-        data.comments = comments.text;
+        (data as CreateShiftDataQuote).comments = comments.text;
       });
-      //TODO: Remove this
-      if (kDebugMode) {
-        await onClientChanged(0,
-            clients: appStore.state.generalState.clientInfos);
-      }
-      if (type == ScheduleCreatePopupMenus.quote) {
-        scheduleLaterIndex = 1;
-        repeatTypeIndex = 0;
-      }
 
-      startDate = data.date;
       if (isCreate) return;
       //   final property = data.property!;
       //   await onClientChanged(
@@ -395,7 +387,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               isReadOnly: true,
                               hintText: "Select date",
                               controller: TextEditingController(
-                                text: startDate?.formattedDate ?? "",
+                                text: date?.formattedDate ?? "",
                               ),
                               onTap: () async {
                                 final date =
@@ -413,7 +405,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 if (date == null) return;
 
                                 setState(() {
-                                  startDate = date;
+                                  this.date = date;
                                 });
                               },
                             ),
@@ -620,177 +612,185 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               ),
                           ],
                         ),
-                      SpacedRow(
-                        horizontalSpace: 64,
-                        children: [
-                          labelWithField(
-                            "Paid Hours",
-                            Row(
-                              children: [
-                                TextInputWidget(
-                                  width: 60,
-                                  hintText: "Hour",
-                                  labelText: "Hour",
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                    decimal: false,
-                                    signed: true,
+                      if (type == ScheduleCreatePopupMenus.job)
+                        SpacedRow(
+                          horizontalSpace: 64,
+                          children: [
+                            labelWithField(
+                              "Paid Hours",
+                              Row(
+                                children: [
+                                  TextInputWidget(
+                                    width: 60,
+                                    hintText: "Hour",
+                                    labelText: "Hour",
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                      decimal: false,
+                                      signed: true,
+                                    ),
+                                    controller: paidHoursHour,
+                                    inputFormatters: <TextInputFormatter>[
+                                      //allow numbers only
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
                                   ),
-                                  controller: paidHoursHour,
-                                  inputFormatters: <TextInputFormatter>[
-                                    //allow numbers only
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            width: 0.5,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              width: 0.5,
+                                            ),
                                           ),
                                         ),
+                                        child: InkWell(
+                                          child: const Icon(
+                                            Icons.arrow_drop_up,
+                                            size: 18.0,
+                                          ),
+                                          onTap: () {
+                                            if (paidHoursHour.text.isEmpty) {
+                                              paidHoursHour.text = "0";
+                                            }
+                                            int currentValue =
+                                                int.parse(paidHoursHour.text);
+                                            setState(() {
+                                              currentValue++;
+                                              paidHoursHour.text = (currentValue)
+                                                  .toString(); // incrementing value
+                                            });
+                                          },
+                                        ),
                                       ),
-                                      child: InkWell(
+                                      InkWell(
                                         child: const Icon(
-                                          Icons.arrow_drop_up,
+                                          Icons.arrow_drop_down,
                                           size: 18.0,
                                         ),
                                         onTap: () {
-                                          if (paidHoursHour.text.isEmpty) {
-                                            paidHoursHour.text = "0";
-                                          }
+                                          if (paidHoursHour.text.isEmpty)
+                                            return;
                                           int currentValue =
                                               int.parse(paidHoursHour.text);
                                           setState(() {
-                                            currentValue++;
-                                            paidHoursHour.text = (currentValue)
-                                                .toString(); // incrementing value
+                                            if (currentValue == 0) return;
+                                            currentValue--;
+                                            paidHoursHour.text = (currentValue >
+                                                        0
+                                                    ? currentValue
+                                                    : 0)
+                                                .toString(); // decrementing value
                                           });
                                         },
                                       ),
-                                    ),
-                                    InkWell(
-                                      child: const Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 18.0,
-                                      ),
-                                      onTap: () {
-                                        if (paidHoursHour.text.isEmpty) return;
-                                        int currentValue =
-                                            int.parse(paidHoursHour.text);
-                                        setState(() {
-                                          if (currentValue == 0) return;
-                                          currentValue--;
-                                          paidHoursHour.text = (currentValue > 0
-                                                  ? currentValue
-                                                  : 0)
-                                              .toString(); // decrementing value
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 16),
-                                TextInputWidget(
-                                  width: 70,
-                                  labelText: "Minute",
-                                  hintText: "Minute",
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                    decimal: false,
-                                    signed: false,
+                                    ],
                                   ),
-                                  controller: paidHoursMinute,
-                                  inputFormatters: <TextInputFormatter>[
-                                    //allow numbers only and do not allow any character
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            width: 0.5,
+                                  const SizedBox(width: 16),
+                                  TextInputWidget(
+                                    width: 70,
+                                    labelText: "Minute",
+                                    hintText: "Minute",
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                      decimal: false,
+                                      signed: false,
+                                    ),
+                                    controller: paidHoursMinute,
+                                    inputFormatters: <TextInputFormatter>[
+                                      //allow numbers only and do not allow any character
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              width: 0.5,
+                                            ),
                                           ),
                                         ),
+                                        child: InkWell(
+                                          child: const Icon(
+                                            Icons.arrow_drop_up,
+                                            size: 18.0,
+                                          ),
+                                          onTap: () {
+                                            if (paidHoursMinute.text.isEmpty) {
+                                              paidHoursMinute.text = "0";
+                                            }
+                                            int currentValue =
+                                                int.parse(paidHoursMinute.text);
+                                            setState(() {
+                                              currentValue++;
+                                              paidHoursMinute.text = (currentValue)
+                                                  .toString(); // incrementing value
+                                            });
+                                          },
+                                        ),
                                       ),
-                                      child: InkWell(
+                                      InkWell(
                                         child: const Icon(
-                                          Icons.arrow_drop_up,
+                                          Icons.arrow_drop_down,
                                           size: 18.0,
                                         ),
                                         onTap: () {
-                                          if (paidHoursMinute.text.isEmpty) {
-                                            paidHoursMinute.text = "0";
-                                          }
+                                          if (paidHoursMinute.text.isEmpty)
+                                            return;
                                           int currentValue =
                                               int.parse(paidHoursMinute.text);
                                           setState(() {
-                                            currentValue++;
-                                            paidHoursMinute.text = (currentValue)
-                                                .toString(); // incrementing value
+                                            if (currentValue == 0) return;
+                                            currentValue--;
+                                            paidHoursMinute
+                                                .text = (currentValue > 0
+                                                    ? currentValue
+                                                    : 0)
+                                                .toString(); // decrementing value
                                           });
                                         },
                                       ),
-                                    ),
-                                    InkWell(
-                                      child: const Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 18.0,
-                                      ),
-                                      onTap: () {
-                                        if (paidHoursMinute.text.isEmpty)
-                                          return;
-                                        int currentValue =
-                                            int.parse(paidHoursMinute.text);
-                                        setState(() {
-                                          if (currentValue == 0) return;
-                                          currentValue--;
-                                          paidHoursMinute.text = (currentValue >
-                                                      0
-                                                  ? currentValue
-                                                  : 0)
-                                              .toString(); // decrementing value
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          labelWithField(
-                            "Split Time",
-                            toggle(isSplitTime, (val) {
-                              setState(() {
-                                isSplitTime = val;
-                              });
-                            }),
-                          ),
-                        ],
-                      ),
+                            if (type == ScheduleCreatePopupMenus.job)
+                              labelWithField(
+                                "Split Time",
+                                toggle(isSplitTime, (val) {
+                                  setState(() {
+                                    isSplitTime = val;
+                                  });
+                                }),
+                              ),
+                          ],
+                        ),
                       if (type == ScheduleCreatePopupMenus.job) _team(users),
-                      if (selectedClientId != null) _products(state),
+                      // if (selectedClientId != null)
+                      _products(state),
                     ],
                   ),
                 ),
-                if (!unavUsers.isLoaded)
-                  Positioned.fill(
-                    child: Container(
-                        alignment: Alignment.center,
-                        color: Colors.grey.withOpacity(.4),
-                        child: const CircularProgressIndicator()),
-                  )
+                if (type == ScheduleCreatePopupMenus.job)
+                  if (!(data as CreateShiftData).unavailableUsers.isLoaded)
+                    Positioned.fill(
+                      child: Container(
+                          alignment: Alignment.center,
+                          color: Colors.grey.withOpacity(.4),
+                          child: const CircularProgressIndicator()),
+                    )
               ],
             ),
           ),
@@ -823,6 +823,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   Widget _team(List<UserRes> users) {
+    final unavUsers = (data as CreateShiftData).unavailableUsers;
     void onAddTeamMember() {
       //Show a dialog which will allow the user to select team members from users list.
       // The content must contain a search box and a list of users.
@@ -1192,46 +1193,43 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               },
               cols: cols(state)),
         ),
-        customLabel: selectedClientId == null
-            ? null
-            : Row(
-                children: [
-                  addIcon(
-                      tooltip: "Create service/product",
-                      onPressed: () async {
-                        final resId = await showDialog<int>(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (context) =>
-                                StorageItemForm(state: state));
-                        if (resId == null) return;
-                        final item = appStore.state.generalState.storage_items
-                            .firstWhereOrNull((element) => element.id == resId);
-                        if (item == null) return;
-                        gridStateManager
-                            .insertRows(0, [_buildRow(item, checked: true)]);
-                      },
-                      icon: HeroIcons.add),
-                  const SizedBox(width: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CustomAutocompleteTextField<StorageItemMd>(
-                        listItemWidget: (p0) => Text(p0.name),
-                        onSelected: (p0) {
-                          gridStateManager
-                              .insertRows(0, [_buildRow(p0, checked: true)]);
-                        },
-                        displayStringForOption: (option) {
-                          return option.name;
-                        },
-                        options: (p0) => state.generalState.storage_items
-                            .where((element) => element.name
-                                .toLowerCase()
-                                .contains(p0.text.toLowerCase()))
-                            .toList()),
-                  ),
-                ],
-              ));
+        customLabel: Row(
+          children: [
+            addIcon(
+                tooltip: "Create service/product",
+                onPressed: () async {
+                  final resId = await showDialog<int>(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) => StorageItemForm(state: state));
+                  if (resId == null) return;
+                  final item = appStore.state.generalState.storage_items
+                      .firstWhereOrNull((element) => element.id == resId);
+                  if (item == null) return;
+                  gridStateManager
+                      .insertRows(0, [_buildRow(item, checked: true)]);
+                },
+                icon: HeroIcons.add),
+            const SizedBox(width: 10),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomAutocompleteTextField<StorageItemMd>(
+                  listItemWidget: (p0) => Text(p0.name),
+                  onSelected: (p0) {
+                    gridStateManager
+                        .insertRows(0, [_buildRow(p0, checked: true)]);
+                  },
+                  displayStringForOption: (option) {
+                    return option.name;
+                  },
+                  options: (p0) => state.generalState.storage_items
+                      .where((element) => element.name
+                          .toLowerCase()
+                          .contains(p0.text.toLowerCase()))
+                      .toList()),
+            ),
+          ],
+        ));
   }
 
   void _handleOnChanged(PlutoGridOnChangedEvent event) async {

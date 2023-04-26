@@ -121,7 +121,7 @@ class _ClientFormState extends State<ClientForm> {
       }
       onIpLookup();
       currencyId = currencies
-          .firstWhereOrNull((element) => element.code == company.currency?.code)
+          .firstWhereOrNull((element) => element.code == company.currency.code)
           ?.id;
     });
   }
