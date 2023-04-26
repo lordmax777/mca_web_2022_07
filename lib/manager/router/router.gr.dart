@@ -156,6 +156,12 @@ class _$AppRouter extends RootStackRouter {
         child: const QuotesListPage(),
       );
     },
+    ApprovalTemplateRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const ApprovalTemplatePage(),
+      );
+    },
   };
 
   @override
@@ -252,6 +258,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               QuotesListRoute.name,
               path: 'quotes',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              ApprovalTemplateRoute.name,
+              path: 'approval',
               parent: HomeRoute.name,
             ),
           ],
@@ -576,4 +587,16 @@ class QuotesListRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'QuotesListRoute';
+}
+
+/// generated route for
+/// [ApprovalTemplatePage]
+class ApprovalTemplateRoute extends PageRouteInfo<void> {
+  const ApprovalTemplateRoute()
+      : super(
+          ApprovalTemplateRoute.name,
+          path: 'approval',
+        );
+
+  static const String name = 'ApprovalTemplateRoute';
 }
