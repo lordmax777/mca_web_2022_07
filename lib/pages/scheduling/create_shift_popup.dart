@@ -13,50 +13,8 @@ import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../theme/theme.dart';
 import '../../manager/model_exporter.dart';
 
-class UnavailableUserLoad {
-  bool isLoaded = kDebugMode ? true : false;
-  List<UnavailableUserMd> _users = [];
-  List<UnavailableUserMd> get users => _users;
-  set users(List<UnavailableUserMd> users) {
-    _users = users;
-    isLoaded = true;
-  }
-}
-
-class CreateShiftData {
-  final ScheduleCreatePopupMenus type;
-  final DateTime date;
-  final PropertiesMd? property;
-  final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
-
-  String title = "";
-  int? selectedClientId;
-  int? selectedLocationId;
-  int? tempAllowedLocationId;
-  bool isActive = true;
-  DateTime? startDate;
-  DateTime? altStartDate;
-  DateTime? endDate;
-  bool isAllDay = false;
-  TimeOfDay? startTime;
-  TimeOfDay? endTime;
-  int scheduleLaterIndex = 0;
-  int? repeatTypeIndex;
-  List<int> repeatDays = [];
-  int paidHour = 0;
-  int paidMinute = 0;
-  bool isSplitTime = false;
-  String? comments;
-
-  List<UserRes> addedChildren = [];
-  Map<int, double> addedChildrenRates = {};
-
-  late PlutoGridStateManager gridStateManager;
-
-  CreateShiftData({required this.type, required this.date, this.property});
-}
-
-Future<T?> showCreateShiftPopup<T>(BuildContext context, CreateShiftData data) {
+Future<T?> showCreateShiftPopup<T>(
+    BuildContext context, CreateShiftDataType data) {
   return showDialog<T>(
     context: context,
     barrierDismissible: kDebugMode ? true : false,
@@ -157,7 +115,7 @@ Widget checkbox(bool value, Function(bool) onToggle) {
 }
 
 class _CreateJob extends StatefulWidget {
-  final CreateShiftData data;
+  final CreateShiftDataType data;
   const _CreateJob(this.data, {Key? key}) : super(key: key);
 
   @override
@@ -166,8 +124,8 @@ class _CreateJob extends StatefulWidget {
 
 class _CreateJobState extends State<_CreateJob>
     with SingleTickerProviderStateMixin {
-  CreateShiftData get data => widget.data;
-  DateTime get date => data.date;
+  CreateShiftDataType get data => widget.data;
+  DateTime get date => data.date ?? DateTime.now();
   bool get isCreate => data.property == null;
   ScheduleCreatePopupMenus get type => data.type;
 
@@ -201,6 +159,7 @@ class _CreateJobState extends State<_CreateJob>
           });
         }
       }
+      logger(data);
     });
   }
 

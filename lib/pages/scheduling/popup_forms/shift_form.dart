@@ -24,7 +24,7 @@ import 'client_form.dart';
 // Shift details form
 class ShiftDetailsForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final CreateShiftData data;
+  final CreateShiftDataType data;
 
   const ShiftDetailsForm(this.formKey, this.data, {Key? key}) : super(key: key);
 
@@ -33,7 +33,7 @@ class ShiftDetailsForm extends StatefulWidget {
 }
 
 class ShiftDetailsFormState extends State<ShiftDetailsForm> {
-  CreateShiftData get data => widget.data;
+  CreateShiftDataType get data => widget.data;
 
   bool get isCreate => data.property == null;
 

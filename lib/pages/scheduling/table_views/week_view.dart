@@ -102,7 +102,6 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                       context,
                       CreateShiftData(
                         date: calendarTapDetails.date!,
-                        type: ScheduleCreatePopupMenus.job,
                         property: id.property,
                       ));
                   //TODO: Handle shiftRes
@@ -140,7 +139,6 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                         context,
                         CreateShiftData(
                           date: calendarTapDetails.date!,
-                          type: createTapResult,
                         ));
                     //TODO: Handle shiftRes
 

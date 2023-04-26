@@ -99,11 +99,16 @@ class _QuotesListPageState extends State<QuotesListPage>
         PlutoColumn(
           title: "Action",
           field: "edit_btn",
+          width: 80,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return GridTableHelpers.getActionRenderer(
               rendererContext,
-              onTap: (value) {},
+              onTap: (value) {
+                _onAddQuoteTap(
+                    successMessage: "Quote updated successfully",
+                    quoteId: rendererContext.row.cells['quote']!.value);
+              },
             );
           },
         ),
@@ -198,6 +203,20 @@ class _QuotesListPageState extends State<QuotesListPage>
     }
   }
 
+  void _onAddQuoteTap({
+    String? successMessage,
+    int? quoteId,
+  }) async {
+    final quoteCreated = await showCreateShiftPopup<ApiResponse?>(
+        context,
+        CreateShiftDataQuote(
+          quoteId: quoteId,
+        ));
+    if (quoteCreated != null) {
+      showError(successMessage ?? "Quote Created Successfully");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
@@ -218,16 +237,8 @@ class _QuotesListPageState extends State<QuotesListPage>
           PagesTitleWidget(
             title: 'Quotes',
             btnText: 'Add New Quote',
-            onRightBtnClick: () async {
-              final quoteCreated = await showCreateShiftPopup<ApiResponse?>(
-                  context,
-                  CreateShiftData(
-                    date: DateTime.now(),
-                    type: ScheduleCreatePopupMenus.quote,
-                  ));
-              if (quoteCreated != null) {
-                showError("Quote Created Successfully");
-              }
+            onRightBtnClick: () {
+              _onAddQuoteTap();
             },
           ),
           TableWrapperWidget(
@@ -340,7 +351,6 @@ class _QuotesListPageState extends State<QuotesListPage>
   }
 
   Widget _footer(AppState state) {
-    logger(stateManager?.page);
     return Padding(
       padding:
           const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
