@@ -141,6 +141,7 @@ class GridTableHelpers {
       mainAxisSize: MainAxisSize.min,
       isSelectable: false,
       onTap: onTap != null ? () => onTap(ctx) : null,
+      // rowCenter: ctx.column.textAlign.value == TextAlign.center,
       icon: HeroIcon(
         icon ?? HeroIcons.edit,
         color: color ?? ThemeColors.MAIN_COLOR,

@@ -1077,8 +1077,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           child: UsersListTable(
               enableEditing: true,
               onChanged: _handleOnChanged,
-              mode: PlutoGridMode.normal,
               rows: [],
+              mode: PlutoGridMode.normal,
               gridBorderColor: Colors.grey[300]!,
               noRowsText: "No product or service added yet",
               onSmReady: (e) {

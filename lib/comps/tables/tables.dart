@@ -82,6 +82,7 @@ class UsersListTable extends StatelessWidget {
           fontWeight: FWeight.regular,
           fontSize: 14,
           isSelectable: false,
+          textAlign: col.textAlign.value,
         );
       };
       _cols.add(col);

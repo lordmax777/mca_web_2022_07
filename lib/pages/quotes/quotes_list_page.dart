@@ -1,9 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../manager/redux/sets/app_state.dart';
+
+mixin GridOnLoadMixin<T extends StatefulWidget> on State<T> {
+  bool reload = false;
+
+  Future<void> onReload() async {
+    setState(() {
+      reload = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 200));
+    setState(() {
+      reload = false;
+    });
+  }
+}
 
 class QuotesListPage extends StatefulWidget {
   const QuotesListPage({Key? key}) : super(key: key);
@@ -12,7 +27,8 @@ class QuotesListPage extends StatefulWidget {
   State<QuotesListPage> createState() => _QuotesListPageState();
 }
 
-class _QuotesListPageState extends State<QuotesListPage> {
+class _QuotesListPageState extends State<QuotesListPage>
+    with GridOnLoadMixin<QuotesListPage> {
   //Etc
   CompanyMd get company => GeneralController.to.companyInfo;
 
@@ -44,19 +60,31 @@ class _QuotesListPageState extends State<QuotesListPage> {
           type: PlutoColumnType.text(),
         ),
         PlutoColumn(
-          title: "Quote Value ${company.currency.sign}",
+          title: "Quote Value (${company.currency.sign})",
           field: "value",
           type: PlutoColumnType.currency(),
         ),
         PlutoColumn(
           title: "Last Sent",
           field: "last_sent",
-          type: PlutoColumnType.date(),
+          type: PlutoColumnType.date(format: "dd/MM/yyyy HH:mm"),
+          renderer: (rendererContext) {
+            return KText(
+              text: rendererContext.cell.value.toString().isEmpty
+                  ? "Never"
+                  : rendererContext.cell.value.toString(),
+              textColor: ThemeColors.gray2,
+              fontWeight: FWeight.regular,
+              fontSize: 14,
+              isSelectable: false,
+              textAlign: rendererContext.column.textAlign.value,
+            );
+          },
         ),
         PlutoColumn(
           title: "Created On",
           field: "created_on",
-          type: PlutoColumnType.date(),
+          type: PlutoColumnType.date(format: "dd/MM/yyyy HH:mm"),
         ),
         PlutoColumn(
           title: "Valid Until",
@@ -64,11 +92,78 @@ class _QuotesListPageState extends State<QuotesListPage> {
           type: PlutoColumnType.date(),
         ),
         PlutoColumn(
-          title: "",
+          title: "Action",
           field: "edit_btn",
           type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return GridTableHelpers.getActionRenderer(rendererContext);
+          },
         ),
-      ];
+      ].map((e) {
+        final e1 = e;
+        e1.textAlign = PlutoColumnTextAlign.center;
+        return e1;
+      }).toList();
+
+  int _pageSize = 10;
+  int _page = 1;
+
+  bool isStateManagerInitialized = false;
+
+  void _setFilter() {
+    _searchController.addListener(() {
+      if (_searchController.text.isNotEmpty) {
+        if (stateManager.page > 1) {
+          stateManager.setPage(1);
+        }
+        stateManager.setFilter(
+          (element) {
+            final String _search = _searchController.text.toLowerCase();
+            bool searched = element.cells['name']?.value
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase());
+            if (!searched) {
+              searched = element.cells['username']?.value
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase());
+              if (!searched) {
+                searched = element.cells['department']?.value
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase());
+                if (!searched) {
+                  searched = element.cells['main_location']?.value
+                      .toLowerCase()
+                      .contains(_searchController.text.toLowerCase());
+                }
+              }
+            }
+            return searched;
+          },
+        );
+        _onPageChange(stateManager.page, stateManager);
+        _onPageSizeChange(stateManager.pageSize.toString(), stateManager);
+        return;
+      }
+
+      stateManager.setFilter((element) => true);
+      _onPageChange(stateManager.page, stateManager);
+      _onPageSizeChange(stateManager.pageSize.toString(), stateManager);
+    });
+  }
+
+  void _onPageSizeChange(pageS, PlutoGridStateManager stateManager) {
+    _pageSize = int.parse(pageS);
+    stateManager.setPageSize(_pageSize);
+    stateManager.setPage(1);
+    _page = 1;
+    setState(() {});
+  }
+
+  void _onPageChange(int page, PlutoGridStateManager stateManager) {
+    _page = page;
+    stateManager.setPage(_page);
+    setState(() {});
+  }
 
   @override
   void dispose() {
@@ -77,8 +172,12 @@ class _QuotesListPageState extends State<QuotesListPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  void reassemble() async {
+    super.reassemble();
+    if (kDebugMode) {
+      print('reassemble');
+      await onReload();
+    }
   }
 
   @override
@@ -103,7 +202,8 @@ class _QuotesListPageState extends State<QuotesListPage> {
               children: [
                 _header(state),
                 _body(state),
-                _footer(),
+                if (isStateManagerInitialized) _footer(state),
+                const SizedBox(height: 4),
               ],
             ),
           )),
@@ -131,35 +231,119 @@ class _QuotesListPageState extends State<QuotesListPage> {
   }
 
   PlutoRow _buildRow(QuoteInfoMd quote, {bool checked = false}) {
+    String name = quote.name;
+    String contact = "-";
+    String status = "Pending";
+    double value = quote.quoteValue.toDouble();
+    String lastSent = "";
+    String createdOn = quote.createdOn;
+    String validUntil = quote.validUntil;
+
+    if (quote.company != null) {
+      name += quote.company!;
+    }
+
+    if (quote.email != null) {
+      contact = quote.email!;
+    }
+    if (quote.phone != null) {
+      contact += "\n${quote.phone!}";
+    }
+
+    if (quote.quoteStatus != null) {
+      status = quote.quoteStatus!;
+    }
+
+    if (quote.lastSent != null) {
+      lastSent = quote.lastSent!;
+    }
+
     return PlutoRow(
       checked: checked,
       cells: {
         'quote': PlutoCell(value: quote),
-        'name': PlutoCell(value: quote.name),
-        'contact': PlutoCell(value: quote.contact),
-        'status': PlutoCell(value: quote.quoteStatus),
-        'value': PlutoCell(value: quote.quoteValue),
-        'last_sent': PlutoCell(value: quote.lastSent),
-        'created_on': PlutoCell(value: quote.createdOn),
-        'valid_until': PlutoCell(value: quote.validUntil),
+        'name': PlutoCell(value: name),
+        'contact': PlutoCell(value: contact),
+        'status': PlutoCell(value: status),
+        'value': PlutoCell(value: value),
+        'last_sent': PlutoCell(value: lastSent),
+        'created_on': PlutoCell(value: createdOn),
+        'valid_until': PlutoCell(value: validUntil),
         'edit_btn': PlutoCell(value: ""),
       },
     );
   }
 
   Widget _body(AppState state) {
-    return UsersListTable(
-        rows: [],
-        noRowsText: 'No quotes found',
-        onSmReady: (p0) {
-          stateManager = p0;
-          final allQuotes = [...state.generalState.quotes];
-          stateManager.appendRows(allQuotes.map((e) => _buildRow(e)).toList());
-        },
-        cols: columns);
+    if (reload) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return UsersListTable(
+          gridBorderColor: Colors.grey[300]!,
+          rows: isStateManagerInitialized ? stateManager.rows : [],
+          noRowsText: 'No quotes found',
+          onSmReady: (p0) {
+            if (!isStateManagerInitialized) {
+              stateManager = p0;
+            }
+            setState(() {
+              isStateManagerInitialized = true;
+            });
+            stateManager.setPage(0);
+            stateManager.setPageSize(10);
+            stateManager.setPage(_page);
+            _setFilter();
+            final allQuotes = [...state.generalState.allSortedQuotes];
+            logger(allQuotes.length);
+            stateManager.removeAllRows();
+            stateManager
+                .prependRows(allQuotes.map((e) => _buildRow(e)).toList());
+            logger(stateManager.rows.length);
+          },
+          cols: columns);
+    }
   }
 
-  Widget _footer() {
-    return Container();
+  Widget _footer(AppState state) {
+    return Padding(
+      padding:
+          const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
+      child: SpacedRow(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SpacedRow(
+                horizontalSpace: 8.0,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  KText(
+                      text: "Showing",
+                      textColor: ThemeColors.black,
+                      fontSize: 14.0,
+                      isSelectable: false),
+                  DropdownWidgetV2(
+                    hintText: "Entries",
+                    items: Constants.tablePageSizes
+                        .map((e) => CustomDropdownValue(name: e.toString()))
+                        .toList(),
+                    dropdownBtnWidth: 120,
+                    onChanged: (index) => _onPageSizeChange(
+                        Constants.tablePageSizes[index].toString(),
+                        stateManager),
+                    value: CustomDropdownValue(
+                        name: stateManager.pageSize.toString()),
+                  ),
+                  KText(
+                      text: "of ${stateManager.rows.length} entries",
+                      textColor: ThemeColors.black,
+                      fontSize: 14.0,
+                      isSelectable: false),
+                ]),
+            TablePaginationWidget(
+                currentPage: _page,
+                totalPages: stateManager
+                    .totalPage, //(widget._itemCount / _pageSize).ceil(),
+                onPageChanged: (int i) => _onPageChange(i, stateManager)),
+          ]),
+    );
   }
 }

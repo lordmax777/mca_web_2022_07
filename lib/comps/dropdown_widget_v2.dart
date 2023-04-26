@@ -104,7 +104,7 @@ class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 14),
+      margin: const EdgeInsets.symmetric(vertical: 7),
       width: widget.dropdownBtnWidth,
       child: Tooltip(
         message: tooltip ?? "",
