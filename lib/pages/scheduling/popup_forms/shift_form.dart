@@ -24,7 +24,7 @@ import 'client_form.dart';
 // Shift details form
 class ShiftDetailsForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final CreateShiftDataType data;
+  final CreateShiftData data;
 
   const ShiftDetailsForm(this.formKey, this.data, {Key? key}) : super(key: key);
 
@@ -33,7 +33,7 @@ class ShiftDetailsForm extends StatefulWidget {
 }
 
 class ShiftDetailsFormState extends State<ShiftDetailsForm> {
-  CreateShiftDataType get data => widget.data;
+  CreateShiftData get data => widget.data;
 
   bool get isCreate => data.isCreate;
 
@@ -43,6 +43,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   //Ephemeral state
   final TextEditingController title = TextEditingController();
+
   int? get selectedClientId => data.selectedClientId;
   set selectedClientId(int? id) => data.selectedClientId = id;
 
@@ -57,10 +58,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   DateTime? get endDate => data.endDate;
   set endDate(DateTime? value) => data.endDate = value;
-
-  DateTime? get altStartDate => (data as CreateShiftDataQuote).altStartDate;
-  set altStartDate(DateTime? value) =>
-      (data as CreateShiftDataQuote).altStartDate = value;
 
   bool get isAllDay => data.isAllDay;
   set isAllDay(bool value) => data.isAllDay = value;
@@ -90,10 +87,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   TextEditingController paidHoursHour = TextEditingController(text: "0");
   TextEditingController paidHoursMinute = TextEditingController(text: "0");
-  TextEditingController comments = TextEditingController();
 
-  bool get isSplitTime => (data as CreateShiftData).isSplitTime;
-  set isSplitTime(bool value) => (data as CreateShiftData).isSplitTime = value;
+  bool get isSplitTime => data.isSplitTime;
+  set isSplitTime(bool value) => data.isSplitTime = value;
 
   List<UserRes> get addedChildren => data.addedChildren;
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
@@ -110,7 +106,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     title.dispose();
     paidHoursHour.dispose();
     paidHoursMinute.dispose();
-    comments.dispose();
     super.dispose();
   }
 
@@ -119,20 +114,14 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       title.addListener(() {
-        (data as CreateShiftData).title = title.text;
+        data.title = title.text;
       });
       paidHoursHour.addListener(() {
-        (data as CreateShiftData).paidHour =
-            int.tryParse(paidHoursHour.text) ?? 0;
+        data.paidHour = int.tryParse(paidHoursHour.text) ?? 0;
       });
       paidHoursMinute.addListener(() {
-        (data as CreateShiftData).paidMinute =
-            int.tryParse(paidHoursMinute.text) ?? 0;
+        data.paidMinute = int.tryParse(paidHoursMinute.text) ?? 0;
       });
-      comments.addListener(() {
-        (data as CreateShiftDataQuote).comments = comments.text;
-      });
-
       if (isCreate) return;
       //   final property = data.property!;
       //   await onClientChanged(
@@ -224,39 +213,40 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       converter: (store) => store.state,
       builder: (context, state) {
         List<UserRes> users = [...(state.usersState.usersList.data ?? [])];
-
         List<ClientInfoMd> clients = [...(state.generalState.clientInfos)];
+        List<LocationAddress> locations = [];
 
         // using this we find the locations which can be used by the selected client
         List<ListShift> selectedClientShifts = [];
-        if (selectedClientId == null) {
-          selectedClientShifts = [];
-        }
-        selectedClientShifts = [
-          ...(state.generalState.shifts
-              .where((element) =>
-                  element.client_id != null &&
-                  element.client_id == selectedClientId)
-              .toList())
-        ];
+        if (type == ScheduleCreatePopupMenus.job) {
+          if (selectedClientId == null) {
+            selectedClientShifts = [];
+          }
+          selectedClientShifts = [
+            ...(state.generalState.shifts
+                .where((element) =>
+                    element.client_id != null &&
+                    element.client_id == selectedClientId)
+                .toList())
+          ];
 
-        List<LocationAddress> locations = [];
-        if (selectedClientId == null) {
-          locations = [];
+          if (selectedClientId == null) {
+            locations = [];
+          }
+          if (selectedClientShifts.isEmpty) locations = [];
+          locations = [
+            ...(state.generalState.locations
+                .where((element) => selectedClientShifts
+                    .any((shift) => shift.location_id == element.id))
+                .toList()),
+            //find and add the location which is equal to tempAllowedLocationId
+            ...(state.generalState.locations
+                .where((element) =>
+                    element.id == tempAllowedLocationId &&
+                    !locations.contains(element))
+                .toList())
+          ];
         }
-        if (selectedClientShifts.isEmpty) locations = [];
-        locations = [
-          ...(state.generalState.locations
-              .where((element) => selectedClientShifts
-                  .any((shift) => shift.location_id == element.id))
-              .toList()),
-          //find and add the location which is equal to tempAllowedLocationId
-          ...(state.generalState.locations
-              .where((element) =>
-                  element.id == tempAllowedLocationId &&
-                  !locations.contains(element))
-              .toList())
-        ];
 
         final List<ListWorkRepeats> workRepeats = [
           ...state.generalState.workRepeats
@@ -286,41 +276,45 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 hintText: "Enter title",
                               ),
                             ),
-                          labelWithField(
-                            "Client",
-                            DropdownWidgetV2(
-                              hasSearchBox: true,
-                              hintText: "Select a client",
-                              dropdownBtnWidth: 300,
-                              dropdownOptionsWidth: 300,
-                              items: clients
-                                  .map((e) => CustomDropdownValue(name: e.name))
-                                  .toList(),
-                              value: CustomDropdownValue(
-                                  name: clients
-                                          .firstWhereOrNull((element) =>
-                                              element.id == selectedClientId)
-                                          ?.name ??
-                                      ""),
-                              onChanged: (index) {
-                                onClientChanged(index, clients: clients);
-                              },
+                          if (type == ScheduleCreatePopupMenus.job)
+                            labelWithField(
+                              "Client",
+                              DropdownWidgetV2(
+                                hasSearchBox: true,
+                                hintText: "Select a client",
+                                dropdownBtnWidth: 300,
+                                dropdownOptionsWidth: 300,
+                                items: clients
+                                    .map((e) =>
+                                        CustomDropdownValue(name: e.name))
+                                    .toList(),
+                                value: CustomDropdownValue(
+                                    name: clients
+                                            .firstWhereOrNull((element) =>
+                                                element.id == selectedClientId)
+                                            ?.name ??
+                                        ""),
+                                onChanged: (index) {
+                                  onClientChanged(index, clients: clients);
+                                },
+                              ),
+                              childHelperWidget: addIcon(
+                                tooltip: "Create new client",
+                                onPressed: () {
+                                  onCreateNewClientTap(
+                                      state, ClientFormType.client);
+                                },
+                              ),
                             ),
-                            childHelperWidget: addIcon(
-                              tooltip: "Create new client",
-                              onPressed: () {
-                                onCreateNewClientTap(
-                                    state, ClientFormType.client);
-                              },
-                            ),
-                          ),
                           labelWithField(
                             "Location",
                             DropdownWidgetV2(
                               hasSearchBox: true,
                               hintText: "Select a location",
                               tooltipWhileDisabled: "Select a client first",
-                              disableAll: selectedClientId == null,
+                              disableAll:
+                                  type == ScheduleCreatePopupMenus.job &&
+                                      selectedClientId == null,
                               dropdownBtnWidth: 300,
                               dropdownOptionsWidth: 300,
                               items: locations
@@ -338,33 +332,30 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                 });
                               },
                             ),
-                            childHelperWidget: selectedClientId != null
-                                ? Row(
-                                    children: [
-                                      addIcon(
-                                        tooltip: "Create new location",
-                                        onPressed: () {
-                                          onCreateNewClientTap(
-                                              state, ClientFormType.location);
-                                        },
-                                      ),
-                                      if (selectedLocationId != null)
-                                        addIcon(
-                                          tooltip: "View on map",
-                                          onPressed: () {
-                                            final loc = state
-                                                .generalState.locationAddresses
-                                                .firstWhereOrNull((element) =>
-                                                    element.id ==
-                                                    selectedLocationId);
-                                            if (loc == null) return;
-                                            showMapPopup(location: loc);
-                                          },
-                                          icon: HeroIcons.location,
-                                        )
-                                    ],
+                            childHelperWidget: Row(
+                              children: [
+                                addIcon(
+                                  tooltip: "Create new location",
+                                  onPressed: () {
+                                    onCreateNewClientTap(
+                                        state, ClientFormType.location);
+                                  },
+                                ),
+                                if (selectedLocationId != null)
+                                  addIcon(
+                                    tooltip: "View on map",
+                                    onPressed: () {
+                                      final loc = state
+                                          .generalState.locationAddresses
+                                          .firstWhereOrNull((element) =>
+                                              element.id == selectedLocationId);
+                                      if (loc == null) return;
+                                      showMapPopup(location: loc);
+                                    },
+                                    icon: HeroIcons.location,
                                   )
-                                : null,
+                              ],
+                            ),
                           ),
                           labelWithField(
                             "Active",
@@ -376,6 +367,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                           ),
                         ],
                       ),
+
                       SpacedRow(
                         horizontalSpace: 64,
                         children: [
@@ -410,38 +402,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               },
                             ),
                           ),
-                          if (type == ScheduleCreatePopupMenus.quote)
-                            labelWithField(
-                              "Alternative Start Date",
-                              TextInputWidget(
-                                width: 300,
-                                rightIcon: HeroIcons.calendar,
-                                isReadOnly: true,
-                                hintText: "",
-                                controller: TextEditingController(
-                                  text: altStartDate?.formattedDate ?? "",
-                                ),
-                                onTap: () async {
-                                  final date =
-                                      await showCustomDatePicker(context);
-                                  //date cannot be before today only if we are creating a new
-                                  if (isCreate) {
-                                    if (date != null &&
-                                        date.isBefore(DateTime.now().subtract(
-                                            const Duration(days: 1)))) {
-                                      showError("Date cannot be before today");
-                                      return;
-                                    }
-                                  }
-
-                                  if (date == null) return;
-
-                                  setState(() {
-                                    altStartDate = date;
-                                  });
-                                },
-                              ),
-                            ),
                           labelWithField(
                             "All day",
                             toggle(isAllDay, (val) {
@@ -600,16 +560,6 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                       }, item.value),
                                   ],
                                 ),
-                            if (type == ScheduleCreatePopupMenus.quote)
-                              labelWithField(
-                                "Comments",
-                                TextInputWidget(
-                                  width: 400,
-                                  maxLines: 4,
-                                  controller: comments,
-                                  hintText: "",
-                                ),
-                              ),
                           ],
                         ),
                       if (type == ScheduleCreatePopupMenus.job)
@@ -674,8 +624,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                           size: 18.0,
                                         ),
                                         onTap: () {
-                                          if (paidHoursHour.text.isEmpty)
+                                          if (paidHoursHour.text.isEmpty) {
                                             return;
+                                          }
                                           int currentValue =
                                               int.parse(paidHoursHour.text);
                                           setState(() {
@@ -784,7 +735,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                   ),
                 ),
                 if (type == ScheduleCreatePopupMenus.job)
-                  if (!(data as CreateShiftData).unavailableUsers.isLoaded)
+                  if (!data.unavailableUsers.isLoaded)
                     Positioned.fill(
                       child: Container(
                           alignment: Alignment.center,
@@ -823,7 +774,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   Widget _team(List<UserRes> users) {
-    final unavUsers = (data as CreateShiftData).unavailableUsers;
+    final unavUsers = data.unavailableUsers;
     void onAddTeamMember() {
       //Show a dialog which will allow the user to select team members from users list.
       // The content must contain a search box and a list of users.

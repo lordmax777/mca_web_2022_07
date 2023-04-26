@@ -11,7 +11,6 @@ abstract class CreateShiftDataType {
   bool get isCreate;
 
   DateTime? date;
-  int? selectedClientId;
   int? selectedLocationId;
   bool isActive = true;
   int? tempAllowedLocationId;
@@ -33,7 +32,6 @@ abstract class CreateShiftDataType {
   @override
   String toString() {
     return 'CreateShiftDataType{type: $type, date: $date,'
-        ' selectedClientId: $selectedClientId, '
         'selectedLocationId: $selectedLocationId, tempAllowedLocationId: $tempAllowedLocationId,'
         ' isActive: $isActive,'
         'endDate: $endDate, isAllDay: $isAllDay, startTime: $startTime, endTime: $endTime,'
@@ -60,6 +58,7 @@ class CreateShiftData extends CreateShiftDataType {
   int paidMinute = 0;
   bool isSplitTime = false;
   final PropertiesMd? property;
+  int? selectedClientId;
 
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
 
@@ -75,17 +74,16 @@ class CreateShiftData extends CreateShiftDataType {
 class CreateShiftDataQuote extends CreateShiftDataType {
   int? quoteId;
   DateTime? altStartDate;
-  String? comments;
-
-  QuoteInfoMd? quote;
+  QuoteInfoMd quote = QuoteInfoMd.init();
 
   CreateShiftDataQuote({this.quoteId}) {
     scheduleLaterIndex = 1;
     repeatTypeIndex = 0;
     if (quoteId != null) {
       quote = appStore.state.generalState.quotes
-          .firstWhereOrNull((element) => element.id == quoteId);
-      if (quote != null) {
+              .firstWhereOrNull((element) => element.id == quoteId) ??
+          QuoteInfoMd.init();
+      if (quote.id != 0) {
         // title = quote!.name;
         // selectedClientId = quote!.;
         // selectedLocationId = quote!.locationId;

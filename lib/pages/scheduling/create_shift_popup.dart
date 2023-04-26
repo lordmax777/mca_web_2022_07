@@ -2,15 +2,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
-import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/quote_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../theme/theme.dart';
-import '../../manager/model_exporter.dart';
+import '../../manager/rest/nocode_helpers.dart';
+import '../../manager/models/storage_item_md.dart';
 
 Future<T?> showCreateShiftPopup<T>(
     BuildContext context, CreateShiftDataType data) {
@@ -49,6 +49,25 @@ Future<bool> onWillPop(BuildContext context) async {
         ),
       )) ??
       false;
+}
+
+Widget titleWithDivider(String? title, Widget? child) {
+  return SpacedColumn(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    if (title != null)
+      KText(
+        text: title,
+        fontSize: 24,
+        textColor: ThemeColors.gray2,
+        fontWeight: FWeight.bold,
+      ),
+    if (title != null)
+      Container(
+          margin: const EdgeInsets.only(top: 8, bottom: 32),
+          width: MediaQuery.of(Get.context!).size.width * .8,
+          height: 1,
+          color: ThemeColors.gray2),
+    if (child != null) child,
+  ]);
 }
 
 Widget labelWithField(String label, Widget? child,
@@ -127,6 +146,7 @@ class _CreateJobState extends State<_CreateJob>
 
   DateTime get date => data.date ?? DateTime.now();
   bool get isCreate => data.isCreate;
+
   ScheduleCreatePopupMenus get type => data.type;
 
   late final TabController _tabController;
@@ -240,68 +260,13 @@ class _CreateJobState extends State<_CreateJob>
             ButtonLarge(
                 text: 'Publish',
                 onPressed: () async {
-                  if (type == ScheduleCreatePopupMenus.quote) {
-                    final client = state.generalState.clientInfos.firstWhere(
-                        (element) => element.id == data.selectedClientId!);
-                    final LocationAddress? location =
-                        state.generalState.locations.firstWhereOrNull(
-                            (element) => element.id == data.selectedLocationId);
-                    final storageItems = [...state.generalState.storage_items];
-                    ApiResponse? quoteCreated =
-                        await appStore.dispatch(CreateQuoteAction(
-                      email: client.email ?? "",
-                      name: client.name,
-                      company: client.company,
-                      phone: client.phone,
-                      addressLine1: client.address.line1,
-                      addressLine2: client.address.line2,
-                      addressCounty: client.address.county,
-                      addressCity: client.address.city,
-                      addressCountry: client.address.country,
-                      addressPostcode: client.address.postcode,
-                      active: data.isActive,
-                      altWorkStartDate: getDateFormat(
-                          (data as CreateShiftDataQuote).altStartDate,
-                          dateSeparatorSymbol: "/"),
-                      currencyId: int.parse(client.currencyId),
-                      payingDays: client.payingDays,
-                      paymentMethodId: int.parse(client.paymentMethodId!),
-                      quoteComments: (data as CreateShiftDataQuote).comments,
-                      workAddressCity: location?.address?.city,
-                      workAddressCountry: location?.address?.country,
-                      workAddressCounty: location?.address?.county,
-                      workAddressLine1: location?.address?.line1,
-                      workAddressLine2: location?.address?.line2,
-                      workAddressPostcode: location?.address?.postcode,
-                      notes: client.notes,
-                      workStartDate:
-                          getDateFormat(data.date, dateSeparatorSymbol: "/"),
-                      workStartTime: data.startTime?.formattedTime,
-                      workRepeatId: state
-                          .generalState.workRepeats[data.repeatTypeIndex!].id,
-                      workFinishTime: data.endTime?.formattedTime,
-                      workDays: data.repeatDays,
-                      storageItems: data.gridStateManager.rows
-                          .map((row) {
-                            final item = storageItems.firstWhereOrNull(
-                                (element) =>
-                                    element.id == row.cells['id']!.value);
-                            if (item != null) {
-                              item.quantity = row.cells['quantity']!.value;
-                              item.outgoingPrice =
-                                  row.cells['customer_price']!.value;
-                              item.auto = row.checked ?? false;
-
-                              return item;
-                            }
-                            return StorageItemMd.init();
-                          })
-                          .where((element) => element.id != -1)
-                          .toList(),
-                    ));
-                    if (quoteCreated?.success == true) {
-                      await context.popRoute(quoteCreated);
-                    }
+                  switch (type) {
+                    case ScheduleCreatePopupMenus.job:
+                      // TODO: Handle this case.
+                      break;
+                    case ScheduleCreatePopupMenus.quote:
+                      _saveQuote(state);
+                      break;
                   }
                 }),
           ],
@@ -310,12 +275,73 @@ class _CreateJobState extends State<_CreateJob>
     );
   }
 
+  void _saveQuote(AppState state) async {
+    final quote = (data as CreateShiftDataQuote).quote;
+    final storageItems = [...state.generalState.storage_items];
+    ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
+      email: quote.email ?? "",
+      name: quote.name,
+      company: quote.company,
+      phone: quote.phone,
+      addressLine1: quote.addressLine1,
+      addressLine2: quote.addressLine2,
+      addressCounty: quote.addressCounty,
+      addressCity: quote.addressCity,
+      addressCountry: quote.addressCountry,
+      addressPostcode: quote.addressPostcode,
+      active: quote.active,
+      altWorkStartDate: getDateFormat(
+          (data as CreateShiftDataQuote).altStartDate,
+          dateSeparatorSymbol: "/"),
+      currencyId: quote.currencyId,
+      payingDays: quote.payingDays,
+      paymentMethodId: quote.paymentMethodId,
+      quoteComments: (data as CreateShiftDataQuote).quote.quoteComments,
+      workAddressLine1: quote.workAddressLine1,
+      workAddressLine2: quote.workAddressLine2,
+      workAddressCounty: quote.workAddressCounty,
+      workAddressCity: quote.workAddressCity,
+      workAddressCountry: quote.workAddressCountry,
+      workAddressPostcode: quote.workAddressPostcode,
+      notes: quote.notes,
+      workStartDate: getDateFormat(data.date, dateSeparatorSymbol: "/"),
+      workStartTime: data.startTime?.formattedTime,
+      workRepeatId: state.generalState.workRepeats[data.repeatTypeIndex!].id,
+      workFinishTime: data.endTime?.formattedTime,
+      workDays: data.repeatDays,
+      storageItems: data.gridStateManager.rows
+          .map<StorageItemMd>((row) {
+            final item = storageItems.firstWhereOrNull(
+                (element) => element.id == row.cells['id']!.value);
+            if (item != null) {
+              item.quantity = row.cells['quantity']!.value;
+              item.outgoingPrice = row.cells['customer_price']!.value;
+              item.auto = row.checked ?? false;
+
+              return item;
+            }
+            return StorageItemMd.init();
+          })
+          .where((element) => element.id != -1)
+          .toList(),
+    ));
+    if (quoteCreated?.success == true) {
+      await context.popRoute(quoteCreated);
+    }
+  }
+
   Widget _getTabChild(AppState state) {
     switch (_tabController.index) {
       case 0:
-        return ShiftDetailsForm(_shiftDetailsFormKey, data);
-      // case 1:
-      //   return StaffAndTimingForm(state, _staffTimingFormKey);
+        switch (type) {
+          case ScheduleCreatePopupMenus.quote:
+            return QuoteForm(
+                _shiftDetailsFormKey, data as CreateShiftDataQuote);
+          case ScheduleCreatePopupMenus.job:
+            return ShiftDetailsForm(
+                _shiftDetailsFormKey, data as CreateShiftData);
+        }
+        return const SizedBox();
       default:
         return const SizedBox();
     }

@@ -352,6 +352,7 @@ Future<ApiResponse?> _createQuoteAction(
               showError(res.statusMessage ?? 'Error');
           }
         } on dio.DioError catch (e) {
+          logger("Response: ${e.response?.data}");
           switch (e.type) {
             case dio.DioErrorType.response:
               showError(e.response?.data ?? 'Error');

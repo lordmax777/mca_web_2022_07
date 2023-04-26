@@ -52,6 +52,7 @@ class GeneralState {
   final StateValue<List<PropertiesMd>> properties;
   final List<LocationAddress> locationAddresses;
   final List<ClientInfoMd> clientInfos;
+
   final List<QuoteInfoMd> quotes;
   List<QuoteInfoMd> get allSortedQuotes => quotes
     ..sort((a, b) => DateTime.tryParse(b.createdOn)!

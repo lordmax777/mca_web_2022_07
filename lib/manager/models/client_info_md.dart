@@ -32,27 +32,27 @@ class ClientInfoMd {
   //         "payingDays": 30
   //     }
 
-  final int id;
-  final String name;
-  final String? contact;
-  final String? company;
-  final bool active;
-  final String notes;
-  final String? email;
-  final String? phone;
-  final String? fax;
-  final String? startDate;
-  final String? endDate;
-  final num? creditLimit;
-  final dynamic invoices;
-  final dynamic payments;
-  final Address address;
-  final String? companyRegNumber;
-  final String? VATnumber;
-  final bool? VATcalc;
-  final String currencyId;
-  final String? paymentMethodId;
-  final int payingDays;
+  int id;
+  String name;
+  String? contact;
+  String? company;
+  bool active;
+  String notes;
+  String? email;
+  String? phone;
+  String? fax;
+  String? startDate;
+  String? endDate;
+  num? creditLimit;
+  dynamic invoices;
+  dynamic payments;
+  Address address;
+  String? companyRegNumber;
+  String? VATnumber;
+  bool? VATcalc;
+  String currencyId;
+  String? paymentMethodId;
+  int payingDays;
 
   ClientInfoMd({
     required this.id,
@@ -133,5 +133,32 @@ class ClientInfoMd {
       'paymentMethodId': paymentMethodId,
       'payingDays': payingDays,
     };
+  }
+
+  // init
+  static ClientInfoMd init() {
+    return ClientInfoMd(
+      id: 0,
+      name: '',
+      contact: '',
+      company: '',
+      active: true,
+      notes: '',
+      email: '',
+      phone: '',
+      fax: '',
+      startDate: '',
+      endDate: '',
+      creditLimit: 0,
+      invoices: null,
+      payments: null,
+      address: Address.init(),
+      companyRegNumber: '',
+      VATnumber: '',
+      VATcalc: true,
+      currencyId: '',
+      paymentMethodId: '',
+      payingDays: 0,
+    );
   }
 }

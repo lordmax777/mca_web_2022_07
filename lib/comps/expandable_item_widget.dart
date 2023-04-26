@@ -18,9 +18,12 @@ class CustomExpandableTabBar extends StatefulWidget {
   List<ExpandedWidgetType> expandedWidgetList;
   final String? saveText;
   final VoidCallback? onSave;
-  CustomExpandableTabBar(
-      {Key? key, required this.expandedWidgetList, this.saveText, this.onSave})
-      : super(key: key);
+  CustomExpandableTabBar({
+    Key? key,
+    required this.expandedWidgetList,
+    this.saveText,
+    this.onSave,
+  }) : super(key: key);
 
   @override
   State<CustomExpandableTabBar> createState() => _CustomExpandableTabBarState();
@@ -33,6 +36,15 @@ class _CustomExpandableTabBarState extends State<CustomExpandableTabBar> {
   void initState() {
     super.initState();
     _addGeneralTabItems();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomExpandableTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.expandedWidgetList != widget.expandedWidgetList) {
+      _generalItems.clear();
+      _addGeneralTabItems();
+    }
   }
 
   void _addGeneralTabItems() {
@@ -51,8 +63,8 @@ class _CustomExpandableTabBarState extends State<CustomExpandableTabBar> {
       separatorBuilder: (context, index) =>
           const Divider(color: ThemeColors.gray11, height: 1.0, thickness: 1.0),
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _generalItems.length + 1,
+      // physics: const NeverScrollableScrollPhysics(),
+      itemCount: _generalItems.length + (widget.onSave != null ? 1 : 0),
       itemBuilder: (context, index) {
         if (widget.onSave != null && index == _generalItems.length) {
           return SaveAndCancelButtonsWidget(

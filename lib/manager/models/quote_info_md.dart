@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class QuoteInfoMd {
   // {
   //         "id": 1,
@@ -86,53 +88,53 @@ class QuoteInfoMd {
   //         "last_sent": "2023-04-21 10:51:45"
   //     },
 
-  final int id;
-  final String customerId;
-  final String name;
-  final String? company;
-  final bool active;
-  final String? phone;
-  final String? email;
-  final String? addressCountry;
-  final String? workAddressCountry;
-  final String? workStartDate;
-  final String? altWorkStartDate;
-  final String? workStartTime;
-  final String? workFinishTime;
-  final int? workRepeat;
-  final List<int> workDays;
-  final String validUntil;
-  final num quoteValue;
-  final num quoteTax;
-  final int currencyId;
-  final int paymentMethodId;
-  final int payingDays;
-  final String createdOn;
-  final String updatedOn;
-  final int createdBy;
-  final int updatedBy;
-  final List<QuoteItemMd> items;
+  int id;
+  String customerId;
+  String name;
+  String? company;
+  bool active;
+  String? phone;
+  String? email;
+  String? addressCountry;
+  String? workAddressCountry;
+  String? workStartDate;
+  String? altWorkStartDate;
+  String? workStartTime;
+  String? workFinishTime;
+  int? workRepeat;
+  List<int> workDays;
+  String validUntil;
+  num quoteValue;
+  num quoteTax;
+  int currencyId;
+  int paymentMethodId;
+  int payingDays;
+  String createdOn;
+  String updatedOn;
+  int createdBy;
+  int updatedBy;
+  List<QuoteItemMd> items;
 
-  final String? contact;
-  final String? companyRegNumber;
-  final String? vatNumber;
-  final String? vatCalc;
-  final String? fax;
-  final String? addressLine1;
-  final String? addressLine2;
-  final String? addressCity;
-  final String? addressCounty;
-  final String? addressPostcode;
-  final String? notes;
-  final String? workAddressLine1;
-  final String? workAddressLine2;
-  final String? workAddressCity;
-  final String? workAddressCounty;
-  final String? workAddressPostcode;
-  final String? acceptedOn;
-  final String? quoteStatus;
-  final String? quoteComments;
-  final String? lastSent;
+  String? contact;
+  String? companyRegNumber;
+  String? vatNumber;
+  String? vatCalc;
+  String? fax;
+  String? addressLine1;
+  String? addressLine2;
+  String? addressCity;
+  String? addressCounty;
+  String? addressPostcode;
+  String? notes;
+  String? workAddressLine1;
+  String? workAddressLine2;
+  String? workAddressCity;
+  String? workAddressCounty;
+  String? workAddressPostcode;
+  String? acceptedOn;
+  String? quoteStatus;
+  String? quoteComments;
+  String? lastSent;
 
   QuoteInfoMd({
     required this.id,
@@ -290,6 +292,58 @@ class QuoteInfoMd {
         "items": List<dynamic>.from(items.map((x) => x.toJson())),
         "last_sent": lastSent,
       };
+
+  // init
+  factory QuoteInfoMd.init() {
+    return QuoteInfoMd(
+      id: 0,
+      customerId: "",
+      name: '',
+      company: '',
+      contact: '',
+      companyRegNumber: '',
+      vatNumber: '',
+      vatCalc: "",
+      active: true,
+      phone: '',
+      fax: '',
+      email: '',
+      addressLine1: '',
+      addressLine2: '',
+      addressCity: '',
+      addressCounty: '',
+      addressCountry: '',
+      addressPostcode: '',
+      notes: '',
+      workAddressLine1: '',
+      workAddressLine2: '',
+      workAddressCity: '',
+      workAddressCounty: '',
+      workAddressCountry: '',
+      workAddressPostcode: '',
+      workStartDate: '',
+      altWorkStartDate: '',
+      workStartTime: '',
+      workFinishTime: '',
+      workRepeat: 0,
+      workDays: [],
+      validUntil: '',
+      acceptedOn: '',
+      quoteStatus: "",
+      quoteComments: '',
+      quoteValue: 0,
+      quoteTax: 0,
+      currencyId: 0,
+      paymentMethodId: 0,
+      payingDays: 1,
+      createdOn: '',
+      updatedOn: '',
+      createdBy: 0,
+      updatedBy: 0,
+      items: [],
+      lastSent: '',
+    );
+  }
 }
 
 class QuoteItemMd {

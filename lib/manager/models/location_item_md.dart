@@ -1,5 +1,7 @@
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
 
+import '../../pages/scheduling/popup_forms/client_form.dart';
+
 class LocationAddress {
   int? id;
   String? name;
@@ -117,6 +119,35 @@ class Address {
     data['longitude'] = longitude;
     data['radius'] = radius;
     return data;
+  }
+
+  // init
+  factory Address.init() {
+    return Address(
+        line1: "",
+        line2: "",
+        city: "",
+        county: "",
+        country: "",
+        postcode: "",
+        latitude: 0,
+        longitude: 0,
+        radius: 0);
+  }
+
+  // from ClientAddressForm
+  factory Address.fromClientAddressForm(ClientAddressForm clientAddressForm) {
+    return Address(
+      line1: clientAddressForm.addressLine1,
+      line2: clientAddressForm.addressLine2,
+      city: clientAddressForm.addressCity,
+      county: clientAddressForm.addressCounty,
+      country: clientAddressForm.addressCountryId,
+      postcode: clientAddressForm.addressPostcode,
+      latitude: clientAddressForm.latitude,
+      longitude: clientAddressForm.longitude,
+      radius: clientAddressForm.radius,
+    );
   }
 }
 

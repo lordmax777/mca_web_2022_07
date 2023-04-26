@@ -11,6 +11,7 @@ import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 
 import '../../../manager/model_exporter.dart';
 import '../../../manager/models/list_all_md.dart';
+import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../theme/theme.dart';
 import '../../../utils/global_functions.dart';
@@ -41,6 +42,19 @@ class ClientAddressForm {
     this.addressPostcode = kDebugMode ? "NW1 8PR" : null,
     this.addressCountryId,
   });
+
+  // from Address
+  ClientAddressForm.fromAddress(Address address) {
+    addressLine1 = address.line1;
+    addressLine2 = address.line2;
+    addressCity = address.city;
+    addressCounty = address.county;
+    addressPostcode = address.postcode;
+    addressCountryId = address.country;
+    latitude = address.latitude?.toDouble();
+    longitude = address.longitude?.toDouble();
+    radius = address.radius?.toInt();
+  }
 }
 
 enum ClientFormType { client, location }
@@ -69,8 +83,10 @@ class _ClientFormState extends State<ClientForm> {
   List<ListPaymentMethods> get paymentMethods =>
       state.generalState.paymentMethods;
   ClientFormType get type => widget.type;
+
   bool get isClient => type == ClientFormType.client;
   bool get isLocation => type == ClientFormType.location;
+
   CompanyMd get company => GeneralController.to.companyInfo;
   int? get selectedClientIndex => widget.selectedClientId;
   String? get clientEmail =>
@@ -219,230 +235,252 @@ class _ClientFormState extends State<ClientForm> {
           controller: scrollController,
           child: Form(
             key: _formKey,
-            child: SpacedColumn(verticalSpace: 16, children: [
-              if (isClient)
-                labelWithField(
-                  "Contact Name",
-                  TextInputWidget(
-                    width: fieldWidth,
-                    controller: contactName,
-                    hintText: "Enter name",
-                    isRequired: true,
-                  ),
-                ),
-              if (isClient)
-                labelWithField(
-                  "Company Name",
-                  TextInputWidget(
-                    width: fieldWidth,
-                    isRequired: true,
-                    controller: companyName,
-                    hintText: "Enter company name",
-                  ),
-                ),
-              labelWithField(
-                "Phone Number",
-                SpacedColumn(
+            child: rowOrColumnWrapper(false, [
+              SpacedColumn(
+                  verticalSpace: 16,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  verticalSpace: 8,
                   children: [
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller: phoneNumber,
-                      isRequired: isClient,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      hintText: "Enter phone number",
+                    if (isClient)
+                      labelWithField(
+                        "Contact Name",
+                        TextInputWidget(
+                          width: fieldWidth,
+                          controller: contactName,
+                          hintText: "Enter name",
+                          isRequired: true,
+                        ),
+                      ),
+                    if (isClient)
+                      labelWithField(
+                        "Company Name",
+                        TextInputWidget(
+                          width: fieldWidth,
+                          isRequired: true,
+                          controller: companyName,
+                          hintText: "Enter company name",
+                        ),
+                      ),
+                    labelWithField(
+                      "Phone Number",
+                      SpacedColumn(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        verticalSpace: 8,
+                        children: [
+                          TextInputWidget(
+                            width: fieldWidth,
+                            controller: phoneNumber,
+                            isRequired: isClient,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            hintText: "Enter phone number",
+                          ),
+                          if (isLocation)
+                            KText(
+                                fontWeight: FWeight.medium,
+                                fontSize: 12.0,
+                                textColor: ThemeColors.gray8,
+                                isSelectable: false,
+                                text:
+                                    'Leave blank to use client\'s phone number'),
+                        ],
+                      ),
                     ),
-                    if (isLocation)
-                      KText(
-                          fontWeight: FWeight.medium,
-                          fontSize: 12.0,
-                          textColor: ThemeColors.gray8,
-                          isSelectable: false,
-                          text: 'Leave blank to use client\'s phone number'),
-                  ],
-                ),
+                    SpacedColumn(
+                      verticalSpace: 16,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        labelWithField(
+                          "Email",
+                          TextInputWidget(
+                            width: fieldWidth,
+                            controller: email,
+                            isRequired: isClient,
+                            validator: (p0) {
+                              if (p0 != null) {
+                                //validate using Regex
+                                if (!RegExp(
+                                        r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(p0)) {
+                                  return "Invalid email";
+                                }
+                              }
+
+                              return null;
+                            },
+                            hintText: "Enter email",
+                          ),
+                        ),
+                        if (isLocation)
+                          KText(
+                              fontWeight: FWeight.medium,
+                              fontSize: 12.0,
+                              textColor: ThemeColors.gray8,
+                              isSelectable: false,
+                              text: 'Leave blank to use client\'s email'),
+                      ],
+                    ),
+                  ]),
+              SpacedColumn(
+                verticalSpace: 16,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isClient)
+                    labelWithField(
+                      "Payment terms",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        isRequired: true,
+                        controller:
+                            TextEditingController(text: payingDays?.toString()),
+                        hintText: "Enter payment terms",
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (value) => payingDays = int.tryParse(value),
+                      ),
+                    ),
+                  if (isClient)
+                    labelWithField(
+                      "Currency",
+                      DropdownWidgetV2(
+                        hintText: "Select currency",
+                        dropdownBtnWidth: fieldWidth,
+                        isRequired: true,
+                        dropdownOptionsWidth: fieldWidth,
+                        items: currencies
+                            .map((e) => CustomDropdownValue(name: e.sign))
+                            .toList(),
+                        value: CustomDropdownValue(
+                            name: currencies
+                                .firstWhereOrNull(
+                                    (element) => element.id == currencyId)
+                                ?.sign),
+                        onChanged: (index) {
+                          setState(() {
+                            currencyId = currencies[index].id;
+                          });
+                        },
+                      ),
+                    ),
+                  if (isClient)
+                    labelWithField(
+                      "Payment Method",
+                      DropdownWidgetV2(
+                        hasSearchBox: true,
+                        isRequired: true,
+                        hintText: "Select payment method",
+                        dropdownBtnWidth: fieldWidth,
+                        dropdownOptionsWidth: fieldWidth,
+                        items: paymentMethods
+                            .map((e) => CustomDropdownValue(name: e.name))
+                            .toList(),
+                        value: CustomDropdownValue(
+                            name: paymentMethods
+                                .firstWhereOrNull(
+                                    (element) => element.id == paymentMethodId)
+                                ?.name),
+                        onChanged: (index) {
+                          setState(() {
+                            paymentMethodId = paymentMethods[index].id;
+                          });
+                        },
+                      ),
+                    ),
+                  if (isClient)
+                    labelWithField(
+                      "Notes",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller: notes,
+                        maxLines: 4,
+                        hintText: "Enter notes",
+                      ),
+                    ),
+                ],
               ),
               SpacedColumn(
-                verticalSpace: 8,
+                verticalSpace: 16,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   labelWithField(
-                    "Email",
+                    "Address Line 1",
                     TextInputWidget(
                       width: fieldWidth,
-                      controller: email,
-                      isRequired: isClient,
-                      validator: (p0) {
-                        if (p0 != null) {
-                          //validate using Regex
-                          if (!RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                              .hasMatch(p0)) {
-                            return "Invalid email";
-                          }
-                        }
-
-                        return null;
-                      },
-                      hintText: "Enter email",
+                      controller:
+                          TextEditingController(text: address.addressLine1),
+                      hintText: "Enter address line 1",
+                      isRequired: true,
+                      onChanged: (value) => address.addressLine1 = value,
                     ),
                   ),
-                  if (isLocation)
-                    KText(
-                        fontWeight: FWeight.medium,
-                        fontSize: 12.0,
-                        textColor: ThemeColors.gray8,
-                        isSelectable: false,
-                        text: 'Leave blank to use client\'s email'),
+                  labelWithField(
+                    "Address Line 2",
+                    TextInputWidget(
+                      width: fieldWidth,
+                      controller:
+                          TextEditingController(text: address.addressLine2),
+                      hintText: "Enter address line 2",
+                      onChanged: (value) => address.addressLine2 = value,
+                    ),
+                  ),
+                  labelWithField(
+                    "City",
+                    TextInputWidget(
+                      width: fieldWidth,
+                      controller:
+                          TextEditingController(text: address.addressCity),
+                      hintText: "Enter city",
+                      isRequired: true,
+                      onChanged: (value) => address.addressCity = value,
+                    ),
+                  ),
+                  labelWithField(
+                    "County",
+                    TextInputWidget(
+                      width: fieldWidth,
+                      controller:
+                          TextEditingController(text: address.addressCounty),
+                      hintText: "Enter county",
+                      onChanged: (value) => address.addressCounty = value,
+                    ),
+                  ),
+                  labelWithField(
+                    "Postcode",
+                    TextInputWidget(
+                      width: fieldWidth,
+                      controller:
+                          TextEditingController(text: address.addressPostcode),
+                      hintText: "Enter postcode",
+                      isRequired: true,
+                      onChanged: (value) => address.addressPostcode = value,
+                    ),
+                  ),
+                  labelWithField(
+                    "Country",
+                    DropdownWidgetV2(
+                      hasSearchBox: true,
+                      hintText: "Select country",
+                      dropdownBtnWidth: fieldWidth,
+                      dropdownOptionsWidth: fieldWidth,
+                      isRequired: true,
+                      items: countries
+                          .map((e) => CustomDropdownValue(name: e.name))
+                          .toList(),
+                      value: CustomDropdownValue(
+                          name: countries
+                                  .firstWhereOrNull((element) =>
+                                      element.code == address.addressCountryId)
+                                  ?.name ??
+                              ""),
+                      onChanged: (index) {
+                        setState(() {
+                          address.addressCountryId = countries[index].code;
+                        });
+                      },
+                    ),
+                  ),
                 ],
-              ),
-              if (isClient)
-                labelWithField(
-                  "Payment terms",
-                  TextInputWidget(
-                    width: fieldWidth,
-                    isRequired: true,
-                    controller:
-                        TextEditingController(text: payingDays?.toString()),
-                    hintText: "Enter payment terms",
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    onChanged: (value) => payingDays = int.tryParse(value),
-                  ),
-                ),
-              if (isClient)
-                labelWithField(
-                  "Currency",
-                  DropdownWidgetV2(
-                    hintText: "Select currency",
-                    dropdownBtnWidth: fieldWidth,
-                    isRequired: true,
-                    dropdownOptionsWidth: fieldWidth,
-                    items: currencies
-                        .map((e) => CustomDropdownValue(name: e.sign))
-                        .toList(),
-                    value: CustomDropdownValue(
-                        name: currencies
-                            .firstWhereOrNull(
-                                (element) => element.id == currencyId)
-                            ?.sign),
-                    onChanged: (index) {
-                      setState(() {
-                        currencyId = currencies[index].id;
-                      });
-                    },
-                  ),
-                ),
-              if (isClient)
-                labelWithField(
-                  "Payment Method",
-                  DropdownWidgetV2(
-                    hasSearchBox: true,
-                    isRequired: true,
-                    hintText: "Select payment method",
-                    dropdownBtnWidth: fieldWidth,
-                    dropdownOptionsWidth: fieldWidth,
-                    items: paymentMethods
-                        .map((e) => CustomDropdownValue(name: e.name))
-                        .toList(),
-                    value: CustomDropdownValue(
-                        name: paymentMethods
-                            .firstWhereOrNull(
-                                (element) => element.id == paymentMethodId)
-                            ?.name),
-                    onChanged: (index) {
-                      setState(() {
-                        paymentMethodId = paymentMethods[index].id;
-                      });
-                    },
-                  ),
-                ),
-              if (isClient)
-                labelWithField(
-                  "Notes",
-                  TextInputWidget(
-                    width: fieldWidth,
-                    controller: notes,
-                    maxLines: 4,
-                    hintText: "Enter notes",
-                  ),
-                ),
-              labelWithField(
-                "Address Line 1",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller: TextEditingController(text: address.addressLine1),
-                  hintText: "Enter address line 1",
-                  isRequired: true,
-                  onChanged: (value) => address.addressLine1 = value,
-                ),
-              ),
-              labelWithField(
-                "Address Line 2",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller: TextEditingController(text: address.addressLine2),
-                  hintText: "Enter address line 2",
-                  onChanged: (value) => address.addressLine2 = value,
-                ),
-              ),
-              labelWithField(
-                "City",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller: TextEditingController(text: address.addressCity),
-                  hintText: "Enter city",
-                  isRequired: true,
-                  onChanged: (value) => address.addressCity = value,
-                ),
-              ),
-              labelWithField(
-                "County",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller:
-                      TextEditingController(text: address.addressCounty),
-                  hintText: "Enter county",
-                  onChanged: (value) => address.addressCounty = value,
-                ),
-              ),
-              labelWithField(
-                "Postcode",
-                TextInputWidget(
-                  width: fieldWidth,
-                  controller:
-                      TextEditingController(text: address.addressPostcode),
-                  hintText: "Enter postcode",
-                  isRequired: true,
-                  onChanged: (value) => address.addressPostcode = value,
-                ),
-              ),
-              labelWithField(
-                "Country",
-                DropdownWidgetV2(
-                  hasSearchBox: true,
-                  hintText: "Select country",
-                  dropdownBtnWidth: fieldWidth,
-                  dropdownOptionsWidth: fieldWidth,
-                  isRequired: true,
-                  items: countries
-                      .map((e) => CustomDropdownValue(name: e.name))
-                      .toList(),
-                  value: CustomDropdownValue(
-                      name: countries
-                              .firstWhereOrNull((element) =>
-                                  element.code == address.addressCountryId)
-                              ?.name ??
-                          ""),
-                  onChanged: (index) {
-                    setState(() {
-                      address.addressCountryId = countries[index].code;
-                    });
-                  },
-                ),
               ),
               if (!isDeliverAtDifferentLocation)
                 ButtonSmall(
@@ -644,6 +682,20 @@ class _ClientFormState extends State<ClientForm> {
     );
   }
 
+  Widget rowOrColumnWrapper(bool isRow, List<Widget> children) {
+    if (isRow) {
+      return SpacedRow(
+        horizontalSpace: 32,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      );
+    }
+    return SpacedColumn(
+      verticalSpace: 16,
+      children: children,
+    );
+  }
+
   Future<ApiResponse> createLocation({bool fetchAllParams = true}) async {
     final ApiResponse res = await restClient()
         .postLocation(
@@ -676,8 +728,8 @@ class _ClientFormState extends State<ClientForm> {
         .nocodeErrorHandler();
     if (res.success) {
       if (fetchAllParams) {
-        appStore.dispatch(GetLocationAddressesAction());
-        appStore.dispatch(GetClientInfosAction());
+        await appStore.dispatch(GetLocationAddressesAction());
+        await appStore.dispatch(GetClientInfosAction());
       }
     }
     return res;
