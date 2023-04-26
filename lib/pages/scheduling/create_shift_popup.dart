@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
@@ -32,16 +35,18 @@ class CreateShiftData {
   int? tempAllowedLocationId;
   bool isActive = true;
   DateTime? startDate;
+  DateTime? altStartDate;
   DateTime? endDate;
   bool isAllDay = false;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
-  int isScheduleLater = 0;
+  int scheduleLaterIndex = 0;
   int? repeatTypeIndex;
   List<int> repeatDays = [];
   int paidHour = 0;
   int paidMinute = 0;
   bool isSplitTime = false;
+  String? comments;
 
   List<UserRes> addedChildren = [];
   Map<int, double> addedChildrenRates = {};
@@ -273,29 +278,69 @@ class _CreateJobState extends State<_CreateJob>
             ButtonLarge(
                 text: 'Publish',
                 onPressed: () async {
-                  // await appStore.dispatch(CreateQuoteAction(
-                  //   email: state.generalState
-                  //       .clientInfos[data.selectedClientId!].email!,
-                  //   name: state
-                  //       .generalState.clientInfos[data.selectedClientId!].name,
-                  //   company: state.generalState
-                  //       .clientInfos[data.selectedClientId!].company!,
-                  //   phone: state.generalState
-                  //       .clientInfos[data.selectedClientId!].phone!,
-                  //   addressLine1: state.generalState
-                  //       .clientInfos[data.selectedClientId!].address.line1!,
-                  //   addressLine2: state.generalState
-                  //       .clientInfos[data.selectedClientId!].address.line2!,
-                  //   addressCounty: state.generalState
-                  //       .clientInfos[data.selectedClientId!].address.county!,
-                  //   addressCity: state.generalState
-                  //       .clientInfos[data.selectedClientId!].address.city!,
-                  //   addressCountry: state.generalState
-                  //       .clientInfos[data.selectedClientId!].address.country!,
-                  //   addressPostcode: state.generalState
-                  //       .clientInfos[data.selectedClientId!].address.postcode!,
-                  //   active: data.isActive,
-                  // ));
+                  if (type == ScheduleCreatePopupMenus.quote) {
+                    final client = state.generalState.clientInfos.firstWhere(
+                        (element) => element.id == data.selectedClientId!);
+                    final LocationAddress? location = data.selectedLocationId !=
+                            null
+                        ? state.generalState.locations[data.selectedLocationId!]
+                        : null;
+                    final storageItems = [...state.generalState.storage_items];
+                    ApiResponse? quoteCreated =
+                        await appStore.dispatch(CreateQuoteAction(
+                      email: client.email ?? "",
+                      name: client.name,
+                      company: client.company,
+                      phone: client.phone,
+                      addressLine1: client.address.line1,
+                      addressLine2: client.address.line2,
+                      addressCounty: client.address.county,
+                      addressCity: client.address.city,
+                      addressCountry: client.address.country,
+                      addressPostcode: client.address.postcode,
+                      active: data.isActive,
+                      altWorkStartDate: getDateFormat(data.altStartDate,
+                          dateSeparatorSymbol: "/"),
+                      currencyId: int.parse(client.currencyId),
+                      payingDays: client.payingDays,
+                      paymentMethodId: int.parse(client.paymentMethodId!),
+                      quoteComments: data.comments,
+                      workAddressCity: location?.address?.city,
+                      workAddressCountry: location?.address?.country,
+                      workAddressCounty: location?.address?.county,
+                      workAddressLine1: location?.address?.line1,
+                      workAddressLine2: location?.address?.line2,
+                      workAddressPostcode: location?.address?.postcode,
+                      notes: client.notes,
+                      workStartDate:
+                          getDateFormat(data.date, dateSeparatorSymbol: "/"),
+                      workStartTime: data.startTime?.formattedTime,
+                      workRepeatId: state
+                          .generalState.workRepeats[data.repeatTypeIndex!].id,
+                      workFinishTime: data.endTime?.formattedTime,
+                      workDays: data.repeatDays,
+                      storageItems: data.gridStateManager.rows
+                          .map((row) {
+                            final item = storageItems.firstWhereOrNull(
+                                (element) =>
+                                    element.id == row.cells['id']!.value);
+                            if (item != null) {
+                              item.quantity = row.cells['quantity']!.value;
+                              item.outgoingPrice =
+                                  row.cells['customer_price']!.value;
+                              item.auto = row.checked ?? false;
+
+                              return item;
+                            }
+                            return StorageItemMd.init();
+                          })
+                          .where((element) => element.id != -1)
+                          .toList(),
+                    ));
+                    if (quoteCreated?.success == true) {
+                      await context.popRoute(quoteCreated);
+                    }
+                  }
                 }),
           ],
         ),

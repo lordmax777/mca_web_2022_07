@@ -4,8 +4,11 @@ class StorageItemMd {
   final bool active;
   final bool service;
   final num incomingPrice;
-  final num outgoingPrice;
+  num outgoingPrice;
   final int taxId;
+
+  int quantity = 0;
+  bool auto = false;
 
   StorageItemMd(
       {required this.id,
@@ -19,7 +22,7 @@ class StorageItemMd {
   //init
   factory StorageItemMd.init({String? name}) {
     return StorageItemMd(
-      id: 0,
+      id: -1,
       name: name ?? '',
       active: false,
       service: false,

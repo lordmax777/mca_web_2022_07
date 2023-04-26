@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/rest/nocode_helpers.dart';
 import '../scheduling/create_shift_popup.dart';
 import '../scheduling/scheduling_page.dart';
 
@@ -96,6 +98,7 @@ class _QuotesListPageState extends State<QuotesListPage>
         PlutoColumn(
           title: "Action",
           field: "edit_btn",
+          hide: true,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return GridTableHelpers.getActionRenderer(rendererContext);
@@ -207,13 +210,13 @@ class _QuotesListPageState extends State<QuotesListPage>
             title: 'Quotes',
             btnText: 'Add New Quote',
             onRightBtnClick: () async {
-              final shiftRes = await showCreateShiftPopup(
+              final quoteCreated = await showCreateShiftPopup<ApiResponse?>(
                   context,
                   CreateShiftData(
                     date: DateTime.now(),
                     type: ScheduleCreatePopupMenus.quote,
                   ));
-              //TODO: Add new quote
+              showError("Quote Created Successfully");
             },
           ),
           TableWrapperWidget(

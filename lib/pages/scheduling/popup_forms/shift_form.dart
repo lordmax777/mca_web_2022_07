@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
+import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
@@ -61,6 +62,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   DateTime? get endDate => data.endDate;
   set endDate(DateTime? value) => data.endDate = value;
 
+  DateTime? get altStartDate => data.altStartDate;
+  set altStartDate(DateTime? value) => data.altStartDate = value;
+
   bool get isAllDay => data.isAllDay;
   set isAllDay(bool value) => data.isAllDay = value;
 
@@ -70,10 +74,10 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   TimeOfDay? get endTime => data.endTime;
   set endTime(TimeOfDay? value) => data.endTime = value;
 
-  int get isScheduleLater => data.isScheduleLater;
-  set isScheduleLater(int value) => data.isScheduleLater = value;
+  int get scheduleLaterIndex => data.scheduleLaterIndex;
+  set scheduleLaterIndex(int value) => data.scheduleLaterIndex = value;
 
-  bool get isRepeat => isScheduleLater == 1;
+  bool get isRepeat => scheduleLaterIndex == 1;
 
   int? get repeatTypeIndex => data.repeatTypeIndex;
   set repeatTypeIndex(int? value) => data.repeatTypeIndex = value;
@@ -86,6 +90,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   TextEditingController paidHoursHour = TextEditingController(text: "0");
   TextEditingController paidHoursMinute = TextEditingController(text: "0");
+  TextEditingController comments = TextEditingController();
+
   bool get isSplitTime => data.isSplitTime;
   set isSplitTime(bool value) => data.isSplitTime = value;
 
@@ -100,6 +106,15 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       data.gridStateManager = value;
 
   @override
+  void dispose() {
+    title.dispose();
+    paidHoursHour.dispose();
+    paidHoursMinute.dispose();
+    comments.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -112,10 +127,17 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
       paidHoursMinute.addListener(() {
         data.paidMinute = int.tryParse(paidHoursMinute.text) ?? 0;
       });
+      comments.addListener(() {
+        data.comments = comments.text;
+      });
       //TODO: Remove this
       if (kDebugMode) {
         await onClientChanged(0,
             clients: appStore.state.generalState.clientInfos);
+      }
+      if (type == ScheduleCreatePopupMenus.quote) {
+        scheduleLaterIndex = 1;
+        repeatTypeIndex = 0;
       }
 
       startDate = data.date;
@@ -226,7 +248,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
               .toList())
         ];
 
-        List<ListLocation> locations = [];
+        List<LocationAddress> locations = [];
         if (selectedClientId == null) {
           locations = [];
         }
@@ -396,6 +418,38 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               },
                             ),
                           ),
+                          if (type == ScheduleCreatePopupMenus.quote)
+                            labelWithField(
+                              "Alternative Start Date",
+                              TextInputWidget(
+                                width: 300,
+                                rightIcon: HeroIcons.calendar,
+                                isReadOnly: true,
+                                hintText: "",
+                                controller: TextEditingController(
+                                  text: altStartDate?.formattedDate ?? "",
+                                ),
+                                onTap: () async {
+                                  final date =
+                                      await showCustomDatePicker(context);
+                                  //date cannot be before today only if we are creating a new
+                                  if (isCreate) {
+                                    if (date != null &&
+                                        date.isBefore(DateTime.now().subtract(
+                                            const Duration(days: 1)))) {
+                                      showError("Date cannot be before today");
+                                      return;
+                                    }
+                                  }
+
+                                  if (date == null) return;
+
+                                  setState(() {
+                                    altStartDate = date;
+                                  });
+                                },
+                              ),
+                            ),
                           labelWithField(
                             "All day",
                             toggle(isAllDay, (val) {
@@ -471,24 +525,26 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                               },
                             ),
                           ),
-                          labelWithField(
-                            "Schedule Later",
-                            radio(0, isScheduleLater, (val) {
-                              setState(() {
-                                isScheduleLater = val;
-                                repeatTypeIndex = null;
-                              });
-                            }),
-                          ),
-                          labelWithField(
-                            "Repeat",
-                            radio(1, isScheduleLater, (val) {
-                              setState(() {
-                                isScheduleLater = val;
-                                repeatTypeIndex = 0;
-                              });
-                            }),
-                          ),
+                          if (type != ScheduleCreatePopupMenus.quote)
+                            labelWithField(
+                              "Schedule Later",
+                              radio(0, scheduleLaterIndex, (val) {
+                                setState(() {
+                                  scheduleLaterIndex = val;
+                                  repeatTypeIndex = null;
+                                });
+                              }),
+                            ),
+                          if (type != ScheduleCreatePopupMenus.quote)
+                            labelWithField(
+                              "Repeat",
+                              radio(1, scheduleLaterIndex, (val) {
+                                setState(() {
+                                  scheduleLaterIndex = val;
+                                  repeatTypeIndex = 0;
+                                });
+                              }),
+                            ),
                         ],
                       ),
                       if (isRepeat)
@@ -551,7 +607,17 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                         });
                                       }, item.value),
                                   ],
-                                )
+                                ),
+                            if (type == ScheduleCreatePopupMenus.quote)
+                              labelWithField(
+                                "Comments",
+                                TextInputWidget(
+                                  width: 400,
+                                  maxLines: 4,
+                                  controller: comments,
+                                  hintText: "",
+                                ),
+                              ),
                           ],
                         ),
                       SpacedRow(
@@ -1169,16 +1235,16 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   void _handleOnChanged(PlutoGridOnChangedEvent event) async {
-    switch (event.column.field) {
-      case "title":
-        final item = appStore.state.generalState.storage_items.firstWhereOrNull(
-            (element) => element.name == event.row.cells["title"]?.value);
-        if (item != null) {
-          gridStateManager.rows[event.rowIdx].cells["customer_price"]?.value =
-              item.outgoingPrice;
-        }
-        break;
-    }
+    // switch (event.column.field) {
+    //   case "title":
+    //     final item = appStore.state.generalState.storage_items.firstWhereOrNull(
+    //         (element) => element.name == event.row.cells["title"]?.value);
+    //     if (item != null) {
+    //       gridStateManager.rows[event.rowIdx].cells["customer_price"]?.value =
+    //           item.outgoingPrice;
+    //     }
+    //     break;
+    // }
   }
 
   void onTableChangeDone() {

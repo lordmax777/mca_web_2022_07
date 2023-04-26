@@ -20,6 +20,15 @@ class ApiResponse {
       this.data,
       required this.success,
       this.requestOptions});
+
+  factory ApiResponse.fromDioResponse(Response res) => ApiResponse(
+        success: res.statusCode == 200,
+        data: res.data,
+        rawError: res,
+        requestOptions: res.requestOptions,
+        resCode: res.statusCode,
+        resMessage: res.statusMessage,
+      );
 }
 
 extension FutureExceptionHandler on Future {

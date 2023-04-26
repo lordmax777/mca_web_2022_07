@@ -560,42 +560,42 @@ abstract class RestClient {
   @GET("/api/fe/quotes/{id}")
   Future<HttpResponse> getQuotes(@Path() int id);
 
-  // @POST("/api/fe/quotes/{id}")
-  // @FormUrlEncoded()
-  // Future<HttpResponse> createQuote(
-  //   ///0 to create new, id to update
-  //   @Path() int id, {
-  //   @Field() required String email,
-  //   @Field() required String name,
-  //   @Field() required String company,
-  //   @Field() required String phone,
-  //   @Field() required String addressLine1,
-  //   @Field() required String addressLine2,
-  //   @Field() required String addressCity,
-  //   @Field() required String addressCounty,
-  //   //country code
-  //   @Field() required String addressCountry,
-  //   @Field() required String addressPostcode,
-  //   @Field() required String workAddressLine1,
-  //   @Field() required String workAddressLine2,
-  //   @Field() required String workAddressCity,
-  //   @Field() required String workAddressCounty,
-  //   //country code
-  //   @Field() required String workAddressCountry,
-  //   @Field() required String workAddressPostcode,
-  //   @Field() String? notes,
-  //   @Field() required int currencyId,
-  //   @Field() required int paymentMethodId,
-  //   @Field() required int payingDays,
-  //   @Field() required bool active,
-  //   @Field() required String workStartDate,
-  //   @Field() required String altWorkStartDate,
-  //   @Field() required String workStartTime,
-  //   @Field() required String workFinishTime,
-  //   @Field() required int workRepeatId,
-  //   @Field() required String quoteComments,
-  //   @Field() required List<int> workDays,
-  // });
+  @POST("/api/fe/quotes/{id}")
+  @FormUrlEncoded()
+  Future<HttpResponse> createQuote(
+    ///0 to create new, id to update
+    @Path() int id, {
+    @Field() required String email,
+    @Field() required String name,
+    @Field() String? company,
+    @Field() String? phone,
+    @Field() String? addressLine1,
+    @Field() String? addressLine2,
+    @Field() String? addressCity,
+    @Field() String? addressCounty,
+    //country code
+    @Field() String? addressCountry,
+    @Field() String? addressPostcode,
+    @Field() String? workAddressLine1,
+    @Field() String? workAddressLine2,
+    @Field() String? workAddressCity,
+    @Field() String? workAddressCounty,
+    //country code
+    @Field() String? workAddressCountry,
+    @Field() String? workAddressPostcode,
+    @Field() String? notes,
+    @Field() int? currencyId,
+    @Field() int? paymentMethodId,
+    @Field() required int payingDays,
+    @Field() required bool active,
+    @Field() String? workStartDate,
+    @Field() String? altWorkStartDate,
+    @Field() String? workStartTime,
+    @Field() String? workFinishTime,
+    @Field() int? workRepeatId,
+    @Field() String? quoteComments,
+    @Field() List<int>? workDays,
+  });
 }
 
 RestClient restClient() => RestClient(
@@ -603,3 +603,21 @@ RestClient restClient() => RestClient(
             bearerToken: appStore.state.authState.authRes.data?.access_token)
         .init(),
     baseUrl: Constants.apiBaseUrl);
+
+Dio restClientWithDio(String contentType) => DioClientForRetrofit(
+        bearerToken: appStore.state.authState.authRes.data?.access_token,
+        contentType: contentType)
+    .init();
+
+RequestOptions setStreamType<T>(RequestOptions requestOptions) {
+  if (T != dynamic &&
+      !(requestOptions.responseType == ResponseType.bytes ||
+          requestOptions.responseType == ResponseType.stream)) {
+    if (T == String) {
+      requestOptions.responseType = ResponseType.plain;
+    } else {
+      requestOptions.responseType = ResponseType.json;
+    }
+  }
+  return requestOptions;
+}

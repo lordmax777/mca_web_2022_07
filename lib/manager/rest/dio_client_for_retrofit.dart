@@ -59,9 +59,11 @@ class DioClientForRetrofit {
   final String? bearerToken;
   final String? contentType;
   final ResponseType responseType;
+  final String? baseUrl;
   DioClientForRetrofit(
       {this.bearerToken,
       this.contentType,
+      this.baseUrl,
       this.responseType = ResponseType.json});
 
   Map<String, dynamic>? get headers {
@@ -92,10 +94,12 @@ class DioClientForRetrofit {
     }
     // _dio.interceptors.add(tokenInterceptor);
     BaseOptions options = BaseOptions(
+      baseUrl: baseUrl ?? Constants.apiBaseUrl,
       headers: headers,
       responseType: responseType,
       connectTimeout: 30000,
       receiveTimeout: 30000,
+      followRedirects: false,
     );
     dio.options = options;
     return dio;
@@ -108,9 +112,9 @@ final loggerInterceptor =
   options.headers.forEach((key, value) {
     headers += "| $key: $value";
   });
-  Logger.d("| [DIO] Request: ${options.method} ${options.uri}");
-  Logger.d("| [DIO] Options: ${options.data?.toString() ?? ''}");
-  Logger.d("| [DIO] Headers: $headers");
+  Logger.d("| [API_Request]: ${options.method} ${options.uri}");
+  Logger.d("| [API_Options]: ${options.data?.toString() ?? ''}");
+  Logger.d("| [API_Headers]: $headers");
 
   handler.next(options); //continue
 }, onResponse: (Response response, handler) async {
@@ -119,11 +123,11 @@ final loggerInterceptor =
 
   if (!skip) {
     Logger.i(
-        "| [DIO] Response [code ${response.statusCode}]: ${response.data}"); //:
+        "| [API_Response] [code ${response.statusCode}]: ${response.data}"); //:
   }
   handler.next(response);
   // return response; // continue
 }, onError: (DioError error, handler) async {
-  Logger.e("| [DIO] Error: ${error.error}: ${error.response?.toString()}");
+  Logger.e("| [API_Error]: ${error.error}: ${error.response?.toString()}");
   handler.next(error); //continue
 });

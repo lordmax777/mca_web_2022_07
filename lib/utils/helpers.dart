@@ -43,6 +43,12 @@ extension TimeExtensionsString on String {
   }
 }
 
+extension TimeOfDayExtensions on TimeOfDay {
+  String get formattedTime {
+    return "${hour.toString().padLeft(2, "0")}:${minute.toString().padLeft(2, "0")}";
+  }
+}
+
 extension TimeExtensions on TextEditingController {
   List<int>? get formattedTime {
     dynamic time = text.split(" ");

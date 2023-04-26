@@ -3,6 +3,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/rest/dio_client_for_retrofit.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
@@ -13,6 +14,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
+import 'package:retrofit/retrofit.dart';
 import '../../general_controller.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
@@ -258,22 +260,101 @@ Future<List<QuoteInfoMd>> _getQuotesAction(
   }
 }
 
-Future<void> _createQuoteAction(
+Future<ApiResponse?> _createQuoteAction(
     AppState state, CreateQuoteAction action, NextDispatcher next) async {
-  try {
-    final dio.Dio apiClient = DioClientForRetrofit().init();
-    apiClient.options.baseUrl = Constants.apiBaseUrl;
-    final dio.FormData data = dio.FormData();
-    data.fields.add(MapEntry(
-      'email',
-      action.email,
-    ));
+  return await Get.showOverlay(
+      asyncFunction: () async {
+        try {
+          final dio.Dio apiClient = DioClientForRetrofit(
+                  bearerToken: state.authState.authRes.data?.access_token,
+                  contentType: "multipart/form-data")
+              .init();
 
-    logger(
-        "CreateQuoteAction FORM: ${data.fields.map((e) => "${e.key}: ${e.value}").toList()}");
+          final data = <String, dynamic>{};
 
-    apiClient.post("/fe/quotes/${action.id}", data: data);
-  } catch (e) {
-    Logger.e(e.toString(), tag: "CreateQuoteAction");
-  }
+          if (action.storageItems.isEmpty) {
+            showError('Please add item/service(s)', titleMsg: "Warning");
+            return null;
+          }
+          if (action.email.isEmpty) {
+            showError('Please add email', titleMsg: "Warning");
+            return null;
+          }
+          final dio.FormData formData = dio.FormData.fromMap(data);
+
+          formData.fields.add(MapEntry('name', action.name));
+          data['name'] = action.name;
+
+          formData.fields.add(MapEntry('email', action.email));
+          data['email'] = action.email;
+
+          formData.fields
+              .add(MapEntry('payingDays', action.payingDays.toString()));
+          data['payingDays'] = action.payingDays;
+
+          formData.fields.add(MapEntry('active', action.active.toString()));
+          data['active'] = action.active;
+
+          formData.fields
+              .add(MapEntry('currencyId', action.currencyId.toString()));
+          data['currencyId'] = action.currencyId;
+
+          formData.fields.add(
+              MapEntry('paymentMethodId', action.paymentMethodId.toString()));
+          data['paymentMethodId'] = action.paymentMethodId;
+
+          formData.fields
+              .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
+          data['workRepeatId'] = action.workRepeatId;
+
+          for (int i = 0; i < action.storageItems.length; i++) {
+            final item = action.storageItems[i];
+
+            formData.fields.add(MapEntry('quoteItem_$i', item.id.toString()));
+            data['quoteItem_$i'] = item.id;
+
+            formData.fields
+                .add(MapEntry('quoteQuantity_$i', item.quantity.toString()));
+            data['quoteQuantity_$i'] = item.quantity;
+
+            formData.fields
+                .add(MapEntry('quotePrice_$i', item.outgoingPrice.toString()));
+            data['quotePrice_$i'] = item.outgoingPrice;
+
+            formData.fields.add(MapEntry('quoteAuto_$i', item.auto.toString()));
+            data['quoteAuto_$i'] = item.auto;
+          }
+
+          logger(
+              "FormData: ${formData.fields.map((e) => "${e.key}: ${e.value}").toList()}");
+
+          dio.Response res = await apiClient.post('/api/fe/quotes/${action.id}',
+              data: formData);
+
+          final ApiResponse apiResponse = ApiResponse.fromDioResponse(res);
+
+          switch (res.statusCode) {
+            case 200:
+              if (res.data != null) {
+                return apiResponse;
+              }
+              showError(res.data ?? 'Error');
+              break;
+            default:
+              showError(res.statusMessage ?? 'Error');
+          }
+        } on dio.DioError catch (e) {
+          switch (e.type) {
+            case dio.DioErrorType.response:
+              showError(e.response?.data ?? 'Error');
+              break;
+            default:
+              showError(e.message);
+          }
+        } catch (e) {
+          showError("Unknown error occurred!");
+          Logger.e(e.toString(), tag: "CreateQuoteAction");
+        }
+      },
+      loadingWidget: const Center(child: CircularProgressIndicator()));
 }

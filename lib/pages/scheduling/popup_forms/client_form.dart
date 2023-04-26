@@ -573,13 +573,6 @@ class _ClientFormState extends State<ClientForm> {
           ButtonLarge(
               text: "Save",
               onPressed: () {
-                logger(phoneNumber.text.isEmpty && selectedClientIndex != null
-                    ? clientPhone
-                    : phoneNumber.text);
-                logger(phoneNumber.text.isEmpty && selectedClientIndex != null
-                    ? clientEmail
-                    : phoneNumber.text);
-                return;
                 if (_formKey.currentState!.validate()) {
                   Get.showOverlay(
                     asyncFunction: () async {
@@ -683,8 +676,8 @@ class _ClientFormState extends State<ClientForm> {
         .nocodeErrorHandler();
     if (res.success) {
       if (fetchAllParams) {
-        await appStore.dispatch(GetAllParamListAction());
         appStore.dispatch(GetLocationAddressesAction());
+        appStore.dispatch(GetClientInfosAction());
       }
     }
     return res;
