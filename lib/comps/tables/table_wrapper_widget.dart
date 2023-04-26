@@ -3,7 +3,10 @@ import '../../theme/theme.dart';
 class TableWrapperWidget extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
-  const TableWrapperWidget({Key? key, required this.child, this.padding})
+  final bool? enableShadow;
+
+  const TableWrapperWidget(
+      {Key? key, required this.child, this.padding, this.enableShadow = true})
       : super(key: key);
 
   @override
@@ -12,20 +15,22 @@ class TableWrapperWidget extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
           color: ThemeColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: ThemeColors.black.withOpacity(0.08),
-              blurRadius: 24,
-              offset: const Offset(0, 4),
-              spreadRadius: 0,
-            ),
-            BoxShadow(
-              color: ThemeColors.black.withOpacity(0.08),
-              blurRadius: 4,
-              offset: const Offset(0, 4),
-              spreadRadius: 0,
-            )
-          ]),
+          boxShadow: enableShadow!
+              ? [
+                  BoxShadow(
+                    color: ThemeColors.black.withOpacity(0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: ThemeColors.black.withOpacity(0.08),
+                    blurRadius: 4,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 0,
+                  )
+                ]
+              : []),
       child: Padding(
         padding: padding ?? EdgeInsets.zero,
         child: ClipRRect(
