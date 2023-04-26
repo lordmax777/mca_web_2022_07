@@ -93,7 +93,7 @@ class QuoteInfoMd {
   final bool active;
   final String? phone;
   final String? email;
-  final String addressCountry;
+  final String? addressCountry;
   final String? workAddressCountry;
   final String? workStartDate;
   final String? altWorkStartDate;
@@ -151,7 +151,7 @@ class QuoteInfoMd {
     this.addressLine2,
     this.addressCity,
     this.addressCounty,
-    required this.addressCountry,
+    this.addressCountry,
     this.addressPostcode,
     this.notes,
     this.workAddressLine1,

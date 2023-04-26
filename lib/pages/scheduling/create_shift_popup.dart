@@ -281,10 +281,9 @@ class _CreateJobState extends State<_CreateJob>
                   if (type == ScheduleCreatePopupMenus.quote) {
                     final client = state.generalState.clientInfos.firstWhere(
                         (element) => element.id == data.selectedClientId!);
-                    final LocationAddress? location = data.selectedLocationId !=
-                            null
-                        ? state.generalState.locations[data.selectedLocationId!]
-                        : null;
+                    final LocationAddress? location =
+                        state.generalState.locations.firstWhereOrNull(
+                            (element) => element.id == data.selectedLocationId);
                     final storageItems = [...state.generalState.storage_items];
                     ApiResponse? quoteCreated =
                         await appStore.dispatch(CreateQuoteAction(

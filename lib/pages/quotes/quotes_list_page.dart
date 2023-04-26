@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../manager/redux/sets/app_state.dart';
@@ -40,7 +41,7 @@ class _QuotesListPageState extends State<QuotesListPage>
   final TextEditingController _searchController = TextEditingController();
 
   //Table
-  late final PlutoGridStateManager stateManager;
+
   List<PlutoColumn> get columns => [
         PlutoColumn(
           title: "",
@@ -98,10 +99,12 @@ class _QuotesListPageState extends State<QuotesListPage>
         PlutoColumn(
           title: "Action",
           field: "edit_btn",
-          hide: true,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
-            return GridTableHelpers.getActionRenderer(rendererContext);
+            return GridTableHelpers.getActionRenderer(
+              rendererContext,
+              onTap: (value) {},
+            );
           },
         ),
       ].map((e) {
@@ -110,19 +113,18 @@ class _QuotesListPageState extends State<QuotesListPage>
         return e1;
       }).toList();
 
-  int _pageSize = 10;
-  int _page = 1;
+  PlutoGridStateManager? stateManager;
 
-  bool isStateManagerInitialized = false;
+  bool get isStateManagerInitialized => stateManager != null;
 
   void _setFilter() {
     _searchController.addListener(() {
       //TODO: NOT WORKING
       if (_searchController.text.isNotEmpty) {
-        if (stateManager.page > 1) {
-          stateManager.setPage(1);
+        if (stateManager!.page > 1) {
+          stateManager!.setPage(1);
         }
-        stateManager.setFilter(
+        stateManager!.setFilter(
           (element) {
             final String search = _searchController.text.toLowerCase();
             bool searched =
@@ -161,29 +163,25 @@ class _QuotesListPageState extends State<QuotesListPage>
             return searched;
           },
         );
-        _onPageChange(stateManager.page);
+        _onPageChange(stateManager!.page);
         _onPageSizeChange(Constants.tablePageSizes[0].toString());
         return;
       }
 
-      stateManager.setFilter((element) => true);
-      _onPageChange(stateManager.page);
+      stateManager!.setFilter((element) => true);
+      _onPageChange(stateManager!.page);
       _onPageSizeChange(Constants.tablePageSizes[0].toString());
     });
   }
 
   void _onPageSizeChange(String pageS) {
-    _pageSize = int.tryParse(pageS) ?? 10;
-    stateManager.setPageSize(_pageSize);
-    stateManager.setPage(1);
-    _page = 1;
-    setState(() {});
+    int pageSize = int.tryParse(pageS) ?? 10;
+    stateManager!.setPageSize(pageSize);
+    stateManager!.setPage(1);
   }
 
   void _onPageChange(int page) {
-    _page = page;
-    stateManager.setPage(_page);
-    setState(() {});
+    stateManager!.setPage(page);
   }
 
   @override
@@ -196,7 +194,7 @@ class _QuotesListPageState extends State<QuotesListPage>
   void reassemble() async {
     super.reassemble();
     if (kDebugMode) {
-      await onReload();
+      // await onReload();
     }
   }
 
@@ -204,6 +202,17 @@ class _QuotesListPageState extends State<QuotesListPage>
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
+      onWillChange: (previousViewModel, newViewModel) {
+        final oldQuotes = previousViewModel?.generalState.allSortedQuotes;
+        final newQuotes = newViewModel.generalState.allSortedQuotes;
+        if (oldQuotes?.length != newQuotes.length) {
+          if (isStateManagerInitialized) {
+            stateManager!.removeAllRows();
+            stateManager!
+                .appendRows(newQuotes.map((e) => _buildRow(e)).toList());
+          }
+        }
+      },
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
           PagesTitleWidget(
@@ -216,7 +225,9 @@ class _QuotesListPageState extends State<QuotesListPage>
                     date: DateTime.now(),
                     type: ScheduleCreatePopupMenus.quote,
                   ));
-              showError("Quote Created Successfully");
+              if (quoteCreated != null) {
+                showError("Quote Created Successfully");
+              }
             },
           ),
           TableWrapperWidget(
@@ -306,29 +317,30 @@ class _QuotesListPageState extends State<QuotesListPage>
     } else {
       return UsersListTable(
           gridBorderColor: Colors.grey[300]!,
-          rows: isStateManagerInitialized ? stateManager.rows : [],
+          rows: [],
           noRowsText: 'No quotes found',
           onSmReady: (p0) {
             if (!isStateManagerInitialized) {
               stateManager = p0;
+              stateManager!.addListener(() {
+                setState(() {});
+              });
+              final allQuotes = state.generalState.allSortedQuotes;
+              stateManager!.removeAllRows();
+              stateManager!
+                  .appendRows(allQuotes.map((e) => _buildRow(e)).toList());
+
               _setFilter();
             }
-            stateManager.setPage(0);
-            stateManager.setPageSize(10);
-            stateManager.setPage(_page);
-            final allQuotes = [...state.generalState.allSortedQuotes];
-            stateManager.removeAllRows();
-            stateManager
-                .appendRows(allQuotes.map((e) => _buildRow(e)).toList());
-            setState(() {
-              isStateManagerInitialized = true;
-            });
+            stateManager!.setPage(1);
+            stateManager!.setPageSize(10);
           },
           cols: columns);
     }
   }
 
   Widget _footer(AppState state) {
+    logger(stateManager?.page);
     return Padding(
       padding:
           const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
@@ -353,17 +365,17 @@ class _QuotesListPageState extends State<QuotesListPage>
                     onChanged: (index) => _onPageSizeChange(
                         Constants.tablePageSizes[index].toString()),
                     value: CustomDropdownValue(
-                        name: stateManager.pageSize.toString()),
+                        name: stateManager!.pageSize.toString()),
                   ),
                   KText(
-                      text: "of ${stateManager.rows.length} entries",
+                      text: "of ${stateManager!.rows.length} entries",
                       textColor: ThemeColors.black,
                       fontSize: 14.0,
                       isSelectable: false),
                 ]),
             TablePaginationWidget(
-                currentPage: _page,
-                totalPages: stateManager
+                currentPage: stateManager!.page,
+                totalPages: stateManager!
                     .totalPage, //(widget._itemCount / _pageSize).ceil(),
                 onPageChanged: (int i) => _onPageChange(i)),
           ]),

@@ -53,8 +53,9 @@ class GeneralState {
   final List<LocationAddress> locationAddresses;
   final List<ClientInfoMd> clientInfos;
   final List<QuoteInfoMd> quotes;
-  List<QuoteInfoMd> get allSortedQuotes =>
-      quotes..sort((a, b) => b.name.compareTo(a.name));
+  List<QuoteInfoMd> get allSortedQuotes => quotes
+    ..sort((a, b) => DateTime.tryParse(b.createdOn)!
+        .compareTo(DateTime.tryParse(a.createdOn)!));
 
   GeneralState({
     required this.paramList,

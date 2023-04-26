@@ -13,7 +13,7 @@ class Constants {
   static bool isDebug = true;
   static bool enableTalker = false;
   static double defaultWidth(BuildContext context) =>
-      MediaQuery.of(context).size.width - 60;
+      MediaQuery.of(context).size.width - 16;
 
   //REST API related data
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";
@@ -46,7 +46,7 @@ class Constants {
   //Drawer
   static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  static const double pagePaddingHorizontal = 32.0;
+  static const double pagePaddingHorizontal = 8.0;
 
   static List<Map<String, dynamic>> drawerItems = [
     {

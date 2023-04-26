@@ -307,6 +307,11 @@ Future<ApiResponse?> _createQuoteAction(
               .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
           data['workRepeatId'] = action.workRepeatId;
 
+          if (action.phone != null && action.phone!.isNotEmpty) {
+            formData.fields.add(MapEntry('phone', action.phone!));
+            data['phone'] = action.phone;
+          }
+
           for (int i = 0; i < action.storageItems.length; i++) {
             final item = action.storageItems[i];
 
@@ -325,6 +330,8 @@ Future<ApiResponse?> _createQuoteAction(
             data['quoteAuto_$i'] = item.auto;
           }
 
+          // formData.fields.removeWhere((element) => element.value == "null");
+
           logger(
               "FormData: ${formData.fields.map((e) => "${e.key}: ${e.value}").toList()}");
 
@@ -336,6 +343,7 @@ Future<ApiResponse?> _createQuoteAction(
           switch (res.statusCode) {
             case 200:
               if (res.data != null) {
+                await appStore.dispatch(GetQuotesAction());
                 return apiResponse;
               }
               showError(res.data ?? 'Error');
