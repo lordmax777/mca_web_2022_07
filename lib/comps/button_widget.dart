@@ -5,12 +5,20 @@ class ButtonMedium extends StatelessWidget {
   final String text;
   Color? bgColor;
   HeroIcon? icon;
+  TextStyle? textStyle;
+
   ButtonMedium(
-      {Key? key, this.onPressed, required this.text, this.icon, this.bgColor})
+      {Key? key,
+      this.onPressed,
+      required this.text,
+      this.icon,
+      this.bgColor,
+      this.textStyle})
       : super(key: key) {
     bgColor ??= ThemeColors.MAIN_COLOR;
     if (icon != null) {
-      icon = HeroIcon(icon!.icon, size: icon!.size, color: ThemeColors.white);
+      icon = HeroIcon(icon!.icon,
+          size: icon!.size, color: icon!.color ?? ThemeColors.white);
     }
   }
 
@@ -60,6 +68,7 @@ class ButtonMedium extends StatelessWidget {
             rowCenter: true,
             isSelectable: false,
             fontSize: 14,
+            style: textStyle,
             fontWeight: FWeight.medium,
           ));
     }
@@ -70,6 +79,7 @@ class ButtonMedium extends StatelessWidget {
           text: text,
           isSelectable: false,
           fontSize: 14,
+          style: textStyle,
           fontWeight: FWeight.bold,
         ));
   }
@@ -167,12 +177,20 @@ class ButtonSmall extends StatelessWidget {
   final String text;
   Color? bgColor;
   HeroIcon? icon;
+  TextStyle? textStyle;
+
   ButtonSmall(
-      {Key? key, this.onPressed, required this.text, this.icon, this.bgColor})
+      {Key? key,
+      this.onPressed,
+      required this.text,
+      this.icon,
+      this.bgColor,
+      this.textStyle})
       : super(key: key) {
     bgColor ??= ThemeColors.MAIN_COLOR;
     if (icon != null) {
-      icon = HeroIcon(icon!.icon, size: icon!.size, color: ThemeColors.white);
+      icon = HeroIcon(icon!.icon,
+          size: icon!.size, color: icon!.color ?? ThemeColors.white);
     }
   }
 
@@ -224,6 +242,7 @@ class ButtonSmall extends StatelessWidget {
             text: text,
             isSelectable: false,
             fontSize: 12,
+            style: textStyle,
             fontWeight: FWeight.medium,
           ));
     }
@@ -234,6 +253,7 @@ class ButtonSmall extends StatelessWidget {
           text: text,
           isSelectable: false,
           fontSize: 12,
+          style: textStyle,
           fontWeight: FWeight.medium,
         ));
   }
@@ -244,6 +264,7 @@ class ButtonMediumSecondary extends StatelessWidget {
   final String text;
   Color? bgColor;
   HeroIcon? leftIcon;
+
   ButtonMediumSecondary(
       {Key? key,
       this.onPressed,
@@ -328,6 +349,7 @@ class ButtonLargeSecondary extends StatelessWidget {
   Color? bgColor;
   HeroIcon? leftIcon;
   final bool paddingWithoutIcon;
+
   ButtonLargeSecondary(
       {Key? key,
       this.onPressed,
@@ -417,6 +439,7 @@ class ButtonSmallSecondary extends StatelessWidget {
   final String text;
   Color? bgColor;
   HeroIcon? leftIcon;
+
   ButtonSmallSecondary(
       {Key? key,
       this.onPressed,
