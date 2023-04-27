@@ -55,19 +55,26 @@ Future<bool> onWillPop(BuildContext context) async {
       false;
 }
 
-Widget titleWithDivider(String? title, Widget? child) {
+Widget titleWithDivider(String? title, Widget? child, {Widget? titleIcon}) {
   return SpacedColumn(crossAxisAlignment: CrossAxisAlignment.start, children: [
     if (title != null)
-      KText(
-        text: title,
-        fontSize: 24,
-        textColor: ThemeColors.gray2,
-        fontWeight: FWeight.bold,
+      SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 6,
+        children: [
+          KText(
+            text: title,
+            fontSize: 24,
+            textColor: ThemeColors.gray2,
+            fontWeight: FWeight.bold,
+          ),
+          if (titleIcon != null) titleIcon,
+        ],
       ),
     if (title != null)
       Container(
-          margin: const EdgeInsets.only(top: 8, bottom: 32),
-          width: MediaQuery.of(Get.context!).size.width * .8,
+          margin: const EdgeInsets.only(top: 8, bottom: 16),
+          width: MediaQuery.of(Get.context!).size.width * .22,
           height: 1,
           color: ThemeColors.gray2),
     if (child != null) child,
@@ -75,7 +82,7 @@ Widget titleWithDivider(String? title, Widget? child) {
 }
 
 Widget labelWithField(String label, Widget? child,
-    {Widget? customLabel, Widget? childHelperWidget}) {
+    {Widget? customLabel, Widget? childHelperWidget, TextStyle? labelStyle}) {
   return SpacedColumn(
     verticalSpace: 0,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +93,7 @@ Widget labelWithField(String label, Widget? child,
         children: [
           Text(
             label,
-            style: ThemeText.md1,
+            style: labelStyle ?? ThemeText.md1,
           ),
           if (customLabel != null) customLabel,
         ],

@@ -149,14 +149,9 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
   }
 
   void onCreateNewClientTap(AppState state, ClientFormType type) async {
-    final CreatedClientReturnValue? data = await showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => ClientForm(
-              state: state,
-              type: type,
-              selectedClientId: selectedClientId,
-            ));
+    final CreatedClientReturnValue? data = await appStore.dispatch(
+        OnCreateNewClientTap(context,
+            type: type, clientInfo: ClientInfoMd.init(id: selectedClientId)));
     if (data == null) return;
     setState(() {
       if (data.clientId != null) {

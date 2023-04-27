@@ -10,6 +10,7 @@ import 'package:redux/redux.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
+import '../../../pages/scheduling/popup_forms/client_form.dart';
 import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
@@ -528,3 +529,11 @@ class OnCreateNewStorageItemAction {
 //
 //   OnAddClientAction({required this.createClient, required this.createLocation});
 // }
+
+class OnCreateNewClientTap<T> {
+  final ClientFormType type;
+  final BuildContext context;
+  final ClientInfoMd? clientInfo;
+
+  OnCreateNewClientTap(this.context, {required this.type, this.clientInfo});
+}

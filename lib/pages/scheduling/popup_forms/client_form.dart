@@ -57,17 +57,35 @@ class ClientAddressForm {
   }
 }
 
-enum ClientFormType { client, location }
+enum ClientFormType {
+  client,
+  location,
+  quoteClient,
+  quoteLocation;
+
+  String get label {
+    switch (this) {
+      case ClientFormType.client:
+        return "Create New Client";
+      case ClientFormType.location:
+        return "Create Location";
+      case ClientFormType.quoteClient:
+        return "Edit Personal Information";
+      case ClientFormType.quoteLocation:
+        return "Edit Location";
+    }
+  }
+}
 
 class ClientForm extends StatefulWidget {
   final AppState state;
   final ClientFormType type;
-  final int? selectedClientId;
+  final ClientInfoMd? selectedClient;
   const ClientForm({
     Key? key,
     required this.state,
     this.type = ClientFormType.client,
-    this.selectedClientId,
+    this.selectedClient,
   }) : super(key: key);
 
   @override
@@ -86,13 +104,13 @@ class _ClientFormState extends State<ClientForm> {
 
   bool get isClient => type == ClientFormType.client;
   bool get isLocation => type == ClientFormType.location;
+  bool get isQuoteClient => type == ClientFormType.quoteClient;
+  bool get isQuoteLocation => type == ClientFormType.quoteLocation;
 
   CompanyMd get company => GeneralController.to.companyInfo;
-  int? get selectedClientIndex => widget.selectedClientId;
-  String? get clientEmail =>
-      state.generalState.clientInfos[selectedClientIndex!].email;
-  String? get clientPhone =>
-      state.generalState.clientInfos[selectedClientIndex!].phone;
+  ClientInfoMd? get selectedClient => widget.selectedClient;
+  String? get clientEmail => selectedClient?.email;
+  String? get clientPhone => selectedClient?.phone;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -132,13 +150,26 @@ class _ClientFormState extends State<ClientForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (kDebugMode) {
-        await lookupAddress();
-      }
+      // if (kDebugMode) {
+      //   await lookupAddress();
+      // }
       onIpLookup();
       currencyId = currencies
           .firstWhereOrNull((element) => element.code == company.currency.code)
           ?.id;
+      contactName.text = selectedClient?.name ?? "";
+      companyName.text = selectedClient?.company ?? "";
+      phoneNumber.text = selectedClient?.phone ?? "";
+      email.text = selectedClient?.email ?? "";
+      payingDays = selectedClient?.payingDays;
+      paymentMethodId = int.tryParse(selectedClient?.paymentMethodId ?? "");
+      notes.text = selectedClient?.notes ?? "";
+      address.addressLine1 = selectedClient?.address.line1;
+      address.addressLine2 = selectedClient?.address.line2;
+      address.addressCity = selectedClient?.address.city;
+      address.addressCounty = selectedClient?.address.county;
+      address.addressPostcode = selectedClient?.address.postcode;
+      address.addressCountryId = selectedClient?.address.country;
     });
   }
 
@@ -206,10 +237,7 @@ class _ClientFormState extends State<ClientForm> {
           const EdgeInsets.only(left: 60, top: 20, bottom: 20, right: 50),
       title: Row(
         children: [
-          if (type == ClientFormType.client)
-            const Text("Create new client")
-          else if (type == ClientFormType.location)
-            const Text("Create new location"),
+          Text(type.label),
           const Spacer(),
           IconButton(
             onPressed: () {
@@ -240,7 +268,7 @@ class _ClientFormState extends State<ClientForm> {
                   verticalSpace: 16,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (isClient)
+                    if (isClient || isQuoteClient)
                       labelWithField(
                         "Contact Name",
                         TextInputWidget(
@@ -250,7 +278,7 @@ class _ClientFormState extends State<ClientForm> {
                           isRequired: true,
                         ),
                       ),
-                    if (isClient)
+                    if (isClient || isQuoteClient)
                       labelWithField(
                         "Company Name",
                         TextInputWidget(
@@ -260,20 +288,58 @@ class _ClientFormState extends State<ClientForm> {
                           hintText: "Enter company name",
                         ),
                       ),
-                    labelWithField(
-                      "Phone Number",
+                    if (isClient || isQuoteClient || isLocation)
+                      labelWithField(
+                        "Phone Number",
+                        SpacedColumn(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          verticalSpace: 8,
+                          children: [
+                            TextInputWidget(
+                              width: fieldWidth,
+                              controller: phoneNumber,
+                              isRequired: isClient,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              hintText: "Enter phone number",
+                            ),
+                            if (isLocation)
+                              KText(
+                                  fontWeight: FWeight.medium,
+                                  fontSize: 12.0,
+                                  textColor: ThemeColors.gray8,
+                                  isSelectable: false,
+                                  text:
+                                      'Leave blank to use client\'s phone number'),
+                          ],
+                        ),
+                      ),
+                    if (isClient || isQuoteClient || isLocation)
                       SpacedColumn(
+                        verticalSpace: 16,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        verticalSpace: 8,
                         children: [
-                          TextInputWidget(
-                            width: fieldWidth,
-                            controller: phoneNumber,
-                            isRequired: isClient,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            hintText: "Enter phone number",
+                          labelWithField(
+                            "Email",
+                            TextInputWidget(
+                              width: fieldWidth,
+                              controller: email,
+                              isRequired: isClient,
+                              validator: (p0) {
+                                if (p0 != null) {
+                                  //validate using Regex
+                                  if (!RegExp(
+                                          r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                      .hasMatch(p0)) {
+                                    return "Invalid email";
+                                  }
+                                }
+
+                                return null;
+                              },
+                              hintText: "Enter email",
+                            ),
                           ),
                           if (isLocation)
                             KText(
@@ -281,51 +347,15 @@ class _ClientFormState extends State<ClientForm> {
                                 fontSize: 12.0,
                                 textColor: ThemeColors.gray8,
                                 isSelectable: false,
-                                text:
-                                    'Leave blank to use client\'s phone number'),
+                                text: 'Leave blank to use client\'s email'),
                         ],
                       ),
-                    ),
-                    SpacedColumn(
-                      verticalSpace: 16,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        labelWithField(
-                          "Email",
-                          TextInputWidget(
-                            width: fieldWidth,
-                            controller: email,
-                            isRequired: isClient,
-                            validator: (p0) {
-                              if (p0 != null) {
-                                //validate using Regex
-                                if (!RegExp(
-                                        r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(p0)) {
-                                  return "Invalid email";
-                                }
-                              }
-
-                              return null;
-                            },
-                            hintText: "Enter email",
-                          ),
-                        ),
-                        if (isLocation)
-                          KText(
-                              fontWeight: FWeight.medium,
-                              fontSize: 12.0,
-                              textColor: ThemeColors.gray8,
-                              isSelectable: false,
-                              text: 'Leave blank to use client\'s email'),
-                      ],
-                    ),
                   ]),
               SpacedColumn(
                 verticalSpace: 16,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (isClient)
+                  if (isClient || isQuoteClient)
                     labelWithField(
                       "Payment terms",
                       TextInputWidget(
@@ -340,7 +370,7 @@ class _ClientFormState extends State<ClientForm> {
                         onChanged: (value) => payingDays = int.tryParse(value),
                       ),
                     ),
-                  if (isClient)
+                  if (isClient || isQuoteClient)
                     labelWithField(
                       "Currency",
                       DropdownWidgetV2(
@@ -363,7 +393,7 @@ class _ClientFormState extends State<ClientForm> {
                         },
                       ),
                     ),
-                  if (isClient)
+                  if (isClient || isQuoteClient)
                     labelWithField(
                       "Payment Method",
                       DropdownWidgetV2(
@@ -387,7 +417,7 @@ class _ClientFormState extends State<ClientForm> {
                         },
                       ),
                     ),
-                  if (isClient)
+                  if (isClient || isQuoteClient)
                     labelWithField(
                       "Notes",
                       TextInputWidget(
@@ -399,90 +429,92 @@ class _ClientFormState extends State<ClientForm> {
                     ),
                 ],
               ),
-              SpacedColumn(
-                verticalSpace: 16,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  labelWithField(
-                    "Address Line 1",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressLine1),
-                      hintText: "Enter address line 1",
-                      isRequired: true,
-                      onChanged: (value) => address.addressLine1 = value,
+              if (!isQuoteClient)
+                SpacedColumn(
+                  verticalSpace: 16,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    labelWithField(
+                      "Address Line 1",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller:
+                            TextEditingController(text: address.addressLine1),
+                        hintText: "Enter address line 1",
+                        isRequired: true,
+                        onChanged: (value) => address.addressLine1 = value,
+                      ),
                     ),
-                  ),
-                  labelWithField(
-                    "Address Line 2",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressLine2),
-                      hintText: "Enter address line 2",
-                      onChanged: (value) => address.addressLine2 = value,
+                    labelWithField(
+                      "Address Line 2",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller:
+                            TextEditingController(text: address.addressLine2),
+                        hintText: "Enter address line 2",
+                        onChanged: (value) => address.addressLine2 = value,
+                      ),
                     ),
-                  ),
-                  labelWithField(
-                    "City",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressCity),
-                      hintText: "Enter city",
-                      isRequired: true,
-                      onChanged: (value) => address.addressCity = value,
+                    labelWithField(
+                      "City",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller:
+                            TextEditingController(text: address.addressCity),
+                        hintText: "Enter city",
+                        isRequired: true,
+                        onChanged: (value) => address.addressCity = value,
+                      ),
                     ),
-                  ),
-                  labelWithField(
-                    "County",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressCounty),
-                      hintText: "Enter county",
-                      onChanged: (value) => address.addressCounty = value,
+                    labelWithField(
+                      "County",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller:
+                            TextEditingController(text: address.addressCounty),
+                        hintText: "Enter county",
+                        onChanged: (value) => address.addressCounty = value,
+                      ),
                     ),
-                  ),
-                  labelWithField(
-                    "Postcode",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressPostcode),
-                      hintText: "Enter postcode",
-                      isRequired: true,
-                      onChanged: (value) => address.addressPostcode = value,
+                    labelWithField(
+                      "Postcode",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller: TextEditingController(
+                            text: address.addressPostcode),
+                        hintText: "Enter postcode",
+                        isRequired: true,
+                        onChanged: (value) => address.addressPostcode = value,
+                      ),
                     ),
-                  ),
-                  labelWithField(
-                    "Country",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      hintText: "Select country",
-                      dropdownBtnWidth: fieldWidth,
-                      dropdownOptionsWidth: fieldWidth,
-                      isRequired: true,
-                      items: countries
-                          .map((e) => CustomDropdownValue(name: e.name))
-                          .toList(),
-                      value: CustomDropdownValue(
-                          name: countries
-                                  .firstWhereOrNull((element) =>
-                                      element.code == address.addressCountryId)
-                                  ?.name ??
-                              ""),
-                      onChanged: (index) {
-                        setState(() {
-                          address.addressCountryId = countries[index].code;
-                        });
-                      },
+                    labelWithField(
+                      "Country",
+                      DropdownWidgetV2(
+                        hasSearchBox: true,
+                        hintText: "Select country",
+                        dropdownBtnWidth: fieldWidth,
+                        dropdownOptionsWidth: fieldWidth,
+                        isRequired: true,
+                        items: countries
+                            .map((e) => CustomDropdownValue(name: e.name))
+                            .toList(),
+                        value: CustomDropdownValue(
+                            name: countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code ==
+                                        address.addressCountryId)
+                                    ?.name ??
+                                ""),
+                        onChanged: (index) {
+                          setState(() {
+                            address.addressCountryId = countries[index].code;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              if (!isDeliverAtDifferentLocation)
+                  ],
+                ),
+              if (!isDeliverAtDifferentLocation && !isQuoteClient)
                 ButtonSmall(
                   text: "Lookup Address",
                   onPressed: () {
@@ -503,7 +535,7 @@ class _ClientFormState extends State<ClientForm> {
                     );
                   },
                 ),
-              if (isClient)
+              if (isClient && isClient || isLocation)
                 labelWithField(
                     "Service Delivered at a different address",
                     toggle(isDeliverAtDifferentLocation, (value) {
@@ -511,7 +543,7 @@ class _ClientFormState extends State<ClientForm> {
                         isDeliverAtDifferentLocation = value;
                       });
                     })),
-              if (!isDeliverAtDifferentLocation)
+              if (!isDeliverAtDifferentLocation && isClient || isLocation)
                 labelWithField(
                     "Fixed IP Address",
                     toggle(isFixedIpAddress, (value) {
@@ -519,7 +551,7 @@ class _ClientFormState extends State<ClientForm> {
                         isFixedIpAddress = value;
                       });
                     })),
-              if (!isDeliverAtDifferentLocation)
+              if (!isDeliverAtDifferentLocation && isClient || isLocation)
                 Column(
                   children: [
                     labelWithField(
@@ -533,7 +565,7 @@ class _ClientFormState extends State<ClientForm> {
                       ),
                   ],
                 ),
-              if (!isDeliverAtDifferentLocation)
+              if (!isDeliverAtDifferentLocation && isClient || isLocation)
                 labelWithField(
                   "IP Addresses",
                   SpacedColumn(
@@ -612,74 +644,99 @@ class _ClientFormState extends State<ClientForm> {
               text: "Save",
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  return await Get.showOverlay(
-                    asyncFunction: () async {
-                      if (isClient) {
-                        final ApiResponse createdClient =
-                            await createClient(fetchAllParams: false);
-                        if (createdClient.success) {
-                          final ApiResponse createdLocation =
-                              await createLocation();
-                          if (createdLocation.success) {
-                            context.popRoute(CreatedClientReturnValue(
-                                clientId: createdClient.data,
-                                locationId: createdLocation.data));
-                          } else {
-                            await appStore.dispatch(GetClientInfosAction());
-                            //Location already exists
-                            if (createdLocation.resCode == 409) {
-                              context.popRoute(CreatedClientReturnValue(
-                                  clientId: createdClient.data,
-                                  locationId: createdLocation.data));
-                              return;
-                            }
-                            showError(ApiHelpers.getRawDataErrorMessages(
-                                        createdLocation)
-                                    .isEmpty
-                                ? "Error"
-                                : ApiHelpers.getRawDataErrorMessages(
-                                    createdLocation));
-                          }
-                        } else {
-                          showError(
-                            ApiHelpers.getRawDataErrorMessages(createdClient)
-                                    .isEmpty
-                                ? "Error"
-                                : ApiHelpers.getRawDataErrorMessages(
-                                    createdClient),
-                          );
-                        }
-                      }
-                      if (isLocation) {
-                        final ApiResponse createdLoc = await createLocation();
-                        if (createdLoc.success) {
-                          context.popRoute(CreatedClientReturnValue(
-                              locationId: createdLoc.data));
-                        } else {
-                          //Location already exists
-                          if (createdLoc.resCode == 409) {
-                            context.popRoute(CreatedClientReturnValue(
-                                locationId: createdLoc.data));
-                            return;
-                          }
-                          showError(
-                            ApiHelpers.getRawDataErrorMessages(createdLoc)
-                                    .isEmpty
-                                ? "Error"
-                                : ApiHelpers.getRawDataErrorMessages(
-                                    createdLoc),
-                          );
-                        }
-                      }
-                    },
-                    loadingWidget: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
+                  switch (type) {
+                    case ClientFormType.client:
+                    case ClientFormType.location:
+                      _handleCreateClient();
+                      break;
+                    case ClientFormType.quoteClient:
+                      _handleCreatequoteClient();
+                      break;
+                    case ClientFormType.quoteLocation:
+                      _handleCreatequoteLocation();
+                      break;
+                  }
                 }
               }),
       ],
     );
+  }
+
+  void _handleCreateClient() async {
+    return await Get.showOverlay(
+      asyncFunction: () async {
+        if (isClient) {
+          final ApiResponse createdClient =
+              await createClient(fetchAllParams: false);
+          if (createdClient.success) {
+            final ApiResponse createdLocation = await createLocation();
+            if (createdLocation.success) {
+              context.popRoute(CreatedClientReturnValue(
+                  clientId: createdClient.data,
+                  locationId: createdLocation.data));
+            } else {
+              await appStore.dispatch(GetClientInfosAction());
+              //Location already exists
+              if (createdLocation.resCode == 409) {
+                context.popRoute(CreatedClientReturnValue(
+                    clientId: createdClient.data,
+                    locationId: createdLocation.data));
+                return;
+              }
+              showError(
+                  ApiHelpers.getRawDataErrorMessages(createdLocation).isEmpty
+                      ? "Error"
+                      : ApiHelpers.getRawDataErrorMessages(createdLocation));
+            }
+          } else {
+            showError(
+              ApiHelpers.getRawDataErrorMessages(createdClient).isEmpty
+                  ? "Error"
+                  : ApiHelpers.getRawDataErrorMessages(createdClient),
+            );
+          }
+        }
+        if (isLocation) {
+          final ApiResponse createdLoc = await createLocation();
+          if (createdLoc.success) {
+            context.popRoute(
+                CreatedClientReturnValue(locationId: createdLoc.data));
+          } else {
+            //Location already exists
+            if (createdLoc.resCode == 409) {
+              context.popRoute(
+                  CreatedClientReturnValue(locationId: createdLoc.data));
+              return;
+            }
+            showError(
+              ApiHelpers.getRawDataErrorMessages(createdLoc).isEmpty
+                  ? "Error"
+                  : ApiHelpers.getRawDataErrorMessages(createdLoc),
+            );
+          }
+        }
+      },
+      loadingWidget: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  void _handleCreatequoteClient() async {
+    final client = ClientInfoMd.init();
+    client.name = contactName.text;
+    client.email = email.text;
+    client.phone = phoneNumber.text;
+    client.payingDays = payingDays!;
+    client.paymentMethodId = paymentMethodId!.toString();
+    client.currencyId = currencyId!.toString();
+    client.notes = notes.text;
+    client.company = companyName.text;
+    context.popRoute(client);
+  }
+
+  void _handleCreatequoteLocation() async {
+    context.popRoute(address);
   }
 
   Widget rowOrColumnWrapper(bool isRow, List<Widget> children) {
@@ -704,10 +761,10 @@ class _ClientFormState extends State<ClientForm> {
           sendChecklist: true,
           anywhere: false,
           radius: 100.toString(),
-          phoneMobile: phoneNumber.text.isEmpty && selectedClientIndex != null
+          phoneMobile: phoneNumber.text.isEmpty && selectedClient != null
               ? clientPhone
               : phoneNumber.text,
-          email: phoneNumber.text.isEmpty && selectedClientIndex != null
+          email: phoneNumber.text.isEmpty && selectedClient != null
               ? clientEmail
               : phoneNumber.text,
           phoneLandline: "",

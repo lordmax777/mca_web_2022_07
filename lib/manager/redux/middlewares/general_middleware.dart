@@ -58,6 +58,9 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _onAddStorageItemAction(store.state, action);
       case OnCreateNewStorageItemAction:
         return _onCreateNewStorageItemAction(store.state, action);
+      case OnCreateNewClientTap:
+        return _onCreateNewClientTap(store.state, action);
+
       // case OnAddLocationAction:
       //   return _onAddLocationAction(store.state, action);
       // case OnAddClientAction:
@@ -487,3 +490,16 @@ Future<int?> _onCreateNewStorageItemAction(
 //   }
 //   return null;
 // }
+
+Future _onCreateNewClientTap(
+    AppState state, OnCreateNewClientTap action) async {
+  final data = await showDialog(
+      barrierDismissible: false,
+      context: action.context,
+      builder: (context) => ClientForm(
+            state: state,
+            type: action.type,
+            selectedClient: action.clientInfo,
+          ));
+  return data;
+}

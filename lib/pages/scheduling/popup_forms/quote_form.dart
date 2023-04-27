@@ -3,11 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
+import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/client_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import '../../../comps/autocomplete_input_field.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/model_exporter.dart';
+import '../../../manager/redux/states/general_state.dart';
 import '../../../theme/theme.dart';
 import '../create_shift_popup.dart';
 import '../scheduling_page.dart';
@@ -74,6 +77,81 @@ class QuoteFormState extends State<QuoteForm> {
 
   final fieldWidth = 400.0;
 
+  void _onEditPm() async {
+    final ClientInfoMd? res =
+        await appStore.dispatch(OnCreateNewClientTap(context,
+            type: ClientFormType.quoteClient,
+            clientInfo: ClientInfoMd.init(
+              name: data.quote.name,
+              company: data.quote.company,
+              email: data.quote.email,
+              phone: data.quote.phone,
+              payingDays: data.quote.payingDays,
+              currencyId: data.quote.currencyId.toString(),
+              paymentMethodId: data.quote.paymentMethodId.toString(),
+              notes: data.quote.notes,
+            )));
+    if (res == null) return;
+    setState(() {
+      data.quote.name = res.name;
+      data.quote.company = res.company;
+      data.quote.email = res.email;
+      data.quote.phone = res.phone;
+      data.quote.payingDays = res.payingDays;
+      data.quote.currencyId = int.parse(res.currencyId);
+      data.quote.paymentMethodId = int.parse(res.paymentMethodId!);
+      data.quote.notes = res.notes;
+    });
+  }
+
+  void _editInvoiceAddress() async {
+    final ClientAddressForm? res =
+        await appStore.dispatch(OnCreateNewClientTap(context,
+            type: ClientFormType.quoteLocation,
+            clientInfo: ClientInfoMd.init(
+                address: Address(
+              line1: data.quote.addressLine1,
+              line2: data.quote.addressLine2,
+              city: data.quote.addressCity,
+              county: data.quote.addressCounty,
+              postcode: data.quote.addressPostcode,
+              country: data.quote.addressCountry,
+            ))));
+    if (res == null) return;
+    setState(() {
+      data.quote.addressLine1 = res.addressLine1;
+      data.quote.addressLine2 = res.addressLine2;
+      data.quote.addressCity = res.addressCity;
+      data.quote.addressCounty = res.addressCounty;
+      data.quote.addressPostcode = res.addressPostcode;
+      data.quote.addressCountry = res.addressCountryId;
+    });
+  }
+
+  void _editWorkAddress() async {
+    final ClientAddressForm? res =
+        await appStore.dispatch(OnCreateNewClientTap(context,
+            type: ClientFormType.quoteLocation,
+            clientInfo: ClientInfoMd.init(
+                address: Address(
+              line1: data.quote.workAddressLine1,
+              line2: data.quote.workAddressLine2,
+              city: data.quote.workAddressCity,
+              county: data.quote.workAddressCounty,
+              postcode: data.quote.workAddressPostcode,
+              country: data.quote.workAddressCountry,
+            ))));
+    if (res == null) return;
+    setState(() {
+      data.quote.workAddressLine1 = res.addressLine1;
+      data.quote.workAddressLine2 = res.addressLine2;
+      data.quote.workAddressCity = res.addressCity;
+      data.quote.workAddressCounty = res.addressCounty;
+      data.quote.workAddressPostcode = res.addressPostcode;
+      data.quote.workAddressCountry = res.addressCountryId;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
@@ -96,442 +174,189 @@ class QuoteFormState extends State<QuoteForm> {
               key: widget.formKey,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .8,
-                height: MediaQuery.of(context).size.height * .75,
-                child: CustomExpandableTabBar(
-                  expandedWidgetList: [
-                    ExpandedWidgetType(
-                        initExpanded: true,
-                        title: "Personal Information",
-                        child: SpacedColumn(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          verticalSpace: 16,
-                          children: [
-                            SpacedRow(
-                              horizontalSpace: 64,
-                              children: [
-                                SpacedColumn(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  verticalSpace: 16,
-                                  children: [
-                                    labelWithField(
-                                      "Contact Name",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        hintText: "Enter name",
-                                        onChanged: (value) {
-                                          data.quote.name = value;
-                                        },
-                                        isRequired: true,
-                                      ),
-                                    ),
-                                    labelWithField(
-                                      "Company Name",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        onChanged: (value) {
-                                          data.quote.company = value;
-                                        },
-                                        hintText: "Enter company name",
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SpacedColumn(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    verticalSpace: 16,
-                                    children: [
-                                      labelWithField(
-                                        "Phone Number",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          onChanged: (value) {
-                                            data.quote.phone = value;
-                                          },
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter
-                                                .digitsOnly,
-                                          ],
-                                          hintText: "Enter phone number",
-                                        ),
-                                      ),
-                                      labelWithField(
-                                        "Email",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          onChanged: (value) {
-                                            data.quote.email = value;
-                                          },
-                                          isRequired: true,
-                                          validator: (p0) {
-                                            if (p0 != null) {
-                                              //validate using Regex
-                                              if (!RegExp(
-                                                      r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                                  .hasMatch(p0)) {
-                                                return "Invalid email";
-                                              }
-                                            }
-
-                                            return null;
-                                          },
-                                          hintText: "Enter email",
-                                        ),
-                                      ),
-                                    ]),
-                              ],
-                            ),
-                            SpacedRow(
-                              horizontalSpace: 64,
-                              children: [
-                                SpacedColumn(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    verticalSpace: 16,
-                                    children: [
-                                      labelWithField(
-                                        "Client Notes",
-                                        TextInputWidget(
-                                          width: fieldWidth * 2 + 64,
-                                          hintText: "",
-                                          onChanged: (value) {
-                                            data.quote.notes = value;
-                                          },
-                                        ),
-                                      ),
-                                    ]),
-                              ],
-                            )
-                          ],
-                        )),
-                    ExpandedWidgetType(
-                        title: "Payment Information",
-                        child: SpacedColumn(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          verticalSpace: 16,
-                          children: [
-                            SpacedRow(
-                              horizontalSpace: 64,
-                              children: [
-                                SpacedColumn(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  verticalSpace: 16,
-                                  children: [
-                                    labelWithField(
-                                      "Payment terms",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        isRequired: true,
-                                        controller: TextEditingController(
-                                            text: data.quote.payingDays
-                                                .toString()),
-                                        hintText: "Enter payment terms",
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter
-                                              .digitsOnly,
-                                        ],
-                                        onChanged: (value) {
-                                          data.quote.payingDays =
-                                              int.tryParse(value) ?? 0;
-                                        },
-                                      ),
-                                    ),
-                                    labelWithField(
-                                      "Currency",
-                                      DropdownWidgetV2(
-                                        hintText: "Select currency",
-                                        dropdownBtnWidth: fieldWidth,
-                                        isRequired: true,
-                                        dropdownOptionsWidth: fieldWidth,
-                                        items: currencies
-                                            .map((e) => CustomDropdownValue(
-                                                name: e.sign))
-                                            .toList(),
-                                        value: CustomDropdownValue(
-                                            name: currencies
-                                                .firstWhereOrNull((element) =>
-                                                    element.id ==
-                                                    data.quote.currencyId)
-                                                ?.sign),
-                                        onChanged: (index) {
-                                          setState(() {
-                                            data.quote.currencyId =
-                                                currencies[index].id;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SpacedColumn(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    verticalSpace: 16,
-                                    children: [
-                                      labelWithField(
-                                        "Payment Method",
-                                        DropdownWidgetV2(
-                                          hasSearchBox: true,
-                                          isRequired: true,
-                                          hintText: "Select payment method",
-                                          dropdownBtnWidth: fieldWidth,
-                                          dropdownOptionsWidth: fieldWidth,
-                                          items: paymentMethods
-                                              .map((e) => CustomDropdownValue(
-                                                  name: e.name))
-                                              .toList(),
-                                          value: CustomDropdownValue(
-                                              name: paymentMethods
-                                                  .firstWhereOrNull((element) =>
-                                                      element.id ==
-                                                      data.quote
-                                                          .paymentMethodId)
-                                                  ?.name),
-                                          onChanged: (index) {
-                                            setState(() {
-                                              data.quote.paymentMethodId =
-                                                  paymentMethods[index].id;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ]),
-                              ],
-                            ),
-                          ],
-                        )),
-                    ExpandedWidgetType(
-                        title: "Invoice Address",
-                        child: SpacedColumn(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          verticalSpace: 16,
-                          children: [
-                            SpacedRow(
-                              horizontalSpace: 64,
-                              children: [
-                                SpacedColumn(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  verticalSpace: 16,
-                                  children: [
-                                    labelWithField(
-                                      "Address Line 1",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        controller: TextEditingController(
-                                            text: data.quote.addressLine1),
-                                        hintText: "Enter address line 1",
-                                        onChanged: (value) =>
-                                            data.quote.addressLine1 = value,
-                                      ),
-                                    ),
-                                    labelWithField(
-                                      "City",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        controller: TextEditingController(
-                                            text: data.quote.addressCity),
-                                        hintText: "Enter city",
-                                        onChanged: (value) =>
-                                            data.quote.addressCity = value,
-                                      ),
-                                    ),
-                                    labelWithField(
-                                      "Country",
-                                      DropdownWidgetV2(
-                                        hasSearchBox: true,
-                                        hintText: "Select country",
-                                        dropdownBtnWidth: fieldWidth,
-                                        dropdownOptionsWidth: fieldWidth,
-                                        items: countries
-                                            .map((e) => CustomDropdownValue(
-                                                name: e.name))
-                                            .toList(),
-                                        value: CustomDropdownValue(
-                                            name: countries
-                                                    .firstWhereOrNull(
-                                                        (element) =>
-                                                            element.code ==
-                                                            data.quote
-                                                                .addressCountry)
-                                                    ?.name ??
-                                                ""),
-                                        onChanged: (index) {
-                                          setState(() {
-                                            data.quote.addressCountry =
-                                                countries[index].code;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SpacedColumn(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    verticalSpace: 16,
-                                    children: [
-                                      labelWithField(
-                                        "Address Line 2",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          controller: TextEditingController(
-                                              text: data.quote.addressLine2),
-                                          hintText: "Enter address line 2",
-                                          onChanged: (value) =>
-                                              data.quote.addressLine2 = value,
-                                        ),
-                                      ),
-                                      labelWithField(
-                                        "County",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          controller: TextEditingController(
-                                              text: data.quote.addressCounty),
-                                          hintText: "Enter county",
-                                          onChanged: (value) =>
-                                              data.quote.addressCounty = value,
-                                        ),
-                                      ),
-                                      labelWithField(
-                                        "Postcode",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          controller: TextEditingController(
-                                              text: data.quote.addressPostcode),
-                                          hintText: "Enter postcode",
-                                          onChanged: (value) => data
-                                              .quote.addressPostcode = value,
-                                        ),
-                                      ),
-                                    ]),
-                              ],
-                            ),
-                          ],
-                        )),
-                    ExpandedWidgetType(
-                        title: "Work Address",
-                        child: SpacedColumn(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          verticalSpace: 16,
-                          children: [
-                            SpacedRow(
-                              horizontalSpace: 64,
-                              children: [
-                                SpacedColumn(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  verticalSpace: 16,
-                                  children: [
-                                    labelWithField(
-                                      "Address Line 1",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        controller: TextEditingController(
-                                            text: data.quote.workAddressLine1),
-                                        hintText: "Enter address line 1",
-                                        onChanged: (value) =>
-                                            data.quote.workAddressLine1 = value,
-                                      ),
-                                    ),
-                                    labelWithField(
-                                      "City",
-                                      TextInputWidget(
-                                        width: fieldWidth,
-                                        controller: TextEditingController(
-                                            text: data.quote.workAddressCity),
-                                        hintText: "Enter city",
-                                        onChanged: (value) =>
-                                            data.quote.workAddressCity = value,
-                                      ),
-                                    ),
-                                    labelWithField(
-                                      "Country",
-                                      DropdownWidgetV2(
-                                        hasSearchBox: true,
-                                        hintText: "Select country",
-                                        dropdownBtnWidth: fieldWidth,
-                                        dropdownOptionsWidth: fieldWidth,
-                                        items: countries
-                                            .map((e) => CustomDropdownValue(
-                                                name: e.name))
-                                            .toList(),
-                                        value: CustomDropdownValue(
-                                            name: countries
-                                                    .firstWhereOrNull((element) =>
-                                                        element.code ==
-                                                        data.quote
-                                                            .workAddressCountry)
-                                                    ?.name ??
-                                                ""),
-                                        onChanged: (index) {
-                                          setState(() {
-                                            data.quote.workAddressCountry =
-                                                countries[index].code;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SpacedColumn(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    verticalSpace: 16,
-                                    children: [
-                                      labelWithField(
-                                        "Address Line 2",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          controller: TextEditingController(
-                                              text:
-                                                  data.quote.workAddressLine2),
-                                          hintText: "Enter address line 2",
-                                          onChanged: (value) => data
-                                              .quote.workAddressLine2 = value,
-                                        ),
-                                      ),
-                                      labelWithField(
-                                        "County",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          controller: TextEditingController(
-                                              text:
-                                                  data.quote.workAddressCounty),
-                                          hintText: "Enter county",
-                                          onChanged: (value) => data
-                                              .quote.workAddressCounty = value,
-                                        ),
-                                      ),
-                                      labelWithField(
-                                        "Postcode",
-                                        TextInputWidget(
-                                          width: fieldWidth,
-                                          controller: TextEditingController(
-                                              text: data
-                                                  .quote.workAddressPostcode),
-                                          hintText: "Enter postcode",
-                                          onChanged: (value) => data.quote
-                                              .workAddressPostcode = value,
-                                        ),
-                                      ),
-                                    ]),
-                              ],
-                            ),
-                          ],
-                        )),
-                    ExpandedWidgetType(
-                        title: "Comments",
-                        child: labelWithField(
-                          "Quote Notes",
-                          TextInputWidget(
-                            width: fieldWidth * 2 + 64,
-                            hintText: "",
-                            onChanged: (value) {
-                              data.quote.quoteComments = value;
-                            },
+                height: MediaQuery.of(context).size.height * .8,
+                child: SpacedColumn(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  verticalSpace: 64,
+                  children: [
+                    SpacedRow(
+                      horizontalSpace: 72,
+                      children: [
+                        _container(
+                          onEdit: () {
+                            _onEditPm();
+                          },
+                          "Personal Information",
+                          SpacedColumn(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              labelWithField(
+                                "Name:",
+                                null,
+                                customLabel: _textField(data.quote.name),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Company:",
+                                null,
+                                customLabel: _textField(data.quote.company),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Email:",
+                                null,
+                                customLabel: _textField(data.quote.email),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Phone:",
+                                null,
+                                customLabel: _textField(data.quote.phone),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Payment Terms:",
+                                null,
+                                customLabel: _textField(
+                                    data.quote.payingDays.toString()),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Currency:",
+                                null,
+                                customLabel: _textField(currencies
+                                    .firstWhereOrNull((element) =>
+                                        data.quote.currencyId == element.id)
+                                    ?.sign),
+                              ),
+                              const Divider(),
+                              labelWithField("Payment method:", null,
+                                  customLabel: _textField(paymentMethods
+                                      .firstWhereOrNull((element) =>
+                                          data.quote.paymentMethodId ==
+                                          element.id)
+                                      ?.name)),
+                              const Divider(),
+                              labelWithField(
+                                "Client Notes:",
+                                null,
+                                customLabel: _textField(data.quote.notes),
+                              ),
+                            ],
                           ),
-                        )),
-                    ExpandedWidgetType(
-                        title: "Products", child: _products(state)),
+                        ),
+                        _container(
+                          onEdit: () {
+                            _editInvoiceAddress();
+                          },
+                          "Invoice Address",
+                          SpacedColumn(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              labelWithField(
+                                "Address Line 1:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressLine1),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Address Line 2:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressLine2),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "City:",
+                                null,
+                                customLabel: _textField(data.quote.addressCity),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "County:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressCounty),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Country:",
+                                null,
+                                customLabel: _textField(countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code ==
+                                        data.quote.addressCountry)
+                                    ?.name),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Postcode:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressPostcode),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _container(
+                          onEdit: () {
+                            _editWorkAddress();
+                          },
+                          "Work Address",
+                          SpacedColumn(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              labelWithField(
+                                "Work Address Line 1:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressLine1),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Work Address Line 2:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressLine2),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Work City:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressCity),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Work County:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressCounty),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Work Country:",
+                                null,
+                                customLabel: _textField(countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code ==
+                                        data.quote.workAddressCountry)
+                                    ?.name),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                "Work Postcode:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressPostcode),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    _products(state),
                   ],
                 ),
               ),
@@ -539,6 +364,37 @@ class QuoteFormState extends State<QuoteForm> {
           ),
         );
       },
+    );
+  }
+
+  Widget _textField(String? text) {
+    return SizedBox(
+        width: MediaQuery.of(context).size.width * .08,
+        child: Text(
+          text == null ? "-" : (text.isEmpty ? "-" : text),
+          style: ThemeText.tabTextStyle,
+        ));
+  }
+
+  Widget _container(String title, Widget child, {VoidCallback? onEdit}) {
+    return titleWithDivider(
+      titleIcon: onEdit != null
+          ? addIcon(
+              tooltip: "Edit $title",
+              onPressed: onEdit,
+              icon: HeroIcons.edit,
+            )
+          : null,
+      title,
+      Container(
+          width: MediaQuery.of(context).size.width * .2,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.grey.withOpacity(.5)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: child),
     );
   }
 
