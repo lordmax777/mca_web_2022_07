@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/pages/scheduling/popup_forms/quote_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../theme/theme.dart';
+import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../manager/models/storage_item_md.dart';
 
@@ -29,8 +30,11 @@ Future<T?> showCreateShiftPopup<T>(
   );
 }
 
+Future<bool> exit(BuildContext context) {
+  return context.popRoute();
+}
+
 Future<bool> onWillPop(BuildContext context) async {
-  if (kDebugMode) return true;
   return (await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -194,83 +198,80 @@ class _CreateJobState extends State<_CreateJob>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => onWillPop(context),
-      child: StoreConnector<AppState, AppState>(
-        converter: (store) => store.state,
-        builder: (context, state) => AlertDialog(
-          contentPadding: const EdgeInsets.all(0),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          title: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    isCreate ? 'Create ${type.label}' : 'Edit ${type.label}',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      onWillPop(context).then((value) {
-                        if (value) {
-                          Navigator.of(context).pop();
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              if (type != ScheduleCreatePopupMenus.quote)
-                TabBar(
-                  controller: _tabController,
-                  tabs: _tabs,
-                  labelColor: ThemeColors.MAIN_COLOR,
-                  unselectedLabelColor: ThemeColors.gray7,
-                  indicatorColor: ThemeColors.MAIN_COLOR,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelStyle: Theme.of(context).textTheme.headlineSmall,
+    return StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,
+      builder: (context, state) => AlertDialog(
+        contentPadding: const EdgeInsets.all(0),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        title: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  isCreate ? 'Create ${type.label}' : 'Edit ${type.label}',
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-              const Divider(
-                thickness: 1,
-                height: 1,
-                color: ThemeColors.gray10,
+                IconButton(
+                  onPressed: () {
+                    onWillPop(context).then((value) {
+                      if (value) {
+                        context.popRoute();
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            if (type != ScheduleCreatePopupMenus.quote)
+              TabBar(
+                controller: _tabController,
+                tabs: _tabs,
+                labelColor: ThemeColors.MAIN_COLOR,
+                unselectedLabelColor: ThemeColors.gray7,
+                indicatorColor: ThemeColors.MAIN_COLOR,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: Theme.of(context).textTheme.headlineSmall,
               ),
-            ],
-          ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.85,
-            child: _getTabChild(state),
-          ),
-          actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
-          actions: [
-            ButtonLarge(
-                text: 'Cancel',
-                onPressed: () {
-                  onWillPop(context).then((value) {
-                    if (value) {
-                      Navigator.of(context).pop();
-                    }
-                  });
-                }),
-            ButtonLarge(
-                text: 'Publish',
-                onPressed: () async {
-                  switch (type) {
-                    case ScheduleCreatePopupMenus.job:
-                      // TODO: Handle this case.
-                      break;
-                    case ScheduleCreatePopupMenus.quote:
-                      _saveQuote(state);
-                      break;
-                  }
-                }),
+            const Divider(
+              thickness: 1,
+              height: 1,
+              color: ThemeColors.gray10,
+            ),
           ],
         ),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.85,
+          child: _getTabChild(state),
+        ),
+        actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
+        actions: [
+          ButtonLarge(
+              text: 'Cancel',
+              onPressed: () {
+                onWillPop(context).then((value) {
+                  if (value) {
+                    context.popRoute();
+                  }
+                });
+              }),
+          ButtonLarge(
+              text: 'Publish',
+              onPressed: () async {
+                switch (type) {
+                  case ScheduleCreatePopupMenus.job:
+                    // TODO: Handle this case.
+                    break;
+                  case ScheduleCreatePopupMenus.quote:
+                    _saveQuote(state);
+                    break;
+                }
+              }),
+        ],
       ),
     );
   }
@@ -326,9 +327,9 @@ class _CreateJobState extends State<_CreateJob>
           .toList(),
     ));
     if (quoteCreated?.success == true) {
-      onWillPop(context)
-          .then((value) => value ? context.popRoute(quoteCreated) : false);
-      ;
+      exit(context).then((value) {
+        showError("Quote created successfully", titleMsg: "Success");
+      });
     }
   }
 

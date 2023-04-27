@@ -11,6 +11,7 @@ import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/client_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:mix/mix.dart';
@@ -57,6 +58,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _onAddStorageItemAction(store.state, action);
       case OnCreateNewStorageItemAction:
         return _onCreateNewStorageItemAction(store.state, action);
+      // case OnAddLocationAction:
+      //   return _onAddLocationAction(store.state, action);
+      // case OnAddClientAction:
+      //   return _onAddClientAction(store.state, action);
       default:
         return next(action);
     }
@@ -411,7 +416,7 @@ Future<int?> _onCreateNewStorageItemAction(
               .nocodeErrorHandler();
           if (res.success) {
             await appStore.dispatch(GetAllStorageItemsAction());
-            action.context.popRoute(res.data);
+            return res.data;
           } else {
             showError(res.resMessage);
           }
@@ -421,3 +426,64 @@ Future<int?> _onCreateNewStorageItemAction(
       },
       loadingWidget: const CustomLoadingWidget());
 }
+//
+// Future<CreatedClientReturnValue?> _onAddLocationAction(
+//     AppState state, OnAddLocationAction action) async {
+//   final CreatedClientReturnValue? data = await showDialog(
+//       barrierDismissible: false,
+//       context: action.context,
+//       builder: (context) => ClientForm(
+//             state: state,
+//             type: ClientFormType.location,
+//           ));
+//   if (data != null && data.locationId != null) {
+//     return await Get.showOverlay(
+//       asyncFunction: () async {
+//         try {
+//           final ApiResponse createdClient = await action.createClient();
+//           if (createdClient.success) {
+//             return CreatedClientReturnValue(
+//                 clientId: createdClient.data, locationId: data.locationId);
+//           } else {
+//             showError(createdClient.resMessage ?? "Unknown Error");
+//           }
+//         } catch (e) {
+//           showError(e.toString());
+//         }
+//       },
+//       loadingWidget: const Center(
+//         child: CircularProgressIndicator(),
+//       ),
+//     );
+//   }
+// }
+//
+// Future<CreatedClientReturnValue?> _onAddClientAction(
+//     AppState state, OnAddClientAction action) async {
+//   final ApiResponse createdClient =
+//       await action.createClient(fetchAllParams: false);
+//   if (createdClient.success) {
+//     final ApiResponse createdLocation = await action.createLocation();
+//     if (createdLocation.success) {
+//       return CreatedClientReturnValue(
+//           clientId: createdClient.data, locationId: createdLocation.data);
+//     } else {
+//       await appStore.dispatch(GetAllParamListAction());
+//       //Location already exists
+//       if (createdLocation.resCode == 409) {
+//         return CreatedClientReturnValue(
+//             clientId: createdClient.data, locationId: createdLocation.data);
+//       }
+//       showError(ApiHelpers.getRawDataErrorMessages(createdLocation).isEmpty
+//           ? "Error"
+//           : ApiHelpers.getRawDataErrorMessages(createdLocation));
+//     }
+//   } else {
+//     showError(
+//       ApiHelpers.getRawDataErrorMessages(createdClient).isEmpty
+//           ? "Error"
+//           : ApiHelpers.getRawDataErrorMessages(createdClient),
+//     );
+//   }
+//   return null;
+// }

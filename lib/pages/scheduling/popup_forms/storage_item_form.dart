@@ -152,16 +152,10 @@ class _StorageItemFormState extends State<StorageItemForm> {
             text: "Cancel",
             onPressed: () {
               onWillPop(context).then((value) {
-                if (value) {
-                  context.popRoute();
-                }
+                context.popRoute();
               });
             }),
-        ButtonLarge(
-            text: "Create",
-            onPressed: () {
-              _onSave();
-            }),
+        ButtonLarge(text: "Create", onPressed: _onSave),
       ],
     );
   }
@@ -169,11 +163,15 @@ class _StorageItemFormState extends State<StorageItemForm> {
   void _onSave() async {
     if (_formKey.currentState!.validate()) {
       final int? res = await appStore.dispatch(OnCreateNewStorageItemAction(
-          title: title.text,
-          warehouseId: warehouses[warehouseIndex!].id,
-          customerPrice: double.tryParse(customerPrice.text),
-          taxId: taxes[taxIndex!].id,
-          context: context));
+        title: title.text,
+        warehouseId:
+            warehouseIndex != null ? warehouses[warehouseIndex!].id : null,
+        customerPrice: double.tryParse(customerPrice.text),
+        taxId: taxes[taxIndex!].id,
+      ));
+      if (res != null) {
+        context.popRoute(res);
+      }
     }
   }
 }

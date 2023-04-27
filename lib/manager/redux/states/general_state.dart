@@ -500,17 +500,31 @@ class OnAddStorageItemAction {
 class OnCreateNewStorageItemAction {
   final int id;
   final String title;
-  final int warehouseId;
+  final int? warehouseId;
   final double? customerPrice;
   final int taxId;
-  final BuildContext context;
 
   OnCreateNewStorageItemAction({
     this.id = 0,
     required this.title,
-    required this.warehouseId,
+    this.warehouseId,
     this.customerPrice,
     required this.taxId,
-    required this.context,
   });
 }
+
+// class OnAddLocationAction {
+//   final BuildContext context;
+//   final Future<ApiResponse> Function({bool fetchAllParams}) createLocation;
+//   final Future<ApiResponse> Function({bool fetchAllParams}) createClient;
+//
+//   OnAddLocationAction(this.context,
+//       {required this.createLocation, required this.createClient});
+// }
+//
+// class OnAddClientAction {
+//   final Future<ApiResponse> Function({bool fetchAllParams}) createLocation;
+//   final Future<ApiResponse> Function({bool fetchAllParams}) createClient;
+//
+//   OnAddClientAction({required this.createClient, required this.createLocation});
+// }

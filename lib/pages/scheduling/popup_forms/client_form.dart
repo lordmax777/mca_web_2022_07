@@ -610,9 +610,9 @@ class _ClientFormState extends State<ClientForm> {
         else
           ButtonLarge(
               text: "Save",
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  Get.showOverlay(
+                  return await Get.showOverlay(
                     asyncFunction: () async {
                       if (isClient) {
                         final ApiResponse createdClient =
@@ -625,7 +625,7 @@ class _ClientFormState extends State<ClientForm> {
                                 clientId: createdClient.data,
                                 locationId: createdLocation.data));
                           } else {
-                            await appStore.dispatch(GetAllParamListAction());
+                            await appStore.dispatch(GetClientInfosAction());
                             //Location already exists
                             if (createdLocation.resCode == 409) {
                               context.popRoute(CreatedClientReturnValue(

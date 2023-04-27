@@ -79,6 +79,12 @@ class CreateShiftDataQuote extends CreateShiftDataType {
   CreateShiftDataQuote({this.quoteId}) {
     scheduleLaterIndex = 1;
     repeatTypeIndex = 0;
+    if (kDebugMode) {
+      quote.email = "kom@g.c";
+      quote.name = "kom";
+      quote.paymentMethodId = 1;
+      quote.currencyId = 1;
+    }
     if (quoteId != null) {
       quote = appStore.state.generalState.quotes
               .firstWhereOrNull((element) => element.id == quoteId) ??

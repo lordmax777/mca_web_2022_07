@@ -542,29 +542,6 @@ class QuoteFormState extends State<QuoteForm> {
     );
   }
 
-  Widget addIcon(
-      {String? tooltip,
-      VoidCallback? onPressed,
-      HeroIcons? icon,
-      Color? color}) {
-    return IconButton(
-        tooltip: tooltip,
-        onPressed: onPressed,
-        icon: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: (color ?? ThemeColors.MAIN_COLOR)
-                    .withOpacity(.5), //Colors.grey[300]!,
-              ),
-            ),
-            child: HeroIcon(
-              icon ?? HeroIcons.add,
-              color: (color ?? ThemeColors.MAIN_COLOR),
-            )));
-  }
-
   List<PlutoColumn> cols(AppState state) => [
         PlutoColumn(
           title: "",
