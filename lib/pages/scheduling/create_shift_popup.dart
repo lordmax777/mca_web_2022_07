@@ -287,6 +287,7 @@ class _CreateJobState extends State<_CreateJob>
     final quote = (data as CreateShiftDataQuote).quote;
     final storageItems = [...state.generalState.storage_items];
     ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
+      id: quote.id,
       email: quote.email ?? "",
       name: quote.name,
       company: quote.company,
@@ -335,7 +336,8 @@ class _CreateJobState extends State<_CreateJob>
     ));
     if (quoteCreated?.success == true) {
       exit(context).then((value) {
-        showError("Quote created successfully", titleMsg: "Success");
+        showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
+            titleMsg: "Success");
       });
     }
   }

@@ -300,8 +300,18 @@ Future<ApiResponse?> _createQuoteAction(
           formData.fields.add(MapEntry('name', action.name));
           data['name'] = action.name;
 
+          if (action.company != null && action.company!.isNotEmpty) {
+            formData.fields.add(MapEntry('company', action.company!));
+            data['company'] = action.company;
+          }
+
           formData.fields.add(MapEntry('email', action.email));
           data['email'] = action.email;
+
+          if (action.phone != null && action.phone!.isNotEmpty) {
+            formData.fields.add(MapEntry('phone', action.phone!));
+            data['phone'] = action.phone;
+          }
 
           formData.fields
               .add(MapEntry('payingDays', action.payingDays.toString()));
@@ -322,9 +332,87 @@ Future<ApiResponse?> _createQuoteAction(
               .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
           data['workRepeatId'] = action.workRepeatId;
 
-          if (action.phone != null && action.phone!.isNotEmpty) {
-            formData.fields.add(MapEntry('phone', action.phone!));
-            data['phone'] = action.phone;
+          if (action.addressLine1 != null && action.addressLine1!.isNotEmpty) {
+            formData.fields.add(MapEntry('addressLine1', action.addressLine1!));
+            data['addressLine1'] = action.addressLine1;
+          }
+
+          if (action.addressLine2 != null && action.addressLine2!.isNotEmpty) {
+            formData.fields.add(MapEntry('addressLine2', action.addressLine2!));
+            data['addressLine2'] = action.addressLine2;
+          }
+
+          if (action.addressCity != null && action.addressCity!.isNotEmpty) {
+            formData.fields.add(MapEntry('addressCity', action.addressCity!));
+            data['addressCity'] = action.addressCity;
+          }
+
+          if (action.addressCounty != null &&
+              action.addressCounty!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('addressCounty', action.addressCounty!));
+            data['addressCounty'] = action.addressCounty;
+          }
+
+          if (action.addressPostcode != null &&
+              action.addressPostcode!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('addressPostcode', action.addressPostcode!));
+            data['addressPostcode'] = action.addressPostcode;
+          }
+
+          if (action.addressCountry != null &&
+              action.addressCountry!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('addressCountry', action.addressCountry!));
+            data['addressCountry'] = action.addressCountry;
+          }
+
+          if (action.notes != null && action.notes!.isNotEmpty) {
+            formData.fields.add(MapEntry('notes', action.notes!));
+            data['notes'] = action.notes;
+          }
+
+          if (action.workAddressLine1 != null &&
+              action.workAddressLine1!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('workAddressLine1', action.workAddressLine1!));
+            data['workAddressLine1'] = action.workAddressLine1;
+          }
+
+          if (action.workAddressLine2 != null &&
+              action.workAddressLine2!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('workAddressLine2', action.workAddressLine2!));
+            data['workAddressLine2'] = action.workAddressLine2;
+          }
+
+          if (action.workAddressCity != null &&
+              action.workAddressCity!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('workAddressCity', action.workAddressCity!));
+            data['workAddressCity'] = action.workAddressCity;
+          }
+
+          if (action.workAddressCounty != null &&
+              action.workAddressCounty!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('workAddressCounty', action.workAddressCounty!));
+            data['workAddressCounty'] = action.workAddressCounty;
+          }
+
+          if (action.workAddressPostcode != null &&
+              action.workAddressPostcode!.isNotEmpty) {
+            formData.fields.add(
+                MapEntry('workAddressPostcode', action.workAddressPostcode!));
+            data['workAddressPostcode'] = action.workAddressPostcode;
+          }
+
+          if (action.workAddressCountry != null &&
+              action.workAddressCountry!.isNotEmpty) {
+            formData.fields.add(
+                MapEntry('workAddressCountry', action.workAddressCountry!));
+            data['workAddressCountry'] = action.workAddressCountry;
           }
 
           for (int i = 0; i < action.storageItems.length; i++) {
@@ -345,7 +433,7 @@ Future<ApiResponse?> _createQuoteAction(
             data['quoteAuto_$i'] = item.auto;
           }
 
-          // formData.fields.removeWhere((element) => element.value == "null");
+          formData.fields.removeWhere((element) => element.value == "null");
 
           logger(
               "FormData: ${formData.fields.map((e) => "${e.key}: ${e.value}").toList()}");

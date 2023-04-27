@@ -79,36 +79,10 @@ class CreateShiftDataQuote extends CreateShiftDataType {
   CreateShiftDataQuote({this.quoteId}) {
     scheduleLaterIndex = 1;
     repeatTypeIndex = 0;
-    if (kDebugMode) {
-      quote.email = "kom@g.c";
-      quote.name = "kom";
-      quote.paymentMethodId = 1;
-      quote.currencyId = 1;
-    }
     if (quoteId != null) {
       quote = appStore.state.generalState.quotes
               .firstWhereOrNull((element) => element.id == quoteId) ??
           QuoteInfoMd.init();
-      if (quote.id != 0) {
-        // title = quote!.name;
-        // selectedClientId = quote!.;
-        // selectedLocationId = quote!.locationId;
-        // tempAllowedLocationId = quote!.locationId;
-        // startDate = quote!.startDate;
-        // endDate = quote!.endDate;
-        // isAllDay = quote!.isAllDay;
-        // startTime = quote!.startTime;
-        // endTime = quote!.endTime;
-        // scheduleLaterIndex = quote!.scheduleLaterIndex;
-        // repeatTypeIndex = quote!.repeatTypeIndex;
-        // repeatDays = quote!.repeatDays;
-        // paidHour = quote!.paidHour;
-        // paidMinute = quote!.paidMinute;
-        // isSplitTime = quote!.isSplitTime;
-        // comments = quote!.comments;
-        // addedChildren = quote!.addedChildren;
-        // addedChildrenRates = quote!.addedChildrenRates;
-      }
     }
   }
   @override

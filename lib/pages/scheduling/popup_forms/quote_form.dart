@@ -174,7 +174,7 @@ class QuoteFormState extends State<QuoteForm> {
               key: widget.formKey,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .8,
-                height: MediaQuery.of(context).size.height * .8,
+                height: MediaQuery.of(context).size.height * .85,
                 child: SpacedColumn(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   verticalSpace: 64,
@@ -483,14 +483,15 @@ class QuoteFormState extends State<QuoteForm> {
         ),
       ];
 
-  PlutoRow _buildRow(StorageItemMd contractShiftItem, {bool checked = false}) {
+  PlutoRow _buildRow(StorageItemMd contractShiftItem,
+      {bool checked = false, int? qty}) {
     return PlutoRow(
       checked: checked,
       cells: {
         "id": PlutoCell(value: contractShiftItem.id),
         "title": PlutoCell(value: contractShiftItem.name),
         "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
-        "quantity": PlutoCell(value: 1),
+        "quantity": PlutoCell(value: qty ?? 1),
         "delete_action": PlutoCell(value: ""),
         "include_in_service": PlutoCell(value: "Included in service"),
       },
@@ -511,6 +512,25 @@ class QuoteFormState extends State<QuoteForm> {
               noRowsText: "No product or service added yet",
               onSmReady: (e) {
                 gridStateManager = e;
+                if (!isCreate) {
+                  gridStateManager.appendRows(data.quote.items
+                      .map(
+                        (e) => _buildRow(
+                          StorageItemMd(
+                            id: e.itemId,
+                            active: true,
+                            name: e.itemName,
+                            incomingPrice: 0,
+                            outgoingPrice: e.price,
+                            service: false,
+                            taxId: 1,
+                          ),
+                          checked: true,
+                          qty: e.quantity,
+                        ),
+                      )
+                      .toList());
+                }
                 gridStateManager.addListener(() {
                   onTableChangeDone();
                 });
