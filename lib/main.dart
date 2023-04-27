@@ -1,5 +1,6 @@
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/pages/approvals/controllers/approval_request_controller.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 import 'package:mca_web_2022_07/pages/checklist_templates/controllers/checklist_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
@@ -50,6 +51,7 @@ Future<void> setup() async {
   Get.lazyPut(() => SettingsController());
   Get.lazyPut(() => PreferredShiftsController());
   Get.lazyPut(() => PropertiesController());
+  Get.lazyPut(() => ApprovalRequestController());
 
   Get.put(TalkerController());
 
