@@ -82,18 +82,24 @@ Widget titleWithDivider(String? title, Widget? child, {Widget? titleIcon}) {
 }
 
 Widget labelWithField(String label, Widget? child,
-    {Widget? customLabel, Widget? childHelperWidget, TextStyle? labelStyle}) {
+    {Widget? customLabel,
+    Widget? childHelperWidget,
+    TextStyle? labelStyle,
+    double? labelWidth}) {
   return SpacedColumn(
     verticalSpace: 0,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       SpacedRow(
-        horizontalSpace: 8,
+        horizontalSpace: 12,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            label,
-            style: labelStyle ?? ThemeText.md1,
+          SizedBox(
+            width: labelWidth,
+            child: Text(
+              label,
+              style: labelStyle ?? ThemeText.md1,
+            ),
           ),
           if (customLabel != null) customLabel,
         ],
@@ -252,7 +258,7 @@ class _CreateJobState extends State<_CreateJob>
           ],
         ),
         content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.85,
+          width: MediaQuery.of(context).size.width * 0.95,
           child: _getTabChild(state),
         ),
         actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
