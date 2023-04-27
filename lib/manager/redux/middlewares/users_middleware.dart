@@ -105,13 +105,7 @@ Future<void> showLoading({bool? barrierDismissible = false}) async {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
-            strokeWidth: 8,
-            backgroundColor: Colors.white,
-            valueColor: AlwaysStoppedAnimation<Color>(
-                ThemeColors.MAIN_COLOR.withOpacity(0.8)),
-            color: ThemeColors.MAIN_COLOR,
-          ),
+          const CustomLoadingWidget(),
           talker.fab() ?? const SizedBox(),
         ],
       );

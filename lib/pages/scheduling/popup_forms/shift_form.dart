@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 import 'package:mca_web_2022_07/pages/properties/new_prop_tabs/shift_details_tab.dart';
@@ -1149,13 +1150,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
             addIcon(
                 tooltip: "Create service/product",
                 onPressed: () async {
-                  final resId = await showDialog<int>(
-                      barrierDismissible: false,
-                      context: context,
-                      builder: (context) => StorageItemForm(state: state));
-                  if (resId == null) return;
-                  final item = appStore.state.generalState.storage_items
-                      .firstWhereOrNull((element) => element.id == resId);
+                  final item =
+                      await appStore.dispatch(OnAddStorageItemAction(context));
                   if (item == null) return;
                   gridStateManager
                       .insertRows(0, [_buildRow(item, checked: true)]);

@@ -490,3 +490,27 @@ class CreateQuoteAction {
     this.workDays,
   });
 }
+
+class OnAddStorageItemAction {
+  final BuildContext context;
+
+  OnAddStorageItemAction(this.context);
+}
+
+class OnCreateNewStorageItemAction {
+  final int id;
+  final String title;
+  final int warehouseId;
+  final double? customerPrice;
+  final int taxId;
+  final BuildContext context;
+
+  OnCreateNewStorageItemAction({
+    this.id = 0,
+    required this.title,
+    required this.warehouseId,
+    this.customerPrice,
+    required this.taxId,
+    required this.context,
+  });
+}

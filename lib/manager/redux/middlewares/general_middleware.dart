@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -10,7 +11,9 @@ import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list
 import 'package:mca_web_2022_07/pages/handover_types/controllers/handover_controller.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:mix/mix.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
@@ -50,6 +53,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getQuotesAction(store.state, action, next);
       case CreateQuoteAction:
         return _createQuoteAction(store.state, action, next);
+      case OnAddStorageItemAction:
+        return _onAddStorageItemAction(store.state, action);
+      case OnCreateNewStorageItemAction:
+        return _onCreateNewStorageItemAction(store.state, action);
       default:
         return next(action);
     }
@@ -366,4 +373,51 @@ Future<ApiResponse?> _createQuoteAction(
         }
       },
       loadingWidget: const Center(child: CircularProgressIndicator()));
+}
+
+Future<StorageItemMd?> _onAddStorageItemAction(
+    AppState state, OnAddStorageItemAction action) async {
+  final resId = await showDialog<int>(
+      barrierDismissible: false,
+      context: action.context,
+      builder: (context) => StorageItemForm(state: state));
+  if (resId == null) return null;
+  final item = appStore.state.generalState.storage_items
+      .firstWhereOrNull((element) => element.id == resId);
+  return item;
+}
+
+Future<int?> _onCreateNewStorageItemAction(
+    AppState state, OnCreateNewStorageItemAction action) async {
+  if (action.title.isEmpty) {
+    showError("Please add title");
+    return null;
+  }
+  if (action.customerPrice == null) {
+    showError("Please add customer price");
+    return null;
+  }
+  return await Get.showOverlay(
+      asyncFunction: () async {
+        try {
+          final ApiResponse res = await restClient()
+              .postStorageItems(
+                  id: action.id,
+                  name: action.title,
+                  taxId: action.taxId,
+                  outgoingPrice: action.customerPrice.toString(),
+                  service: false,
+                  active: true)
+              .nocodeErrorHandler();
+          if (res.success) {
+            await appStore.dispatch(GetAllStorageItemsAction());
+            action.context.popRoute(res.data);
+          } else {
+            showError(res.resMessage);
+          }
+        } catch (e) {
+          showError(e.toString());
+        }
+      },
+      loadingWidget: const CustomLoadingWidget());
 }

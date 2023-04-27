@@ -326,7 +326,9 @@ class _CreateJobState extends State<_CreateJob>
           .toList(),
     ));
     if (quoteCreated?.success == true) {
-      await context.popRoute(quoteCreated);
+      onWillPop(context)
+          .then((value) => value ? context.popRoute(quoteCreated) : false);
+      ;
     }
   }
 
@@ -341,7 +343,6 @@ class _CreateJobState extends State<_CreateJob>
             return ShiftDetailsForm(
                 _shiftDetailsFormKey, data as CreateShiftData);
         }
-        return const SizedBox();
       default:
         return const SizedBox();
     }

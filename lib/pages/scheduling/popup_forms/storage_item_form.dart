@@ -166,31 +166,14 @@ class _StorageItemFormState extends State<StorageItemForm> {
     );
   }
 
-  void _onSave() {
+  void _onSave() async {
     if (_formKey.currentState!.validate()) {
-      Get.showOverlay(
-          asyncFunction: () async {
-            try {
-              final ApiResponse res = await restClient()
-                  .postStorageItems(
-                      id: 0,
-                      name: title.text,
-                      taxId: taxes[taxIndex!].id,
-                      outgoingPrice: customerPrice.text,
-                      service: false,
-                      active: true)
-                  .nocodeErrorHandler();
-              if (res.success) {
-                await appStore.dispatch(GetAllStorageItemsAction());
-                context.popRoute(res.data);
-              } else {
-                showError(res.resMessage);
-              }
-            } catch (e) {
-              showError(e.toString());
-            }
-          },
-          loadingWidget: const Center(child: CircularProgressIndicator()));
+      final int? res = await appStore.dispatch(OnCreateNewStorageItemAction(
+          title: title.text,
+          warehouseId: warehouses[warehouseIndex!].id,
+          customerPrice: double.tryParse(customerPrice.text),
+          taxId: taxes[taxIndex!].id,
+          context: context));
     }
   }
 }
