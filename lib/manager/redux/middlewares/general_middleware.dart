@@ -286,8 +286,6 @@ Future<ApiResponse?> _createQuoteAction(
                   contentType: "multipart/form-data")
               .init();
 
-          final data = <String, dynamic>{};
-
           if (action.storageItems.isEmpty) {
             showError('Please add item/service(s)', titleMsg: "Warning");
             return null;
@@ -296,142 +294,138 @@ Future<ApiResponse?> _createQuoteAction(
             showError('Please add email', titleMsg: "Warning");
             return null;
           }
-          final dio.FormData formData = dio.FormData.fromMap(data);
+          final dio.FormData formData = dio.FormData();
 
           formData.fields.add(MapEntry('name', action.name));
-          data['name'] = action.name;
 
           if (action.company != null && action.company!.isNotEmpty) {
             formData.fields.add(MapEntry('company', action.company!));
-            data['company'] = action.company;
           }
 
           formData.fields.add(MapEntry('email', action.email));
-          data['email'] = action.email;
 
           if (action.phone != null && action.phone!.isNotEmpty) {
             formData.fields.add(MapEntry('phone', action.phone!));
-            data['phone'] = action.phone;
           }
 
           formData.fields
               .add(MapEntry('payingDays', action.payingDays.toString()));
-          data['payingDays'] = action.payingDays;
 
           formData.fields.add(MapEntry('active', action.active.toString()));
-          data['active'] = action.active;
 
           formData.fields
               .add(MapEntry('currencyId', action.currencyId.toString()));
-          data['currencyId'] = action.currencyId;
 
           formData.fields.add(
               MapEntry('paymentMethodId', action.paymentMethodId.toString()));
-          data['paymentMethodId'] = action.paymentMethodId;
 
           formData.fields
               .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
-          data['workRepeatId'] = action.workRepeatId;
 
           if (action.addressLine1 != null && action.addressLine1!.isNotEmpty) {
             formData.fields.add(MapEntry('addressLine1', action.addressLine1!));
-            data['addressLine1'] = action.addressLine1;
           }
 
           if (action.addressLine2 != null && action.addressLine2!.isNotEmpty) {
             formData.fields.add(MapEntry('addressLine2', action.addressLine2!));
-            data['addressLine2'] = action.addressLine2;
           }
 
           if (action.addressCity != null && action.addressCity!.isNotEmpty) {
             formData.fields.add(MapEntry('addressCity', action.addressCity!));
-            data['addressCity'] = action.addressCity;
           }
 
           if (action.addressCounty != null &&
               action.addressCounty!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('addressCounty', action.addressCounty!));
-            data['addressCounty'] = action.addressCounty;
           }
 
           if (action.addressPostcode != null &&
               action.addressPostcode!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('addressPostcode', action.addressPostcode!));
-            data['addressPostcode'] = action.addressPostcode;
           }
 
           if (action.addressCountry != null &&
               action.addressCountry!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('addressCountry', action.addressCountry!));
-            data['addressCountry'] = action.addressCountry;
           }
 
           if (action.notes != null && action.notes!.isNotEmpty) {
             formData.fields.add(MapEntry('notes', action.notes!));
-            data['notes'] = action.notes;
           }
 
           if (action.workAddressLine1 != null &&
               action.workAddressLine1!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('workAddressLine1', action.workAddressLine1!));
-            data['workAddressLine1'] = action.workAddressLine1;
           }
 
           if (action.workAddressLine2 != null &&
               action.workAddressLine2!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('workAddressLine2', action.workAddressLine2!));
-            data['workAddressLine2'] = action.workAddressLine2;
           }
 
           if (action.workAddressCity != null &&
               action.workAddressCity!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('workAddressCity', action.workAddressCity!));
-            data['workAddressCity'] = action.workAddressCity;
           }
 
           if (action.workAddressCounty != null &&
               action.workAddressCounty!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('workAddressCounty', action.workAddressCounty!));
-            data['workAddressCounty'] = action.workAddressCounty;
           }
 
           if (action.workAddressPostcode != null &&
               action.workAddressPostcode!.isNotEmpty) {
             formData.fields.add(
                 MapEntry('workAddressPostcode', action.workAddressPostcode!));
-            data['workAddressPostcode'] = action.workAddressPostcode;
           }
 
           if (action.workAddressCountry != null &&
               action.workAddressCountry!.isNotEmpty) {
             formData.fields.add(
                 MapEntry('workAddressCountry', action.workAddressCountry!));
-            data['workAddressCountry'] = action.workAddressCountry;
+          }
+          if (action.workStartDate != null) {
+            formData.fields.add(MapEntry(
+                'workStartDate', action.workStartDate!.replaceAll("-", "/")));
+          }
+          if (action.altWorkStartDate != null) {
+            formData.fields
+                .add(MapEntry('altWorkStartDate', action.altWorkStartDate!));
+          }
+          if (action.workStartTime != null) {
+            formData.fields
+                .add(MapEntry('workStartTime', action.workStartTime!));
+          }
+          if (action.workFinishTime != null) {
+            formData.fields
+                .add(MapEntry('workFinishTime', action.workFinishTime!));
+          }
+          formData.fields
+              .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
+          if (action.workDays != null && action.workDays!.isNotEmpty) {
+            final String days = action.workDays!.join(',');
+            formData.fields.add(MapEntry('workDays', days));
           }
 
           for (int i = 0; i < action.storageItems.length; i++) {
             final item = action.storageItems[i];
 
             formData.fields.add(MapEntry('quoteItem_$i', item.id.toString()));
-            data['quoteItem_$i'] = item.id;
 
             formData.fields
                 .add(MapEntry('quoteQuantity_$i', item.quantity.toString()));
-            data['quoteQuantity_$i'] = item.quantity;
 
             formData.fields
                 .add(MapEntry('quotePrice_$i', item.outgoingPrice.toString()));
-            data['quotePrice_$i'] = item.outgoingPrice;
 
             formData.fields.add(MapEntry('quoteAuto_$i', item.auto.toString()));
-            data['quoteAuto_$i'] = item.auto;
           }
 
           formData.fields.removeWhere((element) => element.value == "null");

@@ -312,3 +312,18 @@ abstract class HtmlHelper {
     }
   }
 }
+
+extension StringExt on String {
+  DateTime toDate([String splitBy = "/"]) {
+    try {
+      int day = int.parse(split(splitBy)[2]);
+      int month = int.parse(split(splitBy)[1]);
+      int year = int.parse(split(splitBy)[0]);
+      logger("Date: $day/$month/$year");
+      return DateTime(year, month, day);
+    } catch (e) {
+      logger("Fail to parse date: $this");
+      return DateTime.now();
+    }
+  }
+}

@@ -132,7 +132,6 @@ class QuoteFormState extends State<QuoteForm> {
       ),
     );
     if (res == null) return;
-    logger(res.startDate);
     setState(() {
       data.quote.workStartDate = res.startDate?.formatDateForApi;
       data.quote.altWorkStartDate = res.altStartDate?.formatDateForApi;
@@ -411,6 +410,23 @@ class QuoteFormState extends State<QuoteForm> {
                                         ?.name
                                     : null),
                               ),
+                              if (data.quote.workRepeat != null &&
+                                  data.quote.workRepeat == 3)
+                                const Divider(),
+                              if (data.quote.workRepeat != null &&
+                                  data.quote.workRepeat == 3)
+                                labelWithField(
+                                  labelWidth: 160,
+                                  "Days:",
+                                  null,
+                                  customLabel: _textField(
+                                      data.quote.workDays.length == 7
+                                          ? "Everyday"
+                                          : data.quote.workDays
+                                              .map((e) =>
+                                                  Constants.daysOfTheWeek[e])
+                                              .join(", ")),
+                                ),
                               const Divider(),
                               labelWithField(
                                 labelWidth: 160,

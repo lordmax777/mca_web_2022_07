@@ -319,11 +319,10 @@ class _CreateJobState extends State<_CreateJob>
       workAddressCountry: quote.workAddressCountry,
       workAddressPostcode: quote.workAddressPostcode,
       notes: quote.notes,
-      workStartDate: getDateFormat(data.date, dateSeparatorSymbol: "/"),
-      workStartTime: data.startTime?.formattedTime,
-      workRepeatId: state.generalState.workRepeats[data.repeatTypeIndex!].id,
-      workFinishTime: data.endTime?.formattedTime,
-      workDays: data.repeatDays,
+      workStartDate: quote.workStartDate,
+      workRepeatId: state.generalState.workRepeats[quote.workRepeat ?? 1].id,
+      workStartTime: quote.workStartTime,
+      workDays: quote.workDays,
       storageItems: data.gridStateManager.rows
           .map<StorageItemMd>((row) {
             final item = storageItems.firstWhereOrNull(

@@ -66,15 +66,12 @@ class _TimingFormState extends State<TimingForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      //TODO: Add logic here
       if (quote != null) {
-        returnVal.startDate = DateTime.tryParse(quote!.workStartDate ?? "");
-        returnVal.altStartDate =
-            DateTime.tryParse(quote!.altWorkStartDate ?? "");
+        returnVal.startDate = quote!.workStartDate?.toDate("-");
+        returnVal.altStartDate = quote!.altWorkStartDate?.toDate("-");
         returnVal.startTime = quote!.workStartTime?.formattedTime;
         returnVal.endTime = quote!.workFinishTime?.formattedTime;
-        if (quote!.workStartTime?.formattedTime == null &&
-            quote!.workFinishTime?.formattedTime == null) {
+        if (quote!.workStartTime == null && quote!.workFinishTime == null) {
           if (quote!.workStartTime?.formattedTime ==
                   const TimeOfDay(hour: 0, minute: 0) &&
               quote!.workFinishTime?.formattedTime ==
@@ -336,6 +333,16 @@ class _TimingFormState extends State<TimingForm> {
             text: "Save",
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
+                if (returnVal.repeatTypeIndex == null) {
+                  showError("Please select a repeat type");
+                  return;
+                }
+                if (returnVal.repeatTypeIndex == 2) {
+                  if (returnVal.repeatDays.isEmpty) {
+                    showError("Please select at least one day");
+                    return;
+                  }
+                }
                 context.popRoute(returnVal);
               }
             }),
