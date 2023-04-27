@@ -61,7 +61,9 @@ enum ClientFormType {
   client,
   location,
   quoteClient,
-  quoteLocation;
+  quoteLocation,
+  timing,
+  ;
 
   String get label {
     switch (this) {
@@ -73,6 +75,8 @@ enum ClientFormType {
         return "Edit Personal Information";
       case ClientFormType.quoteLocation:
         return "Edit Location";
+      case ClientFormType.timing:
+        return "Timing";
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/client_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import '../../../comps/autocomplete_input_field.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/model_exporter.dart';
@@ -123,27 +124,24 @@ class QuoteFormState extends State<QuoteForm> {
   }
 
   void _editTiming() async {
-    // final ClientAddressForm? res =
-    //     await appStore.dispatch(OnCreateNewClientTap(context,
-    //         type: ClientFormType.quoteLocation,
-    //         clientInfo: ClientInfoMd.init(
-    //             address: Address(
-    //           line1: data.quote.workAddressLine1,
-    //           line2: data.quote.workAddressLine2,
-    //           city: data.quote.workAddressCity,
-    //           county: data.quote.workAddressCounty,
-    //           postcode: data.quote.workAddressPostcode,
-    //           country: data.quote.workAddressCountry,
-    //         ))));
-    // if (res == null) return;
-    // setState(() {
-    //   data.quote.workAddressLine1 = res.addressLine1;
-    //   data.quote.workAddressLine2 = res.addressLine2;
-    //   data.quote.workAddressCity = res.addressCity;
-    //   data.quote.workAddressCounty = res.addressCounty;
-    //   data.quote.workAddressPostcode = res.addressPostcode;
-    //   data.quote.workAddressCountry = res.addressCountryId;
-    // });
+    final CreatedTimingReturnValue? res = await appStore.dispatch(
+      OnCreateNewClientTap(
+        context,
+        type: ClientFormType.timing,
+        quoteInfo: data.quote,
+      ),
+    );
+    if (res == null) return;
+    logger(res.startDate);
+    setState(() {
+      data.quote.workStartDate = res.startDate?.formatDateForApi;
+      data.quote.altWorkStartDate = res.altStartDate?.formatDateForApi;
+      data.quote.workStartTime = res.startTime?.formattedTime;
+      data.quote.workFinishTime = res.endTime?.formattedTime;
+      data.quote.workRepeat =
+          appStore.state.generalState.workRepeats[res.repeatTypeIndex!].id;
+      data.quote.workDays = res.repeatDays;
+    });
   }
 
   @override
@@ -160,21 +158,20 @@ class QuoteFormState extends State<QuoteForm> {
           ...state.generalState.paymentMethods
         ];
 
-        return CustomScrollbar(
-          child: Container(
-            width: MediaQuery.of(context).size.width * .95,
-            padding:
-                const EdgeInsets.only(top: 36, bottom: 36, right: 36, left: 36),
-            child: Form(
-              key: widget.formKey,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * .8,
+        return SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: CustomScrollbar(
+            child: Container(
+              padding: const EdgeInsets.only(
+                  top: 36, bottom: 36, right: 36, left: 36),
+              child: Form(
+                key: widget.formKey,
                 child: SpacedColumn(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   verticalSpace: 64,
                   children: [
                     SpacedRow(
-                      horizontalSpace: 72,
+                      horizontalSpace: 32,
                       children: [
                         _container(
                           onEdit: _onEditPm,
@@ -183,35 +180,35 @@ class QuoteFormState extends State<QuoteForm> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Name:",
                                 null,
                                 customLabel: _textField(data.quote.name),
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Company:",
                                 null,
                                 customLabel: _textField(data.quote.company),
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Email:",
                                 null,
                                 customLabel: _textField(data.quote.email),
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Phone:",
                                 null,
                                 customLabel: _textField(data.quote.phone),
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Payment Terms:",
                                 null,
                                 customLabel: _textField(
@@ -219,7 +216,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Currency:",
                                 null,
                                 customLabel: _textField(currencies
@@ -229,7 +226,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                  labelWidth: 140,
+                                  labelWidth: 160,
                                   "Payment method:",
                                   null,
                                   customLabel: _textField(paymentMethods
@@ -239,7 +236,7 @@ class QuoteFormState extends State<QuoteForm> {
                                       ?.name)),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Client Notes:",
                                 null,
                                 customLabel: _textField(data.quote.notes),
@@ -247,129 +244,122 @@ class QuoteFormState extends State<QuoteForm> {
                             ],
                           ),
                         ),
-                        SpacedColumn(
-                          verticalSpace: 20,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _container(
-                              onEdit: _editInvoiceAddress,
-                              "Invoice Address",
-                              SpacedColumn(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Address Line 1:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.addressLine1),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Address Line 2:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.addressLine2),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "City:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.addressCity),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "County:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.addressCounty),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Country:",
-                                    null,
-                                    customLabel: _textField(countries
-                                        .firstWhereOrNull((element) =>
-                                            element.code ==
-                                            data.quote.addressCountry)
-                                        ?.name),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Postcode:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.addressPostcode),
-                                  ),
-                                ],
+                        _container(
+                          onEdit: _editInvoiceAddress,
+                          "Invoice Address",
+                          SpacedColumn(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              labelWithField(
+                                labelWidth: 160,
+                                "Address Line 1:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressLine1),
                               ),
-                            ),
-                            _container(
-                              onEdit: _editWorkAddress,
-                              "Work Address",
-                              SpacedColumn(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Work Address Line 1:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.workAddressLine1),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Work Address Line 2:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.workAddressLine2),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Work City:",
-                                    null,
-                                    customLabel:
-                                        _textField(data.quote.workAddressCity),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Work County:",
-                                    null,
-                                    customLabel: _textField(
-                                        data.quote.workAddressCounty),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Work Country:",
-                                    null,
-                                    customLabel: _textField(countries
-                                        .firstWhereOrNull((element) =>
-                                            element.code ==
-                                            data.quote.workAddressCountry)
-                                        ?.name),
-                                  ),
-                                  const Divider(),
-                                  labelWithField(
-                                    labelWidth: 140,
-                                    "Work Postcode:",
-                                    null,
-                                    customLabel: _textField(
-                                        data.quote.workAddressPostcode),
-                                  ),
-                                ],
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Address Line 2:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressLine2),
                               ),
-                            ),
-                          ],
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "City:",
+                                null,
+                                customLabel: _textField(data.quote.addressCity),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "County:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressCounty),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Country:",
+                                null,
+                                customLabel: _textField(countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code ==
+                                        data.quote.addressCountry)
+                                    ?.name),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Postcode:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.addressPostcode),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _container(
+                          onEdit: _editWorkAddress,
+                          "Work Address",
+                          SpacedColumn(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              labelWithField(
+                                labelWidth: 160,
+                                "Work Address Line 1:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressLine1),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Work Address Line 2:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressLine2),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Work City:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressCity),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Work County:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressCounty),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Work Country:",
+                                null,
+                                customLabel: _textField(countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code ==
+                                        data.quote.workAddressCountry)
+                                    ?.name),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Work Postcode:",
+                                null,
+                                customLabel:
+                                    _textField(data.quote.workAddressPostcode),
+                              ),
+                            ],
+                          ),
                         ),
                         _container(
                           onEdit: _editTiming,
@@ -378,7 +368,7 @@ class QuoteFormState extends State<QuoteForm> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Work Start Date:",
                                 null,
                                 customLabel:
@@ -386,7 +376,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Alternative Work Start Date:",
                                 null,
                                 customLabel:
@@ -394,7 +384,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Work Start Time:",
                                 null,
                                 customLabel:
@@ -402,7 +392,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Work Finish Time:",
                                 null,
                                 customLabel:
@@ -410,7 +400,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Repeat:",
                                 null,
                                 customLabel: _textField(data.quote.workRepeat !=
@@ -423,7 +413,7 @@ class QuoteFormState extends State<QuoteForm> {
                               ),
                               const Divider(),
                               labelWithField(
-                                labelWidth: 140,
+                                labelWidth: 160,
                                 "Active:",
                                 null,
                                 customLabel: checkbox(data.quote.active, (p0) {
@@ -468,7 +458,7 @@ class QuoteFormState extends State<QuoteForm> {
           : null,
       title,
       Container(
-          width: 400,
+          width: 410,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -581,10 +571,10 @@ class QuoteFormState extends State<QuoteForm> {
 
   Widget _products(AppState state) {
     return labelWithField(
-        labelWidth: 140,
-        "",
+        labelWidth: 160,
+        "Products and services",
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.77,
+          width: MediaQuery.of(context).size.width * .95,
           height: 300,
           child: UsersListTable(
               enableEditing: true,

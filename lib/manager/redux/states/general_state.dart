@@ -534,6 +534,12 @@ class OnCreateNewClientTap<T> {
   final ClientFormType type;
   final BuildContext context;
   final ClientInfoMd? clientInfo;
+  final QuoteInfoMd? quoteInfo;
 
-  OnCreateNewClientTap(this.context, {required this.type, this.clientInfo});
+  OnCreateNewClientTap(
+    this.context, {
+    required this.type,
+    this.clientInfo,
+    this.quoteInfo,
+  });
 }

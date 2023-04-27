@@ -13,6 +13,7 @@ import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller
 import 'package:mca_web_2022_07/pages/qualifications/controllers/qualifs_list_controller.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/client_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:mix/mix.dart';
 import 'package:redux/redux.dart';
@@ -584,10 +585,20 @@ Future _onCreateNewClientTap(
   final data = await showDialog(
       barrierDismissible: false,
       context: action.context,
-      builder: (context) => ClientForm(
-            state: state,
-            type: action.type,
-            selectedClient: action.clientInfo,
-          ));
+      builder: (context) {
+        switch (action.type) {
+          case ClientFormType.timing:
+            return TimingForm(
+              state: state,
+              quoteInfo: action.quoteInfo,
+            );
+          default:
+            return ClientForm(
+              state: state,
+              type: action.type,
+              selectedClient: action.clientInfo,
+            );
+        }
+      });
   return data;
 }

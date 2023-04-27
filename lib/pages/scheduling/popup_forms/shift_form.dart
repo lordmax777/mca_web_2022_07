@@ -248,497 +248,511 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
           ...state.generalState.workRepeats
         ];
 
-        return CustomScrollbar(
-          child: Padding(
-            padding:
-                const EdgeInsets.only(top: 36, bottom: 36, right: 36, left: 36),
-            child: Stack(
-              children: [
-                Form(
-                  key: widget.formKey,
-                  child: SpacedColumn(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    verticalSpace: 48,
-                    children: [
-                      SpacedRow(
-                        horizontalSpace: 64,
-                        children: [
-                          if (type == ScheduleCreatePopupMenus.job)
-                            labelWithField(
-                              "Title",
-                              TextInputWidget(
-                                width: 300,
-                                controller: title,
-                                hintText: "Enter title",
+        return SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: CustomScrollbar(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: 36, bottom: 36, right: 36, left: 36),
+              child: Stack(
+                children: [
+                  Form(
+                    key: widget.formKey,
+                    child: SpacedColumn(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      verticalSpace: 48,
+                      children: [
+                        SpacedRow(
+                          horizontalSpace: 64,
+                          children: [
+                            if (type == ScheduleCreatePopupMenus.job)
+                              labelWithField(
+                                "Title",
+                                TextInputWidget(
+                                  width: 300,
+                                  controller: title,
+                                  hintText: "Enter title",
+                                ),
                               ),
-                            ),
-                          if (type == ScheduleCreatePopupMenus.job)
+                            if (type == ScheduleCreatePopupMenus.job)
+                              labelWithField(
+                                "Client",
+                                DropdownWidgetV2(
+                                  hasSearchBox: true,
+                                  hintText: "Select a client",
+                                  dropdownBtnWidth: 300,
+                                  dropdownOptionsWidth: 300,
+                                  items: clients
+                                      .map((e) =>
+                                          CustomDropdownValue(name: e.name))
+                                      .toList(),
+                                  value: CustomDropdownValue(
+                                      name: clients
+                                              .firstWhereOrNull((element) =>
+                                                  element.id ==
+                                                  selectedClientId)
+                                              ?.name ??
+                                          ""),
+                                  onChanged: (index) {
+                                    onClientChanged(index, clients: clients);
+                                  },
+                                ),
+                                childHelperWidget: addIcon(
+                                  tooltip: "Create new client",
+                                  onPressed: () {
+                                    onCreateNewClientTap(
+                                        state, ClientFormType.client);
+                                  },
+                                ),
+                              ),
                             labelWithField(
-                              "Client",
+                              "Location",
                               DropdownWidgetV2(
                                 hasSearchBox: true,
-                                hintText: "Select a client",
+                                hintText: "Select a location",
+                                tooltipWhileDisabled: "Select a client first",
+                                disableAll:
+                                    type == ScheduleCreatePopupMenus.job &&
+                                        selectedClientId == null,
                                 dropdownBtnWidth: 300,
                                 dropdownOptionsWidth: 300,
-                                items: clients
+                                items: locations
                                     .map((e) =>
                                         CustomDropdownValue(name: e.name))
                                     .toList(),
                                 value: CustomDropdownValue(
-                                    name: clients
+                                    name: locations
                                             .firstWhereOrNull((element) =>
-                                                element.id == selectedClientId)
+                                                element.id ==
+                                                selectedLocationId)
                                             ?.name ??
                                         ""),
                                 onChanged: (index) {
-                                  onClientChanged(index, clients: clients);
+                                  setState(() {
+                                    selectedLocationId = locations[index].id;
+                                  });
                                 },
                               ),
-                              childHelperWidget: addIcon(
-                                tooltip: "Create new client",
-                                onPressed: () {
-                                  onCreateNewClientTap(
-                                      state, ClientFormType.client);
-                                },
-                              ),
-                            ),
-                          labelWithField(
-                            "Location",
-                            DropdownWidgetV2(
-                              hasSearchBox: true,
-                              hintText: "Select a location",
-                              tooltipWhileDisabled: "Select a client first",
-                              disableAll:
-                                  type == ScheduleCreatePopupMenus.job &&
-                                      selectedClientId == null,
-                              dropdownBtnWidth: 300,
-                              dropdownOptionsWidth: 300,
-                              items: locations
-                                  .map((e) => CustomDropdownValue(name: e.name))
-                                  .toList(),
-                              value: CustomDropdownValue(
-                                  name: locations
-                                          .firstWhereOrNull((element) =>
-                                              element.id == selectedLocationId)
-                                          ?.name ??
-                                      ""),
-                              onChanged: (index) {
-                                setState(() {
-                                  selectedLocationId = locations[index].id;
-                                });
-                              },
-                            ),
-                            childHelperWidget: Row(
-                              children: [
-                                addIcon(
-                                  tooltip: "Create new location",
-                                  onPressed: () {
-                                    onCreateNewClientTap(
-                                        state, ClientFormType.location);
-                                  },
-                                ),
-                                if (selectedLocationId != null)
+                              childHelperWidget: Row(
+                                children: [
                                   addIcon(
-                                    tooltip: "View on map",
+                                    tooltip: "Create new location",
                                     onPressed: () {
-                                      final loc = state
-                                          .generalState.locationAddresses
-                                          .firstWhereOrNull((element) =>
-                                              element.id == selectedLocationId);
-                                      if (loc == null) return;
-                                      showMapPopup(location: loc);
+                                      onCreateNewClientTap(
+                                          state, ClientFormType.location);
                                     },
-                                    icon: HeroIcons.location,
-                                  )
-                              ],
-                            ),
-                          ),
-                          labelWithField(
-                            "Active",
-                            toggle(isActive, (val) {
-                              setState(() {
-                                isActive = val;
-                              });
-                            }),
-                          ),
-                        ],
-                      ),
-
-                      SpacedRow(
-                        horizontalSpace: 64,
-                        children: [
-                          labelWithField(
-                            "Date",
-                            TextInputWidget(
-                              width: 300,
-                              rightIcon: HeroIcons.calendar,
-                              isReadOnly: true,
-                              hintText: "Select date",
-                              controller: TextEditingController(
-                                text: date?.formattedDate ?? "",
+                                  ),
+                                  if (selectedLocationId != null)
+                                    addIcon(
+                                      tooltip: "View on map",
+                                      onPressed: () {
+                                        final loc = state
+                                            .generalState.locationAddresses
+                                            .firstWhereOrNull((element) =>
+                                                element.id ==
+                                                selectedLocationId);
+                                        if (loc == null) return;
+                                        showMapPopup(location: loc);
+                                      },
+                                      icon: HeroIcons.location,
+                                    )
+                                ],
                               ),
-                              onTap: () async {
-                                final date =
-                                    await showCustomDatePicker(context);
-                                //date cannot be before today only if we are creating a new
-                                if (isCreate) {
-                                  if (date != null &&
-                                      date.isBefore(DateTime.now()
-                                          .subtract(const Duration(days: 1)))) {
-                                    showError("Date cannot be before today");
-                                    return;
-                                  }
-                                }
-
-                                if (date == null) return;
-
-                                setState(() {
-                                  this.date = date;
-                                });
-                              },
                             ),
-                          ),
-                          labelWithField(
-                            "All day",
-                            toggle(isAllDay, (val) {
-                              setState(() {
-                                isAllDay = val;
-                                if (isAllDay) {
-                                  startTime =
-                                      const TimeOfDay(hour: 0, minute: 0);
-                                  endTime =
-                                      const TimeOfDay(hour: 23, minute: 59);
-                                } else {
-                                  startTime = null;
-                                  endTime = null;
-                                }
-                              });
-                            }),
-                          ),
-                          labelWithField(
-                            "Start Time",
-                            TextInputWidget(
-                              width: 300,
-                              rightIcon: HeroIcons.clock,
-                              isReadOnly: true,
-                              hintText: "Select start time",
-                              controller: TextEditingController(
-                                text: startTime?.format(context) ?? "",
-                              ),
-                              onTap: () async {
-                                final res = await showCustomTimePicker(context,
-                                    initialTime: startTime);
-                                if (res == null) return;
-                                setState(() {
-                                  startTime = res;
-                                  if (endTime ==
-                                          const TimeOfDay(
-                                              hour: 23, minute: 59) &&
-                                      startTime ==
-                                          const TimeOfDay(hour: 0, minute: 0)) {
-                                    isAllDay = true;
-                                  } else {
-                                    isAllDay = false;
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                          labelWithField(
-                            "End Time",
-                            TextInputWidget(
-                              width: 300,
-                              rightIcon: HeroIcons.clock,
-                              isReadOnly: true,
-                              hintText: "Select end time",
-                              controller: TextEditingController(
-                                text: endTime?.format(context) ?? "",
-                              ),
-                              onTap: () async {
-                                final res = await showCustomTimePicker(context,
-                                    initialTime: endTime);
-                                if (res == null) return;
-                                setState(() {
-                                  endTime = res;
-                                  if (endTime ==
-                                          const TimeOfDay(
-                                              hour: 23, minute: 59) &&
-                                      startTime ==
-                                          const TimeOfDay(hour: 0, minute: 0)) {
-                                    isAllDay = true;
-                                  } else {
-                                    isAllDay = false;
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                          if (type != ScheduleCreatePopupMenus.quote)
                             labelWithField(
-                              "Schedule Later",
-                              radio(0, scheduleLaterIndex, (val) {
+                              "Active",
+                              toggle(isActive, (val) {
                                 setState(() {
-                                  scheduleLaterIndex = val;
-                                  repeatTypeIndex = null;
+                                  isActive = val;
                                 });
                               }),
                             ),
-                          if (type != ScheduleCreatePopupMenus.quote)
-                            labelWithField(
-                              "Repeat",
-                              radio(1, scheduleLaterIndex, (val) {
-                                setState(() {
-                                  scheduleLaterIndex = val;
-                                  repeatTypeIndex = 0;
-                                });
-                              }),
-                            ),
-                        ],
-                      ),
-                      if (isRepeat)
+                          ],
+                        ),
+
                         SpacedRow(
                           horizontalSpace: 64,
                           children: [
                             labelWithField(
-                              "Repeats",
-                              DropdownWidgetV2(
-                                hintText: "Select a repeat",
-                                dropdownBtnWidth: 300,
-                                dropdownOptionsWidth: 300,
-                                isRequired: true,
-                                items: workRepeats
-                                    .map((e) =>
-                                        CustomDropdownValue(name: e.name))
-                                    .toList(),
-                                value: repeatTypeIndex != null
-                                    ? CustomDropdownValue(
-                                        name:
-                                            workRepeats[repeatTypeIndex!].name)
-                                    : null,
-                                onChanged: (index) {
+                              "Date",
+                              TextInputWidget(
+                                width: 300,
+                                rightIcon: HeroIcons.calendar,
+                                isReadOnly: true,
+                                hintText: "Select date",
+                                controller: TextEditingController(
+                                  text: date?.formattedDate ?? "",
+                                ),
+                                onTap: () async {
+                                  final date =
+                                      await showCustomDatePicker(context);
+                                  //date cannot be before today only if we are creating a new
+                                  if (isCreate) {
+                                    if (date != null &&
+                                        date.isBefore(DateTime.now().subtract(
+                                            const Duration(days: 1)))) {
+                                      showError("Date cannot be before today");
+                                      return;
+                                    }
+                                  }
+
+                                  if (date == null) return;
+
                                   setState(() {
-                                    repeatTypeIndex = index;
+                                    this.date = date;
                                   });
                                 },
                               ),
                             ),
-                            if (repeatTypeIndex != null)
-                              if (workRepeats[repeatTypeIndex!].id == 3)
-                                SpacedColumn(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        KText(
-                                            text: 'Days ',
-                                            textColor: ThemeColors.gray2,
-                                            fontSize: 14,
-                                            fontWeight: FWeight.bold),
-                                        KText(
-                                            text: '*',
-                                            textColor: ThemeColors.red3,
-                                            fontSize: 14,
-                                            fontWeight: FWeight.bold),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    for (var item
-                                        in Constants.daysOfTheWeek.entries)
-                                      chbx(repeatDays.contains(item.key),
-                                          (value) {
-                                        setState(() {
-                                          if (value) {
-                                            repeatDays.add(item.key);
-                                          } else {
-                                            repeatDays.remove(item.key);
-                                          }
-                                        });
-                                      }, item.value),
-                                  ],
-                                ),
-                          ],
-                        ),
-                      if (type == ScheduleCreatePopupMenus.job)
-                        SpacedRow(
-                          horizontalSpace: 64,
-                          children: [
                             labelWithField(
-                              "Paid Hours",
-                              Row(
-                                children: [
-                                  TextInputWidget(
-                                    width: 60,
-                                    hintText: "Hour",
-                                    labelText: "Hour",
-                                    keyboardType:
-                                        const TextInputType.numberWithOptions(
-                                      decimal: false,
-                                      signed: true,
-                                    ),
-                                    controller: paidHoursHour,
-                                    inputFormatters: <TextInputFormatter>[
-                                      //allow numbers only
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Container(
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              width: 0.5,
-                                            ),
-                                          ),
-                                        ),
-                                        child: InkWell(
-                                          child: const Icon(
-                                            Icons.arrow_drop_up,
-                                            size: 18.0,
-                                          ),
-                                          onTap: () {
-                                            if (paidHoursHour.text.isEmpty) {
-                                              paidHoursHour.text = "0";
-                                            }
-                                            int currentValue =
-                                                int.parse(paidHoursHour.text);
-                                            setState(() {
-                                              currentValue++;
-                                              paidHoursHour.text = (currentValue)
-                                                  .toString(); // incrementing value
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                      InkWell(
-                                        child: const Icon(
-                                          Icons.arrow_drop_down,
-                                          size: 18.0,
-                                        ),
-                                        onTap: () {
-                                          if (paidHoursHour.text.isEmpty) {
-                                            return;
-                                          }
-                                          int currentValue =
-                                              int.parse(paidHoursHour.text);
-                                          setState(() {
-                                            if (currentValue == 0) return;
-                                            currentValue--;
-                                            paidHoursHour.text = (currentValue >
-                                                        0
-                                                    ? currentValue
-                                                    : 0)
-                                                .toString(); // decrementing value
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 16),
-                                  TextInputWidget(
-                                    width: 70,
-                                    labelText: "Minute",
-                                    hintText: "Minute",
-                                    keyboardType:
-                                        const TextInputType.numberWithOptions(
-                                      decimal: false,
-                                      signed: false,
-                                    ),
-                                    controller: paidHoursMinute,
-                                    inputFormatters: <TextInputFormatter>[
-                                      //allow numbers only and do not allow any character
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Container(
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              width: 0.5,
-                                            ),
-                                          ),
-                                        ),
-                                        child: InkWell(
-                                          child: const Icon(
-                                            Icons.arrow_drop_up,
-                                            size: 18.0,
-                                          ),
-                                          onTap: () {
-                                            if (paidHoursMinute.text.isEmpty) {
-                                              paidHoursMinute.text = "0";
-                                            }
-                                            int currentValue =
-                                                int.parse(paidHoursMinute.text);
-                                            setState(() {
-                                              currentValue++;
-                                              paidHoursMinute.text = (currentValue)
-                                                  .toString(); // incrementing value
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                      InkWell(
-                                        child: const Icon(
-                                          Icons.arrow_drop_down,
-                                          size: 18.0,
-                                        ),
-                                        onTap: () {
-                                          if (paidHoursMinute.text.isEmpty)
-                                            return;
-                                          int currentValue =
-                                              int.parse(paidHoursMinute.text);
-                                          setState(() {
-                                            if (currentValue == 0) return;
-                                            currentValue--;
-                                            paidHoursMinute
-                                                .text = (currentValue > 0
-                                                    ? currentValue
-                                                    : 0)
-                                                .toString(); // decrementing value
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              "All day",
+                              toggle(isAllDay, (val) {
+                                setState(() {
+                                  isAllDay = val;
+                                  if (isAllDay) {
+                                    startTime =
+                                        const TimeOfDay(hour: 0, minute: 0);
+                                    endTime =
+                                        const TimeOfDay(hour: 23, minute: 59);
+                                  } else {
+                                    startTime = null;
+                                    endTime = null;
+                                  }
+                                });
+                              }),
+                            ),
+                            labelWithField(
+                              "Start Time",
+                              TextInputWidget(
+                                width: 300,
+                                rightIcon: HeroIcons.clock,
+                                isReadOnly: true,
+                                hintText: "Select start time",
+                                controller: TextEditingController(
+                                  text: startTime?.format(context) ?? "",
+                                ),
+                                onTap: () async {
+                                  final res = await showCustomTimePicker(
+                                      context,
+                                      initialTime: startTime);
+                                  if (res == null) return;
+                                  setState(() {
+                                    startTime = res;
+                                    if (endTime ==
+                                            const TimeOfDay(
+                                                hour: 23, minute: 59) &&
+                                        startTime ==
+                                            const TimeOfDay(
+                                                hour: 0, minute: 0)) {
+                                      isAllDay = true;
+                                    } else {
+                                      isAllDay = false;
+                                    }
+                                  });
+                                },
                               ),
                             ),
-                            if (type == ScheduleCreatePopupMenus.job)
-                              labelWithField(
-                                "Split Time",
-                                toggle(isSplitTime, (val) {
+                            labelWithField(
+                              "End Time",
+                              TextInputWidget(
+                                width: 300,
+                                rightIcon: HeroIcons.clock,
+                                isReadOnly: true,
+                                hintText: "Select end time",
+                                controller: TextEditingController(
+                                  text: endTime?.format(context) ?? "",
+                                ),
+                                onTap: () async {
+                                  final res = await showCustomTimePicker(
+                                      context,
+                                      initialTime: endTime);
+                                  if (res == null) return;
                                   setState(() {
-                                    isSplitTime = val;
+                                    endTime = res;
+                                    if (endTime ==
+                                            const TimeOfDay(
+                                                hour: 23, minute: 59) &&
+                                        startTime ==
+                                            const TimeOfDay(
+                                                hour: 0, minute: 0)) {
+                                      isAllDay = true;
+                                    } else {
+                                      isAllDay = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                            if (type != ScheduleCreatePopupMenus.quote)
+                              labelWithField(
+                                "Schedule Later",
+                                radio(0, scheduleLaterIndex, (val) {
+                                  setState(() {
+                                    scheduleLaterIndex = val;
+                                    repeatTypeIndex = null;
+                                  });
+                                }),
+                              ),
+                            if (type != ScheduleCreatePopupMenus.quote)
+                              labelWithField(
+                                "Repeat",
+                                radio(1, scheduleLaterIndex, (val) {
+                                  setState(() {
+                                    scheduleLaterIndex = val;
+                                    repeatTypeIndex = 0;
                                   });
                                 }),
                               ),
                           ],
                         ),
-                      if (type == ScheduleCreatePopupMenus.job) _team(users),
-                      // if (selectedClientId != null)
-                      _products(state),
-                    ],
+                        if (isRepeat)
+                          SpacedRow(
+                            horizontalSpace: 64,
+                            children: [
+                              labelWithField(
+                                "Repeats",
+                                DropdownWidgetV2(
+                                  hintText: "Select a repeat",
+                                  dropdownBtnWidth: 300,
+                                  dropdownOptionsWidth: 300,
+                                  isRequired: true,
+                                  items: workRepeats
+                                      .map((e) =>
+                                          CustomDropdownValue(name: e.name))
+                                      .toList(),
+                                  value: repeatTypeIndex != null
+                                      ? CustomDropdownValue(
+                                          name: workRepeats[repeatTypeIndex!]
+                                              .name)
+                                      : null,
+                                  onChanged: (index) {
+                                    setState(() {
+                                      repeatTypeIndex = index;
+                                    });
+                                  },
+                                ),
+                              ),
+                              if (repeatTypeIndex != null)
+                                if (workRepeats[repeatTypeIndex!].id == 3)
+                                  SpacedColumn(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          KText(
+                                              text: 'Days ',
+                                              textColor: ThemeColors.gray2,
+                                              fontSize: 14,
+                                              fontWeight: FWeight.bold),
+                                          KText(
+                                              text: '*',
+                                              textColor: ThemeColors.red3,
+                                              fontSize: 14,
+                                              fontWeight: FWeight.bold),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      for (var item
+                                          in Constants.daysOfTheWeek.entries)
+                                        chbx(repeatDays.contains(item.key),
+                                            (value) {
+                                          setState(() {
+                                            if (value) {
+                                              repeatDays.add(item.key);
+                                            } else {
+                                              repeatDays.remove(item.key);
+                                            }
+                                          });
+                                        }, item.value),
+                                    ],
+                                  ),
+                            ],
+                          ),
+                        if (type == ScheduleCreatePopupMenus.job)
+                          SpacedRow(
+                            horizontalSpace: 64,
+                            children: [
+                              labelWithField(
+                                "Paid Hours",
+                                Row(
+                                  children: [
+                                    TextInputWidget(
+                                      width: 60,
+                                      hintText: "Hour",
+                                      labelText: "Hour",
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                        decimal: false,
+                                        signed: true,
+                                      ),
+                                      controller: paidHoursHour,
+                                      inputFormatters: <TextInputFormatter>[
+                                        //allow numbers only
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                          child: InkWell(
+                                            child: const Icon(
+                                              Icons.arrow_drop_up,
+                                              size: 18.0,
+                                            ),
+                                            onTap: () {
+                                              if (paidHoursHour.text.isEmpty) {
+                                                paidHoursHour.text = "0";
+                                              }
+                                              int currentValue =
+                                                  int.parse(paidHoursHour.text);
+                                              setState(() {
+                                                currentValue++;
+                                                paidHoursHour.text = (currentValue)
+                                                    .toString(); // incrementing value
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        InkWell(
+                                          child: const Icon(
+                                            Icons.arrow_drop_down,
+                                            size: 18.0,
+                                          ),
+                                          onTap: () {
+                                            if (paidHoursHour.text.isEmpty) {
+                                              return;
+                                            }
+                                            int currentValue =
+                                                int.parse(paidHoursHour.text);
+                                            setState(() {
+                                              if (currentValue == 0) return;
+                                              currentValue--;
+                                              paidHoursHour
+                                                  .text = (currentValue > 0
+                                                      ? currentValue
+                                                      : 0)
+                                                  .toString(); // decrementing value
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 16),
+                                    TextInputWidget(
+                                      width: 70,
+                                      labelText: "Minute",
+                                      hintText: "Minute",
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                        decimal: false,
+                                        signed: false,
+                                      ),
+                                      controller: paidHoursMinute,
+                                      inputFormatters: <TextInputFormatter>[
+                                        //allow numbers only and do not allow any character
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                          child: InkWell(
+                                            child: const Icon(
+                                              Icons.arrow_drop_up,
+                                              size: 18.0,
+                                            ),
+                                            onTap: () {
+                                              if (paidHoursMinute
+                                                  .text.isEmpty) {
+                                                paidHoursMinute.text = "0";
+                                              }
+                                              int currentValue = int.parse(
+                                                  paidHoursMinute.text);
+                                              setState(() {
+                                                currentValue++;
+                                                paidHoursMinute.text =
+                                                    (currentValue)
+                                                        .toString(); // incrementing value
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        InkWell(
+                                          child: const Icon(
+                                            Icons.arrow_drop_down,
+                                            size: 18.0,
+                                          ),
+                                          onTap: () {
+                                            if (paidHoursMinute.text.isEmpty)
+                                              return;
+                                            int currentValue =
+                                                int.parse(paidHoursMinute.text);
+                                            setState(() {
+                                              if (currentValue == 0) return;
+                                              currentValue--;
+                                              paidHoursMinute
+                                                  .text = (currentValue > 0
+                                                      ? currentValue
+                                                      : 0)
+                                                  .toString(); // decrementing value
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (type == ScheduleCreatePopupMenus.job)
+                                labelWithField(
+                                  "Split Time",
+                                  toggle(isSplitTime, (val) {
+                                    setState(() {
+                                      isSplitTime = val;
+                                    });
+                                  }),
+                                ),
+                            ],
+                          ),
+                        if (type == ScheduleCreatePopupMenus.job) _team(users),
+                        // if (selectedClientId != null)
+                        _products(state),
+                      ],
+                    ),
                   ),
-                ),
-                if (type == ScheduleCreatePopupMenus.job)
-                  if (!data.unavailableUsers.isLoaded)
-                    Positioned.fill(
-                      child: Container(
-                          alignment: Alignment.center,
-                          color: Colors.grey.withOpacity(.4),
-                          child: const CircularProgressIndicator()),
-                    )
-              ],
+                  if (type == ScheduleCreatePopupMenus.job)
+                    if (!data.unavailableUsers.isLoaded)
+                      Positioned.fill(
+                        child: Container(
+                            alignment: Alignment.center,
+                            color: Colors.grey.withOpacity(.4),
+                            child: const CircularProgressIndicator()),
+                      )
+                ],
+              ),
             ),
           ),
         );

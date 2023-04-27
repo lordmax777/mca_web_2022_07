@@ -258,7 +258,7 @@ class _CreateJobState extends State<_CreateJob>
           ],
         ),
         content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.95,
+          // width: MediaQuery.of(context).size.width * 0.95,
           child: _getTabChild(state),
         ),
         actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
