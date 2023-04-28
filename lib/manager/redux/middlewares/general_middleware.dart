@@ -413,27 +413,31 @@ Future<ApiResponse?> _createQuoteAction(
               .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
 
           if (action.workDays != null && action.workDays!.isNotEmpty) {
-            int totalWeeks = 0;
-            for (int i = 1; i <= action.workDays!.length; i++) {
-              for (int j = 0;
-                  j < Constants.getDayAndWeekOfTheWeek(i).length;
-                  j++) {
-                if (totalWeeks <= j) {
-                  totalWeeks = j;
+            String week1 = "";
+            String week2 = "";
+
+            for (var day in action.workDays!) {
+              if (action.workRepeatId == 3) {
+                //Week
+                week1 +=
+                    "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)},";
+              }
+              if (action.workRepeatId == 4) {
+                //Fortnightly
+                if (day > 6) {
+                  week2 +=
+                      "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
+                } else {
+                  week1 +=
+                      "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
                 }
               }
             }
-            for (int i = 1; i <= totalWeeks; i++) {
-              String days = "";
-              for (int j = 0; j < action.workDays!.length; j++) {
-                if (Constants.getDayAndWeekOfTheWeek(
-                        action.workDays![j])['week'] ==
-                    i) {
-                  days += "${action.workDays![j]},";
-                }
-              }
-              formData.fields.add(MapEntry('workDays$i', days));
-              // logger("Week: $i=> ${days.substring(0, days.length - 1)}");
+            if (week1.isNotEmpty) {
+              formData.fields.add(MapEntry('workDays', week1));
+            }
+            if (week2.isNotEmpty) {
+              formData.fields.add(MapEntry('workDays2', week2));
             }
           }
           // return null;
@@ -465,6 +469,7 @@ Future<ApiResponse?> _createQuoteAction(
           switch (res.statusCode) {
             case 200:
               if (res.data != null) {
+                await appStore.dispatch(GetAllStorageItemsAction());
                 await appStore.dispatch(GetQuotesAction());
                 return apiResponse;
               }

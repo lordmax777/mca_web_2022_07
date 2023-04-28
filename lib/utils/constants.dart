@@ -147,18 +147,24 @@ class Constants {
     5: "Friday",
     6: "Saturday",
     7: "Sunday",
+    8: "Monday",
+    9: "Tuesday",
+    10: "Wednesday",
+    11: "Thursday",
+    12: "Friday",
+    13: "Saturday",
+    14: "Sunday",
   };
 
-  static Map<String, dynamic> getDayAndWeekOfTheWeek(int day) {
-    //day must be larger than 7, meaning that 1 is Monday and 8 is also Monday
-    //return Map of day and week of the month {"week": 1, "day": "Monday"}
-    logger(day);
-    return {
-      "week": weeksOfTheMonth[(day / 7).ceil() - 1],
-      "day": daysOfTheWeek[day % 7],
-      "dayNumber": day % 7,
-    };
-  }
+  // static Map<String, dynamic> getDayAndWeekOfTheWeek(int day) {
+  //   //day must be larger than 7, meaning that 1 is Monday and 8 is also Monday and 13 also Monday
+  //   //return Map of day and week of the month {"week": 1, "day": "Monday", "dayNumber": 1}
+  //   return {
+  //     "week": weeksOfTheMonth[(day / 7).ceil() - 1],
+  //     "day": daysOfTheWeek[day % 7 == 0 ? 7 : day % 7],
+  //     "dayNumber": day % 7 == 0 ? 7 : day % 7,
+  //   };
+  // }
 
   static const List<int> weeksOfTheMonth = [1, 2, 3, 4];
 

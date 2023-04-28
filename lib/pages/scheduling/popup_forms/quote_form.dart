@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -139,7 +140,7 @@ class QuoteFormState extends State<QuoteForm> {
       data.quote.workFinishTime = res.endTime?.formattedTime;
       data.quote.workRepeat =
           appStore.state.generalState.workRepeats[res.repeatTypeIndex!].days;
-      data.quote.workDays = res.repeatDays;
+      data.quote.workDays = res.repeatDays.sorted((a, b) => a > b ? 1 : -1);
     });
   }
 
@@ -156,6 +157,27 @@ class QuoteFormState extends State<QuoteForm> {
         List<ListPaymentMethods> paymentMethods = [
           ...state.generalState.paymentMethods
         ];
+
+        String week1 = "* Week 1\n";
+        String week2 = "* Week 2\n";
+        String week = "";
+
+        for (var day in data.quote.workDays) {
+          if (data.quote.workRepeat == 7) {
+            //Week
+            week1 += "${Constants.daysOfTheWeek[day]}\n";
+            week2 = "";
+          }
+          if (data.quote.workRepeat == 14) {
+            //Fortnightly
+            if (day > 6) {
+              week2 += "${Constants.daysOfTheWeek[day]}\n";
+            } else {
+              week1 += "${Constants.daysOfTheWeek[day]}\n";
+            }
+          }
+        }
+        week = week1 + "\n" + week2;
 
         return SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -419,18 +441,10 @@ class QuoteFormState extends State<QuoteForm> {
                                   (data.quote.workRepeat != 0 ||
                                       data.quote.workRepeat != 1))
                                 labelWithField(
-                                  labelWidth: 160,
-                                  "Days:",
-                                  null,
-                                  customLabel:
-                                      _textField(data.quote.workDays.map((e) {
-                                    try {
-                                      return "${Constants.getDayAndWeekOfTheWeek(e - 1)['week'] == Constants.getDayAndWeekOfTheWeek(e)['week'] ? "" : "*Week-${Constants.getDayAndWeekOfTheWeek(e)['week']}:\n"}${Constants.getDayAndWeekOfTheWeek(e)['day']}";
-                                    } catch (_) {
-                                      return "${"*Week-${Constants.getDayAndWeekOfTheWeek(e)['week']}:\n"}${Constants.getDayAndWeekOfTheWeek(e)['day']}";
-                                    }
-                                  }).join("\n")),
-                                ),
+                                    labelWidth: 160,
+                                    "Days:",
+                                    null,
+                                    customLabel: _textField(week)),
                               const Divider(),
                               labelWithField(
                                 labelWidth: 160,
@@ -617,7 +631,7 @@ class QuoteFormState extends State<QuoteForm> {
                             service: false,
                             taxId: 1,
                           ),
-                          checked: true,
+                          checked: e.auto,
                           qty: e.quantity,
                         ),
                       )

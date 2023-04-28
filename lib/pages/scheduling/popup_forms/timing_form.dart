@@ -272,6 +272,7 @@ class _TimingFormState extends State<TimingForm> {
                                 : null,
                             onChanged: (index) {
                               setState(() {
+                                returnVal.repeatDays.clear();
                                 returnVal.repeatTypeIndex = index;
                               });
                             },
@@ -280,56 +281,129 @@ class _TimingFormState extends State<TimingForm> {
                         if (returnVal.repeatTypeIndex != null)
                           if (workRepeats[returnVal.repeatTypeIndex!].id == 3 ||
                               workRepeats[returnVal.repeatTypeIndex!].id == 4)
-                            for (int i = 0;
-                                i <
-                                    workRepeats[returnVal.repeatTypeIndex!]
-                                            .days /
-                                        7;
-                                i++)
-                              SpacedColumn(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                            SpacedColumn(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    KText(
+                                        text: 'Week 1',
+                                        textColor: ThemeColors.gray2,
+                                        fontSize: 14,
+                                        fontWeight: FWeight.bold),
+                                    KText(
+                                        text: '*',
+                                        textColor: ThemeColors.red3,
+                                        fontSize: 14,
+                                        fontWeight: FWeight.bold),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                for (var item in Constants.daysOfTheWeek.keys
+                                    .where((value) => value < 8))
+                                  chbx(returnVal.repeatDays.contains(item),
+                                      (value) {
+                                    setState(() {
+                                      if (value) {
+                                        returnVal.repeatDays.add(item);
+                                      } else {
+                                        returnVal.repeatDays.remove(item);
+                                      }
+                                    });
+                                  }, Constants.daysOfTheWeek[item] ?? ""),
+                                if (workRepeats[returnVal.repeatTypeIndex!]
+                                        .id ==
+                                    4)
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      KText(
-                                          text: 'Week ${i + 1}',
-                                          textColor: ThemeColors.gray2,
-                                          fontSize: 14,
-                                          fontWeight: FWeight.bold),
-                                      KText(
-                                          text: '*',
-                                          textColor: ThemeColors.red3,
-                                          fontSize: 14,
-                                          fontWeight: FWeight.bold),
+                                      Row(
+                                        children: [
+                                          const SizedBox(height: 64),
+                                          KText(
+                                              text: 'Week 2',
+                                              textColor: ThemeColors.gray2,
+                                              fontSize: 14,
+                                              fontWeight: FWeight.bold),
+                                          KText(
+                                              text: '*',
+                                              textColor: ThemeColors.red3,
+                                              fontSize: 14,
+                                              fontWeight: FWeight.bold),
+                                        ],
+                                      ),
+                                      for (var item in Constants
+                                          .daysOfTheWeek.keys
+                                          .where((value) => value > 7))
+                                        chbx(
+                                            returnVal.repeatDays.contains(item),
+                                            (value) {
+                                          setState(() {
+                                            if (value) {
+                                              returnVal.repeatDays.add(item);
+                                            } else {
+                                              returnVal.repeatDays.remove(item);
+                                            }
+                                          });
+                                        }, Constants.daysOfTheWeek[item] ?? ""),
                                     ],
                                   ),
-                                  const SizedBox(height: 16),
-                                  for (int j = 0;
-                                      j <
-                                          workRepeats[returnVal
-                                                      .repeatTypeIndex!]
-                                                  .days /
-                                              (workRepeats[returnVal
-                                                          .repeatTypeIndex!]
-                                                      .days /
-                                                  7);
-                                      j++)
-                                    chbx(
-                                        returnVal.repeatDays
-                                            .contains(j + (i * 7) + 1),
-                                        (value) {
-                                      setState(() {
-                                        if (value) {
-                                          returnVal.repeatDays
-                                              .add(j + (i * 7) + 1);
-                                        } else {
-                                          returnVal.repeatDays
-                                              .remove(j + (i * 7) + 1);
-                                        }
-                                      });
-                                    }, Constants.daysOfTheWeek[j + 1] ?? ""),
-                                ],
-                              ),
+                              ],
+                            ),
+                        // if (returnVal.repeatTypeIndex != null)
+                        //   if (workRepeats[returnVal.repeatTypeIndex!].id == 3 ||
+                        //       workRepeats[returnVal.repeatTypeIndex!].id == 4)
+                        //     for (int i = 0;
+                        //         i <
+                        //             workRepeats[returnVal.repeatTypeIndex!]
+                        //                     .days /
+                        //                 7;
+                        //         i++)
+                        //       SpacedColumn(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Row(
+                        //             children: [
+                        //               KText(
+                        //                   text: 'Week ${i + 1}',
+                        //                   textColor: ThemeColors.gray2,
+                        //                   fontSize: 14,
+                        //                   fontWeight: FWeight.bold),
+                        //               KText(
+                        //                   text: '*',
+                        //                   textColor: ThemeColors.red3,
+                        //                   fontSize: 14,
+                        //                   fontWeight: FWeight.bold),
+                        //             ],
+                        //           ),
+                        //           const SizedBox(height: 16),
+                        //           for (int j = 0;
+                        //               j <
+                        //                   workRepeats[returnVal
+                        //                               .repeatTypeIndex!]
+                        //                           .days /
+                        //                       (workRepeats[returnVal
+                        //                                   .repeatTypeIndex!]
+                        //                               .days /
+                        //                           7);
+                        //               j++)
+                        //             chbx(
+                        //                 returnVal.repeatDays
+                        //                     .contains(j + (i * 7) + 1),
+                        //                 (value) {
+                        //               setState(() {
+                        //                 if (value) {
+                        //                   returnVal.repeatDays
+                        //                       .add(j + (i * 7) + 1);
+                        //                 } else {
+                        //                   returnVal.repeatDays
+                        //                       .remove(j + (i * 7) + 1);
+                        //                 }
+                        //               });
+                        //             }, Constants.daysOfTheWeek[j + 1] ?? ""),
+                        //         ],
+                        //       ),
                       ],
                     ),
                   ],
