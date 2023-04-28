@@ -276,7 +276,7 @@ packages:
       name: flutter_plugin_android_lifecycle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.9"
+    version: "2.0.13"
   flutter_redux:
     dependency: "direct main"
     description:
@@ -391,7 +391,7 @@ packages:
       name: google_maps_flutter_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.12"
+    version: "2.4.13"
   google_maps_flutter_ios:
     dependency: transitive
     description:
@@ -512,7 +512,7 @@ packages:
       name: image_picker_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.6+7"
+    version: "0.8.6+9"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -673,7 +673,7 @@ packages:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.25"
+    version: "2.0.27"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -827,7 +827,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.3.3"
+    version: "6.3.4"
   share_plus_platform_interface:
     dependency: transitive
     description:
