@@ -424,7 +424,7 @@ Future<ApiResponse?> _createQuoteAction(
               }
               if (action.workRepeatId == 4) {
                 //Fortnightly
-                if (day > 6) {
+                if (day > 7) {
                   week2 +=
                       "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
                 } else {
@@ -454,6 +454,12 @@ Future<ApiResponse?> _createQuoteAction(
                 .add(MapEntry('quotePrice_$i', item.outgoingPrice.toString()));
 
             formData.fields.add(MapEntry('quoteAuto_$i', item.auto.toString()));
+          }
+
+          if (action.quoteComments != null &&
+              action.quoteComments!.isNotEmpty) {
+            formData.fields
+                .add(MapEntry('quoteComments', action.quoteComments!));
           }
 
           formData.fields.removeWhere((element) => element.value == "null");

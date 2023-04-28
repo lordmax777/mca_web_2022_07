@@ -170,14 +170,14 @@ class QuoteFormState extends State<QuoteForm> {
           }
           if (data.quote.workRepeat == 14) {
             //Fortnightly
-            if (day > 6) {
+            if (day > 7) {
               week2 += "${Constants.daysOfTheWeek[day]}\n";
             } else {
               week1 += "${Constants.daysOfTheWeek[day]}\n";
             }
           }
         }
-        week = week1 + "\n" + week2;
+        week = "$week1\n$week2";
 
         return SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -194,76 +194,96 @@ class QuoteFormState extends State<QuoteForm> {
                     SpacedRow(
                       horizontalSpace: 32,
                       children: [
-                        _container(
-                          onEdit: _onEditPm,
-                          "Personal Information",
-                          SpacedColumn(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              labelWithField(
-                                labelWidth: 160,
-                                "Name:",
-                                null,
-                                customLabel: _textField(data.quote.name),
+                        SpacedColumn(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          verticalSpace: 16,
+                          children: [
+                            _container(
+                              onEdit: _onEditPm,
+                              "Personal Information",
+                              SpacedColumn(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Name:",
+                                    null,
+                                    customLabel: _textField(data.quote.name),
+                                  ),
+                                  const Divider(),
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Company:",
+                                    null,
+                                    customLabel: _textField(data.quote.company),
+                                  ),
+                                  const Divider(),
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Email:",
+                                    null,
+                                    customLabel: _textField(data.quote.email),
+                                  ),
+                                  const Divider(),
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Phone:",
+                                    null,
+                                    customLabel: _textField(data.quote.phone),
+                                  ),
+                                  const Divider(),
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Payment Terms:",
+                                    null,
+                                    customLabel: _textField(
+                                        data.quote.payingDays.toString()),
+                                  ),
+                                  const Divider(),
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Currency:",
+                                    null,
+                                    customLabel: _textField(currencies
+                                        .firstWhereOrNull((element) =>
+                                            data.quote.currencyId == element.id)
+                                        ?.sign),
+                                  ),
+                                  const Divider(),
+                                  labelWithField(
+                                      labelWidth: 160,
+                                      "Payment method:",
+                                      null,
+                                      customLabel: _textField(paymentMethods
+                                          .firstWhereOrNull((element) =>
+                                              data.quote.paymentMethodId ==
+                                              element.id)
+                                          ?.name)),
+                                  const Divider(),
+                                  labelWithField(
+                                    labelWidth: 160,
+                                    "Client Notes:",
+                                    null,
+                                    customLabel: _textField(data.quote.notes),
+                                  ),
+                                ],
                               ),
-                              const Divider(),
-                              labelWithField(
-                                labelWidth: 160,
-                                "Company:",
-                                null,
-                                customLabel: _textField(data.quote.company),
+                            ),
+                            labelWithField(
+                              labelWidth: 160,
+                              "Quote Comments",
+                              TextInputWidget(
+                                width: 400,
+                                maxLines: 4,
+                                hintText: "Add quote comments",
+                                controller: TextEditingController(
+                                    text: data.quote.quoteComments),
+                                onChanged: (value) {
+                                  data.quote.quoteComments = value;
+                                },
                               ),
-                              const Divider(),
-                              labelWithField(
-                                labelWidth: 160,
-                                "Email:",
-                                null,
-                                customLabel: _textField(data.quote.email),
-                              ),
-                              const Divider(),
-                              labelWithField(
-                                labelWidth: 160,
-                                "Phone:",
-                                null,
-                                customLabel: _textField(data.quote.phone),
-                              ),
-                              const Divider(),
-                              labelWithField(
-                                labelWidth: 160,
-                                "Payment Terms:",
-                                null,
-                                customLabel: _textField(
-                                    data.quote.payingDays.toString()),
-                              ),
-                              const Divider(),
-                              labelWithField(
-                                labelWidth: 160,
-                                "Currency:",
-                                null,
-                                customLabel: _textField(currencies
-                                    .firstWhereOrNull((element) =>
-                                        data.quote.currencyId == element.id)
-                                    ?.sign),
-                              ),
-                              const Divider(),
-                              labelWithField(
-                                  labelWidth: 160,
-                                  "Payment method:",
-                                  null,
-                                  customLabel: _textField(paymentMethods
-                                      .firstWhereOrNull((element) =>
-                                          data.quote.paymentMethodId ==
-                                          element.id)
-                                      ?.name)),
-                              const Divider(),
-                              labelWithField(
-                                labelWidth: 160,
-                                "Client Notes:",
-                                null,
-                                customLabel: _textField(data.quote.notes),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         _container(
                           onEdit: _editInvoiceAddress,
