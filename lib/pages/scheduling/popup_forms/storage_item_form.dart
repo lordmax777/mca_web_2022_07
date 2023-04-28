@@ -169,6 +169,7 @@ class _StorageItemFormState extends State<StorageItemForm> {
         customerPrice: double.tryParse(customerPrice.text),
         taxId: taxes[taxIndex!].id,
       ));
+
       if (res != null) {
         context.popRoute(res);
       }

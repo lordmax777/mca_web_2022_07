@@ -67,11 +67,12 @@ class _TimingFormState extends State<TimingForm> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (quote != null) {
-        returnVal.startDate = quote!.workStartDate?.toDate("-");
-        returnVal.altStartDate = quote!.altWorkStartDate?.toDate("-");
+        returnVal.startDate = quote!.workStartDate?.toDate();
+        returnVal.altStartDate = quote!.altWorkStartDate?.toDate();
         returnVal.startTime = quote!.workStartTime?.formattedTime;
         returnVal.endTime = quote!.workFinishTime?.formattedTime;
         if (quote!.workStartTime == null && quote!.workFinishTime == null) {
+          logger(quote!.workStartTime?.formattedTime);
           if (quote!.workStartTime?.formattedTime ==
                   const TimeOfDay(hour: 0, minute: 0) &&
               quote!.workFinishTime?.formattedTime ==
@@ -80,7 +81,7 @@ class _TimingFormState extends State<TimingForm> {
           }
         }
         final workIndex = state.generalState.workRepeats
-            .indexWhere((element) => element.id == quote!.workRepeat);
+            .indexWhere((element) => element.days == quote!.workRepeat);
         if (workIndex != -1) {
           returnVal.repeatTypeIndex = workIndex;
         }
@@ -277,39 +278,58 @@ class _TimingFormState extends State<TimingForm> {
                           ),
                         ),
                         if (returnVal.repeatTypeIndex != null)
-                          if (workRepeats[returnVal.repeatTypeIndex!].id == 3)
-                            SpacedColumn(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    KText(
-                                        text: 'Days ',
-                                        textColor: ThemeColors.gray2,
-                                        fontSize: 14,
-                                        fontWeight: FWeight.bold),
-                                    KText(
-                                        text: '*',
-                                        textColor: ThemeColors.red3,
-                                        fontSize: 14,
-                                        fontWeight: FWeight.bold),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                for (var item
-                                    in Constants.daysOfTheWeek.entries)
-                                  chbx(returnVal.repeatDays.contains(item.key),
-                                      (value) {
-                                    setState(() {
-                                      if (value) {
-                                        returnVal.repeatDays.add(item.key);
-                                      } else {
-                                        returnVal.repeatDays.remove(item.key);
-                                      }
-                                    });
-                                  }, item.value),
-                              ],
-                            ),
+                          if (workRepeats[returnVal.repeatTypeIndex!].id == 3 ||
+                              workRepeats[returnVal.repeatTypeIndex!].id == 4)
+                            for (int i = 0;
+                                i <
+                                    workRepeats[returnVal.repeatTypeIndex!]
+                                            .days /
+                                        7;
+                                i++)
+                              SpacedColumn(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      KText(
+                                          text: 'Week ${i + 1}',
+                                          textColor: ThemeColors.gray2,
+                                          fontSize: 14,
+                                          fontWeight: FWeight.bold),
+                                      KText(
+                                          text: '*',
+                                          textColor: ThemeColors.red3,
+                                          fontSize: 14,
+                                          fontWeight: FWeight.bold),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  for (int j = 0;
+                                      j <
+                                          workRepeats[returnVal
+                                                      .repeatTypeIndex!]
+                                                  .days /
+                                              (workRepeats[returnVal
+                                                          .repeatTypeIndex!]
+                                                      .days /
+                                                  7);
+                                      j++)
+                                    chbx(
+                                        returnVal.repeatDays
+                                            .contains(j + (i * 7) + 1),
+                                        (value) {
+                                      setState(() {
+                                        if (value) {
+                                          returnVal.repeatDays
+                                              .add(j + (i * 7) + 1);
+                                        } else {
+                                          returnVal.repeatDays
+                                              .remove(j + (i * 7) + 1);
+                                        }
+                                      });
+                                    }, Constants.daysOfTheWeek[j + 1] ?? ""),
+                                ],
+                              ),
                       ],
                     ),
                   ],

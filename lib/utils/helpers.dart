@@ -16,8 +16,8 @@ extension TimeExtensionsForNum on num {
 
   double get inMinutes {
     // Find the decimals of this.inHours and return the minutes
-    logger(this.inHours % 1 * 60);
-    return (this.inHours % 1) * 60;
+    logger(inHours % 1 * 60);
+    return (inHours % 1) * 60;
   }
 }
 
@@ -314,16 +314,15 @@ abstract class HtmlHelper {
 }
 
 extension StringExt on String {
-  DateTime toDate([String splitBy = "/"]) {
+  DateTime? toDate([String splitBy = "-"]) {
     try {
       int day = int.parse(split(splitBy)[2]);
       int month = int.parse(split(splitBy)[1]);
       int year = int.parse(split(splitBy)[0]);
-      logger("Date: $day/$month/$year");
       return DateTime(year, month, day);
     } catch (e) {
       logger("Fail to parse date: $this");
-      return DateTime.now();
+      return null;
     }
   }
 }

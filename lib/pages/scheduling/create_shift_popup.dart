@@ -292,6 +292,7 @@ class _CreateJobState extends State<_CreateJob>
   void _saveQuote(AppState state) async {
     final quote = (data as CreateShiftDataQuote).quote;
     final storageItems = [...state.generalState.storage_items];
+    final workRepeats = [...state.generalState.workRepeats];
     ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
       id: quote.id,
       email: quote.email ?? "",
@@ -305,9 +306,7 @@ class _CreateJobState extends State<_CreateJob>
       addressCountry: quote.addressCountry,
       addressPostcode: quote.addressPostcode,
       active: quote.active,
-      altWorkStartDate: getDateFormat(
-          (data as CreateShiftDataQuote).altStartDate,
-          dateSeparatorSymbol: "/"),
+      altWorkStartDate: quote.altWorkStartDate,
       currencyId: quote.currencyId,
       payingDays: quote.payingDays,
       paymentMethodId: quote.paymentMethodId,
@@ -320,8 +319,12 @@ class _CreateJobState extends State<_CreateJob>
       workAddressPostcode: quote.workAddressPostcode,
       notes: quote.notes,
       workStartDate: quote.workStartDate,
-      workRepeatId: state.generalState.workRepeats[quote.workRepeat ?? 1].id,
+      workRepeatId: workRepeats
+              .firstWhereOrNull((element) => quote.workRepeat == element.days)
+              ?.id ??
+          1,
       workStartTime: quote.workStartTime,
+      workFinishTime: quote.workFinishTime,
       workDays: quote.workDays,
       storageItems: data.gridStateManager.rows
           .map<StorageItemMd>((row) {

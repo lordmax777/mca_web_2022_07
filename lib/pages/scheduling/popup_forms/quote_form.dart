@@ -138,7 +138,7 @@ class QuoteFormState extends State<QuoteForm> {
       data.quote.workStartTime = res.startTime?.formattedTime;
       data.quote.workFinishTime = res.endTime?.formattedTime;
       data.quote.workRepeat =
-          appStore.state.generalState.workRepeats[res.repeatTypeIndex!].id;
+          appStore.state.generalState.workRepeats[res.repeatTypeIndex!].days;
       data.quote.workDays = res.repeatDays;
     });
   }
@@ -402,30 +402,34 @@ class QuoteFormState extends State<QuoteForm> {
                                 labelWidth: 160,
                                 "Repeat:",
                                 null,
-                                customLabel: _textField(data.quote.workRepeat !=
-                                        null
-                                    ? workRepeats
-                                        .firstWhereOrNull((element) =>
-                                            element.id == data.quote.workRepeat)
-                                        ?.name
-                                    : null),
+                                customLabel: _textField(
+                                    data.quote.workRepeat != null
+                                        ? workRepeats
+                                            .firstWhereOrNull((element) =>
+                                                element.days ==
+                                                data.quote.workRepeat)
+                                            ?.name
+                                        : null),
                               ),
                               if (data.quote.workRepeat != null &&
-                                  data.quote.workRepeat == 3)
+                                  (data.quote.workRepeat != 0 ||
+                                      data.quote.workRepeat != 1))
                                 const Divider(),
                               if (data.quote.workRepeat != null &&
-                                  data.quote.workRepeat == 3)
+                                  (data.quote.workRepeat != 0 ||
+                                      data.quote.workRepeat != 1))
                                 labelWithField(
                                   labelWidth: 160,
                                   "Days:",
                                   null,
-                                  customLabel: _textField(
-                                      data.quote.workDays.length == 7
-                                          ? "Everyday"
-                                          : data.quote.workDays
-                                              .map((e) =>
-                                                  Constants.daysOfTheWeek[e])
-                                              .join(", ")),
+                                  customLabel:
+                                      _textField(data.quote.workDays.map((e) {
+                                    try {
+                                      return "${Constants.getDayAndWeekOfTheWeek(e - 1)['week'] == Constants.getDayAndWeekOfTheWeek(e)['week'] ? "" : "*Week-${Constants.getDayAndWeekOfTheWeek(e)['week']}:\n"}${Constants.getDayAndWeekOfTheWeek(e)['day']}";
+                                    } catch (_) {
+                                      return "${"*Week-${Constants.getDayAndWeekOfTheWeek(e)['week']}:\n"}${Constants.getDayAndWeekOfTheWeek(e)['day']}";
+                                    }
+                                  }).join("\n")),
                                 ),
                               const Divider(),
                               labelWithField(

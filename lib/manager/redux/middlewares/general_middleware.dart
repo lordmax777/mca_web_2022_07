@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -392,12 +393,12 @@ Future<ApiResponse?> _createQuoteAction(
                 MapEntry('workAddressCountry', action.workAddressCountry!));
           }
           if (action.workStartDate != null) {
-            formData.fields.add(MapEntry(
-                'workStartDate', action.workStartDate!.replaceAll("-", "/")));
+            formData.fields.add(MapEntry('workStartDate',
+                action.workStartDate!.toDate()!.formattedDate));
           }
           if (action.altWorkStartDate != null) {
-            formData.fields
-                .add(MapEntry('altWorkStartDate', action.altWorkStartDate!));
+            formData.fields.add(MapEntry('altWorkStartDate',
+                action.altWorkStartDate!.toDate()!.formattedDate));
           }
           if (action.workStartTime != null) {
             formData.fields
@@ -407,12 +408,35 @@ Future<ApiResponse?> _createQuoteAction(
             formData.fields
                 .add(MapEntry('workFinishTime', action.workFinishTime!));
           }
+
           formData.fields
               .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
+
           if (action.workDays != null && action.workDays!.isNotEmpty) {
-            final String days = action.workDays!.join(',');
-            formData.fields.add(MapEntry('workDays', days));
+            int totalWeeks = 0;
+            for (int i = 1; i <= action.workDays!.length; i++) {
+              for (int j = 0;
+                  j < Constants.getDayAndWeekOfTheWeek(i).length;
+                  j++) {
+                if (totalWeeks <= j) {
+                  totalWeeks = j;
+                }
+              }
+            }
+            for (int i = 1; i <= totalWeeks; i++) {
+              String days = "";
+              for (int j = 0; j < action.workDays!.length; j++) {
+                if (Constants.getDayAndWeekOfTheWeek(
+                        action.workDays![j])['week'] ==
+                    i) {
+                  days += "${action.workDays![j]},";
+                }
+              }
+              formData.fields.add(MapEntry('workDays$i', days));
+              // logger("Week: $i=> ${days.substring(0, days.length - 1)}");
+            }
           }
+          // return null;
 
           for (int i = 0; i < action.storageItems.length; i++) {
             final item = action.storageItems[i];
@@ -458,9 +482,9 @@ Future<ApiResponse?> _createQuoteAction(
             default:
               showError(e.message);
           }
-        } catch (e) {
+        } on TypeError catch (e) {
           showError("Unknown error occurred!");
-          Logger.e(e.toString(), tag: "CreateQuoteAction");
+          Logger.e(e.stackTrace, tag: "CreateQuoteAction");
         }
       },
       loadingWidget: const Center(child: CircularProgressIndicator()));
@@ -512,72 +536,11 @@ Future<int?> _onCreateNewStorageItemAction(
       },
       loadingWidget: const CustomLoadingWidget());
 }
-//
-// Future<CreatedClientReturnValue?> _onAddLocationAction(
-//     AppState state, OnAddLocationAction action) async {
-//   final CreatedClientReturnValue? data = await showDialog(
-//       barrierDismissible: false,
-//       context: action.context,
-//       builder: (context) => ClientForm(
-//             state: state,
-//             type: ClientFormType.location,
-//           ));
-//   if (data != null && data.locationId != null) {
-//     return await Get.showOverlay(
-//       asyncFunction: () async {
-//         try {
-//           final ApiResponse createdClient = await action.createClient();
-//           if (createdClient.success) {
-//             return CreatedClientReturnValue(
-//                 clientId: createdClient.data, locationId: data.locationId);
-//           } else {
-//             showError(createdClient.resMessage ?? "Unknown Error");
-//           }
-//         } catch (e) {
-//           showError(e.toString());
-//         }
-//       },
-//       loadingWidget: const Center(
-//         child: CircularProgressIndicator(),
-//       ),
-//     );
-//   }
-// }
-//
-// Future<CreatedClientReturnValue?> _onAddClientAction(
-//     AppState state, OnAddClientAction action) async {
-//   final ApiResponse createdClient =
-//       await action.createClient(fetchAllParams: false);
-//   if (createdClient.success) {
-//     final ApiResponse createdLocation = await action.createLocation();
-//     if (createdLocation.success) {
-//       return CreatedClientReturnValue(
-//           clientId: createdClient.data, locationId: createdLocation.data);
-//     } else {
-//       await appStore.dispatch(GetAllParamListAction());
-//       //Location already exists
-//       if (createdLocation.resCode == 409) {
-//         return CreatedClientReturnValue(
-//             clientId: createdClient.data, locationId: createdLocation.data);
-//       }
-//       showError(ApiHelpers.getRawDataErrorMessages(createdLocation).isEmpty
-//           ? "Error"
-//           : ApiHelpers.getRawDataErrorMessages(createdLocation));
-//     }
-//   } else {
-//     showError(
-//       ApiHelpers.getRawDataErrorMessages(createdClient).isEmpty
-//           ? "Error"
-//           : ApiHelpers.getRawDataErrorMessages(createdClient),
-//     );
-//   }
-//   return null;
-// }
 
 Future _onCreateNewClientTap(
     AppState state, OnCreateNewClientTap action) async {
   final data = await showDialog(
-      barrierDismissible: false,
+      barrierDismissible: kDebugMode ? true : false,
       context: action.context,
       builder: (context) {
         switch (action.type) {

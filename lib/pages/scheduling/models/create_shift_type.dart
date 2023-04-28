@@ -62,7 +62,7 @@ class CreateShiftData extends CreateShiftDataType {
 
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
 
-  CreateShiftData({required super.date, this.property}) {}
+  CreateShiftData({required super.date, this.property});
 
   @override
   ScheduleCreatePopupMenus get type => ScheduleCreatePopupMenus.job;
@@ -73,7 +73,6 @@ class CreateShiftData extends CreateShiftDataType {
 
 class CreateShiftDataQuote extends CreateShiftDataType {
   int? quoteId;
-  DateTime? altStartDate;
   QuoteInfoMd quote = QuoteInfoMd.init();
 
   CreateShiftDataQuote({this.quoteId}) {

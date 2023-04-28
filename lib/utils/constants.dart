@@ -149,6 +149,17 @@ class Constants {
     7: "Sunday",
   };
 
+  static Map<String, dynamic> getDayAndWeekOfTheWeek(int day) {
+    //day must be larger than 7, meaning that 1 is Monday and 8 is also Monday
+    //return Map of day and week of the month {"week": 1, "day": "Monday"}
+    logger(day);
+    return {
+      "week": weeksOfTheMonth[(day / 7).ceil() - 1],
+      "day": daysOfTheWeek[day % 7],
+      "dayNumber": day % 7,
+    };
+  }
+
   static const List<int> weeksOfTheMonth = [1, 2, 3, 4];
 
   static const Map<String, String> settingsSection = {
