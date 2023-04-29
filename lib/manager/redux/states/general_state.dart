@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/models/approval_reqest_md.dart';
+import 'package:mca_web_2022_07/manager/models/approval_user_qualification_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
@@ -66,15 +67,22 @@ class GeneralState {
 
   final List<QuoteInfoMd> quotes;
 
-  List<QuoteInfoMd> get allSortedQuotes => quotes
-    ..sort((a, b) => DateTime.tryParse(b.createdOn)!
-        .compareTo(DateTime.tryParse(a.createdOn)!));
+  List<QuoteInfoMd> get allSortedQuotes =>
+      quotes
+        ..sort((a, b) =>
+            DateTime.tryParse(b.createdOn)!
+                .compareTo(DateTime.tryParse(a.createdOn)!));
 
   final List<ApprovalRequestMd> approvalReq;
 
-  List<ApprovalRequestMd> get allSortedApprovalReq => approvalReq
-    ..sort((a, b) => DateTime.tryParse(b.dateTime!)!
-        .compareTo(DateTime.tryParse(a.dateTime!)!));
+  List<ApprovalRequestMd> get allSortedApprovalReq =>
+      approvalReq
+        ..sort((a, b) =>
+            DateTime.tryParse(b.dateTime!)!
+                .compareTo(DateTime.tryParse(a.dateTime!)!));
+
+  final List<ApprovalUserQualificationMd> approvalUserQualifications;
+
 
   GeneralState({
     required this.paramList,
@@ -88,6 +96,7 @@ class GeneralState {
     required this.clientInfos,
     required this.quotes,
     required this.approvalReq,
+    required this.approvalUserQualifications,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -132,6 +141,7 @@ class GeneralState {
       clientInfos: [],
       quotes: [],
       approvalReq: [],
+      approvalUserQualifications: [],
     );
   }
 
@@ -147,6 +157,7 @@ class GeneralState {
     List<ClientInfoMd>? clientInfos,
     List<QuoteInfoMd>? quotes,
     List<ApprovalRequestMd>? approvalReq,
+    List<ApprovalUserQualificationMd>? approvalUserQualifications,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -160,6 +171,8 @@ class GeneralState {
       clientInfos: clientInfos ?? this.clientInfos,
       quotes: quotes ?? this.quotes,
       approvalReq: approvalReq ?? this.approvalReq,
+      approvalUserQualifications:
+      approvalUserQualifications ?? this.approvalUserQualifications,
     );
   }
 }
@@ -177,6 +190,7 @@ class UpdateGeneralStateAction {
   final List<ClientInfoMd>? clientInfos;
   final List<QuoteInfoMd>? quotes;
   final List<ApprovalRequestMd>? approvalReq;
+  final List<ApprovalUserQualificationMd>? approvalUserQualifications;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -191,6 +205,7 @@ class UpdateGeneralStateAction {
     this.clientInfos,
     this.quotes,
     this.approvalReq,
+    this.approvalUserQualifications,
   });
 }
 
@@ -213,8 +228,8 @@ class OpenDrawerAction {
 class GetAllParamListAction {}
 
 class GetWarehousesAction {
-  static Future<StateValue<List<WarehouseMd>>> fetch(
-      AppState state, GetWarehousesAction action, NextDispatcher next) async {
+  static Future<StateValue<List<WarehouseMd>>> fetch(AppState state,
+      GetWarehousesAction action, NextDispatcher next) async {
     final controller = WarehouseController.to;
     final StateValue<List<WarehouseMd>> result = StateValue(
       error: ErrorModel<GetWarehousesAction>(
@@ -226,7 +241,7 @@ class GetWarehousesAction {
     next(UpdateGeneralStateAction(warehouses: result));
 
     final ApiResponse res =
-        await restClient().getWarehouses().nocodeErrorHandler();
+    await restClient().getWarehouses().nocodeErrorHandler();
 
     result.error.errorCode = res.resCode;
     result.error.errorMessage = res.resMessage;
@@ -298,7 +313,7 @@ class GetAllStorageItemsAction {
     next(UpdateGeneralStateAction(storageItems: stateValue));
 
     final ApiResponse res =
-        await restClient().getStorageItems().nocodeErrorHandler();
+    await restClient().getStorageItems().nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
     stateValue.error.errorMessage = res.resMessage;
@@ -334,7 +349,7 @@ class GetChecklistTemplatesAction {
     next(UpdateGeneralStateAction(checklistTemplates: stateValue));
 
     final ApiResponse res =
-        await restClient().getChecklistTemplates(0).nocodeErrorHandler();
+    await restClient().getChecklistTemplates(0).nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
     stateValue.error.errorMessage = res.resMessage;
@@ -360,17 +375,17 @@ class GetChecklistTemplatesAction {
 }
 
 class GetPropertiesAction {
-  static Future<StateValue<List<PropertiesMd>>> fetch(
-      AppState state, GetPropertiesAction action, NextDispatcher next) async {
+  static Future<StateValue<List<PropertiesMd>>> fetch(AppState state,
+      GetPropertiesAction action, NextDispatcher next) async {
     StateValue<List<PropertiesMd>> stateValue = StateValue(
         data: [],
         error:
-            ErrorModel<GetPropertiesAction>(isLoading: true, action: action));
+        ErrorModel<GetPropertiesAction>(isLoading: true, action: action));
 
     next(UpdateGeneralStateAction(properties: stateValue));
 
     final ApiResponse res =
-        await restClient().getProperties(0.toString()).nocodeErrorHandler();
+    await restClient().getProperties(0.toString()).nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
     stateValue.error.errorMessage = res.resMessage;
@@ -452,6 +467,12 @@ class GetApprovalReqAction {
   final int? id;
 
   GetApprovalReqAction({this.id});
+}
+
+class GetApprovalUserQualificationsAction {
+  final int? id;
+
+  GetApprovalUserQualificationsAction({this.id});
 }
 
 class CreateQuoteAction {
@@ -569,8 +590,7 @@ class OnCreateNewClientTap<T> {
   final ClientInfoMd? clientInfo;
   final QuoteInfoMd? quoteInfo;
 
-  OnCreateNewClientTap(
-    this.context, {
+  OnCreateNewClientTap(this.context, {
     required this.type,
     this.clientInfo,
     this.quoteInfo,

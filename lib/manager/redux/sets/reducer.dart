@@ -114,6 +114,8 @@ GeneralState _updateGeneralStateAction(
     clientInfos: action.clientInfos ?? state.clientInfos,
     quotes: action.quotes ?? state.quotes,
     approvalReq: action.approvalReq ?? state.approvalReq,
+    approvalUserQualifications:
+        action.approvalUserQualifications ?? state.approvalUserQualifications,
   );
 }
 
