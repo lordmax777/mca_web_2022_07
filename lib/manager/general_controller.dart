@@ -13,11 +13,15 @@ class GeneralController extends GetxController {
   static GeneralController get to => Get.find();
 
   final Rx<LoggedInUserMd> loggedInUser = Rx<LoggedInUserMd>(LoggedInUserMd());
+
   LoggedInUserMd get loggedInUserValue => loggedInUser.value;
+
   set setLoggedInUser(LoggedInUserMd value) => loggedInUser.value = value;
 
   final Rx<CompanyMd> _companyInfo = Rx<CompanyMd>(CompanyMd.init());
+
   CompanyMd get companyInfo => _companyInfo.value;
+
   set setCompanyInfo(CompanyMd value) {
     _companyInfo.value = value;
     //Set special_word constant
@@ -64,6 +68,8 @@ class GeneralController extends GetxController {
       appStore.dispatch(GetLocationAddressesAction()) as Future,
       appStore.dispatch(GetClientInfosAction()) as Future,
       appStore.dispatch(GetQuotesAction()) as Future,
+      appStore.dispatch(GetApprovalReqAction()) as Future,
+      appStore.dispatch(GetApprovalUserQualificationsAction()) as Future,
       fetch(GetAllParamListAction()),
       fetch(GetUsersListAction()),
       fetch(GetPropertiesAction()),

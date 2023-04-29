@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/models/approval_reqest_md.dart';
+import 'package:mca_web_2022_07/manager/models/approval_user_qualification_md.dart';
 
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
@@ -70,6 +72,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
 
       case GetApprovalReqAction:
         return _getApprovalReqAction(store.state, action, next);
+      case GetApprovalUserQualificationsAction:
+        return _getApprovalUserQualificationsAction(store.state, action, next);
 
       default:
         return next(action);
@@ -575,8 +579,33 @@ Future _onCreateNewClientTap(
   return data;
 }
 
-Future<List<QuoteInfoMd>> _getApprovalReqAction(
+Future<List<ApprovalRequestMd>> _getApprovalReqAction(
     AppState state, GetApprovalReqAction action, NextDispatcher next) async {
+  try {
+    //
+    // final ApiResponse res =
+    // await restClient().getQuotes(action.id ?? 0).nocodeErrorHandler();
+    //
+    // if (res.success) {
+    //   final r = res.data['quotes'];
+    //   final List<QuoteInfoMd> list = [];
+    //   for (var e in r) {
+    //     list.add(QuoteInfoMd.fromJson(e));
+    //   }
+    //   next(UpdateGeneralStateAction(quotes: list));
+    //   return list;
+    // }
+    return [];
+  } catch (e) {
+    Logger.e(e.toString(), tag: "GetApprovalReqAction");
+    return [];
+  }
+}
+
+Future<List<ApprovalUserQualificationMd>> _getApprovalUserQualificationsAction(
+    AppState state,
+    GetApprovalUserQualificationsAction action,
+    NextDispatcher next) async {
   try {
     //
     // final ApiResponse res =
