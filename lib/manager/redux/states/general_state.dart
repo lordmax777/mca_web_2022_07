@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mca_web_2022_07/manager/models/approval_reqest_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
@@ -21,8 +22,11 @@ import '../sets/app_state.dart';
 @immutable
 class GeneralState {
   final StateValue<ListAllMd> paramList;
+
   List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
+
   List<LocationAddress> get locations => locationAddresses;
+
   List<StorageItemMd> get storage_items =>
       (storageItems.data ?? <StorageItemMd>[])
         ..sort((a, b) {
@@ -34,14 +38,20 @@ class GeneralState {
           }
           return 0;
         });
+
   List<ListCurrency> get currencies =>
       paramList.data?.currencies ?? <ListCurrency>[];
+
   List<ListCountry> get countries =>
       paramList.data?.countries ?? <ListCountry>[];
+
   List<ListPaymentMethods> get paymentMethods =>
       paramList.data?.payment_methods ?? <ListPaymentMethods>[];
+
   List<WarehouseMd> get storages => warehouses.data ?? <WarehouseMd>[];
+
   List<ListTaxes> get taxes => paramList.data?.taxes ?? <ListTaxes>[];
+
   List<ListWorkRepeats> get workRepeats =>
       paramList.data?.work_repeats ?? <ListWorkRepeats>[];
 
@@ -55,9 +65,16 @@ class GeneralState {
   final List<ClientInfoMd> clientInfos;
 
   final List<QuoteInfoMd> quotes;
+
   List<QuoteInfoMd> get allSortedQuotes => quotes
     ..sort((a, b) => DateTime.tryParse(b.createdOn)!
         .compareTo(DateTime.tryParse(a.createdOn)!));
+
+  final List<ApprovalRequestMd> approvalReq;
+
+  List<ApprovalRequestMd> get allSortedApprovalReq => approvalReq
+    ..sort((a, b) => DateTime.tryParse(b.dateTime!)!
+        .compareTo(DateTime.tryParse(a.dateTime!)!));
 
   GeneralState({
     required this.paramList,
@@ -70,6 +87,7 @@ class GeneralState {
     required this.locationAddresses,
     required this.clientInfos,
     required this.quotes,
+    required this.approvalReq,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -113,6 +131,7 @@ class GeneralState {
       locationAddresses: [],
       clientInfos: [],
       quotes: [],
+      approvalReq: [],
     );
   }
 
@@ -127,6 +146,7 @@ class GeneralState {
     List<LocationAddress>? locationAddresses,
     List<ClientInfoMd>? clientInfos,
     List<QuoteInfoMd>? quotes,
+    List<ApprovalRequestMd>? approvalReq,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -139,6 +159,7 @@ class GeneralState {
       locationAddresses: locationAddresses ?? this.locationAddresses,
       clientInfos: clientInfos ?? this.clientInfos,
       quotes: quotes ?? this.quotes,
+      approvalReq: approvalReq ?? this.approvalReq,
     );
   }
 }
@@ -155,6 +176,7 @@ class UpdateGeneralStateAction {
   final List<LocationAddress>? locationAddresses;
   final List<ClientInfoMd>? clientInfos;
   final List<QuoteInfoMd>? quotes;
+  final List<ApprovalRequestMd>? approvalReq;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -168,12 +190,15 @@ class UpdateGeneralStateAction {
     this.locationAddresses,
     this.clientInfos,
     this.quotes,
+    this.approvalReq,
   });
 }
 
 class OpenDrawerAction {
   OpenDrawerAction(this.widget);
+
   final Widget widget;
+
   void call(Store<AppState> store, dynamic action, NextDispatcher next) async {
     store.dispatch(UpdateGeneralStateAction(endDrawer: widget));
     await Future.delayed(const Duration(milliseconds: 100));
@@ -423,6 +448,12 @@ class GetQuotesAction {
   GetQuotesAction({this.id});
 }
 
+class GetApprovalReqAction {
+  final int? id;
+
+  GetApprovalReqAction({this.id});
+}
+
 class CreateQuoteAction {
   final int id;
   final String email;
@@ -433,6 +464,7 @@ class CreateQuoteAction {
   String? addressLine2;
   String? addressCity;
   String? addressCounty;
+
   //country code
   String? addressCountry;
   String? addressPostcode;
@@ -440,6 +472,7 @@ class CreateQuoteAction {
   String? workAddressLine2;
   String? workAddressCity;
   String? workAddressCounty;
+
   //country code
   String? workAddressCountry;
   String? workAddressPostcode;

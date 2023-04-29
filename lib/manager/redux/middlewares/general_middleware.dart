@@ -67,6 +67,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       //   return _onAddLocationAction(store.state, action);
       // case OnAddClientAction:
       //   return _onAddClientAction(store.state, action);
+
+      case GetApprovalReqAction:
+        return _getApprovalReqAction(store.state, action, next);
+
       default:
         return next(action);
     }
@@ -569,4 +573,27 @@ Future _onCreateNewClientTap(
         }
       });
   return data;
+}
+
+Future<List<QuoteInfoMd>> _getApprovalReqAction(
+    AppState state, GetApprovalReqAction action, NextDispatcher next) async {
+  try {
+    //
+    // final ApiResponse res =
+    // await restClient().getQuotes(action.id ?? 0).nocodeErrorHandler();
+    //
+    // if (res.success) {
+    //   final r = res.data['quotes'];
+    //   final List<QuoteInfoMd> list = [];
+    //   for (var e in r) {
+    //     list.add(QuoteInfoMd.fromJson(e));
+    //   }
+    //   next(UpdateGeneralStateAction(quotes: list));
+    //   return list;
+    // }
+    return [];
+  } catch (e) {
+    Logger.e(e.toString(), tag: "GetApprovalReqAction");
+    return [];
+  }
 }
