@@ -113,6 +113,7 @@ GeneralState _updateGeneralStateAction(
     locationAddresses: action.locationAddresses ?? state.locationAddresses,
     clientInfos: action.clientInfos ?? state.clientInfos,
     quotes: action.quotes ?? state.quotes,
+    approvalReq: action.approvalReq ?? state.approvalReq,
   );
 }
 
