@@ -14,6 +14,7 @@ import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
 import '../../../pages/scheduling/popup_forms/client_form.dart';
 import '../../model_exporter.dart';
+import '../../models/inventory_md.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
@@ -82,6 +83,7 @@ class GeneralState {
                 .compareTo(DateTime.tryParse(a.dateTime!)!));
 
   final List<ApprovalUserQualificationMd> approvalUserQualifications;
+  final List<InventoryMd> inventoryList;
 
 
   GeneralState({
@@ -97,6 +99,7 @@ class GeneralState {
     required this.quotes,
     required this.approvalReq,
     required this.approvalUserQualifications,
+    required this.inventoryList,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -142,6 +145,7 @@ class GeneralState {
       quotes: [],
       approvalReq: [],
       approvalUserQualifications: [],
+      inventoryList: [],
     );
   }
 
@@ -158,6 +162,7 @@ class GeneralState {
     List<QuoteInfoMd>? quotes,
     List<ApprovalRequestMd>? approvalReq,
     List<ApprovalUserQualificationMd>? approvalUserQualifications,
+    List<InventoryMd> ? inventoryList,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -173,6 +178,7 @@ class GeneralState {
       approvalReq: approvalReq ?? this.approvalReq,
       approvalUserQualifications:
       approvalUserQualifications ?? this.approvalUserQualifications,
+      inventoryList: inventoryList ?? this.inventoryList,
     );
   }
 }
@@ -191,6 +197,7 @@ class UpdateGeneralStateAction {
   final List<QuoteInfoMd>? quotes;
   final List<ApprovalRequestMd>? approvalReq;
   final List<ApprovalUserQualificationMd>? approvalUserQualifications;
+  final List<InventoryMd> ? inventoryList;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -206,6 +213,7 @@ class UpdateGeneralStateAction {
     this.quotes,
     this.approvalReq,
     this.approvalUserQualifications,
+    this.inventoryList,
   });
 }
 
@@ -473,6 +481,11 @@ class GetApprovalUserQualificationsAction {
   final int? id;
 
   GetApprovalUserQualificationsAction({this.id});
+}
+
+class GetInventoryList {
+
+  GetInventoryList();
 }
 
 class CreateQuoteAction {
