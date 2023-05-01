@@ -35,12 +35,12 @@ class DailyViewCalendar extends StatelessWidget {
               visibleResourceCount: CalendarConstants.resourceCount(context),
             ),
             dataSource: getDataSource(scheduleState),
-            timeSlotViewSettings: const TimeSlotViewSettings(
-              timeIntervalWidth: 70,
+            timeSlotViewSettings: TimeSlotViewSettings(
+              timeIntervalWidth: MediaQuery.of(context).size.width * .0363,
               timelineAppointmentHeight: CalendarConstants.shiftHeight,
-              timeInterval: Duration(minutes: interval),
+              timeInterval: const Duration(minutes: interval),
               timeFormat: "h:mm a",
-              timeTextStyle: TextStyle(
+              timeTextStyle: const TextStyle(
                 color: Colors.black,
                 fontSize: 14,
                 fontFamily: ThemeText.fontFamilyR,

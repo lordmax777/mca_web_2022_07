@@ -64,11 +64,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
               showAvatar: false,
               visibleResourceCount: CalendarConstants.resourceCount(context),
             ),
-            timeSlotViewSettings: const TimeSlotViewSettings(
-              timeIntervalWidth: 250,
+            timeSlotViewSettings: TimeSlotViewSettings(
+              timeIntervalWidth: MediaQuery.of(context).size.width * .124,
               timelineAppointmentHeight: CalendarConstants.shiftHeight,
               timeFormat: "EEE d MMM",
-              timeTextStyle: TextStyle(
+              timeTextStyle: const TextStyle(
                 color: Colors.black,
                 fontSize: 14,
                 fontFamily: ThemeText.fontFamilyR,
@@ -214,7 +214,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: 180,
+              width: MediaQuery.of(context).size.width * .085,
               child: FittedBox(
                 alignment: Alignment.centerLeft,
                 fit: BoxFit.scaleDown,

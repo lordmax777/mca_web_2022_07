@@ -45,7 +45,6 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
     return StoreConnector<AppState, ScheduleState>(
         converter: (store) => store.state.scheduleState,
         builder: (_, scheduleState) {
-          logger(scheduleState.getWeekShifts.length);
           return SfCalendar(
             view: CalendarView.month,
             dataSource: getDataSource(scheduleState),
@@ -84,67 +83,6 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
             firstDayOfWeek: 1,
             allowDragAndDrop: false,
             todayHighlightColor: ThemeColors.gray8,
-
-            // appointmentBuilder: (_, calendarAppointmentDetails) {
-            //   final appointment = calendarAppointmentDetails.appointments
-            //       .toList()
-            //       .first as Appointment?;
-            //   final ap = appointment?.id as AppointmentIdMd?;
-            //   if (ap == null) {
-            //     return const SizedBox();
-            //   }
-            //   logger(calendarAppointmentDetails.appointments.toList().length);
-            //   return Container(
-            //     color: ap.user.userRandomBgColor,
-            //     padding: const EdgeInsets.only(left: 8, right: 8),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: [
-            //         Text(
-            //           ap.user.fullname,
-            //           style: TextStyle(
-            //             color: Colors.white,
-            //           ),
-            //         ),
-            //         SimplePopupMenuWidget(
-            //             menus: [
-            //               SimplePopupMenu(
-            //                 label: "Copy",
-            //                 onTap: () {
-            //                   setState(() {
-            //                     selectedAppointment['copy'] = ap;
-            //                   });
-            //                 },
-            //               ),
-            //               SimplePopupMenu(
-            //                 label: "Copy All",
-            //                 onTap: () {
-            //                   setState(() {
-            //                     selectedAppointment['copyAll'] = ap;
-            //                   });
-            //                 },
-            //               ),
-            //               SimplePopupMenu(
-            //                 label: "Remove",
-            //                 onTap: () {
-            //                   if (ap.allocation.dateTimeDate != null) {
-            //                     appStore.dispatch(SCRemoveAllocationAction(
-            //                       fetchAction: fetcher,
-            //                       allocation: ap,
-            //                     ));
-            //                   }
-            //                 },
-            //               ),
-            //             ],
-            //             child: const Icon(
-            //               Icons.more_vert,
-            //               color: Colors.white,
-            //               size: 20,
-            //             )),
-            //       ],
-            //     ),
-            //   );
-            // });
             appointmentBuilder: (_, calendarAppointmentDetails) {
               final appointment = calendarAppointmentDetails.appointments
                   .toList()
