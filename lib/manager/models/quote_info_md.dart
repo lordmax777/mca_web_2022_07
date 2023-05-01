@@ -333,8 +333,8 @@ class QuoteInfoMd {
       quoteComments: '',
       quoteValue: 0,
       quoteTax: 0,
-      currencyId: 0,
-      paymentMethodId: 0,
+      currencyId: 1,
+      paymentMethodId: 1,
       payingDays: 1,
       createdOn: '',
       updatedOn: '',
@@ -344,6 +344,112 @@ class QuoteInfoMd {
       lastSent: '',
     );
   }
+
+  @override
+  String toString() {
+    return 'QuoteInfoMd{id: $id, customerId: $customerId, name: $name, company: $company, contact: $contact, companyRegNumber: $companyRegNumber, vatNumber: $vatNumber, vatCalc: $vatCalc, active: $active, phone: $phone, fax: $fax, email: $email, addressLine1: $addressLine1, addressLine2: $addressLine2, addressCity: $addressCity, addressCounty: $addressCounty, addressCountry: $addressCountry, addressPostcode: $addressPostcode, notes: $notes, workAddressLine1: $workAddressLine1, workAddressLine2: $workAddressLine2, workAddressCity: $workAddressCity, workAddressCounty: $workAddressCounty, workAddressCountry: $workAddressCountry, workAddressPostcode: $workAddressPostcode, workStartDate: $workStartDate, altWorkStartDate: $altWorkStartDate, workStartTime: $workStartTime, workFinishTime: $workFinishTime, workRepeat: $workRepeat, workDays: $workDays, validUntil: $validUntil, acceptedOn: $acceptedOn, quoteStatus: $quoteStatus, quoteComments: $quoteComments, quoteValue: $quoteValue, quoteTax: $quoteTax, currencyId: $currencyId, paymentMethodId: $paymentMethodId, payingDays: $payingDays, createdOn: $createdOn, updatedOn: $updatedOn, createdBy: $createdBy, updatedBy: $updatedBy, items: $items, lastSent: $lastSent}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is QuoteInfoMd &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          customerId == other.customerId &&
+          name == other.name &&
+          company == other.company &&
+          contact == other.contact &&
+          companyRegNumber == other.companyRegNumber &&
+          vatNumber == other.vatNumber &&
+          vatCalc == other.vatCalc &&
+          active == other.active &&
+          phone == other.phone &&
+          fax == other.fax &&
+          email == other.email &&
+          addressLine1 == other.addressLine1 &&
+          addressLine2 == other.addressLine2 &&
+          addressCity == other.addressCity &&
+          addressCounty == other.addressCounty &&
+          addressCountry == other.addressCountry &&
+          addressPostcode == other.addressPostcode &&
+          notes == other.notes &&
+          workAddressLine1 == other.workAddressLine1 &&
+          workAddressLine2 == other.workAddressLine2 &&
+          workAddressCity == other.workAddressCity &&
+          workAddressCounty == other.workAddressCounty &&
+          workAddressCountry == other.workAddressCountry &&
+          workAddressPostcode == other.workAddressPostcode &&
+          workStartDate == other.workStartDate &&
+          altWorkStartDate == other.altWorkStartDate &&
+          workStartTime == other.workStartTime &&
+          workFinishTime == other.workFinishTime &&
+          workRepeat == other.workRepeat &&
+          workDays == other.workDays &&
+          validUntil == other.validUntil &&
+          acceptedOn == other.acceptedOn &&
+          quoteStatus == other.quoteStatus &&
+          quoteComments == other.quoteComments &&
+          quoteValue == other.quoteValue &&
+          quoteTax == other.quoteTax &&
+          currencyId == other.currencyId &&
+          paymentMethodId == other.paymentMethodId &&
+          payingDays == other.payingDays &&
+          createdOn == other.createdOn &&
+          updatedOn == other.updatedOn &&
+          createdBy == other.createdBy &&
+          updatedBy == other.updatedBy &&
+          items == other.items &&
+          lastSent == other.lastSent;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      customerId.hashCode ^
+      name.hashCode ^
+      company.hashCode ^
+      contact.hashCode ^
+      companyRegNumber.hashCode ^
+      vatNumber.hashCode ^
+      vatCalc.hashCode ^
+      active.hashCode ^
+      phone.hashCode ^
+      fax.hashCode ^
+      email.hashCode ^
+      addressLine1.hashCode ^
+      addressLine2.hashCode ^
+      addressCity.hashCode ^
+      addressCounty.hashCode ^
+      addressCountry.hashCode ^
+      addressPostcode.hashCode ^
+      notes.hashCode ^
+      workAddressLine1.hashCode ^
+      workAddressLine2.hashCode ^
+      workAddressCity.hashCode ^
+      workAddressCounty.hashCode ^
+      workAddressCountry.hashCode ^
+      workAddressPostcode.hashCode ^
+      workStartDate.hashCode ^
+      altWorkStartDate.hashCode ^
+      workStartTime.hashCode ^
+      workFinishTime.hashCode ^
+      workRepeat.hashCode ^
+      workDays.hashCode ^
+      validUntil.hashCode ^
+      acceptedOn.hashCode ^
+      quoteStatus.hashCode ^
+      quoteComments.hashCode ^
+      quoteValue.hashCode ^
+      quoteTax.hashCode ^
+      currencyId.hashCode ^
+      paymentMethodId.hashCode ^
+      payingDays.hashCode ^
+      createdOn.hashCode ^
+      updatedOn.hashCode ^
+      createdBy.hashCode ^
+      updatedBy.hashCode ^
+      items.hashCode ^
+      lastSent.hashCode;
 }
 
 class QuoteItemMd {
@@ -398,4 +504,25 @@ class QuoteItemMd {
       'quantity': quantity,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is QuoteItemMd &&
+          runtimeType == other.runtimeType &&
+          itemId == other.itemId &&
+          itemName == other.itemName &&
+          quantity == other.quantity &&
+          price == other.price &&
+          notes == other.notes &&
+          auto == other.auto;
+
+  @override
+  int get hashCode =>
+      itemId.hashCode ^
+      itemName.hashCode ^
+      quantity.hashCode ^
+      price.hashCode ^
+      notes.hashCode ^
+      auto.hashCode;
 }

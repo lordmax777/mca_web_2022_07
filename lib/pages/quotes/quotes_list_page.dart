@@ -217,7 +217,7 @@ class _QuotesListPageState extends State<QuotesListPage>
       onWillChange: (previousViewModel, newViewModel) {
         final oldQuotes = previousViewModel?.generalState.allSortedQuotes;
         final newQuotes = newViewModel.generalState.allSortedQuotes;
-        if (oldQuotes?.length != newQuotes.length) {
+        if (oldQuotes != newQuotes) {
           if (isStateManagerInitialized) {
             stateManager!.removeAllRows();
             stateManager!
