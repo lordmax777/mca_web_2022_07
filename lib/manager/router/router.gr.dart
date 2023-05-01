@@ -162,6 +162,12 @@ class _$AppRouter extends RootStackRouter {
         child: const ApprovalTemplatePage(),
       );
     },
+    InventoryListRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const InventoryListPage(),
+      );
+    },
   };
 
   @override
@@ -263,6 +269,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               ApprovalTemplateRoute.name,
               path: 'approval',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              InventoryListRoute.name,
+              path: 'inventory',
               parent: HomeRoute.name,
             ),
           ],
@@ -599,4 +610,16 @@ class ApprovalTemplateRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'ApprovalTemplateRoute';
+}
+
+/// generated route for
+/// [InventoryListPage]
+class InventoryListRoute extends PageRouteInfo<void> {
+  const InventoryListRoute()
+      : super(
+          InventoryListRoute.name,
+          path: 'inventory',
+        );
+
+  static const String name = 'InventoryListRoute';
 }

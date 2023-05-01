@@ -116,6 +116,7 @@ GeneralState _updateGeneralStateAction(
     approvalReq: action.approvalReq ?? state.approvalReq,
     approvalUserQualifications:
         action.approvalUserQualifications ?? state.approvalUserQualifications,
+    inventoryList: action.inventoryList ?? state.inventoryList,
   );
 }
 

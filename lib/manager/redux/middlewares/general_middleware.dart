@@ -24,6 +24,7 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
 import 'package:retrofit/retrofit.dart';
 import '../../general_controller.dart';
+import '../../models/inventory_md.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
@@ -74,6 +75,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getApprovalReqAction(store.state, action, next);
       case GetApprovalUserQualificationsAction:
         return _getApprovalUserQualificationsAction(store.state, action, next);
+      case GetInventoryList:
+        return _getInventoryList(store.state, action, next);
 
       default:
         return next(action);
@@ -628,6 +631,29 @@ Future<List<ApprovalUserQualificationMd>> _getApprovalUserQualificationsAction(
     return [];
   } catch (e) {
     Logger.e(e.toString(), tag: "GetApprovalReqAction");
+    return [];
+  }
+}
+
+Future<List<InventoryMd>> _getInventoryList(
+    AppState state, GetInventoryList action, NextDispatcher next) async {
+  try {
+    //
+    // final ApiResponse res =
+    // await restClient().getQuotes(action.id ?? 0).nocodeErrorHandler();
+    //
+    // if (res.success) {
+    //   final r = res.data['quotes'];
+    //   final List<QuoteInfoMd> list = [];
+    //   for (var e in r) {
+    //     list.add(QuoteInfoMd.fromJson(e));
+    //   }
+    //   next(UpdateGeneralStateAction(quotes: list));
+    //   return list;
+    // }
+    return [];
+  } catch (e) {
+    Logger.e(e.toString(), tag: "GetInventoryList");
     return [];
   }
 }
