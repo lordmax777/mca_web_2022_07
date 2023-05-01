@@ -55,32 +55,6 @@ Future<bool> onWillPop(BuildContext context) async {
       false;
 }
 
-Widget titleWithDivider(String? title, Widget? child, {Widget? titleIcon}) {
-  return SpacedColumn(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    if (title != null)
-      SpacedRow(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        horizontalSpace: 6,
-        children: [
-          KText(
-            text: title,
-            fontSize: 24,
-            textColor: ThemeColors.gray2,
-            fontWeight: FWeight.bold,
-          ),
-          if (titleIcon != null) titleIcon,
-        ],
-      ),
-    if (title != null)
-      Container(
-          margin: const EdgeInsets.only(top: 8, bottom: 16),
-          width: MediaQuery.of(Get.context!).size.width * .22,
-          height: 1,
-          color: ThemeColors.gray2),
-    if (child != null) child,
-  ]);
-}
-
 Widget labelWithField(String label, Widget? child,
     {Widget? customLabel,
     Widget? childHelperWidget,
@@ -167,9 +141,6 @@ class _CreateJobState extends State<_CreateJob>
   ScheduleCreatePopupMenus get type => data.type;
 
   late final TabController _tabController;
-
-  final ScrollController verticalScrollController = ScrollController();
-  final ScrollController horizontalScrollController = ScrollController();
 
   final List<Tab> _tabs = const [
     Tab(text: "Shift details"),

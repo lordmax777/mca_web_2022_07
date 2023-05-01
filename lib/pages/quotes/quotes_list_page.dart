@@ -10,6 +10,7 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../scheduling/create_shift_popup.dart';
 import '../scheduling/scheduling_page.dart';
+import 'popup_forms/quote_edit_form.dart';
 
 mixin GridOnLoadMixin<T extends StatefulWidget> on State<T> {
   bool reload = false;
@@ -199,11 +200,11 @@ class _QuotesListPageState extends State<QuotesListPage>
     String? successMessage,
     int? quoteId,
   }) async {
-    final quoteCreated = await showCreateShiftPopup<ApiResponse?>(
-        context,
-        CreateShiftDataQuote(
-          quoteId: quoteId,
-        ));
+    final quoteCreated = await showDialog<ApiResponse?>(
+        context: context,
+        barrierDismissible: kDebugMode,
+        builder: (context) =>
+            QuoteEditForm(data: CreateShiftDataQuote(quoteId: quoteId)));
     if (quoteCreated != null) {
       showError(successMessage ?? "Quote Created Successfully");
     }

@@ -4,6 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/custom_scrollbar.dart';
+import 'package:mca_web_2022_07/comps/title_container.dart';
+import 'package:mca_web_2022_07/comps/title_container.dart';
+import 'package:mca_web_2022_07/comps/title_container.dart';
+import 'package:mca_web_2022_07/comps/title_container.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/client_form.dart';
@@ -198,10 +202,10 @@ class QuoteFormState extends State<QuoteForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           verticalSpace: 16,
                           children: [
-                            _container(
+                            TitleContainer(
                               onEdit: _onEditPm,
-                              "Personal Information",
-                              SpacedColumn(
+                              title: "Personal Information",
+                              child: SpacedColumn(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   labelWithField(
@@ -285,10 +289,10 @@ class QuoteFormState extends State<QuoteForm> {
                             ),
                           ],
                         ),
-                        _container(
+                        TitleContainer(
                           onEdit: _editInvoiceAddress,
-                          "Invoice Address",
-                          SpacedColumn(
+                          title: "Invoice Address",
+                          child: SpacedColumn(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               labelWithField(
@@ -343,10 +347,10 @@ class QuoteFormState extends State<QuoteForm> {
                             ],
                           ),
                         ),
-                        _container(
+                        TitleContainer(
                           onEdit: _editWorkAddress,
-                          "Work Address",
-                          SpacedColumn(
+                          title: "Work Address",
+                          child: SpacedColumn(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               labelWithField(
@@ -402,10 +406,10 @@ class QuoteFormState extends State<QuoteForm> {
                             ],
                           ),
                         ),
-                        _container(
+                        TitleContainer(
                           onEdit: _editTiming,
-                          "Timing",
-                          SpacedColumn(
+                          title: "Timing",
+                          child: SpacedColumn(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               labelWithField(
@@ -499,28 +503,6 @@ class QuoteFormState extends State<QuoteForm> {
           text == null ? "-" : (text.isEmpty ? "-" : text),
           style: ThemeText.tabTextStyle,
         ));
-  }
-
-  Widget _container(String title, Widget child, {VoidCallback? onEdit}) {
-    return titleWithDivider(
-      titleIcon: onEdit != null
-          ? addIcon(
-              tooltip: "Edit $title",
-              onPressed: onEdit,
-              icon: HeroIcons.edit,
-            )
-          : null,
-      title,
-      Container(
-          width: 410,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey.withOpacity(.5)),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: child),
-    );
   }
 
   List<PlutoColumn> cols(AppState state) => [

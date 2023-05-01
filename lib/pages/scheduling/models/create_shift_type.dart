@@ -85,7 +85,7 @@ class CreateShiftDataQuote extends CreateShiftDataType {
     }
   }
   @override
-  bool get isCreate => quoteId == null;
+  bool get isCreate => quoteId == null || quote.id == 0;
 
   @override
   ScheduleCreatePopupMenus get type => ScheduleCreatePopupMenus.quote;
