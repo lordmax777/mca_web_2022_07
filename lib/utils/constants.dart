@@ -12,6 +12,7 @@ class Constants {
   static String appVersion = "$mj.$mn.$up";
   static bool isDebug = true;
   static bool enableTalker = false;
+
   static double defaultWidth(BuildContext context) =>
       MediaQuery.of(context).size.width - 16;
 
@@ -28,6 +29,7 @@ class Constants {
   static const String clientSecret =
       "4ok2x70rlfokc8g0wws8c8kwcokw80k44sg48goc0ok4w0so0k";
   static const String token_type = "bearer";
+
   static String grant_type({bool refresh = false}) =>
       refresh ? "refresh_token" : "password";
   static const String username = "96189831";
@@ -104,6 +106,10 @@ class Constants {
         {
           "title": "Approval",
           "name": const ApprovalTemplateRoute(),
+        },
+        {
+          "title": "Inventory",
+          "name": const InventoryListRoute(),
         },
         {
           "title": "Handover Types",

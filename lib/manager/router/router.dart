@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../pages/approvals/approval_template_page.dart';
 import '../../pages/auth/login_page.dart';
+import '../../pages/inventory/inventory_list_page.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
@@ -45,6 +46,7 @@ part 'router.gr.dart';
       AutoRoute(page: SchedulingPage, path: "schedule"),
       AutoRoute(page: QuotesListPage, path: "quotes"),
       AutoRoute(page: ApprovalTemplatePage, path: "approval"),
+      AutoRoute(page: InventoryListPage, path: "inventory"),
     ]),
   ],
 )

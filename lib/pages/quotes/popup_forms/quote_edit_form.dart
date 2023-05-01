@@ -20,6 +20,7 @@ import '../../scheduling/popup_forms/timing_form.dart';
 
 class QuoteEditForm extends StatefulWidget {
   final CreateShiftDataQuote data;
+
   const QuoteEditForm({Key? key, required this.data}) : super(key: key);
 
   @override
@@ -30,7 +31,9 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
   //Getters
   late final CreateShiftDataQuote data = widget.data;
   bool get isCreate => data.isCreate;
+
   ScheduleCreatePopupMenus get type => data.type;
+
   CompanyMd get company => GeneralController.to.companyInfo;
   PlutoGridStateManager get gridStateManager => data.gridStateManager;
 

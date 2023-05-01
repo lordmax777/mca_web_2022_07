@@ -491,3 +491,133 @@ class ApprovalReqBodyTable extends StatelessWidget {
     );
   }
 }
+
+class InventoryBodyTable extends StatelessWidget {
+  final List<PlutoColumn> cols;
+  final List<PlutoRow> rows;
+  final void Function(PlutoGridStateManager) onSmReady;
+  final void Function(PlutoGridOnSelectedEvent)? onOneTapSelect;
+  final Color? gridBorderColor;
+  final bool enableEditing;
+  final PlutoGridMode mode;
+  final void Function(PlutoGridOnChangedEvent)? onChanged;
+  final String? noRowsText;
+  final PlutoGridColumnFilterConfig? columnFilter;
+
+  const InventoryBodyTable(
+      {Key? key,
+      required this.rows,
+      this.onOneTapSelect,
+      this.columnFilter,
+      this.onChanged,
+      this.mode = PlutoGridMode.selectWithOneTap,
+      this.enableEditing = false,
+      this.gridBorderColor,
+      required this.onSmReady,
+      this.noRowsText,
+      required this.cols})
+      : super(key: key);
+
+  static Widget defaultTextWidget(String text,
+      {TextAlign textAlign = TextAlign.start}) {
+    return KText(
+      text: text.contains("null") ? "-" : text,
+      textColor: ThemeColors.gray2,
+      fontWeight: FWeight.regular,
+      fontSize: 14,
+      textAlign: textAlign,
+      isSelectable: false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<PlutoColumn> _cols = [];
+    for (PlutoColumn col in cols) {
+      col.enableContextMenu = false;
+      col.backgroundColor = ThemeColors.gray12;
+      col.enableDropToResize = false;
+      col.enableColumnDrag = false;
+      if (!enableEditing) {
+        col.enableAutoEditing = false;
+        col.enableEditingMode = false;
+      } else {
+        if (col.enableEditingMode == true) {
+          col.cellPadding = const EdgeInsets.symmetric(horizontal: 8);
+          col.renderer = (ctx) {
+            return MouseRegion(
+              cursor: SystemMouseCursors.text,
+              child: Container(
+                height: 32,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  color: ThemeColors.gray12,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: ThemeColors.gray9,
+                    width: 1,
+                  ),
+                ),
+                child: defaultTextWidget(ctx.cell.value.toString()),
+              ),
+            );
+          };
+        }
+      }
+      col.renderer ??= (ctx) {
+        return KText(
+          text: ctx.cell.value,
+          textColor: ThemeColors.gray2,
+          fontWeight: FWeight.regular,
+          fontSize: 14,
+          isSelectable: false,
+          textAlign: col.textAlign.value,
+        );
+      };
+      _cols.add(col);
+    }
+    var _w = MediaQuery.of(context).size.width;
+    var _tableSize = 0.0;
+    for (var c in cols) {
+      _tableSize += c.width;
+    }
+    bool isEqual = _tableSize == _w;
+
+    double _h = 625;
+
+    return SizedBox(
+      height: _h,
+      child: PlutoGrid(
+        configuration: PlutoGridConfiguration(
+            columnFilter: columnFilter ?? const PlutoGridColumnFilterConfig(),
+            style: PlutoGridStyleConfig(
+              columnHeight: 48.0,
+              rowHeight: 48.0,
+              borderColor: gridBorderColor ?? ThemeColors.transparent,
+              gridBorderColor: gridBorderColor ?? ThemeColors.transparent,
+              activatedBorderColor: gridBorderColor ?? ThemeColors.transparent,
+              activatedColor: ThemeColors.blue12.withOpacity(0.5),
+              columnTextStyle: ThemeText.tableColumnTextStyle,
+              enableRowColorAnimation: true,
+            ),
+            columnSize: PlutoGridColumnSizeConfig(
+                autoSizeMode: isEqual
+                    ? PlutoAutoSizeMode.none
+                    : PlutoAutoSizeMode.scale)),
+        columns: _cols,
+        rows: rows,
+        mode: mode,
+        onSelected: onOneTapSelect,
+        onChanged: onChanged,
+        onLoaded: (e) => onSmReady(e.stateManager),
+        noRowsWidget: Center(
+          child: Text(
+            noRowsText ?? "No data found",
+            style: ThemeText.lg,
+          ),
+        ),
+      ),
+    );
+  }
+}
