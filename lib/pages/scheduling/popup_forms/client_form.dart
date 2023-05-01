@@ -302,7 +302,7 @@ class _ClientFormState extends State<ClientForm> {
                             TextInputWidget(
                               width: fieldWidth,
                               controller: phoneNumber,
-                              isRequired: isClient,
+                              isRequired: isClient || isLocation,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
@@ -539,7 +539,7 @@ class _ClientFormState extends State<ClientForm> {
                     );
                   },
                 ),
-              if (isClient && isClient || isLocation)
+              if (isClient && isClient || !isLocation)
                 labelWithField(
                     "Service Delivered at a different address",
                     toggle(isDeliverAtDifferentLocation, (value) {
@@ -762,7 +762,7 @@ class _ClientFormState extends State<ClientForm> {
         .postLocation(
           base: false,
           timelimit: false,
-          sendChecklist: true,
+          sendChecklist: email.text.isNotEmpty,
           anywhere: false,
           radius: 100.toString(),
           phoneMobile: phoneNumber.text.isEmpty && selectedClient != null
@@ -777,8 +777,8 @@ class _ClientFormState extends State<ClientForm> {
           addressLine2: address.addressLine2,
           addressCounty: address.addressCounty,
           active: true,
-          latitude: address.latitude.toString(),
-          longitude: address.latitude.toString(),
+          latitude: (address.latitude)?.toString() ?? "",
+          longitude: address.longitude?.toString() ?? "",
           fixedipaddress: isFixedIpAddress,
           addressCity: address.addressCity!,
           addressCountry: address.addressCountryId!,

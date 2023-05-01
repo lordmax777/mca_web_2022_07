@@ -28,7 +28,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
       height: height ?? 40,
       child: LayoutBuilder(builder: (context, c) {
         return Autocomplete<T>(
-          optionsViewBuilder: (context, onSelected, options) {
+          optionsViewBuilder: (context, onSelected, opts) {
             return Align(
               alignment: Alignment.topLeft,
               child: Material(
@@ -39,7 +39,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                   child: ListView(
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(8.0),
-                    children: options.map((e) {
+                    children: opts.map((e) {
                       return ListTile(
                         title: listItemWidget?.call(e) ?? Text(e.toString()),
                         onTap: () {

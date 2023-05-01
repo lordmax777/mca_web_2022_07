@@ -10,9 +10,11 @@ import '../../../comps/title_container.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/general_state.dart';
 import '../../../theme/theme.dart';
 import '../../scheduling/create_shift_popup.dart';
 import '../../scheduling/popup_forms/storage_item_form.dart';
+import 'client_form.dart';
 
 class JobEditForm extends StatefulWidget {
   final CreateShiftData data;
@@ -93,9 +95,29 @@ class _JobEditFormState extends State<JobEditForm> {
   }
 
   //Functions
-  void _save(AppState state) async {}
+  void _save(AppState state) async {
+    //TODO: Save
+  }
 
-  void _onCreateNewClient() async {}
+  void _onCreateNewClient() async {
+    final CreatedClientReturnValue? res = await appStore.dispatch(
+        OnCreateNewClientTap(context,
+            type: ClientFormType.client,
+            clientInfo: ClientInfoMd.init(id: data.client?.id)));
+    if (res == null) return;
+    setState(() {
+      if (res.clientId != null) {
+        data.client = appStore.state.generalState.clientInfos
+            .firstWhereOrNull((element) => element.id == res.clientId);
+      }
+      if (res.locationId != null) {
+        data.tempAllowedLocationId = res.locationId;
+        data.selectedLocationId = res.locationId;
+        data.location = appStore.state.generalState.locations
+            .firstWhereOrNull((element) => element.id == res.locationId);
+      }
+    });
+  }
 
   void _editInvoiceAddress() async {
     // final ClientAddressForm? res =
@@ -235,8 +257,6 @@ class _JobEditFormState extends State<JobEditForm> {
       ];
     }
 
-    logger("locations: ${locations.length}");
-
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: CustomScrollbar(
@@ -268,9 +288,10 @@ class _JobEditFormState extends State<JobEditForm> {
                                 hintText: "Select Client",
                                 listItemWidget: (p0) => Text(p0.name),
                                 onSelected: (p0) {
-                                  data.location = null;
                                   data.client = p0;
                                   data.selectedClientId = p0.id;
+                                  data.location = null;
+                                  data.tempAllowedLocationId = null;
                                   setState(() {});
                                 },
                                 displayStringForOption: (option) {
@@ -396,15 +417,10 @@ class _JobEditFormState extends State<JobEditForm> {
                                   displayStringForOption: (option) {
                                     return option.name ?? "";
                                   },
-                                  options: (p0) async {
-                                    return await Future.delayed(
-                                        100.milliseconds, () {
-                                      return locations.where((element) =>
-                                          (element.name ?? "")
-                                              .toLowerCase()
-                                              .contains(p0.text.toLowerCase()));
-                                    });
-                                  }),
+                                  options: (p0) => locations.where((element) =>
+                                      (element.name ?? "")
+                                          .toLowerCase()
+                                          .contains(p0.text.toLowerCase()))),
                             const SizedBox(height: 16),
                             labelWithField(
                               labelWidth: 160,
