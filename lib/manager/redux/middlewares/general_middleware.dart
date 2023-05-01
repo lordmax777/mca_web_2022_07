@@ -400,19 +400,24 @@ Future<ApiResponse?> _createQuoteAction(
             formData.fields.add(
                 MapEntry('workAddressCountry', action.workAddressCountry!));
           }
-          if (action.workStartDate != null) {
+          logger(action.workStartDate);
+          if (action.workStartDate != null &&
+              action.workStartDate!.isNotEmpty) {
             formData.fields.add(MapEntry('workStartDate',
                 action.workStartDate!.toDate()!.formattedDate));
           }
-          if (action.altWorkStartDate != null) {
+          if (action.altWorkStartDate != null &&
+              action.altWorkStartDate!.isNotEmpty) {
             formData.fields.add(MapEntry('altWorkStartDate',
                 action.altWorkStartDate!.toDate()!.formattedDate));
           }
-          if (action.workStartTime != null) {
+          if (action.workStartTime != null &&
+              action.workStartTime!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('workStartTime', action.workStartTime!));
           }
-          if (action.workFinishTime != null) {
+          if (action.workFinishTime != null &&
+              action.workFinishTime!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('workFinishTime', action.workFinishTime!));
           }
