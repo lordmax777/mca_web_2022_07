@@ -7,10 +7,16 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
   final String Function(T) displayStringForOption;
   final Widget Function(T)? listItemWidget;
   final void Function(T)? onSelected;
+  final String? hintText;
+  final double? width;
+  final double? height;
   const CustomAutocompleteTextField({
     Key? key,
     required this.options,
     required this.onSelected,
+    this.hintText,
+    this.width,
+    this.height,
     this.displayStringForOption = RawAutocomplete.defaultStringForOption,
     this.listItemWidget,
   }) : super(key: key);
@@ -18,8 +24,8 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 300,
-      height: 40,
+      width: width ?? 300,
+      height: height ?? 40,
       child: LayoutBuilder(builder: (context, c) {
         return Autocomplete<T>(
           optionsViewBuilder: (context, onSelected, options) {
@@ -33,15 +39,14 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                   child: ListView(
                     shrinkWrap: true,
                     padding: const EdgeInsets.all(8.0),
-                    children: options
-                        .map((e) => ListTile(
-                              title:
-                                  listItemWidget?.call(e) ?? Text(e.toString()),
-                              onTap: () {
-                                onSelected(e);
-                              },
-                            ))
-                        .toList(),
+                    children: options.map((e) {
+                      return ListTile(
+                        title: listItemWidget?.call(e) ?? Text(e.toString()),
+                        onTap: () {
+                          onSelected(e);
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
               ),
@@ -65,7 +70,9 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                   },
                 ),
                 border: const OutlineInputBorder(),
-                labelText: "Search a product",
+                labelText: hintText ?? "Search a product",
+                suffixIcon: const Icon(Icons.arrow_drop_down),
+                prefixIcon: const Icon(Icons.search),
               ),
             );
           },

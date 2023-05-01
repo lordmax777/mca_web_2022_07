@@ -5,6 +5,8 @@ import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
+import '../../../manager/models/location_item_md.dart';
+
 abstract class CreateShiftDataType {
   ScheduleCreatePopupMenus get type;
 
@@ -55,20 +57,30 @@ class UnavailableUserLoad {
 class CreateShiftData extends CreateShiftDataType {
   String title = "";
   int paidHour = 0;
+
   int paidMinute = 0;
   bool isSplitTime = false;
-  final PropertiesMd? property;
   int? selectedClientId;
+  int? selectedJobId;
+
+  ClientInfoMd? client;
+  LocationAddress? location;
 
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
 
-  CreateShiftData({required super.date, this.property});
+  CreateShiftData({required super.date}) {
+    if (selectedClientId != null) {
+      client = appStore.state.generalState.clientInfos
+          .firstWhereOrNull((element) => element.id == selectedClientId);
+      if (client == null) return;
+    }
+  }
 
   @override
   ScheduleCreatePopupMenus get type => ScheduleCreatePopupMenus.job;
 
   @override
-  bool get isCreate => property == null;
+  bool get isCreate => selectedJobId == null || selectedJobId == 0;
 }
 
 class CreateShiftDataQuote extends CreateShiftDataType {

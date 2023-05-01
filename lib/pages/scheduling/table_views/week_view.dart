@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../comps/simple_popup_menu.dart';
@@ -12,6 +13,7 @@ import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
+import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 import '../create_shift_popup.dart';
 import '../models/data_source.dart';
@@ -98,12 +100,17 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   final AppointmentIdMd? id =
                       calendarTapDetails.appointments?.first.id;
                   if (id == null) return;
-                  final shiftRes = await showCreateShiftPopup(
-                      context,
-                      CreateShiftData(
-                        date: calendarTapDetails.date!,
-                        property: id.property,
-                      ));
+                  final jobCreated = await showDialog<ApiResponse?>(
+                      context: context,
+                      barrierDismissible: kDebugMode,
+                      builder: (context) => JobEditForm(
+                          data:
+                              CreateShiftData(date: calendarTapDetails.date!)));
+                  // final shiftRes = await showCreateShiftPopup(
+                  //     context,
+                  //     CreateShiftData(
+                  //       date: calendarTapDetails.date!,
+                  //     ));
                   //TODO: Handle shiftRes
                   break;
                 case CalendarElement.calendarCell:
@@ -135,11 +142,17 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     logger(calendarTapDetails.date, hint: "Date");
                     if (calendarTapDetails.date == null) return;
                     if (createTapResult == null) return;
-                    final shiftRes = await showCreateShiftPopup(
-                        context,
-                        CreateShiftData(
-                          date: calendarTapDetails.date!,
-                        ));
+                    final jobCreated = await showDialog<ApiResponse?>(
+                        context: context,
+                        barrierDismissible: kDebugMode,
+                        builder: (context) => JobEditForm(
+                            data: CreateShiftData(
+                                date: calendarTapDetails.date!)));
+                    // final shiftRes = await showCreateShiftPopup(
+                    //     context,
+                    //     CreateShiftData(
+                    //       date: calendarTapDetails.date!,
+                    //     ));
                     //TODO: Handle shiftRes
 
                   } else {

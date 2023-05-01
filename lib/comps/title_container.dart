@@ -7,8 +7,15 @@ class TitleContainer extends StatelessWidget {
   final String title;
   final Widget child;
   final VoidCallback? onEdit;
+  final String? titleOverride;
+  final HeroIcons? titleIcon;
   const TitleContainer(
-      {Key? key, required this.title, required this.child, this.onEdit})
+      {Key? key,
+      required this.title,
+      required this.child,
+      this.titleIcon,
+      this.onEdit,
+      this.titleOverride})
       : super(key: key);
 
   @override
@@ -16,9 +23,9 @@ class TitleContainer extends StatelessWidget {
     return titleWithDivider(
       titleIcon: onEdit != null
           ? addIcon(
-              tooltip: "Edit $title",
+              tooltip: titleOverride ?? "Edit $title",
               onPressed: onEdit,
-              icon: HeroIcons.edit,
+              icon: titleIcon ?? HeroIcons.edit,
             )
           : null,
       title,
