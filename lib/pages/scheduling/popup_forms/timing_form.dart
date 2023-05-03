@@ -28,15 +28,28 @@ class CreatedTimingReturnValue {
   bool isAllDay = false;
   int? repeatTypeIndex;
   List<int> repeatDays = [];
+  bool hasAltTime;
+
+  CreatedTimingReturnValue({
+    this.startDate,
+    this.altStartDate,
+    this.startTime,
+    this.endTime,
+    this.isAllDay = false,
+    this.repeatTypeIndex,
+    this.hasAltTime = true,
+  });
 }
 
 class TimingForm extends StatefulWidget {
   final AppState state;
   final QuoteInfoMd? quoteInfo;
+  final CreatedTimingReturnValue? timingInfo;
   const TimingForm({
     Key? key,
     required this.state,
     this.quoteInfo,
+    this.timingInfo,
   }) : super(key: key);
 
   @override
@@ -47,6 +60,7 @@ class _TimingFormState extends State<TimingForm> {
   final ScrollController scrollController = ScrollController();
 
   QuoteInfoMd? get quote => widget.quoteInfo;
+  get timingInfo => widget.timingInfo;
 
   AppState get state => widget.state;
 
@@ -86,6 +100,17 @@ class _TimingFormState extends State<TimingForm> {
           returnVal.repeatTypeIndex = workIndex;
         }
         returnVal.repeatDays = quote!.workDays;
+        setState(() {});
+      }
+      if (timingInfo != null) {
+        returnVal.startDate = timingInfo!.startDate;
+        returnVal.altStartDate = timingInfo!.altStartDate;
+        returnVal.startTime = timingInfo!.startTime;
+        returnVal.endTime = timingInfo!.endTime;
+        returnVal.isAllDay = timingInfo!.isAllDay;
+        returnVal.repeatTypeIndex = timingInfo!.repeatTypeIndex;
+        returnVal.repeatDays = timingInfo!.repeatDays;
+        returnVal.hasAltTime = timingInfo!.hasAltTime;
         setState(() {});
       }
     });
@@ -148,7 +173,8 @@ class _TimingFormState extends State<TimingForm> {
                           text: returnVal.startDate?.formattedDate ?? "",
                         ),
                         onTap: () async {
-                          final date = await showCustomDatePicker(context);
+                          final date = await showCustomDatePicker(context,
+                              initialTime: returnVal.startDate);
                           if (date == null) return;
 
                           setState(() {
@@ -157,27 +183,29 @@ class _TimingFormState extends State<TimingForm> {
                         },
                       ),
                     ),
-                    labelWithField(
-                      "Alternative Start Date",
-                      TextInputWidget(
-                        width: 300,
-                        rightIcon: HeroIcons.calendar,
-                        isReadOnly: true,
-                        hintText: "Start date",
-                        controller: TextEditingController(
-                          text: returnVal.altStartDate?.formattedDate ?? "",
+                    if (returnVal.hasAltTime)
+                      labelWithField(
+                        "Alternative Start Date",
+                        TextInputWidget(
+                          width: 300,
+                          rightIcon: HeroIcons.calendar,
+                          isReadOnly: true,
+                          hintText: "Start date",
+                          controller: TextEditingController(
+                            text: returnVal.altStartDate?.formattedDate ?? "",
+                          ),
+                          onTap: () async {
+                            final date = await showCustomDatePicker(context,
+                                initialTime: returnVal.altStartDate);
+
+                            if (date == null) return;
+
+                            setState(() {
+                              returnVal.altStartDate = date;
+                            });
+                          },
                         ),
-                        onTap: () async {
-                          final date = await showCustomDatePicker(context);
-
-                          if (date == null) return;
-
-                          setState(() {
-                            returnVal.altStartDate = date;
-                          });
-                        },
                       ),
-                    ),
                     labelWithField(
                       "All day",
                       toggle(returnVal.isAllDay, (val) {

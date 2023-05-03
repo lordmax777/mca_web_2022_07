@@ -574,7 +574,8 @@ Future _onCreateNewClientTap(
           case ClientFormType.timing:
             return TimingForm(
               state: state,
-              quoteInfo: action.quoteInfo,
+              timingInfo: action.timingInfo,
+              quoteInfo: action.quoteInfo ?? QuoteInfoMd.init(),
             );
           default:
             return ClientForm(

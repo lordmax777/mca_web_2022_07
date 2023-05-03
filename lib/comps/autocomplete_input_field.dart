@@ -36,17 +36,29 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                 child: SizedBox(
                   width: c.maxWidth,
                   height: 300,
-                  child: ListView(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.all(8.0),
-                    children: opts.map((e) {
-                      return ListTile(
-                        title: listItemWidget?.call(e) ?? Text(e.toString()),
-                        onTap: () {
-                          onSelected(e);
-                        },
-                      );
-                    }).toList(),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(8.0),
+                          children: opts.map((e) {
+                            return ListTile(
+                              title:
+                                  listItemWidget?.call(e) ?? Text(e.toString()),
+                              onTap: () {
+                                logger((e as dynamic).toJson());
+                                onSelected(e);
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      // Container(
+                      //   height: 50,
+                      //   color: Colors.grey,
+                      // ),
+                    ],
                   ),
                 ),
               ),
@@ -78,7 +90,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
           },
           optionsBuilder: options,
           onSelected: onSelected,
-          optionsMaxHeight: 80.0,
+          optionsMaxHeight: 100.0,
         );
       }),
     );

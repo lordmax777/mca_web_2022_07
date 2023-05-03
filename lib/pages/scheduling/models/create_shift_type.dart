@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../../manager/models/location_item_md.dart';
+import '../popup_forms/timing_form.dart';
 
 abstract class CreateShiftDataType {
   ScheduleCreatePopupMenus get type;
@@ -65,6 +66,8 @@ class CreateShiftData extends CreateShiftDataType {
 
   ClientInfoMd? client;
   LocationAddress? location;
+  CreatedTimingReturnValue timingInfo =
+      CreatedTimingReturnValue(hasAltTime: false);
 
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
 

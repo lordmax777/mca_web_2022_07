@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
 import '../../../pages/scheduling/popup_forms/client_form.dart';
+import '../../../pages/scheduling/popup_forms/timing_form.dart';
 import '../../model_exporter.dart';
 import '../../models/inventory_md.dart';
 import '../../models/location_item_md.dart';
@@ -68,23 +69,18 @@ class GeneralState {
 
   final List<QuoteInfoMd> quotes;
 
-  List<QuoteInfoMd> get allSortedQuotes =>
-      quotes
-        ..sort((a, b) =>
-            DateTime.tryParse(b.createdOn)!
-                .compareTo(DateTime.tryParse(a.createdOn)!));
+  List<QuoteInfoMd> get allSortedQuotes => quotes
+    ..sort((a, b) => DateTime.tryParse(b.createdOn)!
+        .compareTo(DateTime.tryParse(a.createdOn)!));
 
   final List<ApprovalRequestMd> approvalReq;
 
-  List<ApprovalRequestMd> get allSortedApprovalReq =>
-      approvalReq
-        ..sort((a, b) =>
-            DateTime.tryParse(b.dateTime!)!
-                .compareTo(DateTime.tryParse(a.dateTime!)!));
+  List<ApprovalRequestMd> get allSortedApprovalReq => approvalReq
+    ..sort((a, b) => DateTime.tryParse(b.dateTime!)!
+        .compareTo(DateTime.tryParse(a.dateTime!)!));
 
   final List<ApprovalUserQualificationMd> approvalUserQualifications;
   final List<InventoryMd> inventoryList;
-
 
   GeneralState({
     required this.paramList,
@@ -162,7 +158,7 @@ class GeneralState {
     List<QuoteInfoMd>? quotes,
     List<ApprovalRequestMd>? approvalReq,
     List<ApprovalUserQualificationMd>? approvalUserQualifications,
-    List<InventoryMd> ? inventoryList,
+    List<InventoryMd>? inventoryList,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -177,7 +173,7 @@ class GeneralState {
       quotes: quotes ?? this.quotes,
       approvalReq: approvalReq ?? this.approvalReq,
       approvalUserQualifications:
-      approvalUserQualifications ?? this.approvalUserQualifications,
+          approvalUserQualifications ?? this.approvalUserQualifications,
       inventoryList: inventoryList ?? this.inventoryList,
     );
   }
@@ -197,7 +193,7 @@ class UpdateGeneralStateAction {
   final List<QuoteInfoMd>? quotes;
   final List<ApprovalRequestMd>? approvalReq;
   final List<ApprovalUserQualificationMd>? approvalUserQualifications;
-  final List<InventoryMd> ? inventoryList;
+  final List<InventoryMd>? inventoryList;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -236,8 +232,8 @@ class OpenDrawerAction {
 class GetAllParamListAction {}
 
 class GetWarehousesAction {
-  static Future<StateValue<List<WarehouseMd>>> fetch(AppState state,
-      GetWarehousesAction action, NextDispatcher next) async {
+  static Future<StateValue<List<WarehouseMd>>> fetch(
+      AppState state, GetWarehousesAction action, NextDispatcher next) async {
     final controller = WarehouseController.to;
     final StateValue<List<WarehouseMd>> result = StateValue(
       error: ErrorModel<GetWarehousesAction>(
@@ -249,7 +245,7 @@ class GetWarehousesAction {
     next(UpdateGeneralStateAction(warehouses: result));
 
     final ApiResponse res =
-    await restClient().getWarehouses().nocodeErrorHandler();
+        await restClient().getWarehouses().nocodeErrorHandler();
 
     result.error.errorCode = res.resCode;
     result.error.errorMessage = res.resMessage;
@@ -321,7 +317,7 @@ class GetAllStorageItemsAction {
     next(UpdateGeneralStateAction(storageItems: stateValue));
 
     final ApiResponse res =
-    await restClient().getStorageItems().nocodeErrorHandler();
+        await restClient().getStorageItems().nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
     stateValue.error.errorMessage = res.resMessage;
@@ -357,7 +353,7 @@ class GetChecklistTemplatesAction {
     next(UpdateGeneralStateAction(checklistTemplates: stateValue));
 
     final ApiResponse res =
-    await restClient().getChecklistTemplates(0).nocodeErrorHandler();
+        await restClient().getChecklistTemplates(0).nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
     stateValue.error.errorMessage = res.resMessage;
@@ -383,17 +379,17 @@ class GetChecklistTemplatesAction {
 }
 
 class GetPropertiesAction {
-  static Future<StateValue<List<PropertiesMd>>> fetch(AppState state,
-      GetPropertiesAction action, NextDispatcher next) async {
+  static Future<StateValue<List<PropertiesMd>>> fetch(
+      AppState state, GetPropertiesAction action, NextDispatcher next) async {
     StateValue<List<PropertiesMd>> stateValue = StateValue(
         data: [],
         error:
-        ErrorModel<GetPropertiesAction>(isLoading: true, action: action));
+            ErrorModel<GetPropertiesAction>(isLoading: true, action: action));
 
     next(UpdateGeneralStateAction(properties: stateValue));
 
     final ApiResponse res =
-    await restClient().getProperties(0.toString()).nocodeErrorHandler();
+        await restClient().getProperties(0.toString()).nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
     stateValue.error.errorMessage = res.resMessage;
@@ -484,7 +480,6 @@ class GetApprovalUserQualificationsAction {
 }
 
 class GetInventoryList {
-
   GetInventoryList();
 }
 
@@ -602,10 +597,12 @@ class OnCreateNewClientTap<T> {
   final BuildContext context;
   final ClientInfoMd? clientInfo;
   final QuoteInfoMd? quoteInfo;
-
-  OnCreateNewClientTap(this.context, {
+  final CreatedTimingReturnValue? timingInfo;
+  OnCreateNewClientTap(
+    this.context, {
     required this.type,
     this.clientInfo,
+    this.timingInfo,
     this.quoteInfo,
   });
 }

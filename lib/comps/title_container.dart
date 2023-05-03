@@ -62,7 +62,7 @@ class TitleContainer extends StatelessWidget {
           if (title != null)
             Container(
                 margin: const EdgeInsets.only(top: 8, bottom: 16),
-                width: MediaQuery.of(Get.context!).size.width * .22,
+                width: 410, //MediaQuery.of(Get.context!).size.width * .22,
                 height: 1,
                 color: ThemeColors.gray2),
           if (child != null) child,
