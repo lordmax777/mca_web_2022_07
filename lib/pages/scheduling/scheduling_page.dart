@@ -352,6 +352,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
           return PageWrapper(
               child: TableWrapperWidget(
                   child: SizedBox(
+            // color: Colors.red,red
             width: double.infinity,
             height: CalendarConstants.fullHeight(context),
             child: SpacedColumn(

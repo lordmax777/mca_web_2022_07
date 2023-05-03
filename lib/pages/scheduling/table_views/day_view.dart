@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../manager/models/location_item_md.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
+import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
@@ -58,6 +59,21 @@ class DailyViewCalendar extends StatelessWidget {
               allowScroll: true,
               allowNavigation: false,
             ),
+            onTap: (calendarTapDetails, offset) async {
+              switch (calendarTapDetails.targetElement) {
+                case CalendarElement.calendarCell:
+                  //Create shift
+                  if (offset != null) {
+                    final jobCreated = await showFormsMenus(context,
+                        globalPosition: offset,
+                        data: CreateShiftData(
+                          date: calendarTapDetails.date,
+                        ));
+                  } else {
+                    showError("There was an unexpected error!");
+                  }
+              }
+            },
             onSelectionChanged: (calendarSelectionDetails) async {},
             initialSelectedDate: day,
             initialDisplayDate: day,
@@ -92,45 +108,28 @@ class DailyViewCalendar extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapUp: (details) async {
-          final RenderBox overlay =
-              Overlay.of(context)!.context.findRenderObject() as RenderBox;
-          final offset = overlay.globalToLocal(details.globalPosition);
-          double left = offset.dx;
-          double top = offset.dy;
-          double right = MediaQuery.of(context).size.width - left;
-          double bottom = MediaQuery.of(context).size.height - top;
-
-          final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
-              context: context,
-              position: RelativeRect.fromLTRB(left, top, right, bottom),
-              items: getPopupCreateMenus());
-          logger(createTapResult, hint: 'Type');
-          if (createTapResult == null) return;
-          final jobCreated = await showDialog<ApiResponse?>(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => JobEditForm(
-                  data: CreateShiftData(date: appointment.startTime)));
+          final jobCreated = await showFormsMenus(context,
+              globalPosition: details.globalPosition,
+              data: CreateShiftData(
+                date: appointment.startTime,
+              ));
         },
         child: Container(
+          alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4.0),
             color: user.userRandomBgColor,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: FittedBox(
-            alignment: Alignment.centerLeft,
-            fit: BoxFit.scaleDown,
-            child: Text(
-              title,
-              softWrap: false,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                    color: Colors.white,
-                    fontFamily: ThemeText.fontFamilyM,
-                  ),
-            ),
+          child: Text(
+            title,
+            softWrap: false,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                  color: Colors.white,
+                  fontFamily: ThemeText.fontFamilyM,
+                ),
           ),
         ),
       ),

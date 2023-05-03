@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/simple_popup_menu.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
@@ -65,12 +66,20 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
               startHour: 0,
               endHour: 1,
             ),
-            onTap: (calendarTapDetails, position) {
-              //          final jobCreated = await showFormsMenus(context,
-              //               globalPosition: details.globalPosition,
-              //               data: CreateShiftData(
-              //                 date: appointment.startTime,
-              //               ));
+            onTap: (calendarTapDetails, offset) async {
+              switch (calendarTapDetails.targetElement) {
+                case CalendarElement.calendarCell:
+                  //Create shift
+                  if (offset != null) {
+                    final jobCreated = await showFormsMenus(context,
+                        globalPosition: offset,
+                        data: CreateShiftData(
+                          date: calendarTapDetails.date,
+                        ));
+                  } else {
+                    showError("There was an unexpected error!");
+                  }
+              }
             },
             maxDate: to,
             headerHeight: 0,
@@ -126,7 +135,7 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: 180,
+                width: MediaQuery.of(context).size.width * 0.1,
                 child: Text(
                   title,
                   softWrap: false,

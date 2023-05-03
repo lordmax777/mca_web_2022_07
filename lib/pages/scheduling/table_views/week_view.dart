@@ -115,28 +115,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
 
                   //Create shift
                   if (offset != null) {
-                    double left = offset.dx;
-                    double top = offset.dy - 60;
-                    double right = MediaQuery.of(context).size.width - left;
-                    double bottom = MediaQuery.of(context).size.height - top;
-
-                    final createTapResult =
-                        await showMenu<ScheduleCreatePopupMenus>(
-                            context: context,
-                            position:
-                                RelativeRect.fromLTRB(left, top, right, bottom),
-                            items: getPopupCreateMenus());
-                    logger(createTapResult, hint: 'Type');
-                    logger(calendarTapDetails.date, hint: "Date");
-                    if (calendarTapDetails.date == null) return;
-                    if (createTapResult == null) return;
-                    final jobCreated = await showDialog<ApiResponse?>(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => JobEditForm(
-                            data: CreateShiftData(
-                                date: calendarTapDetails.date!)));
-                    //TODO: Handle shiftRes
+                    final jobCreated = await showFormsMenus(context,
+                        globalPosition: offset,
+                        data: CreateShiftData(
+                          date: calendarTapDetails.date,
+                        ));
                   } else {
                     showError("There was an unexpected error!");
                   }
@@ -205,20 +188,16 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width * .085,
-                child: FittedBox(
-                  alignment: Alignment.centerLeft,
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    title,
-                    softWrap: false,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: ap.user.foregroundColor,
-                          fontFamily: ThemeText.fontFamilyM,
-                        ),
-                  ),
+                width: MediaQuery.of(context).size.width * .08,
+                child: Text(
+                  title,
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: ap.user.foregroundColor,
+                        fontFamily: ThemeText.fontFamilyM,
+                      ),
                 ),
               ),
               FittedBox(
