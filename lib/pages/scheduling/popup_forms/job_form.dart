@@ -162,6 +162,7 @@ class _JobEditFormState extends State<JobEditForm> {
     if (mounted) {
       data.unavailableUsers.users = unavUsrs;
       for (int i = 0; i < data.unavailableUsers.users.length; i++) {
+        if (addedChildren.isEmpty) break;
         try {
           final user = addedChildren[i];
           if (data.unavailableUsers.users
