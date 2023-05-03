@@ -21,6 +21,7 @@ import 'client_form.dart';
 
 class JobEditForm extends StatefulWidget {
   final CreateShiftData data;
+
   const JobEditForm({Key? key, required this.data}) : super(key: key);
 
   @override
@@ -30,21 +31,32 @@ class JobEditForm extends StatefulWidget {
 class _JobEditFormState extends State<JobEditForm> {
   //Getters
   late final CreateShiftData data = widget.data;
+
   bool get isCreate => data.isCreate;
+
   ScheduleCreatePopupMenus get type => data.type;
+
   CompanyMd get company => GeneralController.to.companyInfo;
+
   PlutoGridStateManager get gridStateManager => data.gridStateManager;
+
   bool get isClientSelected => data.client != null;
+
   List<UserRes> get addedChildren => data.addedChildren;
+
   Map<int, double> get addedChildrenRates => data.addedChildrenRates;
+
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
+
   CreatedTimingReturnValue get timing => data.timingInfo;
 
   //Setters
   set addedChildrenRates(Map<int, double> value) =>
       data.addedChildrenRates = value;
+
   set gridStateManager(PlutoGridStateManager value) =>
       data.gridStateManager = value;
+
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
 
   @override
@@ -98,6 +110,7 @@ class _JobEditFormState extends State<JobEditForm> {
                   color: ThemeColors.gray6,
                   width: 2,
                   strokeAlign: StrokeAlign.outside),
+              // strokeAlign: BorderSide.strokeAlignInside),
             ),
             child: _Form(state)),
       ),
