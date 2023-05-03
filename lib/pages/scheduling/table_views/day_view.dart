@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
@@ -8,8 +10,11 @@ import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
+import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
+import '../popup_forms/job_form.dart';
+import '../scheduling_page.dart';
 
 class DailyViewCalendar extends StatelessWidget {
   final DateTime day;
@@ -53,9 +58,7 @@ class DailyViewCalendar extends StatelessWidget {
               allowScroll: true,
               allowNavigation: false,
             ),
-            onSelectionChanged: (calendarSelectionDetails) async {
-              // openEndDrawer(const Drawer());
-            },
+            onSelectionChanged: (calendarSelectionDetails) async {},
             initialSelectedDate: day,
             initialDisplayDate: day,
             todayHighlightColor: Colors.transparent,
@@ -86,24 +89,48 @@ class DailyViewCalendar extends StatelessWidget {
     return Tooltip(
       verticalOffset: 10,
       message: title,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4.0),
-          color: user.userRandomBgColor,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: FittedBox(
-          alignment: Alignment.centerLeft,
-          fit: BoxFit.scaleDown,
-          child: Text(
-            title,
-            softWrap: false,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  color: Colors.white,
-                  fontFamily: ThemeText.fontFamilyM,
-                ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onSecondaryTapDown: (details) async {
+          final RenderBox overlay =
+              Overlay.of(context)!.context.findRenderObject() as RenderBox;
+          final offset = overlay.globalToLocal(details.globalPosition);
+          double left = offset.dx;
+          double top = offset.dy;
+          double right = MediaQuery.of(context).size.width - left;
+          double bottom = MediaQuery.of(context).size.height - top;
+
+          final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
+              context: context,
+              position: RelativeRect.fromLTRB(left, top, right, bottom),
+              items: getPopupCreateMenus());
+          logger(createTapResult, hint: 'Type');
+          if (createTapResult == null) return;
+          final jobCreated = await showDialog<ApiResponse?>(
+              context: context,
+              barrierDismissible: kDebugMode,
+              builder: (context) => JobEditForm(
+                  data: CreateShiftData(date: appointment.startTime)));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: user.userRandomBgColor,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: FittedBox(
+            alignment: Alignment.centerLeft,
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              softWrap: false,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                    color: Colors.white,
+                    fontFamily: ThemeText.fontFamilyM,
+                  ),
+            ),
           ),
         ),
       ),
@@ -134,6 +161,7 @@ class DailyViewCalendar extends StatelessWidget {
               child: KText(
                 fontSize: 16.0,
                 isSelectable: false,
+                textColor: user.foregroundColor,
                 fontWeight: FWeight.bold,
                 text:
                     "${user.firstName.substring(0, 1)}${user.lastName.substring(0, 1)}"

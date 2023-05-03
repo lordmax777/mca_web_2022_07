@@ -6,14 +6,16 @@ import 'package:mca_web_2022_07/comps/simple_popup_menu.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
+import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
+import '../popup_forms/job_form.dart';
 import '../scheduling_page.dart';
 
 class MonthlyViewCalendar extends StatefulWidget {
   final DateTime month;
 
-  MonthlyViewCalendar({
+  const MonthlyViewCalendar({
     Key? key,
     required this.month,
   }) : super(key: key);
@@ -48,11 +50,12 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
           return SfCalendar(
             view: CalendarView.month,
             dataSource: getDataSource(scheduleState),
+            initialSelectedDate: from,
+            initialDisplayDate: from,
             monthViewSettings: const MonthViewSettings(
               dayFormat: "EEE",
               appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
             ),
-            // maxDate: to,
             viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
               allowScroll: !kDebugMode,
@@ -62,20 +65,8 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
               startHour: 0,
               endHour: 1,
             ),
+            maxDate: to,
             headerHeight: 0,
-            onTap: (calendarTapDetails, offset) {
-              switch (calendarTapDetails.targetElement) {
-                case CalendarElement.appointment:
-                  logger("appointment");
-                  break;
-                case CalendarElement.calendarCell:
-                  logger("calendarCell ${calendarTapDetails.date}");
-                  _onAppointmentTap(calendarTapDetails.date!, scheduleState);
-                  break;
-                default:
-                  logger(calendarTapDetails.targetElement);
-              }
-            },
             onDragEnd: (appointmentDragEndDetails) {
               appStore.dispatch(SCDragEndAction(appointmentDragEndDetails));
             },
@@ -104,34 +95,59 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
     final formatter = DateFormat('h:mm a');
     final start = appointment.startTime;
     final end = appointment.endTime;
+    final colorFg = ap.user.foregroundColor;
     final title = "${location.title ?? "-"} - ${location.locationName}";
     return Tooltip(
       verticalOffset: 10,
       message: title,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4.0),
-          color: user.userRandomBgColor,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: 180,
-              child: Text(
-                title,
-                softWrap: false,
-                maxLines: 1,
-                overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Colors.white,
-                      fontFamily: ThemeText.fontFamilyM,
-                    ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onSecondaryTapDown: (details) async {
+          final RenderBox overlay =
+              Overlay.of(context)!.context.findRenderObject() as RenderBox;
+          final offset = overlay.globalToLocal(details.globalPosition);
+          double left = offset.dx;
+          double top = offset.dy;
+          double right = MediaQuery.of(context).size.width - left;
+          double bottom = MediaQuery.of(context).size.height - top;
+
+          final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
+              context: context,
+              position: RelativeRect.fromLTRB(left, top, right, bottom),
+              items: getPopupCreateMenus());
+          logger(createTapResult, hint: 'Type');
+          if (createTapResult == null) return;
+          final jobCreated = await showDialog<ApiResponse?>(
+              context: context,
+              barrierDismissible: kDebugMode,
+              builder: (context) => JobEditForm(
+                  data: CreateShiftData(date: appointment.startTime)));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: ap.user.userRandomBgColor,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 180,
+                child: Text(
+                  title,
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: colorFg,
+                        fontFamily: ThemeText.fontFamilyM,
+                      ),
+                ),
               ),
-            ),
-            FittedBox(child: _appActionWidget(ap)),
-          ],
+              FittedBox(child: _appActionWidget(ap)),
+            ],
+          ),
         ),
       ),
     );
@@ -234,7 +250,7 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    logger(state.backupShiftsMonth.length);
-    return ShiftDataSource(state.backupShiftsMonth, []);
+    logger(state.getMonthShifts.length);
+    return ShiftDataSource(state.getMonthShifts, []);
   }
 }

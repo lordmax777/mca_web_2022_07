@@ -150,21 +150,11 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
         isExpanded: true,
         focusColor: ThemeColors.transparent,
         autofocus: true,
-        dropdownDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: [
-            BoxShadow(
-                color: ThemeColors.black.withOpacity(0.2),
-                offset: const Offset(0, 1),
-                blurRadius: 4)
-          ],
-        ),
         barrierColor: ThemeColors.black.withOpacity(0.1),
         buttonPadding: EdgeInsets.zero,
         value: widget.value != null ? (widget.value as String) : null,
         dropdownWidth: widget.dropdownOptionsWidth,
         dropdownMaxHeight: widget.dropdownMaxHeight,
-
         customButton: MouseRegion(
           cursor: widget.disableAll
               ? SystemMouseCursors.forbidden
@@ -172,7 +162,7 @@ class _DropdownWidget1State<T> extends State<DropdownWidget1> {
                   ? SystemMouseCursors.click
                   : SystemMouseCursors.basic),
           child: Container(
-            height: 56,
+            height: 54,
             padding: const EdgeInsets.only(left: 15.0),
             decoration: BoxDecoration(
               border: Border.all(

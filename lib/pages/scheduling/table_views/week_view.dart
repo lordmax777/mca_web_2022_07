@@ -15,7 +15,6 @@ import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
-import '../create_shift_popup.dart';
 import '../models/data_source.dart';
 import '../schdule_appointment_drawer.dart';
 import '../scheduling_page.dart';
@@ -100,12 +99,12 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   final AppointmentIdMd? id =
                       calendarTapDetails.appointments?.first.id;
                   if (id == null) return;
-                  final jobCreated = await showDialog<ApiResponse?>(
-                      context: context,
-                      barrierDismissible: kDebugMode,
-                      builder: (context) => JobEditForm(
-                          data:
-                              CreateShiftData(date: calendarTapDetails.date!)));
+                  // final jobCreated = await showDialog<ApiResponse?>(
+                  //     context: context,
+                  //     barrierDismissible: kDebugMode,
+                  //     builder: (context) => JobEditForm(
+                  //         data:
+                  //             CreateShiftData(date: calendarTapDetails.date!)));
                   // final shiftRes = await showCreateShiftPopup(
                   //     context,
                   //     CreateShiftData(
@@ -204,36 +203,60 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     return Tooltip(
       verticalOffset: 10,
       message: title,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4.0),
-          color: color,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .085,
-              child: FittedBox(
-                alignment: Alignment.centerLeft,
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  title,
-                  softWrap: false,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: ap.user.foregroundColor,
-                        fontFamily: ThemeText.fontFamilyM,
-                      ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onSecondaryTapDown: (details) async {
+          final RenderBox overlay =
+              Overlay.of(context)!.context.findRenderObject() as RenderBox;
+          final offset = overlay.globalToLocal(details.globalPosition);
+          double left = offset.dx;
+          double top = offset.dy;
+          double right = MediaQuery.of(context).size.width - left;
+          double bottom = MediaQuery.of(context).size.height - top;
+
+          final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
+              context: context,
+              position: RelativeRect.fromLTRB(left, top, right, bottom),
+              items: getPopupCreateMenus());
+          logger(createTapResult, hint: 'Type');
+          if (createTapResult == null) return;
+          final jobCreated = await showDialog<ApiResponse?>(
+              context: context,
+              barrierDismissible: kDebugMode,
+              builder: (context) => JobEditForm(
+                  data: CreateShiftData(date: appointment.startTime)));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.0),
+            color: color,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * .085,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    softWrap: false,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: ap.user.foregroundColor,
+                          fontFamily: ThemeText.fontFamilyM,
+                        ),
+                  ),
                 ),
               ),
-            ),
-            FittedBox(
-                child:
-                    _appActionWidget(ap, iconColor: ap.user.foregroundColor)),
-          ],
+              FittedBox(
+                  child:
+                      _appActionWidget(ap, iconColor: ap.user.foregroundColor)),
+            ],
+          ),
         ),
       ),
     );
