@@ -30,11 +30,13 @@ class QuoteEditForm extends StatefulWidget {
 class _QuoteEditFormState extends State<QuoteEditForm> {
   //Getters
   late final CreateShiftDataQuote data = widget.data;
+
   bool get isCreate => data.isCreate;
 
   ScheduleCreatePopupMenus get type => data.type;
 
   CompanyMd get company => GeneralController.to.companyInfo;
+
   PlutoGridStateManager get gridStateManager => data.gridStateManager;
 
   //Setters
@@ -92,6 +94,7 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                   color: ThemeColors.gray6,
                   width: 2,
                   strokeAlign: StrokeAlign.outside),
+              // strokeAlign: BorderSide.strokeAlignInside),
             ),
             child: _Form(state)),
       ),

@@ -28,8 +28,8 @@ AppState appReducer(AppState state, dynamic action) {
 final _scheduleReducer = combineReducers<ScheduleState>(
     [TypedReducer<ScheduleState, UpdateScheduleState>(_updateScheduleState)]);
 
-ScheduleState _updateScheduleState(
-    ScheduleState state, UpdateScheduleState action) {
+ScheduleState _updateScheduleState(ScheduleState state,
+    UpdateScheduleState action) {
   return state.copyWith(
     calendarView: action.calendarView ?? state.calendarView,
     sidebarType: action.sidebarType ?? state.sidebarType,
@@ -63,8 +63,8 @@ final _usersReducer = combineReducers<UsersState>([
   TypedReducer<UsersState, UpdateUsersStateAction>(_updateUsersStateAction)
 ]);
 
-UsersState _updateUsersStateAction(
-    UsersState state, UpdateUsersStateAction action) {
+UsersState _updateUsersStateAction(UsersState state,
+    UpdateUsersStateAction action) {
   if (action.isInit) {
     final managedUsers = state.usersList;
     final newState = UsersState.initial();
@@ -77,7 +77,7 @@ UsersState _updateUsersStateAction(
     selectedUser: action.selectedUser,
     userDetails: action.userDetails ?? state.userDetails,
     userDetailContracts:
-        action.userDetailContracts ?? state.userDetailContracts,
+    action.userDetailContracts ?? state.userDetailContracts,
     userDetailReviews: action.userDetailReviews ?? state.userDetailReviews,
     userDetailVisas: action.userDetailVisas ?? state.userDetailVisas,
     userDetailQualifs: action.userDetailQualifs ?? state.userDetailQualifs,
@@ -85,7 +85,7 @@ UsersState _updateUsersStateAction(
     userDetailMobileIsRegistered: action.userDetailMobileIsRegistered ??
         state.userDetailMobileIsRegistered,
     userDetailPreferredShift:
-        action.userDetailPreferredShift ?? state.userDetailPreferredShift,
+    action.userDetailPreferredShift ?? state.userDetailPreferredShift,
     userDetailPhotos: action.userDetailPhotos ?? state.userDetailPhotos,
     // saveableUserDetails:
     // action.saveableUserDetails ?? state.saveableUserDetails,
@@ -100,8 +100,8 @@ final _generalReducer = combineReducers<GeneralState>([
       _updateGeneralStateAction)
 ]);
 
-GeneralState _updateGeneralStateAction(
-    GeneralState state, UpdateGeneralStateAction action) {
+GeneralState _updateGeneralStateAction(GeneralState state,
+    UpdateGeneralStateAction action) {
   return state.copyWith(
     paramList: action.paramList ?? state.paramList,
     drawerStates: action.drawerStates ?? state.drawerStates,
@@ -113,9 +113,9 @@ GeneralState _updateGeneralStateAction(
     locationAddresses: action.locationAddresses ?? state.locationAddresses,
     clientInfos: action.clientInfos ?? state.clientInfos,
     quotes: action.quotes ?? state.quotes,
-    approvalReq: action.approvalReq ?? state.approvalReq,
+    approvals: action.approvals ?? state.approvals,
     approvalUserQualifications:
-        action.approvalUserQualifications ?? state.approvalUserQualifications,
+    action.approvalUserQualifications ?? state.approvalUserQualifications,
     inventoryList: action.inventoryList ?? state.inventoryList,
   );
 }
@@ -128,8 +128,8 @@ final _savedUserReducer = combineReducers<SavedUserState>([
       _updateSavedUserStateAction)
 ]);
 
-SavedUserState _updateSavedUserStateAction(
-    SavedUserState state, UpdateSavedUserStateAction action) {
+SavedUserState _updateSavedUserStateAction(SavedUserState state,
+    UpdateSavedUserStateAction action) {
   if (action.isInit) {
     return SavedUserState.initial();
   }
@@ -142,7 +142,7 @@ SavedUserState _updateSavedUserStateAction(
     lastName: action.lastName ?? state.lastName,
     birthdate: action.birthdate ?? state.birthdate,
     nationalityCountryCode:
-        action.nationalityCountryCode ?? state.nationalityCountryCode,
+    action.nationalityCountryCode ?? state.nationalityCountryCode,
     addressCity: action.addressCity ?? state.addressCity,
     addressLine1: action.addressLine1 ?? state.addressLine1,
     addressPostcode: action.addressPostcode ?? state.addressPostcode,
@@ -171,7 +171,7 @@ SavedUserState _updateSavedUserStateAction(
     latitude: action.latitude ?? state.latitude,
     longitude: action.longitude ?? state.longitude,
     nationalInsuranceNo:
-        action.nationalInsuranceNo ?? state.nationalInsuranceNo,
+    action.nationalInsuranceNo ?? state.nationalInsuranceNo,
     roleCode: action.roleCode ?? state.roleCode,
     county: action.county ?? state.county,
   );
