@@ -1,11 +1,13 @@
 export './models/create_shift_type.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/modals/custom_date_picker.dart';
 import '../../comps/modals/custom_date_range_picker.dart';
@@ -13,7 +15,9 @@ import '../../comps/modals/custom_month_picker.dart';
 import '../../comps/simple_popup_menu.dart';
 import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
+import 'models/create_shift_type.dart';
 import 'table_views/day_view.dart';
 import 'table_views/month_view.dart';
 import 'table_views/week_view.dart';
@@ -507,4 +511,43 @@ Widget addIcon(
             icon ?? HeroIcons.add,
             color: (color ?? ThemeColors.MAIN_COLOR),
           )));
+}
+
+Future<ApiResponse?> showFormsMenus(BuildContext context,
+    {Offset? globalPosition, CreateShiftData? data}) async {
+  //Positions the menu
+  final RenderBox overlay =
+      Overlay.of(context)!.context.findRenderObject() as RenderBox;
+  Offset? off;
+  double? left;
+  double? top;
+  double? right;
+  double? bottom;
+  if (globalPosition != null) {
+    off = overlay.globalToLocal(globalPosition);
+    left = off.dx;
+    top = off.dy;
+    right = MediaQuery.of(context).size.width - left;
+    bottom = MediaQuery.of(context).size.height - top;
+  }
+  final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
+      context: context,
+      position: globalPosition != null
+          ? RelativeRect.fromLTRB(left!, top!, right!, bottom!)
+          : RelativeRect.fill,
+      items: getPopupCreateMenus());
+
+  if (createTapResult == null) return null;
+
+  switch (createTapResult) {
+    case ScheduleCreatePopupMenus.job:
+      final jobCreated = await showDialog<ApiResponse?>(
+          context: context,
+          barrierDismissible: kDebugMode,
+          builder: (context) => JobEditForm(data: data!));
+      return jobCreated;
+    case ScheduleCreatePopupMenus.quote:
+      // TODO: Handle this case.
+      return null;
+  }
 }
