@@ -149,6 +149,21 @@ class Address {
       radius: clientAddressForm.radius,
     );
   }
+
+  // from LocationAddress
+  factory Address.fromLocationAddress(LocationAddress locationAddress) {
+    return Address(
+      line1: locationAddress.address!.line1,
+      line2: locationAddress.address!.line2,
+      city: locationAddress.address!.city,
+      county: locationAddress.address!.county,
+      country: locationAddress.address!.country,
+      postcode: locationAddress.address!.postcode,
+      latitude: locationAddress.address!.latitude,
+      longitude: locationAddress.address!.longitude,
+      radius: locationAddress.address!.radius,
+    );
+  }
 }
 
 class Phone {

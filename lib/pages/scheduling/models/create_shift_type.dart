@@ -9,8 +9,6 @@ import '../../../manager/models/location_item_md.dart';
 import '../popup_forms/timing_form.dart';
 
 abstract class CreateShiftDataType {
-  ScheduleCreatePopupMenus get type;
-
   bool get isCreate;
 
   DateTime? date;
@@ -31,18 +29,6 @@ abstract class CreateShiftDataType {
   late PlutoGridStateManager gridStateManager;
 
   CreateShiftDataType({this.date});
-
-  @override
-  String toString() {
-    return 'CreateShiftDataType{type: $type, date: $date,'
-        'selectedLocationId: $selectedLocationId, tempAllowedLocationId: $tempAllowedLocationId,'
-        ' isActive: $isActive,'
-        'endDate: $endDate, isAllDay: $isAllDay, startTime: $startTime, endTime: $endTime,'
-        ' scheduleLaterIndex: $scheduleLaterIndex, repeatTypeIndex: $repeatTypeIndex,'
-        ' repeatDays: $repeatDays, '
-        'addedChildren: $addedChildren,'
-        ' addedChildrenRates: $addedChildrenRates, gridStateManager: $gridStateManager}';
-  }
 }
 
 class UnavailableUserLoad {
@@ -66,21 +52,47 @@ class CreateShiftData extends CreateShiftDataType {
 
   ClientInfoMd? client;
   LocationAddress? location;
-  CreatedTimingReturnValue timingInfo =
-      CreatedTimingReturnValue(hasAltTime: false);
+  CreatedTimingReturnValue timingInfo = CreatedTimingReturnValue();
+  bool hasAltTime;
+
+  Address? workAddress;
+  bool hasWorkAddress;
+  int? tempAllowedLocIdWorkAddress;
+
+  String comment = "";
+  bool hasComment;
 
   final UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
+  bool hasUnavUsers;
 
-  CreateShiftData({required super.date}) {
+  int? quoteId;
+
+  CreateShiftData({
+    required super.date,
+    this.hasComment = false,
+    this.hasUnavUsers = true,
+    this.hasWorkAddress = false,
+    this.quoteId,
+    this.hasAltTime = false,
+    this.type = ScheduleCreatePopupMenus.job,
+  }) {
     if (selectedClientId != null) {
       client = appStore.state.generalState.clientInfos
           .firstWhereOrNull((element) => element.id == selectedClientId);
       if (client == null) return;
     }
+    timingInfo.hasAltTime = hasAltTime;
+    if (type == ScheduleCreatePopupMenus.quote) {
+      scheduleLaterIndex = 1;
+      repeatTypeIndex = 0;
+      if (quoteId != null) {
+        //TODO: SHOH
+
+      }
+    }
   }
 
-  @override
-  ScheduleCreatePopupMenus get type => ScheduleCreatePopupMenus.job;
+  ScheduleCreatePopupMenus type;
 
   @override
   bool get isCreate => selectedJobId == null || selectedJobId == 0;

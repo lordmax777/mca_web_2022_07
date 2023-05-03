@@ -403,7 +403,7 @@ Future<ApiResponse?> _createQuoteAction(
             formData.fields.add(
                 MapEntry('workAddressCountry', action.workAddressCountry!));
           }
-          logger(action.workStartDate);
+
           if (action.workStartDate != null &&
               action.workStartDate!.isNotEmpty) {
             formData.fields.add(MapEntry('workStartDate',
@@ -476,6 +476,23 @@ Future<ApiResponse?> _createQuoteAction(
               action.quoteComments!.isNotEmpty) {
             formData.fields
                 .add(MapEntry('quoteComments', action.quoteComments!));
+          }
+
+          if (action.clientId != null) {
+            formData.fields
+                .add(MapEntry('client_id', action.clientId!.toString()));
+          }
+          if (action.locationId != null) {
+            formData.fields
+                .add(MapEntry('location_id', action.locationId!.toString()));
+          }
+          if (action.clientContractId != null) {
+            formData.fields.add(MapEntry(
+                'client_contract_id', action.clientContractId!.toString()));
+          }
+          if (action.shiftId != null) {
+            formData.fields
+                .add(MapEntry('shift_id', action.shiftId!.toString()));
           }
 
           formData.fields.removeWhere((element) => element.value == "null");

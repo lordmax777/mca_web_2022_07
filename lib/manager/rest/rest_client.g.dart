@@ -2381,92 +2381,6 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> createQuote(
-    id, {
-    required email,
-    required name,
-    company,
-    phone,
-    addressLine1,
-    addressLine2,
-    addressCity,
-    addressCounty,
-    addressCountry,
-    addressPostcode,
-    workAddressLine1,
-    workAddressLine2,
-    workAddressCity,
-    workAddressCounty,
-    workAddressCountry,
-    workAddressPostcode,
-    notes,
-    currencyId,
-    paymentMethodId,
-    required payingDays,
-    required active,
-    workStartDate,
-    altWorkStartDate,
-    workStartTime,
-    workFinishTime,
-    workRepeatId,
-    quoteComments,
-    workDays,
-  }) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    final _data = {
-      'email': email,
-      'name': name,
-      'company': company,
-      'phone': phone,
-      'addressLine1': addressLine1,
-      'addressLine2': addressLine2,
-      'addressCity': addressCity,
-      'addressCounty': addressCounty,
-      'addressCountry': addressCountry,
-      'addressPostcode': addressPostcode,
-      'workAddressLine1': workAddressLine1,
-      'workAddressLine2': workAddressLine2,
-      'workAddressCity': workAddressCity,
-      'workAddressCounty': workAddressCounty,
-      'workAddressCountry': workAddressCountry,
-      'workAddressPostcode': workAddressPostcode,
-      'notes': notes,
-      'currencyId': currencyId,
-      'paymentMethodId': paymentMethodId,
-      'payingDays': payingDays,
-      'active': active,
-      'workStartDate': workStartDate,
-      'altWorkStartDate': altWorkStartDate,
-      'workStartTime': workStartTime,
-      'workFinishTime': workFinishTime,
-      'workRepeatId': workRepeatId,
-      'quoteComments': quoteComments,
-      'workDays': workDays,
-    };
-    _data.removeWhere((k, v) => v == null);
-    final _result =
-        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-      contentType: null,
-    )
-            .compose(
-              _dio.options,
-              '/api/fe/quotes/${id}',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data;
-    final httpResponse = HttpResponse(value, _result);
-    return httpResponse;
-  }
-
-  @override
   Future<HttpResponse<dynamic>> getApprovals() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -2481,6 +2395,40 @@ class _RestClient implements RestClient {
             .compose(
               _dio.options,
               '/api/fe/approvals',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> updateQuoteStatus(
+    id, {
+    required status,
+    required ip_address,
+    required browserId,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'status': status,
+      'ip_address': ip_address,
+      'browserId': browserId,
+    };
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/quotestatus/${id}',
               queryParameters: queryParameters,
               data: _data,
             )

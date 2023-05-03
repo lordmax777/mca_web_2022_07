@@ -11,9 +11,11 @@ import '../../../comps/custom_scrollbar.dart';
 import '../../../comps/title_container.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/models/location_item_md.dart';
+import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/users_state/users_state.dart';
+import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 import '../../scheduling/create_shift_popup.dart';
 import '../../scheduling/popup_forms/storage_item_form.dart';
@@ -31,46 +33,50 @@ class JobEditForm extends StatefulWidget {
 class _JobEditFormState extends State<JobEditForm> {
   //Getters
   late final CreateShiftData data = widget.data;
-
   bool get isCreate => data.isCreate;
-
   ScheduleCreatePopupMenus get type => data.type;
-
   CompanyMd get company => GeneralController.to.companyInfo;
-
   PlutoGridStateManager get gridStateManager => data.gridStateManager;
-
   bool get isClientSelected => data.client != null;
-
   List<UserRes> get addedChildren => data.addedChildren;
-
   Map<int, double> get addedChildrenRates => data.addedChildrenRates;
-
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
-
   CreatedTimingReturnValue get timing => data.timingInfo;
+  String get comment => data.comment;
+  bool get hasComment => data.hasComment;
+  bool get hasUnavUsers => data.hasUnavUsers;
+  bool get hasWorkAddress => data.hasWorkAddress;
+  Address? get workAddress => data.workAddress;
 
   //Setters
   set addedChildrenRates(Map<int, double> value) =>
       data.addedChildrenRates = value;
-
   set gridStateManager(PlutoGridStateManager value) =>
       data.gridStateManager = value;
-
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
+  set comment(String value) => data.comment = value;
+
+  //Vars
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final unavUsers = await appStore
-          .dispatch(GetUnavailableUsersAction(data.date ?? DateTime.now()));
-      if (mounted) {
-        setState(() {
-          data.unavailableUsers.users = unavUsers;
-        });
+      if (hasUnavUsers) {
+        final unavUsers = await appStore
+            .dispatch(GetUnavailableUsersAction(data.date ?? DateTime.now()));
+        if (mounted) {
+          setState(() {
+            data.unavailableUsers.users = unavUsers;
+          });
+        }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -133,7 +139,72 @@ class _JobEditFormState extends State<JobEditForm> {
 
   //Functions
   void _save(AppState state) async {
-    //TODO: Save
+    switch (type) {
+      case ScheduleCreatePopupMenus.job:
+        // TODO: Handle this case.
+        break;
+      case ScheduleCreatePopupMenus.quote:
+        _saveQuote(state);
+        break;
+    }
+    logger('Save ${type.label}');
+  }
+
+  void _saveQuote(AppState state) async {
+    final storageItems = [...state.generalState.storage_items];
+    final workRepeats = [...state.generalState.workRepeats];
+    ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
+      id: data.quoteId ?? 0,
+      email: data.client!.email ?? "",
+      name: data.client!.name,
+      company: data.client!.company,
+      phone: data.client!.phone,
+      addressLine1: data.client!.address.line1,
+      addressLine2: data.client!.address.line2,
+      addressCounty: data.client!.address.county,
+      addressCity: data.client!.address.city,
+      addressCountry: data.client!.address.country,
+      addressPostcode: data.client!.address.postcode,
+      active: data.client!.active,
+      altWorkStartDate: data.timingInfo.altStartDate?.formattedDate,
+      currencyId: int.parse(data.client!.currencyId),
+      payingDays: data.client!.payingDays,
+      paymentMethodId: int.parse(data.client!.paymentMethodId!),
+      quoteComments: data.comment,
+      workAddressLine1: data.workAddress?.line1,
+      workAddressLine2: data.workAddress?.line2,
+      workAddressCounty: data.workAddress?.county,
+      workAddressCity: data.workAddress?.city,
+      workAddressCountry: data.workAddress?.country,
+      workAddressPostcode: data.workAddress?.postcode,
+      notes: data.client!.notes,
+      workStartDate: data.timingInfo.startDate?.formattedDate,
+      workRepeatId: workRepeats[data.timingInfo.repeatTypeIndex ?? 0].id,
+      workStartTime: data.timingInfo.startTime?.formattedTime,
+      workFinishTime: data.timingInfo.endTime?.formattedTime,
+      workDays: data.timingInfo.repeatDays,
+      storageItems: gridStateManager.rows
+          .map<StorageItemMd>((row) {
+            final item = storageItems.firstWhereOrNull(
+                (element) => element.id == row.cells['id']!.value);
+            if (item != null) {
+              item.quantity = row.cells['quantity']!.value;
+              item.outgoingPrice = row.cells['customer_price']!.value;
+              item.auto = row.checked ?? false;
+
+              return item;
+            }
+            return StorageItemMd.init();
+          })
+          .where((element) => element.id != -1)
+          .toList(),
+    ));
+    if (quoteCreated?.success == true) {
+      // exit(context).then((value) {
+      //   showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
+      //       titleMsg: "Success");
+      // });
+    }
   }
 
   void _onCreateNewClient() async {
@@ -172,6 +243,26 @@ class _JobEditFormState extends State<JobEditForm> {
     });
   }
 
+  void _editWorkAddress() async {
+    final CreatedClientReturnValue? res = await appStore.dispatch(
+        OnCreateNewClientTap(context,
+            type: ClientFormType.location,
+            clientInfo: ClientInfoMd.init(id: data.client?.id)));
+    if (res == null) return;
+    setState(() {
+      if (res.locationId != null) {
+        data.tempAllowedLocIdWorkAddress = res.locationId;
+        final loc = appStore.state.generalState.locations
+            .firstWhereOrNull((element) => element.id == res.locationId);
+        if (loc != null) {
+          data.workAddress = Address.fromLocationAddress(appStore
+              .state.generalState.locations
+              .firstWhereOrNull((element) => element.id == res.locationId)!);
+        }
+      }
+    });
+  }
+
   void _editTiming() async {
     timing.hasAltTime = false;
     final CreatedTimingReturnValue? res = await appStore.dispatch(
@@ -181,29 +272,31 @@ class _JobEditFormState extends State<JobEditForm> {
     if (res == null) return;
     logger(res.repeatDays);
     data.timingInfo = res;
-    setState(() {
-      data.unavailableUsers.isLoaded = false;
-    });
-    final unavUsrs =
-        await appStore.dispatch(GetUnavailableUsersAction(res.startDate!));
-    if (mounted) {
-      data.unavailableUsers.users = unavUsrs;
-      for (int i = 0; i < data.unavailableUsers.users.length; i++) {
-        if (addedChildren.isEmpty) break;
-        try {
-          final user = addedChildren[i];
-          if (data.unavailableUsers.users
-              .any((element) => element.userId == user.id)) {
-            addedChildren.remove(user);
-            addedChildrenRates.remove(user.id);
+    if (hasUnavUsers) {
+      setState(() {
+        data.unavailableUsers.isLoaded = false;
+      });
+      final unavUsrs =
+          await appStore.dispatch(GetUnavailableUsersAction(res.startDate!));
+      if (mounted) {
+        data.unavailableUsers.users = unavUsrs;
+        for (int i = 0; i < data.unavailableUsers.users.length; i++) {
+          if (addedChildren.isEmpty) break;
+          try {
+            final user = addedChildren[i];
+            if (data.unavailableUsers.users
+                .any((element) => element.userId == user.id)) {
+              addedChildren.remove(user);
+              addedChildrenRates.remove(user.id);
+            }
+          } catch (e) {
+            logger(e);
           }
-        } catch (e) {
-          logger(e);
         }
+        data.unavailableUsers.isLoaded = true;
       }
-      data.unavailableUsers.isLoaded = true;
-      setState(() {});
     }
+    setState(() {});
   }
 
   void onEditTeamMember(List<UserRes> users) {
@@ -394,7 +487,12 @@ class _JobEditFormState extends State<JobEditForm> {
             .where((element) =>
                 element.id == data.tempAllowedLocationId &&
                 !locations.contains(element))
-            .toList())
+            .toList()),
+        ...(state.generalState.locations
+            .where((element) =>
+                element.id == data.tempAllowedLocIdWorkAddress &&
+                !locations.contains(element))
+            .toList()),
       ];
     }
 
@@ -415,107 +513,135 @@ class _JobEditFormState extends State<JobEditForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     verticalSpace: 16,
                     children: [
-                      TitleContainer(
-                        titleOverride: "Create New Client",
-                        titleIcon: HeroIcons.add,
-                        onEdit: _onCreateNewClient,
-                        title: "Personal Information",
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomAutocompleteTextField<ClientInfoMd>(
-                                width: 400,
-                                height: 50,
-                                hintText: "Select Client",
-                                listItemWidget: (p0) => Text(p0.name),
-                                onSelected: (p0) {
-                                  data.client = p0;
-                                  data.selectedClientId = p0.id;
-                                  data.location = null;
-                                  data.tempAllowedLocationId = null;
-                                  setState(() {});
-                                },
-                                displayStringForOption: (option) {
-                                  return option.name;
-                                },
-                                options: (p0) => state.generalState.clientInfos
-                                    .where((element) => element.name
-                                        .toLowerCase()
-                                        .contains(p0.text.toLowerCase()))),
-                            const SizedBox(height: 16),
-                            SpacedColumn(
+                      SpacedColumn(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        verticalSpace: 16,
+                        children: [
+                          TitleContainer(
+                            titleOverride: "Create New Client",
+                            titleIcon: HeroIcons.add,
+                            onEdit: _onCreateNewClient,
+                            title: "Personal Information",
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Name:",
-                                  null,
-                                  customLabel: _textField(data.client?.name),
-                                ),
-                                const Divider(),
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Company:",
-                                  null,
-                                  customLabel: _textField(data.client?.company),
-                                ),
-                                const Divider(),
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Email:",
-                                  null,
-                                  customLabel: _textField(data.client?.email),
-                                ),
-                                const Divider(),
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Phone:",
-                                  null,
-                                  customLabel: _textField(data.client?.phone),
-                                ),
-                                const Divider(),
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Payment Terms:",
-                                  null,
-                                  customLabel: _textField(
-                                      data.client?.payingDays.toString()),
-                                ),
-                                const Divider(),
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Currency:",
-                                  null,
-                                  customLabel: _textField(currencies
-                                      .firstWhereOrNull((element) =>
-                                          int.tryParse(
-                                              data.client?.currencyId ?? "") ==
-                                          element.id)
-                                      ?.sign),
-                                ),
-                                const Divider(),
-                                labelWithField(
-                                    labelWidth: 160,
-                                    "Payment method:",
-                                    null,
-                                    customLabel: _textField(paymentMethods
-                                        .firstWhereOrNull((element) =>
-                                            int.tryParse(
-                                                data.client?.paymentMethodId ??
+                                CustomAutocompleteTextField<ClientInfoMd>(
+                                    width: 400,
+                                    height: 50,
+                                    hintText: "Select Client",
+                                    listItemWidget: (p0) => Text(p0.name),
+                                    onSelected: (p0) {
+                                      data.client = p0;
+                                      data.selectedClientId = p0.id;
+                                      data.location = null;
+                                      data.tempAllowedLocationId = null;
+                                      setState(() {});
+                                    },
+                                    displayStringForOption: (option) {
+                                      return option.name;
+                                    },
+                                    options: (p0) => state
+                                        .generalState.clientInfos
+                                        .where((element) => element.name
+                                            .toLowerCase()
+                                            .contains(p0.text.toLowerCase()))),
+                                const SizedBox(height: 16),
+                                SpacedColumn(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Name:",
+                                      null,
+                                      customLabel:
+                                          _textField(data.client?.name),
+                                    ),
+                                    const Divider(),
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Company:",
+                                      null,
+                                      customLabel:
+                                          _textField(data.client?.company),
+                                    ),
+                                    const Divider(),
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Email:",
+                                      null,
+                                      customLabel:
+                                          _textField(data.client?.email),
+                                    ),
+                                    const Divider(),
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Phone:",
+                                      null,
+                                      customLabel:
+                                          _textField(data.client?.phone),
+                                    ),
+                                    const Divider(),
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Payment Terms:",
+                                      null,
+                                      customLabel: _textField(
+                                          data.client?.payingDays.toString()),
+                                    ),
+                                    const Divider(),
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Currency:",
+                                      null,
+                                      customLabel: _textField(currencies
+                                          .firstWhereOrNull((element) =>
+                                              int.tryParse(
+                                                  data.client?.currencyId ??
+                                                      "") ==
+                                              element.id)
+                                          ?.sign),
+                                    ),
+                                    const Divider(),
+                                    labelWithField(
+                                        labelWidth: 160,
+                                        "Payment method:",
+                                        null,
+                                        customLabel: _textField(paymentMethods
+                                            .firstWhereOrNull((element) =>
+                                                int.tryParse(data.client
+                                                        ?.paymentMethodId ??
                                                     "") ==
-                                            element.id)
-                                        ?.name)),
-                                const Divider(),
-                                labelWithField(
-                                  labelWidth: 160,
-                                  "Client Notes:",
-                                  null,
-                                  customLabel: _textField(data.client?.notes),
+                                                element.id)
+                                            ?.name)),
+                                    const Divider(),
+                                    labelWithField(
+                                      labelWidth: 160,
+                                      "Client Notes:",
+                                      null,
+                                      customLabel:
+                                          _textField(data.client?.notes),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          if (hasComment)
+                            labelWithField(
+                              labelWidth: 160,
+                              "Quote Comments",
+                              TextInputWidget(
+                                width: 400,
+                                maxLines: 4,
+                                hintText: "Add quote comments",
+                                controller:
+                                    TextEditingController(text: comment),
+                                onChanged: (value) {
+                                  comment = value;
+                                },
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
@@ -615,6 +741,94 @@ class _JobEditFormState extends State<JobEditForm> {
                           ],
                         ),
                       ),
+                      if (hasWorkAddress)
+                        TitleContainer(
+                          onEdit: !isClientSelected ? null : _editWorkAddress,
+                          titleOverride: "Create New Location",
+                          titleIcon: HeroIcons.add,
+                          title: "Work Address",
+                          child: SpacedColumn(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!isClientSelected)
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Text(
+                                      isClientSelected
+                                          ? ""
+                                          : "Select Client First!",
+                                      style: ThemeText.bold14,
+                                    ),
+                                  ),
+                                ),
+                              if (isClientSelected)
+                                CustomAutocompleteTextField<LocationAddress>(
+                                    width: 400,
+                                    height: 50,
+                                    hintText: "Select Location",
+                                    listItemWidget: (p0) => Text(p0.name ?? ""),
+                                    onSelected: (p0) {
+                                      setState(() {
+                                        data.workAddress =
+                                            Address.fromLocationAddress(p0);
+                                      });
+                                    },
+                                    displayStringForOption: (option) {
+                                      return option.name ?? "";
+                                    },
+                                    options: (p0) => locations.where(
+                                        (element) => (element.name ?? "")
+                                            .toLowerCase()
+                                            .contains(p0.text.toLowerCase()))),
+                              const SizedBox(height: 16),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Address Line 1:",
+                                null,
+                                customLabel: _textField(workAddress?.line1),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Address Line 2:",
+                                null,
+                                customLabel: _textField(workAddress?.line2),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "City:",
+                                null,
+                                customLabel: _textField(workAddress?.city),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "County:",
+                                null,
+                                customLabel: _textField(workAddress?.county),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Country:",
+                                null,
+                                customLabel: _textField(countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code == workAddress?.country)
+                                    ?.name),
+                              ),
+                              const Divider(),
+                              labelWithField(
+                                labelWidth: 160,
+                                "Postcode:",
+                                null,
+                                customLabel: _textField(workAddress?.postcode),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                   TitleContainer(
@@ -682,16 +896,17 @@ class _JobEditFormState extends State<JobEditForm> {
                       ],
                     ),
                   ),
-                  TitleContainer(
-                    titleIcon: HeroIcons.add,
-                    onEdit: unavUsers.isLoaded
-                        ? () {
-                            onEditTeamMember(users);
-                          }
-                        : null,
-                    title: "Team",
-                    child: _team(users),
-                  ),
+                  if (hasUnavUsers)
+                    TitleContainer(
+                      titleIcon: HeroIcons.add,
+                      onEdit: unavUsers.isLoaded
+                          ? () {
+                              onEditTeamMember(users);
+                            }
+                          : null,
+                      title: "Team",
+                      child: _team(users),
+                    ),
                 ],
               ),
               _products(state),

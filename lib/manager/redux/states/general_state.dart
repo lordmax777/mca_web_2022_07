@@ -522,6 +522,11 @@ class CreateQuoteAction {
 
   final List<StorageItemMd> storageItems;
 
+  final int? clientId;
+  final int? locationId;
+  final int? shiftId;
+  final int? clientContractId;
+
   CreateQuoteAction({
     this.id = 0,
     required this.email,
@@ -552,6 +557,10 @@ class CreateQuoteAction {
     this.workFinishTime,
     required this.workRepeatId,
     this.quoteComments,
+    this.clientContractId,
+    this.locationId,
+    this.clientId,
+    this.shiftId,
     this.workDays,
   });
 }

@@ -121,7 +121,7 @@ class _CreateJobState extends State<_CreateJob>
   DateTime get date => data.date ?? DateTime.now();
   bool get isCreate => data.isCreate;
 
-  ScheduleCreatePopupMenus get type => data.type;
+  ScheduleCreatePopupMenus get type => ScheduleCreatePopupMenus.job;
 
   late final TabController _tabController;
 
