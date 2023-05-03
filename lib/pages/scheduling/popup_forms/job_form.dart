@@ -60,6 +60,20 @@ class _JobEditFormState extends State<JobEditForm> {
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final unavUsers = await appStore
+          .dispatch(GetUnavailableUsersAction(data.date ?? DateTime.now()));
+      if (mounted) {
+        setState(() {
+          data.unavailableUsers.users = unavUsers;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,

@@ -567,7 +567,7 @@ Future<int?> _onCreateNewStorageItemAction(
 Future _onCreateNewClientTap(
     AppState state, OnCreateNewClientTap action) async {
   final data = await showDialog(
-      barrierDismissible: kDebugMode ? true : false,
+      barrierDismissible: false,
       context: action.context,
       builder: (context) {
         switch (action.type) {

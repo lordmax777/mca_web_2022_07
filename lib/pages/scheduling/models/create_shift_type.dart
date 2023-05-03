@@ -46,7 +46,7 @@ abstract class CreateShiftDataType {
 }
 
 class UnavailableUserLoad {
-  bool isLoaded = kDebugMode ? true : false;
+  bool isLoaded = false;
   List<UnavailableUserMd> _users = [];
   List<UnavailableUserMd> get users => _users;
   set users(List<UnavailableUserMd> users) {

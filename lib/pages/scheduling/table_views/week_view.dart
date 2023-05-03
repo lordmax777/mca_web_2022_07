@@ -81,8 +81,8 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
             maxDate: to,
             viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
-              allowScroll: !kDebugMode,
-              allowNavigation: !kDebugMode,
+              allowScroll: true,
+              allowNavigation: false,
             ),
             onTap: (calendarTapDetails, offset) async {
               switch (calendarTapDetails.targetElement) {
@@ -99,17 +99,6 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                   final AppointmentIdMd? id =
                       calendarTapDetails.appointments?.first.id;
                   if (id == null) return;
-                  // final jobCreated = await showDialog<ApiResponse?>(
-                  //     context: context,
-                  //     barrierDismissible: kDebugMode,
-                  //     builder: (context) => JobEditForm(
-                  //         data:
-                  //             CreateShiftData(date: calendarTapDetails.date!)));
-                  // final shiftRes = await showCreateShiftPopup(
-                  //     context,
-                  //     CreateShiftData(
-                  //       date: calendarTapDetails.date!,
-                  //     ));
                   //TODO: Handle shiftRes
                   break;
                 case CalendarElement.calendarCell:
@@ -143,17 +132,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                     if (createTapResult == null) return;
                     final jobCreated = await showDialog<ApiResponse?>(
                         context: context,
-                        barrierDismissible: kDebugMode,
+                        barrierDismissible: false,
                         builder: (context) => JobEditForm(
                             data: CreateShiftData(
                                 date: calendarTapDetails.date!)));
-                    // final shiftRes = await showCreateShiftPopup(
-                    //     context,
-                    //     CreateShiftData(
-                    //       date: calendarTapDetails.date!,
-                    //     ));
                     //TODO: Handle shiftRes
-
                   } else {
                     showError("There was an unexpected error!");
                   }
@@ -205,8 +188,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
       message: title,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onSecondaryTapDown: (details) async {
-          logger("onSecondaryTapDown");
+        onTapUp: (details) async {
           final jobCreated = await showFormsMenus(context,
               globalPosition: details.globalPosition,
               data: CreateShiftData(

@@ -514,36 +514,36 @@ Widget addIcon(
 }
 
 Future<ApiResponse?> showFormsMenus(BuildContext context,
-    {Offset? globalPosition, CreateShiftData? data}) async {
+    {required Offset globalPosition, CreateShiftData? data}) async {
   //Positions the menu
   final RenderBox overlay =
       Overlay.of(context)!.context.findRenderObject() as RenderBox;
-  Offset? off;
-  double? left;
-  double? top;
-  double? right;
-  double? bottom;
-  if (globalPosition != null) {
-    off = overlay.globalToLocal(globalPosition);
-    left = off.dx;
-    top = off.dy;
-    right = MediaQuery.of(context).size.width - left;
-    bottom = MediaQuery.of(context).size.height - top;
-  }
+  Offset off;
+  double left;
+  double top;
+  double right;
+  double bottom;
+  off = overlay.globalToLocal(globalPosition);
+  left = off.dx;
+  top = off.dy;
+  right = MediaQuery.of(context).size.width - left;
+  bottom = MediaQuery.of(context).size.height - top;
+
+  //Shows the menu
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
       context: context,
-      position: globalPosition != null
-          ? RelativeRect.fromLTRB(left!, top!, right!, bottom!)
-          : RelativeRect.fill,
+      position: RelativeRect.fromLTRB(left, top, right, bottom),
       items: getPopupCreateMenus());
 
   if (createTapResult == null) return null;
 
+  //Shows the form based on the menu selected
   switch (createTapResult) {
     case ScheduleCreatePopupMenus.job:
+      //Shows the form
       final jobCreated = await showDialog<ApiResponse?>(
           context: context,
-          barrierDismissible: kDebugMode,
+          barrierDismissible: false,
           builder: (context) => JobEditForm(data: data!));
       return jobCreated;
     case ScheduleCreatePopupMenus.quote:

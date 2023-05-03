@@ -58,13 +58,20 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
             ),
             viewNavigationMode: ViewNavigationMode.none,
             dragAndDropSettings: const DragAndDropSettings(
-              allowScroll: !kDebugMode,
-              allowNavigation: !kDebugMode,
+              allowScroll: true,
+              allowNavigation: true,
             ),
             timeSlotViewSettings: const TimeSlotViewSettings(
               startHour: 0,
               endHour: 1,
             ),
+            onTap: (calendarTapDetails, position) {
+              //          final jobCreated = await showFormsMenus(context,
+              //               globalPosition: details.globalPosition,
+              //               data: CreateShiftData(
+              //                 date: appointment.startTime,
+              //               ));
+            },
             maxDate: to,
             headerHeight: 0,
             onDragEnd: (appointmentDragEndDetails) {
@@ -102,26 +109,12 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
       message: title,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onSecondaryTapDown: (details) async {
-          final RenderBox overlay =
-              Overlay.of(context)!.context.findRenderObject() as RenderBox;
-          final offset = overlay.globalToLocal(details.globalPosition);
-          double left = offset.dx;
-          double top = offset.dy;
-          double right = MediaQuery.of(context).size.width - left;
-          double bottom = MediaQuery.of(context).size.height - top;
-
-          final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
-              context: context,
-              position: RelativeRect.fromLTRB(left, top, right, bottom),
-              items: getPopupCreateMenus());
-          logger(createTapResult, hint: 'Type');
-          if (createTapResult == null) return;
-          final jobCreated = await showDialog<ApiResponse?>(
-              context: context,
-              barrierDismissible: kDebugMode,
-              builder: (context) => JobEditForm(
-                  data: CreateShiftData(date: appointment.startTime)));
+        onTapUp: (details) async {
+          final jobCreated = await showFormsMenus(context,
+              globalPosition: details.globalPosition,
+              data: CreateShiftData(
+                date: appointment.startTime,
+              ));
         },
         child: Container(
           decoration: BoxDecoration(

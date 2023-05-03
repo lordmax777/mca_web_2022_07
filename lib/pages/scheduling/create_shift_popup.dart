@@ -13,23 +13,6 @@ import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../manager/models/storage_item_md.dart';
 
-Future<T?> showCreateShiftPopup<T>(
-    BuildContext context, CreateShiftDataType data) {
-  return showDialog<T>(
-    context: context,
-    barrierDismissible: kDebugMode ? true : false,
-    builder: (_) {
-      switch (data.type) {
-        case ScheduleCreatePopupMenus.job:
-        case ScheduleCreatePopupMenus.quote:
-          return _CreateJob(data);
-        default:
-          return const Center(child: Text("Invalid type"));
-      }
-    },
-  );
-}
-
 Future<bool> exit(BuildContext context) {
   return context.popRoute();
 }
@@ -149,13 +132,12 @@ class _CreateJobState extends State<_CreateJob>
   ];
 
   final _shiftDetailsFormKey = GlobalKey<FormState>();
-  final _staffTimingFormKey = GlobalKey<FormState>();
-  final _siteDetailsFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //GetUnavailableUsersAction
       switch (type) {

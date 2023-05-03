@@ -91,7 +91,7 @@ class DailyViewCalendar extends StatelessWidget {
       message: title,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onSecondaryTapDown: (details) async {
+        onTapUp: (details) async {
           final RenderBox overlay =
               Overlay.of(context)!.context.findRenderObject() as RenderBox;
           final offset = overlay.globalToLocal(details.globalPosition);
@@ -108,7 +108,7 @@ class DailyViewCalendar extends StatelessWidget {
           if (createTapResult == null) return;
           final jobCreated = await showDialog<ApiResponse?>(
               context: context,
-              barrierDismissible: kDebugMode,
+              barrierDismissible: false,
               builder: (context) => JobEditForm(
                   data: CreateShiftData(date: appointment.startTime)));
         },
