@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mca_web_2022_07/manager/models/approval_reqest_md.dart';
+import 'package:mca_web_2022_07/manager/models/approval_md.dart';
 import 'package:mca_web_2022_07/manager/models/approval_user_qualification_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
@@ -73,11 +73,13 @@ class GeneralState {
     ..sort((a, b) => DateTime.tryParse(b.createdOn)!
         .compareTo(DateTime.tryParse(a.createdOn)!));
 
-  final List<ApprovalRequestMd> approvalReq;
+  final ApprovalMd approvals;
 
-  List<ApprovalRequestMd> get allSortedApprovalReq => approvalReq
-    ..sort((a, b) => DateTime.tryParse(b.dateTime!)!
-        .compareTo(DateTime.tryParse(a.dateTime!)!));
+  // List<ApprovalMd> get allSortedApprovalReq =>
+  //     approvals
+  //       ..sort((a, b) =>
+  //           DateTime.tryParse(b.dateTime!)!
+  //               .compareTo(DateTime.tryParse(a.dateTime!)!));
 
   final List<ApprovalUserQualificationMd> approvalUserQualifications;
   final List<InventoryMd> inventoryList;
@@ -93,7 +95,7 @@ class GeneralState {
     required this.locationAddresses,
     required this.clientInfos,
     required this.quotes,
-    required this.approvalReq,
+    required this.approvals,
     required this.approvalUserQualifications,
     required this.inventoryList,
   });
@@ -139,7 +141,7 @@ class GeneralState {
       locationAddresses: [],
       clientInfos: [],
       quotes: [],
-      approvalReq: [],
+      approvals: ApprovalMd(pendingUserQualifications: [], requests: []),
       approvalUserQualifications: [],
       inventoryList: [],
     );
@@ -156,7 +158,7 @@ class GeneralState {
     List<LocationAddress>? locationAddresses,
     List<ClientInfoMd>? clientInfos,
     List<QuoteInfoMd>? quotes,
-    List<ApprovalRequestMd>? approvalReq,
+    ApprovalMd? approvals,
     List<ApprovalUserQualificationMd>? approvalUserQualifications,
     List<InventoryMd>? inventoryList,
   }) {
@@ -171,7 +173,7 @@ class GeneralState {
       locationAddresses: locationAddresses ?? this.locationAddresses,
       clientInfos: clientInfos ?? this.clientInfos,
       quotes: quotes ?? this.quotes,
-      approvalReq: approvalReq ?? this.approvalReq,
+      approvals: approvals ?? this.approvals,
       approvalUserQualifications:
           approvalUserQualifications ?? this.approvalUserQualifications,
       inventoryList: inventoryList ?? this.inventoryList,
@@ -191,7 +193,7 @@ class UpdateGeneralStateAction {
   final List<LocationAddress>? locationAddresses;
   final List<ClientInfoMd>? clientInfos;
   final List<QuoteInfoMd>? quotes;
-  final List<ApprovalRequestMd>? approvalReq;
+  final ApprovalMd? approvals;
   final List<ApprovalUserQualificationMd>? approvalUserQualifications;
   final List<InventoryMd>? inventoryList;
 
@@ -207,7 +209,7 @@ class UpdateGeneralStateAction {
     this.locationAddresses,
     this.clientInfos,
     this.quotes,
-    this.approvalReq,
+    this.approvals,
     this.approvalUserQualifications,
     this.inventoryList,
   });
@@ -467,10 +469,10 @@ class GetQuotesAction {
   GetQuotesAction({this.id});
 }
 
-class GetApprovalReqAction {
+class GetApprovalAction {
   final int? id;
 
-  GetApprovalReqAction({this.id});
+  GetApprovalAction({this.id});
 }
 
 class GetApprovalUserQualificationsAction {
@@ -598,6 +600,7 @@ class OnCreateNewClientTap<T> {
   final ClientInfoMd? clientInfo;
   final QuoteInfoMd? quoteInfo;
   final CreatedTimingReturnValue? timingInfo;
+
   OnCreateNewClientTap(
     this.context, {
     required this.type,

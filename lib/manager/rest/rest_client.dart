@@ -234,6 +234,7 @@ abstract class RestClient {
     @Field() List<int>? loginmethods, //codes
     @Field() String? email,
   });
+
   @GET("/api/fe/locations")
   Future<HttpResponse> getLocationsOrSingle({int? id});
 
@@ -596,6 +597,9 @@ abstract class RestClient {
     @Field() String? quoteComments,
     @Field() List<int>? workDays,
   });
+
+  @GET("/api/fe/approvals")
+  Future<HttpResponse> getApprovals();
 }
 
 RestClient restClient() => RestClient(
