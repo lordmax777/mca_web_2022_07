@@ -144,4 +144,67 @@ class PropertiesMd {
       active: true,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is PropertiesMd &&
+        other.id == id &&
+        other.title == title &&
+        other.locationId == locationId &&
+        other.locationName == locationName &&
+        other.clientId == clientId &&
+        other.clientName == clientName &&
+        other.warehouseId == warehouseId &&
+        other.warehouseName == warehouseName &&
+        other.checklistTemplateId == checklistTemplateId &&
+        other.checklistTemplateName == checklistTemplateName &&
+        other.startTime == startTime &&
+        other.finishTime == finishTime &&
+        other.startBreak == startBreak &&
+        other.finishBreak == finishBreak &&
+        other.fpStartTime == fpStartTime &&
+        other.fpFinishTime == fpFinishTime &&
+        other.fpStartBreak == fpStartBreak &&
+        other.fpFinishBreak == fpFinishBreak &&
+        other.strictBreak == strictBreak &&
+        other.minPaidTime == minPaidTime &&
+        other.minWorkTime == minWorkTime &&
+        other.splitTime == splitTime &&
+        other.checklist == checklist &&
+        other.linked == linked &&
+        other.days == days &&
+        other.active == active;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        title.hashCode ^
+        locationId.hashCode ^
+        locationName.hashCode ^
+        clientId.hashCode ^
+        clientName.hashCode ^
+        warehouseId.hashCode ^
+        warehouseName.hashCode ^
+        checklistTemplateId.hashCode ^
+        checklistTemplateName.hashCode ^
+        startTime.hashCode ^
+        finishTime.hashCode ^
+        startBreak.hashCode ^
+        finishBreak.hashCode ^
+        fpStartTime.hashCode ^
+        fpFinishTime.hashCode ^
+        fpStartBreak.hashCode ^
+        fpFinishBreak.hashCode ^
+        strictBreak.hashCode ^
+        minPaidTime.hashCode ^
+        minWorkTime.hashCode ^
+        splitTime.hashCode ^
+        checklist.hashCode ^
+        linked.hashCode ^
+        days.hashCode ^
+        active.hashCode;
+  }
 }

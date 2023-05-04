@@ -88,6 +88,62 @@ class UserRes {
       _$UserResFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserResToJson(this);
+
+  @override
+  String toString() {
+    return fullname;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is UserRes &&
+        other.id == id &&
+        other.username == username &&
+        other.title == title &&
+        other.firstName == firstName &&
+        other.lastName == lastName &&
+        other.lastTime == lastTime &&
+        other.lastStatus == lastStatus &&
+        other.lastIpAddress == lastIpAddress &&
+        other.lastLocationId == lastLocationId &&
+        other.lastLatitude == lastLatitude &&
+        other.lastLongitude == lastLongitude &&
+        other.payrollCode == payrollCode &&
+        other.lastComment == lastComment &&
+        other.groupId == groupId &&
+        other.locationId == locationId &&
+        other.groupAdmin == groupAdmin &&
+        other.locationAdmin == locationAdmin &&
+        other.loginRequired == loginRequired &&
+        other.locked == locked &&
+        other.fullname == fullname;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        username.hashCode ^
+        title.hashCode ^
+        firstName.hashCode ^
+        lastName.hashCode ^
+        lastTime.hashCode ^
+        lastStatus.hashCode ^
+        lastIpAddress.hashCode ^
+        lastLocationId.hashCode ^
+        lastLatitude.hashCode ^
+        lastLongitude.hashCode ^
+        payrollCode.hashCode ^
+        lastComment.hashCode ^
+        groupId.hashCode ^
+        locationId.hashCode ^
+        groupAdmin.hashCode ^
+        locationAdmin.hashCode ^
+        loginRequired.hashCode ^
+        locked.hashCode ^
+        fullname.hashCode;
+  }
 }
 
 @JsonSerializable(anyMap: true)
@@ -107,4 +163,24 @@ class LastTime {
       _$LastTimeFromJson(json);
 
   Map<String, dynamic> toJson() => _$LastTimeToJson(this);
+
+  @override
+  String toString() {
+    return 'LastTime(date: $date, timezone_type: $timezone_type, timezone: $timezone)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is LastTime &&
+        other.date == date &&
+        other.timezone_type == timezone_type &&
+        other.timezone == timezone;
+  }
+
+  @override
+  int get hashCode {
+    return date.hashCode ^ timezone_type.hashCode ^ timezone.hashCode;
+  }
 }

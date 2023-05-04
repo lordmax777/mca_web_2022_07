@@ -88,4 +88,61 @@ class ShiftMd {
       'date': date,
     };
   }
+
+  ShiftMd copyWith({
+    int? id,
+    int? locationId,
+    int? userId,
+    int? shiftId,
+    bool? published,
+    String? special_start_time,
+    String? special_finish_time,
+    num? special_rate,
+    int? user_order,
+    String? date,
+  }) {
+    return ShiftMd(
+      id: id ?? this.id,
+      locationId: locationId ?? this.locationId,
+      userId: userId ?? this.userId,
+      shiftId: shiftId ?? this.shiftId,
+      published: published ?? this.published,
+      special_start_time: special_start_time ?? this.special_start_time,
+      special_finish_time: special_finish_time ?? this.special_finish_time,
+      special_rate: special_rate ?? this.special_rate,
+      user_order: user_order ?? this.user_order,
+      date: date ?? this.date,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ShiftMd &&
+        other.id == id &&
+        other.locationId == locationId &&
+        other.userId == userId &&
+        other.shiftId == shiftId &&
+        other.published == published &&
+        other.special_start_time == special_start_time &&
+        other.special_finish_time == special_finish_time &&
+        other.special_rate == special_rate &&
+        other.user_order == user_order &&
+        other.date == date;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        locationId.hashCode ^
+        userId.hashCode ^
+        shiftId.hashCode ^
+        published.hashCode ^
+        special_start_time.hashCode ^
+        special_finish_time.hashCode ^
+        special_rate.hashCode ^
+        user_order.hashCode ^
+        date.hashCode;
+  }
 }

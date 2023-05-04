@@ -1,4 +1,6 @@
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
+import 'package:mca_web_2022_07/manager/models/property_md.dart';
 
 class ClientInfoMd {
   // {
@@ -182,4 +184,18 @@ class ClientInfoMd {
       paymentMethodId: paymentMethodId ?? '',
     );
   }
+
+  // //from PropertiesMd
+  // static ClientInfoMd fromPropertiesMd(PropertiesMd p) {
+  //   try{
+  //
+  //   return ClientInfoMd(
+  //     id: p.clientId!,
+  //     payingDays:
+  //   );
+  //   } on TypeError catch (e) {
+  //     Logger.e('ClientInfoMd.fromPropertiesMd: ${e.stackTrace}');
+  //     rethrow;
+  //   }
+  // }
 }

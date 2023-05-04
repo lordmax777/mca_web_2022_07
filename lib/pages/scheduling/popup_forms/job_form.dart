@@ -201,6 +201,7 @@ class _JobEditFormState extends State<JobEditForm>
           final ApiResponse? newJob =
               await appStore.dispatch(CreateJobAction(data));
           if (newJob?.success == true) {
+            logger('Job created successfully ${newJob?.data}');
             // exit(context).then((value) {
             //   showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
             //       titleMsg: "Success");

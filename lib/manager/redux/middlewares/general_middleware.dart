@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/approval_md.dart';
 import 'package:mca_web_2022_07/manager/models/approval_user_qualification_md.dart';
@@ -730,10 +731,31 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
       final ApiResponse? changedQuoteStatus = await appStore.dispatch(
           ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
 
-      //3. (Optional) Assign users to the allocation
-      if (changedQuoteStatus != null && changedQuoteStatus.success) {
-        //TODO: Assign users to the allocation
-      }
+      // //3. (Optional) Assign users to the allocation
+      // if (changedQuoteStatus != null && changedQuoteStatus.success) {
+      //   //TODO: Assign users to the allocation
+      //   // final allocationId = changedQuoteStatus.data as int;
+      //   // //Get all allocations and find the shift id using allocation id and date
+      //   // final ApiResponse res = await restClient()
+      //   //     .getShifts(
+      //   //       location?.id ?? 0,
+      //   //       0,
+      //   //       0,
+      //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+      //   //     )
+      //   //     .nocodeErrorHandler();
+      //   // //Use shift id
+      //   // // final ApiResponse res = await restClient()
+      //   // //     .postShifts(
+      //   // //       location?.id ?? 0,
+      //   // //       805, //TODO: User
+      //   // //       106,
+      //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+      //   // //       AllocationActions.add.name,
+      //   // //     )
+      //   // //     .nocodeErrorHandler();
+      //   // return res;
+      // }
     }
   } on Exception catch (e) {
     Logger.e(e.toString(), tag: "CreateJobAction");

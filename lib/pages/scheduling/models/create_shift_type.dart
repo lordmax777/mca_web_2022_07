@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -68,7 +69,6 @@ class CreateShiftData extends CreateShiftDataType {
   int paidMinute = 0;
   bool isSplitTime = false;
   int? selectedClientId;
-  int? selectedJobId;
 
   ClientInfoMd? client;
   LocationAddress? location;
@@ -105,7 +105,6 @@ class CreateShiftData extends CreateShiftDataType {
     if (selectedClientId != null) {
       client = appStore.state.generalState.clientInfos
           .firstWhereOrNull((element) => element.id == selectedClientId);
-      if (client == null) return;
     }
     timingInfo.hasAltTime = hasAltTime;
     if (type == ScheduleCreatePopupMenus.quote) {
@@ -116,16 +115,19 @@ class CreateShiftData extends CreateShiftDataType {
 
       }
     }
-    if (kDebugMode) {
-      shiftId = 379;
+    if (editAppointment != null) {
+      final id = editAppointment!.id as AppointmentIdMd;
+      shiftId = id.property.id;
+      // client = ClientInfoMd(
+      //   id: id.property.clientId!,
+      // );
     }
   }
 
   ScheduleCreatePopupMenus type;
 
   @override
-  bool get isCreate =>
-      selectedJobId == null || selectedJobId == 0 || editAppointment == null;
+  bool get isCreate => shiftId == null;
 }
 
 class CreateShiftDataQuote extends CreateShiftDataType {

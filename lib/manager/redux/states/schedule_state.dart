@@ -158,60 +158,19 @@ class AppointmentIdMd {
       allocation: allocation ?? this.allocation,
     );
   }
-}
-
-class AppointmentIdMd1 {
-  final DateTime startTime;
-  final DateTime endTime;
-  final PropertiesMd property;
-  final UserRes user;
-  final ShiftMd allocation;
-
-  AppointmentIdMd1({
-    required this.startTime,
-    required this.endTime,
-    required this.property,
-    required this.user,
-    required this.allocation,
-  });
-
-  AppointmentIdMd1 copyWith({
-    PropertiesMd? property,
-    UserRes? user,
-    ShiftMd? allocation,
-    PropertiesMd? location,
-    DateTime? startTime,
-    DateTime? endTime,
-  }) {
-    return AppointmentIdMd1(
-      property: property ?? this.property,
-      user: user ?? this.user,
-      allocation: allocation ?? this.allocation,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-    );
-  }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is AppointmentIdMd1 &&
-        other.startTime == startTime &&
-        other.endTime == endTime &&
+    return other is AppointmentIdMd &&
         other.property == property &&
         other.user == user &&
         other.allocation == allocation;
   }
 
   @override
-  int get hashCode {
-    return startTime.hashCode ^
-        endTime.hashCode ^
-        property.hashCode ^
-        user.hashCode ^
-        allocation.hashCode;
-  }
+  int get hashCode => property.hashCode ^ user.hashCode ^ allocation.hashCode;
 }
 
 class SCDragEndAction {
