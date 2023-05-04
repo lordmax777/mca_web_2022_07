@@ -1,26 +1,30 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
+import 'package:mca_web_2022_07/pages/scheduling/create_shift_popup.dart';
 
 import '../../../comps/autocomplete_input_field.dart';
 import '../../../theme/theme.dart';
 
-class EditShiftStaffReqPopup extends StatefulWidget {
-  final ShiftStaffReqMd? staff;
+class EditShiftQualifReqPopup extends StatefulWidget {
+  final ShiftQualifReqMd? staff;
   final List<int>? exceptedIds;
-  const EditShiftStaffReqPopup({Key? key, this.staff, this.exceptedIds})
+  const EditShiftQualifReqPopup({Key? key, this.staff, this.exceptedIds})
       : super(key: key);
   @override
-  State<EditShiftStaffReqPopup> createState() => _EditShiftStaffReqPopupState();
+  State<EditShiftQualifReqPopup> createState() =>
+      _EditShiftQualifReqPopupState();
 }
 
-class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
+class _EditShiftQualifReqPopupState extends State<EditShiftQualifReqPopup> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController numberOfStaff = TextEditingController();
-  final TextEditingController maxStaff = TextEditingController();
   final department = CodeMap<int>(name: null, code: null);
+  final minLevel = CodeMap<int>(name: null, code: null);
+  bool alternate = false;
 
   List<int> get exceptedIds => widget.exceptedIds ?? [];
 
@@ -28,10 +32,12 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
   void initState() {
     super.initState();
     if (widget.staff != null) {
-      numberOfStaff.text = widget.staff!.min.toString();
-      maxStaff.text = widget.staff!.max.toString();
-      department.name = widget.staff!.group;
-      department.code = widget.staff!.groupId;
+      department.name = widget.staff!.qualificationName;
+      department.code = widget.staff!.qualificationId;
+      minLevel.name = widget.staff!.levelName;
+      minLevel.code = widget.staff!.levelId;
+      numberOfStaff.text = widget.staff!.numberOfStaff.toString();
+      alternate = widget.staff!.alternative;
     }
   }
 
@@ -63,7 +69,7 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           KText(
-            text: !isNew ? 'Edit Staff' : 'Add Staff',
+            text: !isNew ? 'Edit Qualification' : 'Add Qualification',
             fontSize: 18.0,
             fontWeight: FWeight.bold,
             isSelectable: false,
@@ -79,8 +85,10 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
   }
 
   Widget _body(double dpWidth) {
-    final bool isNew = widget.staff == null;
-
+    final levels = [
+      ...(appStore.state.generalState.qualificationLevels
+        ..add(ListQualificationLevel(id: -1, level: "N/A", rank: 0)))
+    ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: SpacedColumn(
@@ -88,43 +96,41 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
         verticalSpace: 32.0,
         children: [
           const SizedBox(height: 1),
-          CustomAutocompleteTextField<ListGroup>(
+          CustomAutocompleteTextField<ListQualification>(
               width: dpWidth / 5,
               height: 50,
-              hintText: "Department",
-              listItemWidget: (p0) => Text(p0.name),
+              hintText: "Qualification",
+              initialValue: TextEditingValue(text: department.name ?? ""),
+              listItemWidget: (p0) => Text(p0.title),
               onSelected: (p0) {
-                department.name = p0.name;
+                department.name = p0.title;
                 department.code = p0.id;
                 setState(() {});
               },
               displayStringForOption: (option) {
-                return option.name;
+                return option.title;
               },
-              options: (p0) => appStore.state.generalState.groups
+              options: (p0) => appStore.state.generalState.qualifications
                   .where((element) => !exceptedIds.contains(element.id))
-                  .where((element) => element.name
+                  .where((element) => element.title
                       .toLowerCase()
                       .contains(p0.text.toLowerCase()))),
-          // DropdownWidget1(
-          //   hintText: "Department",
-          //   value: department.name,
-          //   dropdownBtnWidth: dpWidth / 5,
-          //   isRequired: true,
-          //   dropdownOptionsWidth: dpWidth / 5,
-          //   hasSearchBox: true,
-          //   dropdownMaxHeight: 300.0,
-          //   items: (appStore.state.generalState.paramList.data?.groups
-          //           .map((e) => e.name)
-          //           .toList()) ??
-          //       [],
-          //   onChangedWithObj: (p0) {
-          //     department.name = p0.name;
-          //     department.code = (p0.item as ListGroup).id;
-          //     setState(() {});
-          //   },
-          //   objItems: appStore.state.generalState.paramList.data?.groups ?? [],
-          // ),
+          CustomAutocompleteTextField<ListQualificationLevel>(
+              width: dpWidth / 5,
+              height: 50,
+              hintText: "Min Level",
+              initialValue: TextEditingValue(text: minLevel.name ?? ""),
+              listItemWidget: (p0) => Text(p0.level),
+              onSelected: (p0) {
+                minLevel.name = p0.level;
+                minLevel.code = p0.id;
+                setState(() {});
+              },
+              displayStringForOption: (option) {
+                return option.level;
+              },
+              options: (p0) => levels.where((element) =>
+                  element.level.toLowerCase().contains(p0.text.toLowerCase()))),
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 5,
@@ -137,10 +143,13 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
               return null;
             },
           ),
-          TextInputWidget(
-            width: dpWidth / 5,
-            labelText: "Maximum Staff",
-            controller: maxStaff,
+          labelWithField(
+            "Alternative to selected",
+            checkbox(alternate, (p0) {
+              setState(() {
+                alternate = p0;
+              });
+            }),
           ),
           const SizedBox(width: 1),
         ],
@@ -171,11 +180,17 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
             text: isNew ? "Add New" : "Save Changes",
             onPressed: () {
               if (!formKey.currentState!.validate()) return;
-              context.popRoute(ShiftStaffReqMd(
-                groupId: department.code ?? -1,
-                group: department.name ?? "",
-                min: int.parse(numberOfStaff.text),
-                max: int.tryParse(maxStaff.text),
+              if (department.code == null) {
+                showError("Please select qualification");
+                return;
+              }
+              context.popRoute(ShiftQualifReqMd(
+                qualificationId: department.code!,
+                numberOfStaff: int.parse(numberOfStaff.text),
+                levelId: minLevel.code!,
+                levelName: minLevel.name!,
+                qualificationName: department.name!,
+                alternative: alternate,
               ));
             },
           ),

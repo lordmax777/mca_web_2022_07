@@ -10,11 +10,13 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
   final String? hintText;
   final double? width;
   final double? height;
+  final TextEditingValue? initialValue;
   const CustomAutocompleteTextField({
     Key? key,
     required this.options,
     required this.onSelected,
     this.hintText,
+    this.initialValue,
     this.width,
     this.height,
     this.displayStringForOption = RawAutocomplete.defaultStringForOption,
@@ -28,6 +30,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
       height: height ?? 40,
       child: LayoutBuilder(builder: (context, c) {
         return Autocomplete<T>(
+          initialValue: initialValue,
           optionsViewBuilder: (context, onSelected, opts) {
             return Align(
               alignment: Alignment.topLeft,

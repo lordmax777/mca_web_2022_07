@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
@@ -67,15 +68,12 @@ class _JobEditFormState extends State<JobEditForm>
   void initState() {
     super.initState();
     _tabs = [
-      Tab(text: "${Constants.propertyName} details"),
+      Tab(text: "${Constants.propertyName.capitalizeFirst} details"),
       const Tab(text: "Staff Requirements"),
+      const Tab(text: "Qualification Requirements"),
     ];
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(() {
-      // if (_tabController.index != _tabController.previousIndex) {
-      //   setState(() {});
-      // }
-    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (hasUnavUsers) {
         final unavUsers = await appStore
@@ -176,6 +174,7 @@ class _JobEditFormState extends State<JobEditForm>
               children: [
                 _Form(state),
                 StaffRequirementForm(data: data),
+                QualificationReqForm(data: data),
               ],
             ),
           ),
@@ -184,25 +183,13 @@ class _JobEditFormState extends State<JobEditForm>
     );
   }
 
-  Widget _getTabChild(AppState state) {
-    switch (_tabController.index) {
-      case 0:
-        return _Form(state);
-      case 1:
-        return StaffRequirementForm(data: data);
-      default:
-        return const SizedBox();
-    }
-  }
-
   //Functions
   void _save(AppState state) async {
     switch (type) {
       case ScheduleCreatePopupMenus.job:
         _saveJob(state);
         break;
-      case ScheduleCreatePopupMenus.quote:
-        break;
+      default:
     }
   }
 

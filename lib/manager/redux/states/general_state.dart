@@ -51,6 +51,14 @@ class GeneralState {
       paramList.data?.work_repeats ?? <ListWorkRepeats>[];
   List<ListGroup> get groups => (paramList.data?.groups ?? <ListGroup>[])
     ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  List<ListQualification> get qualifications => (paramList
+          .data?.qualifications ??
+      <ListQualification>[])
+    ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+  List<ListQualificationLevel> get qualificationLevels => (paramList
+          .data?.qualification_levels ??
+      <ListQualificationLevel>[])
+    ..sort((a, b) => a.level.toLowerCase().compareTo(b.level.toLowerCase()));
 
   final DrawerStates drawerStates;
   final Widget? endDrawer;

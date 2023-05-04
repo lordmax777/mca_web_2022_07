@@ -2,8 +2,8 @@ class ShiftQualifReqMd {
   int qualificationId;
   String qualificationName;
   int numberOfStaff;
-  int levelId;
-  String levelName;
+  int? levelId;
+  String? levelName;
   dynamic alternative;
   ShiftQualifReqMd({
     this.alternative,
@@ -16,8 +16,8 @@ class ShiftQualifReqMd {
 
   factory ShiftQualifReqMd.fromJson(Map<String, dynamic> json) {
     return ShiftQualifReqMd(
-      levelId: json['levelId'] as int,
-      levelName: json['level'] as String,
+      levelId: json['levelId'] as int?,
+      levelName: json['level'] as String?,
       numberOfStaff: json['numberOfStaff'] as int,
       qualificationId: json['qualificationId'] as int,
       qualificationName: json['qualification'] as String,

@@ -45,6 +45,8 @@ abstract class CreateShiftDataType {
 
   late PlutoGridStateManager staffReqGridManager;
 
+  late PlutoGridStateManager qualifReqGridManager;
+
   CreateShiftDataType({this.date});
 }
 

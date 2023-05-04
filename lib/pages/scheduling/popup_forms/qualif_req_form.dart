@@ -3,6 +3,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
+import 'package:mca_web_2022_07/pages/properties/new_prop_tabs/edit_shift_qualif_req_popup.dart';
 
 import '../../../comps/show_overlay_popup.dart';
 import '../../../manager/model_exporter.dart';
@@ -13,17 +14,17 @@ import '../../../theme/theme.dart';
 import '../../properties/new_prop_tabs/edit_shift_staff_req_popup.dart';
 import '../models/create_shift_type.dart';
 
-class StaffRequirementForm extends StatefulWidget {
+class QualificationReqForm extends StatefulWidget {
   final CreateShiftData data;
-  const StaffRequirementForm({Key? key, required this.data}) : super(key: key);
+  const QualificationReqForm({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<StaffRequirementForm> createState() => _StaffRequirementFormState();
+  State<QualificationReqForm> createState() => _QualificationReqFormState();
 }
 
-class _StaffRequirementFormState extends State<StaffRequirementForm> {
+class _QualificationReqFormState extends State<QualificationReqForm> {
   CreateShiftData get data => widget.data;
-  PlutoGridStateManager get gridStateManager => data.staffReqGridManager;
+  PlutoGridStateManager get gridStateManager => data.qualifReqGridManager;
   List<PlutoRow> get checkedRows => gridStateManager.checkedRows;
 
   List<PlutoColumn> cols(AppState state) {
@@ -35,27 +36,20 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
         hide: true,
       ),
       PlutoColumn(
-        title: "Department",
+        title: "Qualification",
         field: "department",
         type: PlutoColumnType.text(),
         enableRowChecked: true,
-        width: 200,
       ),
       PlutoColumn(
-        title: "Number of Staff (min)",
+        title: "Min.Level",
+        field: "min_level",
+        type: PlutoColumnType.text(),
+      ),
+      PlutoColumn(
+        title: "Number of Staff",
         field: "min",
         type: PlutoColumnType.number(),
-      ),
-      PlutoColumn(
-        title: "Number of Staff (max)",
-        field: "max",
-        type: PlutoColumnType.number(),
-        renderer: (rendererContext) {
-          return UsersListTable.defaultTextWidget(
-              rendererContext.cell.value == 0
-                  ? "-"
-                  : rendererContext.cell.value);
-        },
       ),
       PlutoColumn(
         title: "Action",
@@ -79,31 +73,33 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
   void _onDelete(PlutoRow row) async {
     try {
       final int groupId =
-          (row.cells['depModel']!.value as ShiftStaffReqMd).groupId;
+          (row.cells['depModel']!.value as ShiftQualifReqMd).qualificationId;
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
-          .deletePropertiesStaff(data.shiftId!, groupId)
+          .deletePropertiesQualif(data.shiftId!, groupId)
           .nocodeErrorHandler();
       gridStateManager.setShowLoading(false);
       if (res.success) {
         gridStateManager.removeRows([row]);
       } else {
-        showError(res.resMessage ?? "Error deleting staff requirement");
+        showError(res.data != null
+            ? ApiHelpers.getRawDataErrorMessages(res)
+            : "Error deleting qualification requirement");
       }
     } on Exception catch (e) {
-      Logger.e(e.toString(), tag: "StaffRequirementForm._onDelete");
-      showError("Error deleting staff requirement");
+      Logger.e(e.toString(), tag: "QualificationReqForm._onDelete");
+      showError("Error deleting qualification requirement");
     }
   }
 
   void _onCreate() async {
     try {
-      final ShiftStaffReqMd? item = await showOverlayPopup(
-          body: EditShiftStaffReqPopup(
+      final ShiftQualifReqMd? item = await showOverlayPopup(
+          body: EditShiftQualifReqPopup(
             exceptedIds: [
               ...(gridStateManager.rows
-                  .map((e) =>
-                      (e.cells['depModel']!.value as ShiftStaffReqMd).groupId)
+                  .map((e) => (e.cells['depModel']!.value as ShiftQualifReqMd)
+                      .qualificationId)
                   .toList())
             ],
           ),
@@ -111,22 +107,24 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
       if (item == null) return;
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
-          .postPropertiesStaff(
+          .postPropertiesQualif(
             id: data.shiftId!,
-            maxOfStaff: item.max,
-            groupId: item.groupId,
-            numberOfStaff: item.min,
+            levelId: item.levelId,
+            numberOfStaff: item.numberOfStaff,
+            qualificationId: item.qualificationId,
           )
           .nocodeErrorHandler();
       if (res.success) {
         gridStateManager.appendRows([_buildRow(item)]);
       } else {
-        showError(res.resMessage ?? "Error creating staff requirement");
+        showError(res.data != null
+            ? ApiHelpers.getRawDataErrorMessages(res)
+            : "Error creating qualification requirement");
       }
       gridStateManager.setShowLoading(false);
     } on Exception catch (e) {
-      Logger.e(e.toString(), tag: "StaffRequirementForm._onCreate");
-      showError("Error creating staff requirement");
+      Logger.e(e.toString(), tag: "QualificationReqForm._onCreate");
+      showError("Error creating qualification requirement");
     }
   }
 
@@ -142,7 +140,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
             Padding(
               padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
               child: PagesTitleWidget(
-                title: 'Staff Requirements',
+                title: 'Qualification Requirements',
                 btnText: "Add",
                 buttons: [
                   ButtonMedium(
@@ -168,13 +166,13 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
     );
   }
 
-  PlutoRow _buildRow(ShiftStaffReqMd group) {
+  PlutoRow _buildRow(ShiftQualifReqMd group) {
     return PlutoRow(
       cells: {
         "depModel": PlutoCell(value: group),
-        "department": PlutoCell(value: group.group),
-        "min": PlutoCell(value: group.min),
-        "max": PlutoCell(value: group.max),
+        "department": PlutoCell(value: group.qualificationName),
+        "min_level": PlutoCell(value: group.levelName),
+        "min": PlutoCell(value: group.numberOfStaff),
         "delete_btn": PlutoCell(value: ""),
       },
     );
@@ -185,13 +183,13 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
         height: MediaQuery.of(context).size.height * 0.7,
         rows: [],
         gridBorderColor: Colors.grey[300]!,
-        noRowsText: "No staff requirements",
+        noRowsText: "No qualification requirements",
         onSmReady: (e) async {
-          data.staffReqGridManager = e;
+          data.qualifReqGridManager = e;
 
           gridStateManager.setShowLoading(true);
-          List<ShiftStaffReqMd> res =
-              await GetPropertiesAction.fetchShiftStaff(data.shiftId ?? -1);
+          List<ShiftQualifReqMd> res =
+              await GetPropertiesAction.fetchShiftQualif(data.shiftId ?? -1);
           if (res.isNotEmpty) {
             for (var item in res) {
               e.appendRows([_buildRow(item)]);
