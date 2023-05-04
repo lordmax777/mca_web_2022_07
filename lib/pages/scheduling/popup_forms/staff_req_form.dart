@@ -1,3 +1,5 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
@@ -75,11 +77,9 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
   }
 
   void _onDelete(PlutoRow row) async {
-    final int groupId =
-        (row.cells['depModel']!.value as ShiftStaffReqMd).groupId;
-    final bool fromDb = groupId != -1;
-    if (fromDb) {
-      //TODO: Delete from db
+    try {
+      final int groupId =
+          (row.cells['depModel']!.value as ShiftStaffReqMd).groupId;
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
           .deletePropertiesStaff(data.shiftId!, groupId)
@@ -90,10 +90,36 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
       } else {
         showError(res.resMessage ?? "Error deleting staff requirement");
       }
-
-      return;
+    } on Exception catch (e) {
+      Logger.e(e.toString(), tag: "StaffRequirementForm._onDelete");
+      showError("Error deleting staff requirement");
     }
-    gridStateManager.removeRows([row]);
+  }
+
+  void _onCreate() async {
+    try {
+      final ShiftStaffReqMd? item = await showOverlayPopup(
+          body: const EditShiftStaffReqPopup(), context: context);
+      if (item == null) return;
+      gridStateManager.setShowLoading(true);
+      final ApiResponse res = await restClient()
+          .postPropertiesStaff(
+            id: data.shiftId!,
+            maxOfStaff: item.max,
+            groupId: item.groupId,
+            numberOfStaff: item.min,
+          )
+          .nocodeErrorHandler();
+      if (res.success) {
+        gridStateManager.appendRows([_buildRow(item)]);
+      } else {
+        showError(res.resMessage ?? "Error creating staff requirement");
+      }
+      gridStateManager.setShowLoading(false);
+    } on Exception catch (e) {
+      Logger.e(e.toString(), tag: "StaffRequirementForm._onCreate");
+      showError("Error creating staff requirement");
+    }
   }
 
   @override
@@ -124,13 +150,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
                         }
                       }),
                 ],
-                onRightBtnClick: () async {
-                  final ShiftStaffReqMd? res = await showOverlayPopup(
-                      body: const EditShiftStaffReqPopup(), context: context);
-                  if (res == null) return;
-                  res.groupId = -1;
-                  gridStateManager.appendRows([_buildRow(res)]);
-                },
+                onRightBtnClick: _onCreate,
               ),
             ),
             _table(state),
