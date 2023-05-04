@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -108,12 +109,14 @@ class DailyViewCalendar extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapUp: (details) async {
-          await showFormsMenus(context,
-              globalPosition: details.globalPosition,
-              data: CreateShiftData(
-                editAppointment: appointment,
-                date: appointment.startTime,
-              ));
+          await showFormsMenus(
+            context,
+            globalPosition: details.globalPosition,
+            data: CreateShiftData(
+              editAppointment: appointment.id as AppointmentIdMd,
+              date: appointment.startTime,
+            ),
+          );
         },
         child: Container(
           alignment: Alignment.centerLeft,

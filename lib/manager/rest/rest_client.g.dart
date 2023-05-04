@@ -1893,6 +1893,7 @@ class _RestClient implements RestClient {
       'numberOfStaff': numberOfStaff,
       'levelId': levelId,
     };
+    _data.removeWhere((k, v) => v == null);
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
       method: 'POST',
@@ -2493,6 +2494,39 @@ class _RestClient implements RestClient {
             .compose(
               _dio.options,
               '/api/fe/quotestatus/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getQuoteBy(
+    id, {
+    required date,
+    required location_id,
+    required shift_id,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'date': date,
+      r'location_id': location_id,
+      r'shift_id': shift_id,
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/quotes/${id}',
               queryParameters: queryParameters,
               data: _data,
             )

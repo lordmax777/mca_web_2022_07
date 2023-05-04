@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
@@ -107,61 +108,67 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
     final quote = data.quote;
     final storageItems = [...state.generalState.storage_items];
     final workRepeats = [...state.generalState.workRepeats];
-    ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
-      id: quote.id,
-      email: quote.email ?? "",
-      name: quote.name,
-      company: quote.company,
-      phone: quote.phone,
-      addressLine1: quote.addressLine1,
-      addressLine2: quote.addressLine2,
-      addressCounty: quote.addressCounty,
-      addressCity: quote.addressCity,
-      addressCountry: quote.addressCountry,
-      addressPostcode: quote.addressPostcode,
-      active: quote.active,
-      altWorkStartDate: quote.altWorkStartDate,
-      currencyId: quote.currencyId,
-      payingDays: quote.payingDays,
-      paymentMethodId: quote.paymentMethodId,
-      quoteComments: data.quote.quoteComments,
-      workAddressLine1: quote.workAddressLine1,
-      workAddressLine2: quote.workAddressLine2,
-      workAddressCounty: quote.workAddressCounty,
-      workAddressCity: quote.workAddressCity,
-      workAddressCountry: quote.workAddressCountry,
-      workAddressPostcode: quote.workAddressPostcode,
-      notes: quote.notes,
-      workStartDate: quote.workStartDate,
-      workRepeatId: workRepeats
-              .firstWhereOrNull((element) => quote.workRepeat == element.days)
-              ?.id ??
-          1,
-      workStartTime: quote.workStartTime,
-      workFinishTime: quote.workFinishTime,
-      workDays: quote.workDays,
-      storageItems: gridStateManager.rows
-          .map<StorageItemMd>((row) {
-            final item = storageItems.firstWhereOrNull(
-                (element) => element.id == row.cells['id']!.value);
-            if (item != null) {
-              item.quantity = row.cells['quantity']!.value;
-              item.outgoingPrice = row.cells['customer_price']!.value;
-              item.auto = row.checked ?? false;
+    Get.showOverlay(
+        asyncFunction: () async {
+          ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
+            id: quote.id,
+            email: quote.email ?? "",
+            name: quote.name,
+            company: quote.company,
+            phone: quote.phone,
+            addressLine1: quote.addressLine1,
+            addressLine2: quote.addressLine2,
+            addressCounty: quote.addressCounty,
+            addressCity: quote.addressCity,
+            addressCountry: quote.addressCountry,
+            addressPostcode: quote.addressPostcode,
+            active: quote.active,
+            altWorkStartDate: quote.altWorkStartDate,
+            currencyId: quote.currencyId,
+            payingDays: quote.payingDays,
+            paymentMethodId: quote.paymentMethodId,
+            quoteComments: data.quote.quoteComments,
+            workAddressLine1: quote.workAddressLine1,
+            workAddressLine2: quote.workAddressLine2,
+            workAddressCounty: quote.workAddressCounty,
+            workAddressCity: quote.workAddressCity,
+            workAddressCountry: quote.workAddressCountry,
+            workAddressPostcode: quote.workAddressPostcode,
+            notes: quote.notes,
+            workStartDate: quote.workStartDate,
+            workRepeatId: workRepeats
+                    .firstWhereOrNull(
+                        (element) => quote.workRepeat == element.days)
+                    ?.id ??
+                1,
+            workStartTime: quote.workStartTime,
+            workFinishTime: quote.workFinishTime,
+            workDays: quote.workDays,
+            storageItems: gridStateManager.rows
+                .map<StorageItemMd>((row) {
+                  final item = storageItems.firstWhereOrNull(
+                      (element) => element.id == row.cells['id']!.value);
+                  if (item != null) {
+                    item.quantity = row.cells['quantity']!.value;
+                    item.outgoingPrice = row.cells['customer_price']!.value;
+                    item.auto = row.checked ?? false;
 
-              return item;
-            }
-            return StorageItemMd.init();
-          })
-          .where((element) => element.id != -1)
-          .toList(),
-    ));
-    if (quoteCreated?.success == true) {
-      exit(context).then((value) {
-        showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
-            titleMsg: "Success");
-      });
-    }
+                    return item;
+                  }
+                  return StorageItemMd.init();
+                })
+                .where((element) => element.id != -1)
+                .toList(),
+          ));
+          if (quoteCreated?.success == true) {
+            exit(context).then((value) {
+              showError(
+                  "Quote ${quote.id == 0 ? "created" : "updated"} successfully",
+                  titleMsg: "Success");
+            });
+          }
+        },
+        loadingWidget: const Center(child: CircularProgressIndicator()));
   }
 
   void _onEditPm() async {
@@ -755,21 +762,6 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
         ),
       ];
 
-  PlutoRow _buildRow(StorageItemMd contractShiftItem,
-      {bool checked = false, int? qty}) {
-    return PlutoRow(
-      checked: checked,
-      cells: {
-        "id": PlutoCell(value: contractShiftItem.id),
-        "title": PlutoCell(value: contractShiftItem.name),
-        "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
-        "quantity": PlutoCell(value: qty ?? 1),
-        "delete_action": PlutoCell(value: ""),
-        "include_in_service": PlutoCell(value: "Included in service"),
-      },
-    );
-  }
-
   Widget _products(AppState state) {
     return labelWithField(
         labelWidth: 160,
@@ -788,7 +780,7 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                 if (!isCreate) {
                   gridStateManager.appendRows(data.quote.items
                       .map(
-                        (e) => _buildRow(
+                        (e) => data.buildRow(
                           StorageItemMd(
                             id: e.itemId,
                             active: true,
@@ -824,7 +816,7 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                       .firstWhereOrNull((element) => element.id == resId);
                   if (item == null) return;
                   gridStateManager
-                      .insertRows(0, [_buildRow(item, checked: true)]);
+                      .insertRows(0, [data.buildRow(item, checked: true)]);
                 },
                 icon: HeroIcons.add),
             const SizedBox(width: 10),
@@ -834,7 +826,7 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                   listItemWidget: (p0) => Text(p0.name),
                   onSelected: (p0) {
                     gridStateManager
-                        .insertRows(0, [_buildRow(p0, checked: true)]);
+                        .insertRows(0, [data.buildRow(p0, checked: true)]);
                   },
                   displayStringForOption: (option) {
                     return option.name;

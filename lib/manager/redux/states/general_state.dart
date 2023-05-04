@@ -491,36 +491,36 @@ class CreateQuoteAction {
   final int id;
   final String email;
   final String name;
-  String? company;
-  String? phone;
-  String? addressLine1;
-  String? addressLine2;
-  String? addressCity;
-  String? addressCounty;
+  final String? company;
+  final String? phone;
+  final String? addressLine1;
+  final String? addressLine2;
+  final String? addressCity;
+  final String? addressCounty;
 
   //country code
-  String? addressCountry;
-  String? addressPostcode;
-  String? workAddressLine1;
-  String? workAddressLine2;
-  String? workAddressCity;
-  String? workAddressCounty;
+  final String? addressCountry;
+  final String? addressPostcode;
+  final String? workAddressLine1;
+  final String? workAddressLine2;
+  final String? workAddressCity;
+  final String? workAddressCounty;
 
   //country code
-  String? workAddressCountry;
-  String? workAddressPostcode;
-  String? notes;
+  final String? workAddressCountry;
+  final String? workAddressPostcode;
+  final String? notes;
   final int currencyId;
   final int paymentMethodId;
   final int payingDays;
   final bool active;
-  String? workStartDate;
-  String? altWorkStartDate;
-  String? workStartTime;
-  String? workFinishTime;
+  final String? workStartDate;
+  final String? altWorkStartDate;
+  final String? workStartTime;
+  final String? workFinishTime;
   final int workRepeatId;
-  String? quoteComments;
-  List<int>? workDays;
+  final String? quoteComments;
+  final List<int>? workDays;
 
   final List<StorageItemMd> storageItems;
 
@@ -528,6 +528,8 @@ class CreateQuoteAction {
   final int? locationId;
   final int? shiftId;
   final int? clientContractId;
+
+  final List<int>? userIds;
 
   CreateQuoteAction({
     this.id = 0,
@@ -564,6 +566,7 @@ class CreateQuoteAction {
     this.clientId,
     this.shiftId,
     this.workDays,
+    this.userIds,
   });
 }
 

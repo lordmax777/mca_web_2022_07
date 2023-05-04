@@ -47,6 +47,11 @@ class QuoteInfoMd {
   //         "currency_id": 1,
   //         "payment_method_id": 1,
   //         "paying_days": 21,
+  //         "client_id":1 or null,
+  //         "client_contract_id": 1 or null,
+  //         "location_id": 1 or null,
+  //         "shift_id": 1 or null,
+  //         "user_ids": "1,2,3,4,5" or null,
   //         "created_on": "2023-04-20 10:00:00",
   //         "updated_on": "2023-04-21 17:34:13",
   //         "created_by": 795,
@@ -85,7 +90,9 @@ class QuoteInfoMd {
   //                 "notes": ""
   //             }
   //         ],
-  //         "last_sent": "2023-04-21 10:51:45"
+  //         "last_sent": "2023-04-21 10:51:45",
+  //         "messages": [],
+  //         "users": <UserInfo>[],
   //     },
 
   int id;
@@ -136,12 +143,28 @@ class QuoteInfoMd {
   String? quoteComments;
   String? lastSent;
 
+  int? clientId;
+  int? clientContractId;
+  int? locationId;
+  int? shiftId;
+  String? userIds;
+  List<int> get getUserIds =>
+      userIds?.split(',').map((e) => int.parse(e)).toList() ?? [];
+  List<QuoteMessageInfo>? messages;
+  List<UserInfo>? users;
+
   QuoteInfoMd({
     required this.id,
     required this.customerId,
     required this.name,
     this.company,
     this.contact,
+    this.locationId,
+    this.shiftId,
+    this.userIds,
+    this.clientId,
+    this.clientContractId,
+    this.messages,
     this.companyRegNumber,
     this.vatNumber,
     this.vatCalc,
@@ -183,6 +206,7 @@ class QuoteInfoMd {
     required this.updatedBy,
     required this.items,
     this.lastSent,
+    this.users,
   });
 
   // from json
@@ -236,6 +260,19 @@ class QuoteInfoMd {
         items: List<QuoteItemMd>.from(
             json['items'].map((x) => QuoteItemMd.fromJson(x))),
         lastSent: json['last_sent'],
+        userIds: json['user_ids'],
+        locationId: json['location_id'],
+        clientId: json['client_id'],
+        clientContractId: json['client_contract_id'],
+        messages: json['messages'] != null
+            ? List<QuoteMessageInfo>.from(
+                json['messages'].map((x) => QuoteMessageInfo.fromJson(x)))
+            : null,
+        shiftId: json['shift_id'],
+        users: json['users'] != null
+            ? List<UserInfo>.from(
+                json['users'].map((x) => UserInfo.fromJson(x)))
+            : null,
       );
     } on TypeError catch (e) {
       print('QuoteInfoMd.fromJson: ${e.stackTrace}');
@@ -291,6 +328,17 @@ class QuoteInfoMd {
         "updated_by": updatedBy,
         "items": List<dynamic>.from(items.map((x) => x.toJson())),
         "last_sent": lastSent,
+        "user_ids": userIds,
+        "location_id": locationId,
+        "client_id": clientId,
+        "client_contract_id": clientContractId,
+        "messages": messages != null
+            ? List<dynamic>.from(messages!.map((x) => x.toJson()))
+            : null,
+        "shift_id": shiftId,
+        "users": users != null
+            ? List<dynamic>.from(users!.map((x) => x.toJson()))
+            : null,
       };
 
   // init
@@ -400,7 +448,14 @@ class QuoteInfoMd {
           createdBy == other.createdBy &&
           updatedBy == other.updatedBy &&
           items == other.items &&
-          lastSent == other.lastSent;
+          lastSent == other.lastSent &&
+          userIds == other.userIds &&
+          locationId == other.locationId &&
+          clientId == other.clientId &&
+          clientContractId == other.clientContractId &&
+          messages == other.messages &&
+          shiftId == other.shiftId &&
+          users == other.users;
 
   @override
   int get hashCode =>
@@ -449,7 +504,14 @@ class QuoteInfoMd {
       createdBy.hashCode ^
       updatedBy.hashCode ^
       items.hashCode ^
-      lastSent.hashCode;
+      lastSent.hashCode ^
+      userIds.hashCode ^
+      locationId.hashCode ^
+      clientId.hashCode ^
+      clientContractId.hashCode ^
+      messages.hashCode ^
+      shiftId.hashCode ^
+      users.hashCode;
 }
 
 class QuoteItemMd {
@@ -525,4 +587,133 @@ class QuoteItemMd {
       price.hashCode ^
       notes.hashCode ^
       auto.hashCode;
+}
+
+class QuoteMessageInfo {
+  //{
+  //                     "content": "dfgdsfg",
+  //                     "createdOn": "2023-05-04 18:59:51",
+  //                     "createdBy": 786
+  //                 }
+
+  final String content;
+  final String createdOn;
+  final int createdBy;
+
+  QuoteMessageInfo({
+    required this.content,
+    required this.createdOn,
+    required this.createdBy,
+  });
+
+  // toJson
+  factory QuoteMessageInfo.fromJson(Map<String, dynamic> json) {
+    try {
+      return QuoteMessageInfo(
+        content: json['content'],
+        createdOn: json['createdOn'],
+        createdBy: json['createdBy'],
+      );
+    } on TypeError catch (e) {
+      print('QuoteMessageInfo.fromJson: ${e.stackTrace}');
+      rethrow;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content,
+      'createdOn': createdOn,
+      'createdBy': createdBy,
+    };
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is QuoteMessageInfo &&
+          runtimeType == other.runtimeType &&
+          content == other.content &&
+          createdOn == other.createdOn &&
+          createdBy == other.createdBy;
+
+  @override
+  int get hashCode =>
+      content.hashCode ^ createdOn.hashCode ^ createdBy.hashCode;
+}
+
+class UserInfo {
+  //{user_id: 878, special_start_time: null, special_finish_time: null, special_rate: null, user_order: null, service_shift: null, published: false}
+
+  final int userId;
+  final String? specialStartTime;
+  final String? specialFinishTime;
+  final num? specialRate;
+  final int? userOrder;
+  final int? serviceShift;
+  final bool published;
+
+  UserInfo({
+    required this.userId,
+    required this.specialStartTime,
+    required this.specialFinishTime,
+    required this.specialRate,
+    required this.userOrder,
+    required this.serviceShift,
+    required this.published,
+  });
+
+  // fromJson
+  factory UserInfo.fromJson(Map<String, dynamic> json) {
+    try {
+      return UserInfo(
+        userId: json['user_id'],
+        specialStartTime: json['special_start_time'],
+        specialFinishTime: json['special_finish_time'],
+        specialRate: json['special_rate'],
+        userOrder: json['user_order'],
+        serviceShift: json['service_shift'],
+        published: json['published'],
+      );
+    } on TypeError catch (e) {
+      print('UserInfo.fromJson: ${e.stackTrace}');
+      rethrow;
+    }
+  }
+
+  // toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'special_start_time': specialStartTime,
+      'special_finish_time': specialFinishTime,
+      'special_rate': specialRate,
+      'user_order': userOrder,
+      'service_shift': serviceShift,
+      'published': published,
+    };
+  }
+
+  @override
+  operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserInfo &&
+          runtimeType == other.runtimeType &&
+          userId == other.userId &&
+          specialStartTime == other.specialStartTime &&
+          specialFinishTime == other.specialFinishTime &&
+          specialRate == other.specialRate &&
+          userOrder == other.userOrder &&
+          serviceShift == other.serviceShift &&
+          published == other.published;
+
+  @override
+  int get hashCode =>
+      userId.hashCode ^
+      specialStartTime.hashCode ^
+      specialFinishTime.hashCode ^
+      specialRate.hashCode ^
+      userOrder.hashCode ^
+      serviceShift.hashCode ^
+      published.hashCode;
 }

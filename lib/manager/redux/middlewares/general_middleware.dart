@@ -35,6 +35,8 @@ import '../states/general_state.dart';
 
 import 'package:dio/dio.dart' as dio;
 
+import '../states/schedule_state.dart';
+
 class GeneralMiddleware extends MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
@@ -295,248 +297,229 @@ Future<List<QuoteInfoMd>> _getQuotesAction(
 
 Future<ApiResponse?> _createQuoteAction(
     AppState state, CreateQuoteAction action, NextDispatcher next) async {
-  return await Get.showOverlay(
-      asyncFunction: () async {
-        try {
-          final dio.Dio apiClient = DioClientForRetrofit(
-                  bearerToken: state.authState.authRes.data?.access_token,
-                  contentType: "multipart/form-data")
-              .init();
+  try {
+    final dio.Dio apiClient = DioClientForRetrofit(
+            bearerToken: state.authState.authRes.data?.access_token,
+            contentType: "multipart/form-data")
+        .init();
 
-          if (action.storageItems.isEmpty) {
-            showError('Please add item/service(s)', titleMsg: "Warning");
-            return null;
-          }
-          if (action.email.isEmpty) {
-            showError('Please add email', titleMsg: "Warning");
-            return null;
-          }
-          final dio.FormData formData = dio.FormData();
+    if (action.storageItems.isEmpty) {
+      showError('Please add item/service(s)', titleMsg: "Warning");
+      return null;
+    }
+    if (action.email.isEmpty) {
+      showError('Please add email', titleMsg: "Warning");
+      return null;
+    }
+    final dio.FormData formData = dio.FormData();
 
-          formData.fields.add(MapEntry('name', action.name));
+    formData.fields.add(MapEntry('name', action.name));
 
-          if (action.company != null && action.company!.isNotEmpty) {
-            formData.fields.add(MapEntry('company', action.company!));
-          }
+    if (action.company != null && action.company!.isNotEmpty) {
+      formData.fields.add(MapEntry('company', action.company!));
+    }
 
-          formData.fields.add(MapEntry('email', action.email));
+    formData.fields.add(MapEntry('email', action.email));
 
-          if (action.phone != null && action.phone!.isNotEmpty) {
-            formData.fields.add(MapEntry('phone', action.phone!));
-          }
+    if (action.phone != null && action.phone!.isNotEmpty) {
+      formData.fields.add(MapEntry('phone', action.phone!));
+    }
 
-          formData.fields
-              .add(MapEntry('payingDays', action.payingDays.toString()));
+    formData.fields.add(MapEntry('payingDays', action.payingDays.toString()));
 
-          formData.fields.add(MapEntry('active', action.active.toString()));
+    formData.fields.add(MapEntry('active', action.active.toString()));
 
-          formData.fields
-              .add(MapEntry('currencyId', action.currencyId.toString()));
+    formData.fields.add(MapEntry('currencyId', action.currencyId.toString()));
 
-          formData.fields.add(
-              MapEntry('paymentMethodId', action.paymentMethodId.toString()));
+    formData.fields
+        .add(MapEntry('paymentMethodId', action.paymentMethodId.toString()));
 
-          formData.fields
-              .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
+    formData.fields
+        .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
 
-          if (action.addressLine1 != null && action.addressLine1!.isNotEmpty) {
-            formData.fields.add(MapEntry('addressLine1', action.addressLine1!));
-          }
+    if (action.addressLine1 != null && action.addressLine1!.isNotEmpty) {
+      formData.fields.add(MapEntry('addressLine1', action.addressLine1!));
+    }
 
-          if (action.addressLine2 != null && action.addressLine2!.isNotEmpty) {
-            formData.fields.add(MapEntry('addressLine2', action.addressLine2!));
-          }
+    if (action.addressLine2 != null && action.addressLine2!.isNotEmpty) {
+      formData.fields.add(MapEntry('addressLine2', action.addressLine2!));
+    }
 
-          if (action.addressCity != null && action.addressCity!.isNotEmpty) {
-            formData.fields.add(MapEntry('addressCity', action.addressCity!));
-          }
+    if (action.addressCity != null && action.addressCity!.isNotEmpty) {
+      formData.fields.add(MapEntry('addressCity', action.addressCity!));
+    }
 
-          if (action.addressCounty != null &&
-              action.addressCounty!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('addressCounty', action.addressCounty!));
-          }
+    if (action.addressCounty != null && action.addressCounty!.isNotEmpty) {
+      formData.fields.add(MapEntry('addressCounty', action.addressCounty!));
+    }
 
-          if (action.addressPostcode != null &&
-              action.addressPostcode!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('addressPostcode', action.addressPostcode!));
-          }
+    if (action.addressPostcode != null && action.addressPostcode!.isNotEmpty) {
+      formData.fields.add(MapEntry('addressPostcode', action.addressPostcode!));
+    }
 
-          if (action.addressCountry != null &&
-              action.addressCountry!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('addressCountry', action.addressCountry!));
-          }
+    if (action.addressCountry != null && action.addressCountry!.isNotEmpty) {
+      formData.fields.add(MapEntry('addressCountry', action.addressCountry!));
+    }
 
-          if (action.notes != null && action.notes!.isNotEmpty) {
-            formData.fields.add(MapEntry('notes', action.notes!));
-          }
+    if (action.notes != null && action.notes!.isNotEmpty) {
+      formData.fields.add(MapEntry('notes', action.notes!));
+    }
 
-          if (action.workAddressLine1 != null &&
-              action.workAddressLine1!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('workAddressLine1', action.workAddressLine1!));
-          }
+    if (action.workAddressLine1 != null &&
+        action.workAddressLine1!.isNotEmpty) {
+      formData.fields
+          .add(MapEntry('workAddressLine1', action.workAddressLine1!));
+    }
 
-          if (action.workAddressLine2 != null &&
-              action.workAddressLine2!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('workAddressLine2', action.workAddressLine2!));
-          }
+    if (action.workAddressLine2 != null &&
+        action.workAddressLine2!.isNotEmpty) {
+      formData.fields
+          .add(MapEntry('workAddressLine2', action.workAddressLine2!));
+    }
 
-          if (action.workAddressCity != null &&
-              action.workAddressCity!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('workAddressCity', action.workAddressCity!));
-          }
+    if (action.workAddressCity != null && action.workAddressCity!.isNotEmpty) {
+      formData.fields.add(MapEntry('workAddressCity', action.workAddressCity!));
+    }
 
-          if (action.workAddressCounty != null &&
-              action.workAddressCounty!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('workAddressCounty', action.workAddressCounty!));
-          }
+    if (action.workAddressCounty != null &&
+        action.workAddressCounty!.isNotEmpty) {
+      formData.fields
+          .add(MapEntry('workAddressCounty', action.workAddressCounty!));
+    }
 
-          if (action.workAddressPostcode != null &&
-              action.workAddressPostcode!.isNotEmpty) {
-            formData.fields.add(
-                MapEntry('workAddressPostcode', action.workAddressPostcode!));
-          }
+    if (action.workAddressPostcode != null &&
+        action.workAddressPostcode!.isNotEmpty) {
+      formData.fields
+          .add(MapEntry('workAddressPostcode', action.workAddressPostcode!));
+    }
 
-          if (action.workAddressCountry != null &&
-              action.workAddressCountry!.isNotEmpty) {
-            formData.fields.add(
-                MapEntry('workAddressCountry', action.workAddressCountry!));
-          }
+    if (action.workAddressCountry != null &&
+        action.workAddressCountry!.isNotEmpty) {
+      formData.fields
+          .add(MapEntry('workAddressCountry', action.workAddressCountry!));
+    }
 
-          if (action.workStartDate != null &&
-              action.workStartDate!.isNotEmpty) {
-            formData.fields.add(MapEntry('workStartDate',
-                action.workStartDate!.toDate()!.formattedDate));
-          }
-          if (action.altWorkStartDate != null &&
-              action.altWorkStartDate!.isNotEmpty) {
-            formData.fields.add(MapEntry('altWorkStartDate',
-                action.altWorkStartDate!.toDate()!.formattedDate));
-          }
-          if (action.workStartTime != null &&
-              action.workStartTime!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('workStartTime', action.workStartTime!));
-          }
-          if (action.workFinishTime != null &&
-              action.workFinishTime!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('workFinishTime', action.workFinishTime!));
-          }
+    if (action.workStartDate != null && action.workStartDate!.isNotEmpty) {
+      formData.fields.add(MapEntry(
+          'workStartDate', action.workStartDate!.toDate()!.formattedDate));
+    }
+    if (action.altWorkStartDate != null &&
+        action.altWorkStartDate!.isNotEmpty) {
+      formData.fields.add(MapEntry('altWorkStartDate',
+          action.altWorkStartDate!.toDate()!.formattedDate));
+    }
+    if (action.workStartTime != null && action.workStartTime!.isNotEmpty) {
+      formData.fields.add(MapEntry('workStartTime', action.workStartTime!));
+    }
+    if (action.workFinishTime != null && action.workFinishTime!.isNotEmpty) {
+      formData.fields.add(MapEntry('workFinishTime', action.workFinishTime!));
+    }
 
-          formData.fields
-              .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
+    formData.fields
+        .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
 
-          if (action.workDays != null && action.workDays!.isNotEmpty) {
-            String week1 = "";
-            String week2 = "";
+    if (action.workDays != null && action.workDays!.isNotEmpty) {
+      String week1 = "";
+      String week2 = "";
 
-            for (var day in action.workDays!) {
-              if (action.workRepeatId == 3) {
-                //Week
-                week1 +=
-                    "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)},";
-              }
-              if (action.workRepeatId == 4) {
-                //Fortnightly
-                if (day > 7) {
-                  week2 +=
-                      "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
-                } else {
-                  week1 +=
-                      "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
-                }
-              }
-            }
-            if (week1.isNotEmpty) {
-              formData.fields.add(MapEntry('workDays', week1));
-            }
-            if (week2.isNotEmpty) {
-              formData.fields.add(MapEntry('workDays2', week2));
-            }
-          }
-          // return null;
-
-          for (int i = 0; i < action.storageItems.length; i++) {
-            final item = action.storageItems[i];
-
-            formData.fields.add(MapEntry('quoteItem_$i', item.id.toString()));
-
-            formData.fields
-                .add(MapEntry('quoteQuantity_$i', item.quantity.toString()));
-
-            formData.fields
-                .add(MapEntry('quotePrice_$i', item.outgoingPrice.toString()));
-
-            formData.fields.add(MapEntry('quoteAuto_$i', item.auto.toString()));
-          }
-
-          if (action.quoteComments != null &&
-              action.quoteComments!.isNotEmpty) {
-            formData.fields
-                .add(MapEntry('quoteComments', action.quoteComments!));
-          }
-
-          if (action.clientId != null) {
-            formData.fields
-                .add(MapEntry('client_id', action.clientId!.toString()));
-          }
-          if (action.locationId != null) {
-            formData.fields
-                .add(MapEntry('location_id', action.locationId!.toString()));
-          }
-          if (action.clientContractId != null) {
-            formData.fields.add(MapEntry(
-                'client_contract_id', action.clientContractId!.toString()));
-          }
-          if (action.shiftId != null) {
-            formData.fields
-                .add(MapEntry('shift_id', action.shiftId!.toString()));
-          }
-
-          formData.fields.removeWhere((element) => element.value == "null");
-
-          logger(
-              "FormData: ${formData.fields.map((e) => "${e.key}: ${e.value}").toList()}");
-
-          dio.Response res = await apiClient.post('/api/fe/quotes/${action.id}',
-              data: formData);
-
-          final ApiResponse apiResponse = ApiResponse.fromDioResponse(res);
-
-          switch (res.statusCode) {
-            case 200:
-              if (res.data != null) {
-                await appStore.dispatch(GetAllStorageItemsAction());
-                await appStore.dispatch(GetQuotesAction());
-                return apiResponse;
-              }
-              showError(res.data ?? 'Error');
-              break;
-            default:
-              showError(res.statusMessage ?? 'Error');
-          }
-        } on dio.DioError catch (e) {
-          logger("Response: ${e.response?.data}");
-          switch (e.type) {
-            case dio.DioErrorType.response:
-              showError(e.response?.data ?? 'Error');
-              break;
-            default:
-              showError(e.message);
-          }
-        } on TypeError catch (e) {
-          showError("Unknown error occurred!");
-          Logger.e(e.stackTrace, tag: "CreateQuoteAction");
+      for (var day in action.workDays!) {
+        if (action.workRepeatId == 3) {
+          //Week
+          week1 +=
+              "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)},";
         }
-      },
-      loadingWidget: const Center(child: CircularProgressIndicator()));
+        if (action.workRepeatId == 4) {
+          //Fortnightly
+          if (day > 7) {
+            week2 +=
+                "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
+          } else {
+            week1 +=
+                "${Constants.daysOfTheWeek.keys.firstWhere((element) => element == day)}${action.workDays?.last == day ? "" : ","}";
+          }
+        }
+      }
+      if (week1.isNotEmpty) {
+        formData.fields.add(MapEntry('workDays', week1));
+      }
+      if (week2.isNotEmpty) {
+        formData.fields.add(MapEntry('workDays2', week2));
+      }
+    }
+    if (action.userIds != null && action.userIds!.isNotEmpty) {
+      final usrs = action.userIds!.join(',');
+      formData.fields.add(MapEntry('user_ids', usrs));
+    }
+    // return null;
+
+    for (int i = 0; i < action.storageItems.length; i++) {
+      final item = action.storageItems[i];
+
+      formData.fields.add(MapEntry('quoteItem_$i', item.id.toString()));
+
+      formData.fields
+          .add(MapEntry('quoteQuantity_$i', item.quantity.toString()));
+
+      formData.fields
+          .add(MapEntry('quotePrice_$i', item.outgoingPrice.toString()));
+
+      formData.fields.add(MapEntry('quoteAuto_$i', item.auto.toString()));
+    }
+
+    if (action.quoteComments != null && action.quoteComments!.isNotEmpty) {
+      formData.fields.add(MapEntry('quoteComments', action.quoteComments!));
+    }
+
+    if (action.clientId != null) {
+      formData.fields.add(MapEntry('client_id', action.clientId!.toString()));
+    }
+    if (action.locationId != null) {
+      formData.fields
+          .add(MapEntry('location_id', action.locationId!.toString()));
+    }
+    if (action.clientContractId != null) {
+      formData.fields.add(
+          MapEntry('client_contract_id', action.clientContractId!.toString()));
+    }
+    if (action.shiftId != null) {
+      formData.fields.add(MapEntry('shift_id', action.shiftId!.toString()));
+    }
+
+    formData.fields.removeWhere((element) => element.value == "null");
+
+    logger(
+        "FormData: ${formData.fields.map((e) => "${e.key}: ${e.value}").toList()}");
+
+    dio.Response res =
+        await apiClient.post('/api/fe/quotes/${action.id}', data: formData);
+
+    final ApiResponse apiResponse = ApiResponse.fromDioResponse(res);
+
+    switch (res.statusCode) {
+      case 200:
+        if (res.data != null) {
+          await appStore.dispatch(GetAllStorageItemsAction());
+          await appStore.dispatch(GetQuotesAction());
+          return apiResponse;
+        }
+        showError(res.data ?? 'Error');
+        break;
+      default:
+        showError(res.statusMessage ?? 'Error');
+    }
+  } on dio.DioError catch (e) {
+    logger("Response: ${e.response?.data}");
+    switch (e.type) {
+      case dio.DioErrorType.response:
+        showError(e.response?.data ?? 'Error');
+        break;
+      default:
+        showError(e.message);
+    }
+  } on TypeError catch (e) {
+    showError("Unknown error occurred!");
+    Logger.e(e.stackTrace, tag: "CreateQuoteAction");
+  }
 }
 
 Future<StorageItemMd?> _onAddStorageItemAction(
@@ -683,6 +666,10 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
     final location = data.location;
     final timing = data.timingInfo;
     final gridStateManager = data.gridStateManager;
+    final team = data.addedChildren;
+    final quote = data.fetchedQuote;
+    final bool isUpdate = !data.isCreate;
+
     if (client == null) {
       showError("Please select client");
       return;
@@ -695,10 +682,19 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
       showError("Please add at least one storage item");
       return;
     }
+    if (location == null) {
+      showError("Please add location");
+      return;
+    }
     //1. Create Quote
-    ApiResponse? createdQuote = await appStore.dispatch(
+    ApiResponse? createdQuote;
+    if (isUpdate) {
+      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+          ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
+    }
+    createdQuote = await appStore.dispatch(
       CreateQuoteAction(
-        id: 0,
+        id: data.quoteId ?? 0,
         name: client.name,
         active: client.active,
         paymentMethodId: int.tryParse(client.paymentMethodId ?? "") ?? 1,
@@ -713,15 +709,16 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
         workStartDate: timing.startDate?.formatDateForApi,
         workStartTime: timing.startTime?.formattedTime,
         workFinishTime: timing.endTime?.formattedTime,
-        addressLine1: location?.address?.line1,
-        addressLine2: location?.address?.line2,
-        addressCity: location?.address?.city,
-        addressCounty: location?.address?.county,
-        addressCountry: location?.address?.country,
-        addressPostcode: location?.address?.postcode,
+        addressLine1: location.address?.line1,
+        addressLine2: location.address?.line2,
+        addressCity: location.address?.city,
+        addressCounty: location.address?.county,
+        addressCountry: location.address?.country,
+        addressPostcode: location.address?.postcode,
         clientId: client.id,
-        locationId: location?.id,
+        locationId: location.id,
         company: client.company,
+        userIds: team.map((e) => e.id).toList(),
       ),
     );
 
@@ -730,7 +727,20 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
       final quoteId = createdQuote.data as int;
       final ApiResponse? changedQuoteStatus = await appStore.dispatch(
           ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
+      if (changedQuoteStatus?.success == true) {
+        await appStore.dispatch(SCFetchShiftsAction(date: timing.startDate!));
+        await appStore.dispatch(SCFetchShiftsWeekAction(
+          startDate: timing.startDate!.subtract(const Duration(days: 7)),
+          endDate: timing.startDate!,
+        ));
+        await appStore
+            .dispatch(SCFetchShiftsMonthAction(startDate: timing.startDate!));
 
+        return changedQuoteStatus;
+      } else {
+        showError(changedQuoteStatus?.data ?? "Error");
+      }
+      //DEPRECATED
       // //3. (Optional) Assign users to the allocation
       // if (changedQuoteStatus != null && changedQuoteStatus.success) {
       //   //TODO: Assign users to the allocation
