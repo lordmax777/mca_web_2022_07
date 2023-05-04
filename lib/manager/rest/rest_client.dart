@@ -430,7 +430,7 @@ abstract class RestClient {
   });
 
   @DELETE("/api/fe/shifts/{id}/staff")
-  Future<HttpResponse> deletePropertiesStaff(
+  Future<HttpResponse> deletePropertiesStaff (
       @Path('id') int shiftId, @Query("groupId") int groupId);
 
   @GET("/api/fe/shifts/{id}/qualification")

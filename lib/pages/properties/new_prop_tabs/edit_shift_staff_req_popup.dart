@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 
+import '../../../comps/autocomplete_input_field.dart';
 import '../../../theme/theme.dart';
 
 class EditShiftStaffReqPopup extends StatefulWidget {
@@ -83,25 +84,42 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
         verticalSpace: 32.0,
         children: [
           const SizedBox(height: 1),
-          DropdownWidget1(
-            hintText: "Department",
-            value: department.name,
-            dropdownBtnWidth: dpWidth / 5,
-            isRequired: true,
-            dropdownOptionsWidth: dpWidth / 5,
-            hasSearchBox: true,
-            dropdownMaxHeight: 300.0,
-            items: (appStore.state.generalState.paramList.data?.groups
-                    .map((e) => e.name)
-                    .toList()) ??
-                [],
-            onChangedWithObj: (p0) {
-              department.name = p0.name;
-              department.code = (p0.item as ListGroup).id;
-              setState(() {});
-            },
-            objItems: appStore.state.generalState.paramList.data?.groups ?? [],
-          ),
+          CustomAutocompleteTextField<ListGroup>(
+              width: dpWidth / 5,
+              height: 50,
+              hintText: "Department",
+              listItemWidget: (p0) => Text(p0.name),
+              onSelected: (p0) {
+                department.name = p0.name;
+                department.code = p0.id;
+                setState(() {});
+              },
+              displayStringForOption: (option) {
+                return option.name;
+              },
+              options: (p0) => appStore.state.generalState.groups.where(
+                  (element) => element.name
+                      .toLowerCase()
+                      .contains(p0.text.toLowerCase()))),
+          // DropdownWidget1(
+          //   hintText: "Department",
+          //   value: department.name,
+          //   dropdownBtnWidth: dpWidth / 5,
+          //   isRequired: true,
+          //   dropdownOptionsWidth: dpWidth / 5,
+          //   hasSearchBox: true,
+          //   dropdownMaxHeight: 300.0,
+          //   items: (appStore.state.generalState.paramList.data?.groups
+          //           .map((e) => e.name)
+          //           .toList()) ??
+          //       [],
+          //   onChangedWithObj: (p0) {
+          //     department.name = p0.name;
+          //     department.code = (p0.item as ListGroup).id;
+          //     setState(() {});
+          //   },
+          //   objItems: appStore.state.generalState.paramList.data?.groups ?? [],
+          // ),
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 5,

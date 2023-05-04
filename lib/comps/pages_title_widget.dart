@@ -4,8 +4,13 @@ class PagesTitleWidget extends StatelessWidget {
   final String title;
   final String? btnText;
   final VoidCallback? onRightBtnClick;
+  final List<ButtonMedium>? buttons;
   const PagesTitleWidget(
-      {Key? key, required this.title, this.btnText, this.onRightBtnClick})
+      {Key? key,
+      required this.title,
+      this.btnText,
+      this.onRightBtnClick,
+      this.buttons})
       : super(key: key);
 
   @override
@@ -22,13 +27,19 @@ class PagesTitleWidget extends StatelessWidget {
           textColor: ThemeColors.gray1,
         ),
         if (onRightBtnClick != null)
-          ButtonMedium(
-            text: btnText ?? "New User",
-            icon: const HeroIcon(
-              HeroIcons.plusCircle,
-              size: 20,
-            ),
-            onPressed: onRightBtnClick,
+          SpacedRow(
+            horizontalSpace: 8,
+            children: [
+              if (buttons != null) ...buttons!,
+              ButtonMedium(
+                text: btnText ?? "New User",
+                icon: const HeroIcon(
+                  HeroIcons.plusCircle,
+                  size: 20,
+                ),
+                onPressed: onRightBtnClick,
+              ),
+            ],
           ),
       ],
     );

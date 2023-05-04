@@ -5,38 +5,12 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
-import 'package:mca_web_2022_07/pages/scheduling/popup_forms/quote_form.dart';
-import 'package:mca_web_2022_07/pages/scheduling/popup_forms/shift_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../theme/theme.dart';
 import '../../manager/redux/middlewares/users_middleware.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../manager/models/storage_item_md.dart';
-
-Future<bool> exit(BuildContext context) {
-  return context.popRoute();
-}
-
-Future<bool> onWillPop(BuildContext context) async {
-  return (await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Discard changes?'),
-          content: const Text('Are you sure you want to discard changes?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => context.popRoute(false),
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () => context.popRoute(true),
-              child: const Text('Yes'),
-            ),
-          ],
-        ),
-      )) ??
-      false;
-}
+import '../../utils/global_functions.dart';
 
 Widget labelWithField(String label, Widget? child,
     {Widget? customLabel,
@@ -305,15 +279,6 @@ class _CreateJobState extends State<_CreateJob>
 
   Widget _getTabChild(AppState state) {
     switch (_tabController.index) {
-      case 0:
-        switch (type) {
-          case ScheduleCreatePopupMenus.quote:
-            return QuoteForm(
-                _shiftDetailsFormKey, data as CreateShiftDataQuote);
-          case ScheduleCreatePopupMenus.job:
-            return ShiftDetailsForm(
-                _shiftDetailsFormKey, data as CreateShiftData);
-        }
       default:
         return const SizedBox();
     }

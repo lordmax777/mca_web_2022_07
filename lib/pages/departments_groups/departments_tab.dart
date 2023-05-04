@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import '../../comps/show_overlay_popup.dart';
 import '../../manager/models/list_all_md.dart';
 import '../../theme/theme.dart';
@@ -51,10 +53,13 @@ class DepartmentsTab extends GetView<DepartmentsController> {
                     HeroIcons.plusCircle,
                     size: 20,
                   ),
-                  onPressed: () {
-                    showOverlayPopup(
+                  onPressed: () async {
+                    ApiResponse? res = await showOverlayPopup(
                         body: const DepartmentsNewDepPopupWidget(),
                         context: context);
+                    if (res != null && res.success) {
+                      context.popRoute();
+                    }
                   },
                 ),
               ]),

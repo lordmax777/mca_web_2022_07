@@ -1,8 +1,7 @@
-import 'package:get/get.dart';
+import 'package:get/get.dart' as g;
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
-
 import '../../../theme/theme.dart';
 import '../schdule_appointment_drawer.dart';
 

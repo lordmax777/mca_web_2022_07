@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../comps/autocomplete_input_field.dart';
@@ -31,7 +32,8 @@ class JobEditForm extends StatefulWidget {
   State<JobEditForm> createState() => _JobEditFormState();
 }
 
-class _JobEditFormState extends State<JobEditForm> {
+class _JobEditFormState extends State<JobEditForm>
+    with SingleTickerProviderStateMixin {
   //Getters
   late final CreateShiftData data = widget.data;
   bool get isCreate => data.isCreate;
@@ -58,10 +60,22 @@ class _JobEditFormState extends State<JobEditForm> {
   set comment(String value) => data.comment = value;
 
   //Vars
+  late final TabController _tabController;
+  late final List<Tab> _tabs;
 
   @override
   void initState() {
     super.initState();
+    _tabs = [
+      Tab(text: "${Constants.propertyName} details"),
+      const Tab(text: "Staff Requirements"),
+    ];
+    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController.addListener(() {
+      // if (_tabController.index != _tabController.previousIndex) {
+      //   setState(() {});
+      // }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (hasUnavUsers) {
         final unavUsers = await appStore
@@ -77,6 +91,8 @@ class _JobEditFormState extends State<JobEditForm> {
 
   @override
   void dispose() {
+    _tabController.dispose();
+
     super.dispose();
   }
 
@@ -111,6 +127,20 @@ class _JobEditFormState extends State<JobEditForm> {
                 ),
               ],
             ),
+            TabBar(
+              controller: _tabController,
+              tabs: _tabs,
+              labelColor: ThemeColors.MAIN_COLOR,
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: ThemeColors.MAIN_COLOR.withOpacity(0.1),
+              ),
+              splashBorderRadius: BorderRadius.circular(30),
+              unselectedLabelColor: ThemeColors.gray7,
+              indicatorColor: ThemeColors.MAIN_COLOR,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: Theme.of(context).textTheme.headlineSmall,
+            ),
           ],
         ),
         actions: [
@@ -126,16 +156,43 @@ class _JobEditFormState extends State<JobEditForm> {
           ButtonLarge(text: 'Publish', onPressed: () => _save(state)),
         ],
         content: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                  color: ThemeColors.gray6,
-                  width: 2,
-                  strokeAlign: StrokeAlign.outside),
-              // strokeAlign: BorderSide.strokeAlignInside),
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: ThemeColors.gray6,
+                width: 2,
+                strokeAlign: StrokeAlign.outside),
+            // strokeAlign: BorderSide.strokeAlignInside),
+          ),
+          // child: SizedBox(
+          //   width: MediaQuery.of(context).size.width * 0.95,
+          // child: _getTabChild(state),
+          // ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _tabController,
+              children: [
+                _Form(state),
+                StaffRequirementForm(data: data),
+              ],
             ),
-            child: _Form(state)),
+          ),
+        ),
       ),
     );
+  }
+
+  Widget _getTabChild(AppState state) {
+    switch (_tabController.index) {
+      case 0:
+        return _Form(state);
+      case 1:
+        return StaffRequirementForm(data: data);
+      default:
+        return const SizedBox();
+    }
   }
 
   //Functions
@@ -147,7 +204,6 @@ class _JobEditFormState extends State<JobEditForm> {
       case ScheduleCreatePopupMenus.quote:
         break;
     }
-    logger('Save ${type.label}');
   }
 
   void _saveJob(AppState state) {

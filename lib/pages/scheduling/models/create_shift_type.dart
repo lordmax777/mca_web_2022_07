@@ -43,6 +43,8 @@ abstract class CreateShiftDataType {
         .toList();
   }
 
+  late PlutoGridStateManager staffReqGridManager;
+
   CreateShiftDataType({this.date});
 }
 
@@ -82,6 +84,8 @@ class CreateShiftData extends CreateShiftDataType {
 
   int? quoteId;
 
+  int? shiftId;
+
   CreateShiftData({
     required super.date,
     this.hasComment = false,
@@ -89,6 +93,7 @@ class CreateShiftData extends CreateShiftDataType {
     this.hasWorkAddress = false,
     this.quoteId,
     this.hasAltTime = false,
+    this.shiftId,
     this.type = ScheduleCreatePopupMenus.job,
   }) {
     if (selectedClientId != null) {
@@ -104,6 +109,9 @@ class CreateShiftData extends CreateShiftDataType {
         //TODO: SHOH
 
       }
+    }
+    if (kDebugMode) {
+      shiftId = 379;
     }
   }
 

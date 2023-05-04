@@ -16,11 +16,16 @@ class UsersListTable extends StatelessWidget {
   final void Function(PlutoGridOnChangedEvent)? onChanged;
   final String? noRowsText;
   final PlutoGridColumnFilterConfig? columnFilter;
+  final double? height;
+
+  final void Function(PlutoGridOnRowCheckedEvent)? onRowChecked;
 
   const UsersListTable(
       {Key? key,
       required this.rows,
       this.onOneTapSelect,
+      this.onRowChecked,
+      this.height,
       this.columnFilter,
       this.onChanged,
       this.mode = PlutoGridMode.selectWithOneTap,
@@ -31,10 +36,10 @@ class UsersListTable extends StatelessWidget {
       required this.cols})
       : super(key: key);
 
-  static Widget defaultTextWidget(String text,
+  static Widget defaultTextWidget(dynamic text,
       {TextAlign textAlign = TextAlign.start}) {
     return KText(
-      text: text.contains("null") ? "-" : text,
+      text: text.toString().contains("null") ? "-" : text.toString(),
       textColor: ThemeColors.gray2,
       fontWeight: FWeight.regular,
       fontSize: 14,
@@ -100,7 +105,7 @@ class UsersListTable extends StatelessWidget {
     double _h = 625;
 
     return SizedBox(
-      height: _h,
+      height: height ?? _h,
       child: PlutoGrid(
         configuration: PlutoGridConfiguration(
             columnFilter: columnFilter ?? const PlutoGridColumnFilterConfig(),
@@ -120,6 +125,7 @@ class UsersListTable extends StatelessWidget {
                     : PlutoAutoSizeMode.scale)),
         columns: _cols,
         rows: rows,
+        onRowChecked: onRowChecked,
         mode: mode,
         onSelected: onOneTapSelect,
         onChanged: onChanged,

@@ -43,7 +43,7 @@ class DepsNewDepController extends GetxController {
 
       await closeLoading();
       if (res.success) {
-        context?.popRoute();
+        // context?.popRoute();
 
         await appStore.dispatch(GetAllParamListAction());
       } else {
@@ -73,8 +73,9 @@ class DepsNewDepController extends GetxController {
 
 class DepartmentsNewDepPopupWidget extends GetView<DepsNewDepController> {
   final ListGroup? group;
-  const DepartmentsNewDepPopupWidget({super.key, this.group});
-
+  final bool isAddOnly;
+  const DepartmentsNewDepPopupWidget(
+      {super.key, this.group, this.isAddOnly = false});
   @override
   Widget build(BuildContext context) {
     final dpWidth = MediaQuery.of(context).size.width;
@@ -181,8 +182,14 @@ class DepartmentsNewDepPopupWidget extends GetView<DepsNewDepController> {
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: isNew ? 'Add Department' : 'Update Department',
-            onPressed: () {
-              controller.postDepartment(context: context);
+            onPressed: () async {
+              if (isAddOnly) {
+                // return {};
+                return;
+              }
+              ApiResponse? res =
+                  await controller.postDepartment(context: context);
+              context.popRoute(res);
             },
           ),
         ],

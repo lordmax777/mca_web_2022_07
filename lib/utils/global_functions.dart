@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:get_ip_address/get_ip_address.dart' as getIp;
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:plural_noun/plural_noun.dart';
-
+import '../theme/theme.dart';
 import 'constants.dart' as constants;
 
 // import 'package:fingerprintjs/fingerprintjs.dart';
@@ -58,4 +58,29 @@ Future<String?> getBrowserId() async {
     browserId = null;
   }
   return browserId;
+}
+
+Future<bool> exit(BuildContext context) {
+  return context.popRoute();
+}
+
+Future<bool> onWillPop(BuildContext context) async {
+  return (await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Discard changes?'),
+          content: const Text('Are you sure you want to discard changes?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => context.popRoute(false),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () => context.popRoute(true),
+              child: const Text('Yes'),
+            ),
+          ],
+        ),
+      )) ??
+      false;
 }

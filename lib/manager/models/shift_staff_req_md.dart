@@ -27,4 +27,18 @@ class ShiftStaffReqMd {
     data['groupId'] = groupId;
     return data;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ShiftStaffReqMd &&
+          runtimeType == other.runtimeType &&
+          min == other.min &&
+          max == other.max &&
+          group == other.group &&
+          groupId == other.groupId;
+
+  @override
+  int get hashCode =>
+      min.hashCode ^ max.hashCode ^ group.hashCode ^ groupId.hashCode;
 }

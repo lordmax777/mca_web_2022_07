@@ -28,7 +28,6 @@ class GeneralState {
   final StateValue<ListAllMd> paramList;
 
   List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
-
   List<StorageItemMd> get storage_items =>
       (storageItems.data ?? <StorageItemMd>[])
         ..sort((a, b) {
@@ -40,22 +39,18 @@ class GeneralState {
           }
           return 0;
         });
-
   List<ListCurrency> get currencies =>
       paramList.data?.currencies ?? <ListCurrency>[];
-
   List<ListCountry> get countries =>
       paramList.data?.countries ?? <ListCountry>[];
-
   List<ListPaymentMethods> get paymentMethods =>
       paramList.data?.payment_methods ?? <ListPaymentMethods>[];
-
   List<WarehouseMd> get storages => warehouses.data ?? <WarehouseMd>[];
-
   List<ListTaxes> get taxes => paramList.data?.taxes ?? <ListTaxes>[];
-
   List<ListWorkRepeats> get workRepeats =>
       paramList.data?.work_repeats ?? <ListWorkRepeats>[];
+  List<ListGroup> get groups => (paramList.data?.groups ?? <ListGroup>[])
+    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
   final DrawerStates drawerStates;
   final Widget? endDrawer;
