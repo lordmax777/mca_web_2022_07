@@ -108,9 +108,10 @@ class DailyViewCalendar extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapUp: (details) async {
-          final jobCreated = await showFormsMenus(context,
+          await showFormsMenus(context,
               globalPosition: details.globalPosition,
               data: CreateShiftData(
+                editAppointment: appointment,
                 date: appointment.startTime,
               ));
         },

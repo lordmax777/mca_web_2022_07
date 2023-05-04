@@ -62,16 +62,18 @@ class _JobEditFormState extends State<JobEditForm>
 
   //Vars
   late final TabController _tabController;
-  late final List<Tab> _tabs;
+  List<Tab> _tabs = [];
 
   @override
   void initState() {
     super.initState();
     _tabs = [
       Tab(text: "${Constants.propertyName.capitalizeFirst} details"),
-      const Tab(text: "Staff Requirements"),
-      const Tab(text: "Qualification Requirements"),
     ];
+    if (!isCreate) {
+      _tabs.add(const Tab(text: "Staff Requirements"));
+      _tabs.add(const Tab(text: "Qualification Requirements"));
+    }
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -173,8 +175,8 @@ class _JobEditFormState extends State<JobEditForm>
               controller: _tabController,
               children: [
                 _Form(state),
-                StaffRequirementForm(data: data),
-                QualificationReqForm(data: data),
+                if (!isCreate) StaffRequirementForm(data: data),
+                if (!isCreate) QualificationReqForm(data: data),
               ],
             ),
           ),

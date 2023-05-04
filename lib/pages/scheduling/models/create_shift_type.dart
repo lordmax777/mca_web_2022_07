@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../manager/models/location_item_md.dart';
 import '../popup_forms/timing_form.dart';
@@ -88,6 +89,8 @@ class CreateShiftData extends CreateShiftDataType {
 
   int? shiftId;
 
+  Appointment? editAppointment;
+
   CreateShiftData({
     required super.date,
     this.hasComment = false,
@@ -96,6 +99,7 @@ class CreateShiftData extends CreateShiftDataType {
     this.quoteId,
     this.hasAltTime = false,
     this.shiftId,
+    this.editAppointment,
     this.type = ScheduleCreatePopupMenus.job,
   }) {
     if (selectedClientId != null) {
@@ -120,7 +124,8 @@ class CreateShiftData extends CreateShiftDataType {
   ScheduleCreatePopupMenus type;
 
   @override
-  bool get isCreate => selectedJobId == null || selectedJobId == 0;
+  bool get isCreate =>
+      selectedJobId == null || selectedJobId == 0 || editAppointment == null;
 }
 
 class CreateShiftDataQuote extends CreateShiftDataType {

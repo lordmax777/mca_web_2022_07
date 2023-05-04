@@ -474,8 +474,25 @@ enum ScheduleCreatePopupMenus {
   }
 }
 
-List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus() {
+List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
+    {Appointment? editAppointment}) {
   return [
+    if (editAppointment != null)
+      PopupMenuItem(
+        value: ScheduleCreatePopupMenus.job,
+        child: SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          horizontalSpace: 8,
+          children: const [
+            HeroIcon(
+              HeroIcons.edit,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+            Text("Edit Job"),
+          ],
+        ),
+      ),
     PopupMenuItem(
       value: ScheduleCreatePopupMenus.job,
       child: SpacedRow(
@@ -515,7 +532,7 @@ Widget addIcon(
 }
 
 Future<ApiResponse?> showFormsMenus(BuildContext context,
-    {required Offset globalPosition, CreateShiftData? data}) async {
+    {required Offset globalPosition, required CreateShiftData data}) async {
   //Positions the menu
   final RenderBox overlay =
       Overlay.of(context)!.context.findRenderObject() as RenderBox;
@@ -534,7 +551,7 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
       context: context,
       position: RelativeRect.fromLTRB(left, top, right, bottom),
-      items: getPopupCreateMenus());
+      items: getPopupCreateMenus(editAppointment: data.editAppointment));
 
   if (createTapResult == null) return null;
 
@@ -545,7 +562,7 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
       final jobCreated = await showDialog<ApiResponse?>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => JobEditForm(data: data!));
+          builder: (context) => JobEditForm(data: data));
       return jobCreated;
     case ScheduleCreatePopupMenus.quote:
       // TODO: Handle this case.
