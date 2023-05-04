@@ -81,6 +81,7 @@ class _TimingFormState extends State<TimingForm> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (quote != null) {
+        logger(quote);
         returnVal.startDate = quote!.workStartDate?.toDate();
         returnVal.altStartDate = quote!.altWorkStartDate?.toDate();
         returnVal.startTime = quote!.workStartTime?.formattedTime;

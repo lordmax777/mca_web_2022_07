@@ -111,16 +111,24 @@ class CreateShiftData extends CreateShiftDataType {
       scheduleLaterIndex = 1;
       timingInfo.repeatTypeIndex = 0;
       if (quoteId != null) {
-        //TODO: SHOH
-
+        return;
       }
     }
     if (editAppointment != null) {
       final id = editAppointment!.id as AppointmentIdMd;
-      shiftId = id.property.id;
-      // client = ClientInfoMd(
-      //   id: id.property.clientId!,
-      // );
+      final p = id.property;
+      final sh = id.allocation;
+      logger(p.toJson());
+      logger(sh.toJson());
+      shiftId = p.id;
+      client = appStore.state.generalState.clientInfos
+          .firstWhereOrNull((element) => element.id == p.clientId);
+      location = appStore.state.generalState.locations
+          .firstWhereOrNull((element) => element.id == p.locationId);
+      timingInfo.startDate = sh.dateTimeDate;
+      timingInfo.startTime = p.startTime?.formattedTime;
+      timingInfo.endTime = p.finishTime?.formattedTime;
+      isActive = p.active ?? false;
     }
   }
 
