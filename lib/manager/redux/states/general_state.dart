@@ -12,6 +12,7 @@ import 'package:redux/redux.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
+import '../../../pages/scheduling/models/create_shift_type.dart';
 import '../../../pages/scheduling/popup_forms/client_form.dart';
 import '../../../pages/scheduling/popup_forms/timing_form.dart';
 import '../../model_exporter.dart';
@@ -615,4 +616,17 @@ class OnCreateNewClientTap<T> {
     this.timingInfo,
     this.quoteInfo,
   });
+}
+
+class CreateJobAction {
+  final CreateShiftData data;
+
+  CreateJobAction(this.data);
+}
+
+class ChangeQuoteStatusAction {
+  final int quoteId;
+  final String status;
+
+  ChangeQuoteStatusAction({required this.status, required this.quoteId});
 }

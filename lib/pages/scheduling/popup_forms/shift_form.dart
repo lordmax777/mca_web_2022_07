@@ -77,8 +77,8 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
 
   bool get isRepeat => scheduleLaterIndex == 1;
 
-  int? get repeatTypeIndex => data.repeatTypeIndex;
-  set repeatTypeIndex(int? value) => data.repeatTypeIndex = value;
+  int? get repeatTypeIndex => data.timingInfo.repeatTypeIndex;
+  set repeatTypeIndex(int? value) => data.timingInfo.repeatTypeIndex = value;
   List<int> get repeatDays => data.repeatDays;
   set repeatDays(List<int> value) => data.repeatDays = value;
 

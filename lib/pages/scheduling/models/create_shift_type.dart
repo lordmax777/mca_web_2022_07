@@ -20,13 +20,28 @@ abstract class CreateShiftDataType {
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   int scheduleLaterIndex = 0;
-  int? repeatTypeIndex;
   List<int> repeatDays = [];
 
   List<UserRes> addedChildren = [];
   Map<int, double> addedChildrenRates = {};
 
   late PlutoGridStateManager gridStateManager;
+  List<StorageItemMd> storageItems(List<StorageItemMd> storageItems) {
+    return gridStateManager.rows
+        .map<StorageItemMd>((row) {
+          final item = storageItems.firstWhereOrNull(
+              (element) => element.id == row.cells['id']!.value);
+          if (item != null) {
+            item.quantity = row.cells['quantity']!.value;
+            item.outgoingPrice = row.cells['customer_price']!.value;
+            item.auto = row.checked ?? false;
+            return item;
+          }
+          return StorageItemMd.init();
+        })
+        .where((element) => element.id != -1)
+        .toList();
+  }
 
   CreateShiftDataType({this.date});
 }
@@ -84,7 +99,7 @@ class CreateShiftData extends CreateShiftDataType {
     timingInfo.hasAltTime = hasAltTime;
     if (type == ScheduleCreatePopupMenus.quote) {
       scheduleLaterIndex = 1;
-      repeatTypeIndex = 0;
+      timingInfo.repeatTypeIndex = 0;
       if (quoteId != null) {
         //TODO: SHOH
 
@@ -145,7 +160,6 @@ class CreateShiftDataQuote extends CreateShiftDataType {
 
   CreateShiftDataQuote({this.quoteId}) {
     scheduleLaterIndex = 1;
-    repeatTypeIndex = 0;
     if (quoteId != null) {
       quote = appStore.state.generalState.quotes
               .firstWhereOrNull((element) => element.id == quoteId) ??

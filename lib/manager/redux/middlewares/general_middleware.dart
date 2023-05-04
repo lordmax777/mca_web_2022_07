@@ -23,6 +23,7 @@ import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
 import 'package:retrofit/retrofit.dart';
+import '../../../utils/global_functions.dart';
 import '../../general_controller.dart';
 import '../../models/inventory_md.dart';
 import '../../models/location_item_md.dart';
@@ -77,7 +78,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getApprovalUserQualificationsAction(store.state, action, next);
       case GetInventoryList:
         return _getInventoryList(store.state, action, next);
-
+      case CreateJobAction:
+        return _createJobAction(store.state, action);
+      case ChangeQuoteStatusAction:
+        return _changeQuoteStatusAction(store.state, action);
       default:
         return next(action);
     }
@@ -668,5 +672,92 @@ Future<List<InventoryMd>> _getInventoryList(
   } catch (e) {
     Logger.e(e.toString(), tag: "GetInventoryList");
     return [];
+  }
+}
+
+Future _createJobAction(AppState state, CreateJobAction action) async {
+  try {
+    final data = action.data;
+    final client = data.client;
+    final location = data.location;
+    final timing = data.timingInfo;
+    final gridStateManager = data.gridStateManager;
+    if (client == null) {
+      showError("Please select client");
+      return;
+    }
+    if (timing.repeatTypeIndex == null) {
+      showError("Please select repeat type");
+      return;
+    }
+    if (data.storageItems(state.generalState.storage_items).isEmpty) {
+      showError("Please add at least one storage item");
+      return;
+    }
+    //1. Create Quote
+    ApiResponse? createdQuote = await appStore.dispatch(
+      CreateQuoteAction(
+        id: 0,
+        name: client.name,
+        active: client.active,
+        paymentMethodId: int.tryParse(client.paymentMethodId ?? "") ?? 1,
+        currencyId: int.tryParse(client.currencyId ?? "") ?? 1,
+        payingDays: client.payingDays,
+        email: client.email ?? "",
+        workRepeatId:
+            state.generalState.workRepeats[timing.repeatTypeIndex!].id,
+        notes: client.notes,
+        phone: client.phone,
+        storageItems: data.storageItems(state.generalState.storage_items),
+        workStartDate: timing.startDate?.formatDateForApi,
+        workStartTime: timing.startTime?.formattedTime,
+        workFinishTime: timing.endTime?.formattedTime,
+        addressLine1: location?.address?.line1,
+        addressLine2: location?.address?.line2,
+        addressCity: location?.address?.city,
+        addressCounty: location?.address?.county,
+        addressCountry: location?.address?.country,
+        addressPostcode: location?.address?.postcode,
+        clientId: client.id,
+        locationId: location?.id,
+        company: client.company,
+      ),
+    );
+
+    //2. Change Quote Status to accepted
+    if (createdQuote != null && createdQuote.success) {
+      final quoteId = createdQuote.data as int;
+      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+          ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
+
+      //3. (Optional) Assign users to the allocation
+      if (changedQuoteStatus != null && changedQuoteStatus.success) {
+        //TODO: Assign users to the allocation
+      }
+    }
+  } on Exception catch (e) {
+    Logger.e(e.toString(), tag: "CreateJobAction");
+    showError("Something went wrong");
+  }
+}
+
+Future<ApiResponse?> _changeQuoteStatusAction(
+    AppState state, ChangeQuoteStatusAction action) async {
+  try {
+    final ip_address = await getIpAddress();
+    if (ip_address == null) {
+      throw Exception("Cannot get IP address");
+    }
+    final browserId = await getBrowserId();
+    if (browserId == null) {
+      throw Exception("Cannot get browser id");
+    }
+    final ApiResponse res = await restClient()
+        .updateQuoteStatus(action.quoteId,
+            status: action.status, ip_address: ip_address, browser: browserId)
+        .nocodeErrorHandler();
+    return res;
+  } on Exception catch (e) {
+    throw Exception("Cannot change Quote status ${e.toString()}");
   }
 }

@@ -321,8 +321,7 @@ extension StringExt on String {
       int year = int.parse(split(splitBy)[0]);
       return DateTime(year, month, day);
     } catch (e) {
-      logger("Fail to parse date: $this");
-      return null;
+      throw Exception("Invalid date format");
     }
   }
 }

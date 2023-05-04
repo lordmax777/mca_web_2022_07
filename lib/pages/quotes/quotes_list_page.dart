@@ -102,6 +102,7 @@ class _QuotesListPageState extends State<QuotesListPage>
           title: "Action",
           field: "edit_btn",
           width: 80,
+          enableSorting: false,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return GridTableHelpers.getActionRenderer(
@@ -297,7 +298,7 @@ class _QuotesListPageState extends State<QuotesListPage>
     }
 
     if (quote.quoteStatus != null) {
-      status = quote.quoteStatus!;
+      status = quote.quoteStatus! ? "Accepted" : "Pending";
     }
 
     if (quote.lastSent != null) {

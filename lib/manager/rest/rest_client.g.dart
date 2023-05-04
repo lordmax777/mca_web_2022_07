@@ -2409,7 +2409,7 @@ class _RestClient implements RestClient {
     id, {
     required status,
     required ip_address,
-    required browserId,
+    required browser,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -2417,7 +2417,7 @@ class _RestClient implements RestClient {
     final _data = {
       'status': status,
       'ip_address': ip_address,
-      'browserId': browserId,
+      'browser': browser,
     };
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(

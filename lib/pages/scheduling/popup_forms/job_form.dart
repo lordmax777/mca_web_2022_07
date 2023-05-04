@@ -17,6 +17,7 @@ import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
+import '../../../utils/global_functions.dart';
 import '../../scheduling/create_shift_popup.dart';
 import '../../scheduling/popup_forms/storage_item_form.dart';
 import 'client_form.dart';
@@ -141,70 +142,29 @@ class _JobEditFormState extends State<JobEditForm> {
   void _save(AppState state) async {
     switch (type) {
       case ScheduleCreatePopupMenus.job:
-        // TODO: Handle this case.
+        _saveJob(state);
         break;
       case ScheduleCreatePopupMenus.quote:
-        _saveQuote(state);
         break;
     }
     logger('Save ${type.label}');
   }
 
-  void _saveQuote(AppState state) async {
-    final storageItems = [...state.generalState.storage_items];
-    final workRepeats = [...state.generalState.workRepeats];
-    ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
-      id: data.quoteId ?? 0,
-      email: data.client!.email ?? "",
-      name: data.client!.name,
-      company: data.client!.company,
-      phone: data.client!.phone,
-      addressLine1: data.client!.address.line1,
-      addressLine2: data.client!.address.line2,
-      addressCounty: data.client!.address.county,
-      addressCity: data.client!.address.city,
-      addressCountry: data.client!.address.country,
-      addressPostcode: data.client!.address.postcode,
-      active: data.client!.active,
-      altWorkStartDate: data.timingInfo.altStartDate?.formattedDate,
-      currencyId: int.parse(data.client!.currencyId),
-      payingDays: data.client!.payingDays,
-      paymentMethodId: int.parse(data.client!.paymentMethodId!),
-      quoteComments: data.comment,
-      workAddressLine1: data.workAddress?.line1,
-      workAddressLine2: data.workAddress?.line2,
-      workAddressCounty: data.workAddress?.county,
-      workAddressCity: data.workAddress?.city,
-      workAddressCountry: data.workAddress?.country,
-      workAddressPostcode: data.workAddress?.postcode,
-      notes: data.client!.notes,
-      workStartDate: data.timingInfo.startDate?.formattedDate,
-      workRepeatId: workRepeats[data.timingInfo.repeatTypeIndex ?? 0].id,
-      workStartTime: data.timingInfo.startTime?.formattedTime,
-      workFinishTime: data.timingInfo.endTime?.formattedTime,
-      workDays: data.timingInfo.repeatDays,
-      storageItems: gridStateManager.rows
-          .map<StorageItemMd>((row) {
-            final item = storageItems.firstWhereOrNull(
-                (element) => element.id == row.cells['id']!.value);
-            if (item != null) {
-              item.quantity = row.cells['quantity']!.value;
-              item.outgoingPrice = row.cells['customer_price']!.value;
-              item.auto = row.checked ?? false;
-
-              return item;
-            }
-            return StorageItemMd.init();
-          })
-          .where((element) => element.id != -1)
-          .toList(),
-    ));
-    if (quoteCreated?.success == true) {
-      // exit(context).then((value) {
-      //   showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
-      //       titleMsg: "Success");
-      // });
-    }
+  void _saveJob(AppState state) {
+    Get.showOverlay(
+        asyncFunction: () async {
+          final ApiResponse? newJob =
+              await appStore.dispatch(CreateJobAction(data));
+          if (newJob?.success == true) {
+            // exit(context).then((value) {
+            //   showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
+            //       titleMsg: "Success");
+            // });
+          }
+        },
+        loadingWidget: const Center(
+          child: CircularProgressIndicator(),
+        ));
   }
 
   void _onCreateNewClient() async {
@@ -270,7 +230,6 @@ class _JobEditFormState extends State<JobEditForm> {
           type: ClientFormType.timing, timingInfo: timing),
     );
     if (res == null) return;
-    logger(res.repeatDays);
     data.timingInfo = res;
     if (hasUnavUsers) {
       setState(() {

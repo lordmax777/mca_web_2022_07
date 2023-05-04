@@ -132,7 +132,7 @@ class QuoteInfoMd {
   String? workAddressCounty;
   String? workAddressPostcode;
   String? acceptedOn;
-  String? quoteStatus;
+  bool? quoteStatus;
   String? quoteComments;
   String? lastSent;
 
@@ -329,7 +329,7 @@ class QuoteInfoMd {
       workDays: [],
       validUntil: '',
       acceptedOn: '',
-      quoteStatus: "",
+      quoteStatus: null,
       quoteComments: '',
       quoteValue: 0,
       quoteTax: 0,

@@ -561,43 +561,6 @@ abstract class RestClient {
   @GET("/api/fe/quotes/{id}")
   Future<HttpResponse> getQuotes(@Path() int id);
 
-  // @POST("/api/fe/quotes/{id}")
-  // @FormUrlEncoded()
-  // Future<HttpResponse> createQuote(
-  //   ///0 to create new, id to update
-  //   @Path() int id, {
-  //   @Field() required String email,
-  //   @Field() required String name,
-  //   @Field() String? company,
-  //   @Field() String? phone,
-  //   @Field() String? addressLine1,
-  //   @Field() String? addressLine2,
-  //   @Field() String? addressCity,
-  //   @Field() String? addressCounty,
-  //   //country code
-  //   @Field() String? addressCountry,
-  //   @Field() String? addressPostcode,
-  //   @Field() String? workAddressLine1,
-  //   @Field() String? workAddressLine2,
-  //   @Field() String? workAddressCity,
-  //   @Field() String? workAddressCounty,
-  //   //country code
-  //   @Field() String? workAddressCountry,
-  //   @Field() String? workAddressPostcode,
-  //   @Field() String? notes,
-  //   @Field() int? currencyId,
-  //   @Field() int? paymentMethodId,
-  //   @Field() required int payingDays,
-  //   @Field() required bool active,
-  //   @Field() String? workStartDate,
-  //   @Field() String? altWorkStartDate,
-  //   @Field() String? workStartTime,
-  //   @Field() String? workFinishTime,
-  //   @Field() int? workRepeatId,
-  //   @Field() String? quoteComments,
-  //   @Field() List<int>? workDays,
-  // });
-
   @GET("/api/fe/approvals")
   Future<HttpResponse> getApprovals();
 
@@ -607,7 +570,7 @@ abstract class RestClient {
     @Path() int id, {
     @Field() required String status,
     @Field() required String ip_address,
-    @Field() required String browserId,
+    @Field() required String browser,
   });
 }
 
