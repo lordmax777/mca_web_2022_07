@@ -37,27 +37,44 @@ class _JobEditFormState extends State<JobEditForm>
     with SingleTickerProviderStateMixin {
   //Getters
   late final CreateShiftData data = widget.data;
+
   bool get isCreate => data.isCreate;
+
   ScheduleCreatePopupMenus get type => data.type;
+
   CompanyMd get company => GeneralController.to.companyInfo;
+
   PlutoGridStateManager get gridStateManager => data.gridStateManager;
+
   bool get isClientSelected => data.client != null;
+
   List<UserRes> get addedChildren => data.addedChildren;
+
   Map<int, double> get addedChildrenRates => data.addedChildrenRates;
+
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
+
   CreatedTimingReturnValue get timing => data.timingInfo;
+
   String get comment => data.comment;
+
   bool get hasComment => data.hasComment;
+
   bool get hasUnavUsers => data.hasUnavUsers;
+
   bool get hasWorkAddress => data.hasWorkAddress;
+
   Address? get workAddress => data.workAddress;
 
   //Setters
   set addedChildrenRates(Map<int, double> value) =>
       data.addedChildrenRates = value;
+
   set gridStateManager(PlutoGridStateManager value) =>
       data.gridStateManager = value;
+
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
+
   set comment(String value) => data.comment = value;
 
   //Vars
@@ -160,25 +177,8 @@ class _JobEditFormState extends State<JobEditForm>
             border: Border.all(
                 color: ThemeColors.gray6,
                 width: 2,
-                strokeAlign: StrokeAlign.outside),
-            // strokeAlign: BorderSide.strokeAlignInside),
-          ),
-          // child: SizedBox(
-          //   width: MediaQuery.of(context).size.width * 0.95,
-          // child: _getTabChild(state),
-          // ),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _tabController,
-              children: [
-                _Form(state),
-                if (!isCreate) StaffRequirementForm(data: data),
-                if (!isCreate) QualificationReqForm(data: data),
-              ],
-            ),
+                // strokeAlign: StrokeAlign.outside),
+                strokeAlign: BorderSide.strokeAlignOutside),
           ),
         ),
       ),

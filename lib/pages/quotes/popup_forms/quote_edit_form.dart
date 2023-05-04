@@ -94,8 +94,8 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
               border: Border.all(
                   color: ThemeColors.gray6,
                   width: 2,
-                  strokeAlign: StrokeAlign.outside),
-              // strokeAlign: BorderSide.strokeAlignInside),
+                  // strokeAlign: StrokeAlign.outside),
+                  strokeAlign: BorderSide.strokeAlignOutside),
             ),
             child: _Form(state)),
       ),

@@ -16,6 +16,7 @@ import '../../../pages/scheduling/models/create_shift_type.dart';
 import '../../../pages/scheduling/popup_forms/client_form.dart';
 import '../../../pages/scheduling/popup_forms/timing_form.dart';
 import '../../model_exporter.dart';
+import '../../models/approval_md.dart';
 import '../../models/inventory_md.dart';
 import '../../models/location_item_md.dart';
 import '../../rest/nocode_helpers.dart';
@@ -83,7 +84,11 @@ class GeneralState {
   //           DateTime.tryParse(b.dateTime!)!
   //               .compareTo(DateTime.tryParse(a.dateTime!)!));
 
-  final List<ApprovalUserQualificationMd> approvalUserQualifications;
+  List<ApprovalPendingUserQlf> get approvalPendingUserQlf =>
+      approvals.pendingUserQualifications;
+
+  List<ApprovalRequest> get approvalRequest => approvals.requests;
+
   final List<InventoryMd> inventoryList;
 
   GeneralState({
@@ -98,7 +103,6 @@ class GeneralState {
     required this.clientInfos,
     required this.quotes,
     required this.approvals,
-    required this.approvalUserQualifications,
     required this.inventoryList,
   });
 
@@ -144,7 +148,6 @@ class GeneralState {
       clientInfos: [],
       quotes: [],
       approvals: ApprovalMd(pendingUserQualifications: [], requests: []),
-      approvalUserQualifications: [],
       inventoryList: [],
     );
   }
@@ -176,8 +179,6 @@ class GeneralState {
       clientInfos: clientInfos ?? this.clientInfos,
       quotes: quotes ?? this.quotes,
       approvals: approvals ?? this.approvals,
-      approvalUserQualifications:
-          approvalUserQualifications ?? this.approvalUserQualifications,
       inventoryList: inventoryList ?? this.inventoryList,
     );
   }
