@@ -102,6 +102,47 @@ class CreateShiftDataQuote extends CreateShiftDataType {
   int? quoteId;
   QuoteInfoMd quote = QuoteInfoMd.init();
 
+  ClientInfoMd? _client;
+  ClientInfoMd? get client => _client;
+  set client(ClientInfoMd? client) {
+    if (client == null) return;
+    _client = client;
+    quote.email = client.email;
+    quote.phone = client.phone;
+    quote.company = client.company;
+    if (client.paymentMethodId != null) {
+      quote.paymentMethodId = int.tryParse(client.paymentMethodId!) ?? 1;
+    }
+    quote.currencyId = int.tryParse(client.currencyId) ?? 1;
+    quote.payingDays = client.payingDays;
+    quote.notes = client.notes;
+    quote.name = client.name;
+  }
+
+  set invoiceLocation(LocationAddress? address) {
+    if (address == null) return;
+    quote.addressLine1 = address.address?.line1;
+    quote.addressLine2 = address.address?.line2;
+    quote.addressCity = address.address?.city;
+    quote.addressCounty = address.address?.county;
+    quote.addressCountry = address.address?.country;
+    quote.addressPostcode = address.address?.postcode;
+  }
+
+  set workLocation(LocationAddress? address) {
+    if (address == null) return;
+    if (address.anywhere == true) {
+      quote.workAddressLine1 = address.name;
+      return;
+    }
+    quote.workAddressLine1 = address.address?.line1;
+    quote.workAddressLine2 = address.address?.line2;
+    quote.workAddressCity = address.address?.city;
+    quote.workAddressCounty = address.address?.county;
+    quote.workAddressCountry = address.address?.country;
+    quote.workAddressPostcode = address.address?.postcode;
+  }
+
   CreateShiftDataQuote({this.quoteId}) {
     scheduleLaterIndex = 1;
     repeatTypeIndex = 0;

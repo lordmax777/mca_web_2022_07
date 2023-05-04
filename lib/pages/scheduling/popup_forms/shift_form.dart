@@ -346,8 +346,7 @@ class ShiftDetailsFormState extends State<ShiftDetailsForm> {
                                     addIcon(
                                       tooltip: "View on map",
                                       onPressed: () {
-                                        final loc = state
-                                            .generalState.locationAddresses
+                                        final loc = state.generalState.locations
                                             .firstWhereOrNull((element) =>
                                                 element.id ==
                                                 selectedLocationId);

@@ -28,8 +28,6 @@ class GeneralState {
 
   List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
 
-  List<LocationAddress> get locations => locationAddresses;
-
   List<StorageItemMd> get storage_items =>
       (storageItems.data ?? <StorageItemMd>[])
         ..sort((a, b) {
@@ -64,7 +62,7 @@ class GeneralState {
   final StateValue<List<StorageItemMd>> storageItems;
   final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
   final StateValue<List<PropertiesMd>> properties;
-  final List<LocationAddress> locationAddresses;
+  final List<LocationAddress> locations;
   final List<ClientInfoMd> clientInfos;
 
   final List<QuoteInfoMd> quotes;
@@ -92,7 +90,7 @@ class GeneralState {
     required this.storageItems,
     required this.checklistTemplates,
     required this.properties,
-    required this.locationAddresses,
+    required this.locations,
     required this.clientInfos,
     required this.quotes,
     required this.approvals,
@@ -138,7 +136,7 @@ class GeneralState {
         error: ErrorModel(),
         data: [],
       ),
-      locationAddresses: [],
+      locations: [],
       clientInfos: [],
       quotes: [],
       approvals: ApprovalMd(pendingUserQualifications: [], requests: []),
@@ -155,7 +153,7 @@ class GeneralState {
     StateValue<List<StorageItemMd>>? storageItems,
     StateValue<List<ChecklistTemplateMd>>? checklistTemplates,
     StateValue<List<PropertiesMd>>? properties,
-    List<LocationAddress>? locationAddresses,
+    List<LocationAddress>? locations,
     List<ClientInfoMd>? clientInfos,
     List<QuoteInfoMd>? quotes,
     ApprovalMd? approvals,
@@ -170,7 +168,7 @@ class GeneralState {
       storageItems: storageItems ?? this.storageItems,
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
       properties: properties ?? this.properties,
-      locationAddresses: locationAddresses ?? this.locationAddresses,
+      locations: locations ?? this.locations,
       clientInfos: clientInfos ?? this.clientInfos,
       quotes: quotes ?? this.quotes,
       approvals: approvals ?? this.approvals,
@@ -190,7 +188,7 @@ class UpdateGeneralStateAction {
   final StateValue<List<StorageItemMd>>? storageItems;
   final StateValue<List<ChecklistTemplateMd>>? checklistTemplates;
   final StateValue<List<PropertiesMd>>? properties;
-  final List<LocationAddress>? locationAddresses;
+  final List<LocationAddress>? locations;
   final List<ClientInfoMd>? clientInfos;
   final List<QuoteInfoMd>? quotes;
   final ApprovalMd? approvals;
@@ -206,7 +204,7 @@ class UpdateGeneralStateAction {
     this.storageItems,
     this.checklistTemplates,
     this.properties,
-    this.locationAddresses,
+    this.locations,
     this.clientInfos,
     this.quotes,
     this.approvals,

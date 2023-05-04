@@ -234,7 +234,7 @@ Future<List<LocationAddress>> _getLocationAddresses(AppState state,
         list.add(LocationAddress.fromJson(e));
       }
       LocationsController.to.setList(list);
-      next(UpdateGeneralStateAction(locationAddresses: list));
+      next(UpdateGeneralStateAction(locations: list));
       return list;
     }
     return [];

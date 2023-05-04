@@ -539,7 +539,7 @@ class _ClientFormState extends State<ClientForm> {
                     );
                   },
                 ),
-              if (isClient && isClient || !isLocation)
+              if (isClient && isClient || !isLocation && !isQuoteClient)
                 labelWithField(
                     "Service Delivered at a different address",
                     toggle(isDeliverAtDifferentLocation, (value) {

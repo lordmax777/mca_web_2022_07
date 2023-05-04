@@ -2,13 +2,10 @@ import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/auth.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
-
-import '../../../app.dart';
 import '../../../theme/theme.dart';
 import '../../hive.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
-import '../../talker_controller.dart';
 import '../sets/state_value.dart';
 import '../states/auth_state.dart';
 

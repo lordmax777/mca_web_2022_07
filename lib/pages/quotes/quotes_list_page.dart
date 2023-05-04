@@ -204,15 +204,9 @@ class _QuotesListPageState extends State<QuotesListPage>
     final quoteCreated = await showDialog<ApiResponse?>(
       context: context,
       barrierDismissible: kDebugMode,
-      builder: (context) => JobEditForm(
-        data: CreateShiftData(
-          type: ScheduleCreatePopupMenus.quote,
+      builder: (context) => QuoteEditForm(
+        data: CreateShiftDataQuote(
           quoteId: quoteId,
-          date: DateTime.now(),
-          hasComment: true,
-          hasUnavUsers: false,
-          hasWorkAddress: true,
-          hasAltTime: true,
         ),
       ),
     );

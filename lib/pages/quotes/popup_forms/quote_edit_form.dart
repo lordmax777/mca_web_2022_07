@@ -316,6 +316,23 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                         child: SpacedColumn(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            CustomAutocompleteTextField<ClientInfoMd>(
+                                width: 400,
+                                height: 50,
+                                hintText: "Select Client",
+                                listItemWidget: (p0) => Text(p0.name),
+                                onSelected: (p0) {
+                                  data.client = p0;
+                                  setState(() {});
+                                },
+                                displayStringForOption: (option) {
+                                  return option.name;
+                                },
+                                options: (p0) => state.generalState.clientInfos
+                                    .where((element) => element.name
+                                        .toLowerCase()
+                                        .contains(p0.text.toLowerCase()))),
+                            const SizedBox(height: 16),
                             labelWithField(
                               labelWidth: 160,
                               "Name:",
@@ -408,6 +425,23 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                         child: SpacedColumn(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            CustomAutocompleteTextField<LocationAddress>(
+                                width: 400,
+                                height: 50,
+                                hintText: "Select Location",
+                                listItemWidget: (p0) => Text(p0.name ?? ""),
+                                onSelected: (p0) {
+                                  data.invoiceLocation = p0;
+                                  setState(() {});
+                                },
+                                displayStringForOption: (option) {
+                                  return option.name ?? "";
+                                },
+                                options: (p0) => state.generalState.locations
+                                    .where((element) => (element.name ?? "")
+                                        .toLowerCase()
+                                        .contains(p0.text.toLowerCase()))),
+                            const SizedBox(height: 16),
                             labelWithField(
                               labelWidth: 160,
                               "Address Line 1:",
@@ -467,6 +501,23 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
                         child: SpacedColumn(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            CustomAutocompleteTextField<LocationAddress>(
+                                width: 400,
+                                height: 50,
+                                hintText: "Select Location",
+                                listItemWidget: (p0) => Text(p0.name ?? ""),
+                                onSelected: (p0) {
+                                  data.workLocation = p0;
+                                  setState(() {});
+                                },
+                                displayStringForOption: (option) {
+                                  return option.name ?? "";
+                                },
+                                options: (p0) => state.generalState.locations
+                                    .where((element) => (element.name ?? "")
+                                        .toLowerCase()
+                                        .contains(p0.text.toLowerCase()))),
+                            const SizedBox(height: 16),
                             labelWithField(
                               labelWidth: 160,
                               "Work Address Line 1:",
