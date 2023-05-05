@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/models/approval_md.dart';
-import 'package:mca_web_2022_07/manager/models/approval_user_qualification_md.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/locations/controllers/locations_controller.dart';
@@ -29,6 +28,7 @@ class GeneralState {
   final StateValue<ListAllMd> paramList;
 
   List<ListShift> get shifts => paramList.data?.shifts ?? <ListShift>[];
+
   List<StorageItemMd> get storage_items =>
       (storageItems.data ?? <StorageItemMd>[])
         ..sort((a, b) {
@@ -40,22 +40,31 @@ class GeneralState {
           }
           return 0;
         });
+
   List<ListCurrency> get currencies =>
       paramList.data?.currencies ?? <ListCurrency>[];
+
   List<ListCountry> get countries =>
       paramList.data?.countries ?? <ListCountry>[];
+
   List<ListPaymentMethods> get paymentMethods =>
       paramList.data?.payment_methods ?? <ListPaymentMethods>[];
+
   List<WarehouseMd> get storages => warehouses.data ?? <WarehouseMd>[];
+
   List<ListTaxes> get taxes => paramList.data?.taxes ?? <ListTaxes>[];
+
   List<ListWorkRepeats> get workRepeats =>
       paramList.data?.work_repeats ?? <ListWorkRepeats>[];
+
   List<ListGroup> get groups => (paramList.data?.groups ?? <ListGroup>[])
     ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
   List<ListQualification> get qualifications => (paramList
           .data?.qualifications ??
       <ListQualification>[])
     ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+
   List<ListQualificationLevel> get qualificationLevels => (paramList
           .data?.qualification_levels ??
       <ListQualificationLevel>[])
@@ -164,7 +173,6 @@ class GeneralState {
     List<ClientInfoMd>? clientInfos,
     List<QuoteInfoMd>? quotes,
     ApprovalMd? approvals,
-    List<ApprovalUserQualificationMd>? approvalUserQualifications,
     List<InventoryMd>? inventoryList,
   }) {
     return GeneralState(
@@ -197,7 +205,6 @@ class UpdateGeneralStateAction {
   final List<ClientInfoMd>? clientInfos;
   final List<QuoteInfoMd>? quotes;
   final ApprovalMd? approvals;
-  final List<ApprovalUserQualificationMd>? approvalUserQualifications;
   final List<InventoryMd>? inventoryList;
 
   UpdateGeneralStateAction({
@@ -213,7 +220,6 @@ class UpdateGeneralStateAction {
     this.clientInfos,
     this.quotes,
     this.approvals,
-    this.approvalUserQualifications,
     this.inventoryList,
   });
 }
@@ -476,12 +482,6 @@ class GetApprovalAction {
   final int? id;
 
   GetApprovalAction({this.id});
-}
-
-class GetApprovalUserQualificationsAction {
-  final int? id;
-
-  GetApprovalUserQualificationsAction({this.id});
 }
 
 class GetInventoryList {
