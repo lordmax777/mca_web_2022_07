@@ -27,7 +27,9 @@ abstract class CreateShiftDataType {
   List<UserRes> addedChildren = [];
   Map<int, double> addedChildrenRates = {};
 
+  bool isGridInitialized = false;
   late PlutoGridStateManager gridStateManager;
+
   List<StorageItemMd> storageItems(List<StorageItemMd> storageItems) {
     return gridStateManager.rows
         .map<StorageItemMd>((row) {
@@ -50,6 +52,21 @@ abstract class CreateShiftDataType {
   late PlutoGridStateManager qualifReqGridManager;
 
   CreateShiftDataType({this.date});
+
+  PlutoRow buildRow(StorageItemMd contractShiftItem,
+      {bool checked = false, int? qty}) {
+    return PlutoRow(
+      checked: checked,
+      cells: {
+        "id": PlutoCell(value: contractShiftItem.id),
+        "title": PlutoCell(value: contractShiftItem.name),
+        "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
+        "quantity": PlutoCell(value: qty ?? 1),
+        "delete_action": PlutoCell(value: ""),
+        "include_in_service": PlutoCell(value: "Included in service"),
+      },
+    );
+  }
 }
 
 class UnavailableUserLoad {
@@ -89,7 +106,51 @@ class CreateShiftData extends CreateShiftDataType {
 
   int? shiftId;
 
-  Appointment? editAppointment;
+  AppointmentIdMd? editAppointment;
+
+  QuoteInfoMd? _fetchedQuote;
+  QuoteInfoMd? get fetchedQuote => _fetchedQuote;
+  set fetchedQuote(QuoteInfoMd? quote) {
+    if (quote == null) return;
+    _fetchedQuote = quote;
+    quoteId = quote.id;
+    client = appStore.state.generalState.clientInfos
+        .firstWhereOrNull((element) => element.id == quote.clientId);
+    location = appStore.state.generalState.locations
+        .firstWhereOrNull((element) => element.id == quote.locationId);
+    timingInfo.startDate = quote.workStartDate?.toDate();
+    timingInfo.startTime = quote.workStartTime?.formattedTime;
+    timingInfo.endTime = quote.workFinishTime?.formattedTime;
+    isActive = quote.active;
+    title = quote.name;
+    for (UserInfo user in (quote.users ?? [])) {
+      final userRes = appStore.state.usersState.users
+          .firstWhereOrNull((element) => element.id == user.userId);
+      if (userRes != null) {
+        addedChildren.add(userRes);
+        if (user.specialRate != null) {
+          addedChildrenRates[userRes.id] = user.specialRate!.toDouble();
+        }
+      }
+    }
+    gridStateManager.appendRows(quote.items
+        .map(
+          (e) => buildRow(
+            StorageItemMd(
+              id: e.itemId,
+              active: true,
+              name: e.itemName,
+              incomingPrice: 0,
+              outgoingPrice: e.price,
+              service: false,
+              taxId: 1,
+            ),
+            checked: e.auto,
+            qty: e.quantity,
+          ),
+        )
+        .toList());
+  }
 
   CreateShiftData({
     required super.date,
@@ -115,11 +176,9 @@ class CreateShiftData extends CreateShiftDataType {
       }
     }
     if (editAppointment != null) {
-      final id = editAppointment!.id as AppointmentIdMd;
+      final id = editAppointment!;
       final p = id.property;
       final sh = id.allocation;
-      logger(p.toJson());
-      logger(sh.toJson());
       shiftId = p.id;
       client = appStore.state.generalState.clientInfos
           .firstWhereOrNull((element) => element.id == p.clientId);
@@ -135,7 +194,7 @@ class CreateShiftData extends CreateShiftDataType {
   ScheduleCreatePopupMenus type;
 
   @override
-  bool get isCreate => shiftId == null;
+  bool get isCreate => _fetchedQuote?.id == null;
 }
 
 class CreateShiftDataQuote extends CreateShiftDataType {

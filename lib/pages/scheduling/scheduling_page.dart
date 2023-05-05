@@ -475,9 +475,9 @@ enum ScheduleCreatePopupMenus {
 }
 
 List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
-    {Appointment? editAppointment}) {
+    {bool hasEditJob = false}) {
   return [
-    if (editAppointment != null)
+    if (hasEditJob)
       PopupMenuItem(
         value: ScheduleCreatePopupMenus.job,
         child: SpacedRow(
@@ -551,7 +551,7 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
       context: context,
       position: RelativeRect.fromLTRB(left, top, right, bottom),
-      items: getPopupCreateMenus(editAppointment: data.editAppointment));
+      items: getPopupCreateMenus(hasEditJob: data.editAppointment != null));
 
   if (createTapResult == null) return null;
 

@@ -185,8 +185,10 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       for (var item in res.data['allocations']) {
         final ShiftMd shift = ShiftMd.fromJson(item);
         list.add(shift);
+
         final pr = properties
             .firstWhereOrNull((element) => element.id == shift.shiftId);
+        logger(pr?.startTime, hint: "pr.startTime");
         if (pr == null) continue;
         final us =
             users.firstWhereOrNull((element) => element.id == shift.userId);
@@ -194,7 +196,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         final loc =
             locs.firstWhereOrNull((element) => element.id == pr.locationId);
         if (loc == null) continue;
-
         final startTime = TimeOfDay(
             hour: int.parse(pr.startTime!.substring(0, 2)),
             minute: int.parse(pr.startTime!.substring(3, 5)));
@@ -225,19 +226,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         ));
       }
 
-      // compute(_findLargestAppointmentCountDayInIsolate, {
-      //   "list": list,
-      //   "largestAppointmentCountDay": largestAppointmentCountDay,
-      // }).then((value) {
-      //   largestAppointmentCountDay = value;
-      //   // next(UpdateScheduleState(
-      //   //   largestAppointmentCountDay: largestAppointmentCountDay,
-      //   // ));
-      //   print("Isolate FINISH");
-      // });
-
-      // Finds the occurrence of resourceIds and
-      // sets the largestAppointmentCountDay
       for (var e in list) {
         int max = 0;
         for (var a in list) {

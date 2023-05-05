@@ -25,6 +25,7 @@ class UsersState {
   UserRes? selectedUser;
   bool isNewUser;
   StateValue<List<UserRes>> usersList;
+  List<UserRes> get users => usersList.data ?? [];
   StateValue<UserDetailsMd?> userDetails;
   StateValue<List<ContractMd>> userDetailContracts;
   StateValue<List<ReviewMd>> userDetailReviews;
@@ -34,7 +35,6 @@ class UsersState {
   StateValue<MobileMd> userDetailMobileIsRegistered;
   StateValue<List<PreferredShiftMd>> userDetailPreferredShift;
   StateValue<PhotosMd?> userDetailPhotos;
-  // final UserDetailSaveMd? saveableUserDetails;
 
   UsersState({
     required this.usersList,

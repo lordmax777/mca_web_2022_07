@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
@@ -16,8 +17,10 @@ import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/general_state.dart';
+import '../../../manager/redux/states/schedule_state.dart';
 import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
+import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../../utils/global_functions.dart';
 import '../../scheduling/create_shift_popup.dart';
@@ -37,44 +40,37 @@ class _JobEditFormState extends State<JobEditForm>
     with SingleTickerProviderStateMixin {
   //Getters
   late final CreateShiftData data = widget.data;
-
   bool get isCreate => data.isCreate;
-
   ScheduleCreatePopupMenus get type => data.type;
-
   CompanyMd get company => GeneralController.to.companyInfo;
-
   PlutoGridStateManager get gridStateManager => data.gridStateManager;
-
   bool get isClientSelected => data.client != null;
-
   List<UserRes> get addedChildren => data.addedChildren;
-
   Map<int, double> get addedChildrenRates => data.addedChildrenRates;
-
   UnavailableUserLoad get unavUsers => data.unavailableUsers;
-
   CreatedTimingReturnValue get timing => data.timingInfo;
-
   String get comment => data.comment;
-
   bool get hasComment => data.hasComment;
-
   bool get hasUnavUsers => data.hasUnavUsers;
-
   bool get hasWorkAddress => data.hasWorkAddress;
-
   Address? get workAddress => data.workAddress;
+  QuoteInfoMd? get fetchedQuote => data.fetchedQuote;
+  AppointmentIdMd? get appointment => data.editAppointment;
+  bool get isUpdate => !isCreate;
 
   //Setters
   set addedChildrenRates(Map<int, double> value) =>
       data.addedChildrenRates = value;
-
-  set gridStateManager(PlutoGridStateManager value) =>
-      data.gridStateManager = value;
+  set gridStateManager(PlutoGridStateManager value) {
+    if (data.isGridInitialized) return;
+    data.gridStateManager = value;
+    data.gridStateManager.addListener(() {
+      onTableChangeDone();
+    });
+    data.isGridInitialized = true;
+  }
 
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
-
   set comment(String value) => data.comment = value;
 
   //Vars
@@ -94,15 +90,38 @@ class _JobEditFormState extends State<JobEditForm>
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (hasUnavUsers) {
-        final unavUsers = await appStore
-            .dispatch(GetUnavailableUsersAction(data.date ?? DateTime.now()));
-        if (mounted) {
-          setState(() {
-            data.unavailableUsers.users = unavUsers;
-          });
-        }
-      }
+      Get.showOverlay(
+        asyncFunction: () async {
+          if (hasUnavUsers) {
+            final unavUsers = await appStore.dispatch(
+                GetUnavailableUsersAction(data.date ?? DateTime.now()));
+            if (mounted) {
+              setState(() {
+                data.unavailableUsers.users = unavUsers;
+              });
+            }
+          }
+          if (data.editAppointment != null) {
+            final res = await restClient()
+                .getQuoteBy(
+                  0,
+                  date: appointment!.allocation.dateTimeDate!.formatDateForApi,
+                  location_id: appointment!.property.locationId!,
+                  shift_id: appointment!.property.id!,
+                )
+                .nocodeErrorHandler();
+            if (res.success) {
+              setState(() {
+                final q = res.data['quotes'][0];
+                data.fetchedQuote = QuoteInfoMd.fromJson(q);
+              });
+            }
+          }
+        },
+        loadingWidget: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     });
   }
 
@@ -115,6 +134,7 @@ class _JobEditFormState extends State<JobEditForm>
 
   @override
   Widget build(BuildContext context) {
+    logger(fetchedQuote?.toJson());
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       builder: (context, state) => AlertDialog(
@@ -170,15 +190,29 @@ class _JobEditFormState extends State<JobEditForm>
                   }
                 });
               }),
-          ButtonLarge(text: 'Publish', onPressed: () => _save(state)),
+          ButtonLarge(
+              text: isCreate ? 'Publish' : (isUpdate ? "Update" : "Save"),
+              onPressed: () => _save(state)),
         ],
         content: DecoratedBox(
           decoration: BoxDecoration(
             border: Border.all(
                 color: ThemeColors.gray6,
                 width: 2,
-                // strokeAlign: StrokeAlign.outside),
-                strokeAlign: BorderSide.strokeAlignOutside),
+                strokeAlign: StrokeAlign.outside),
+          ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _tabController,
+              children: [
+                _Form(state),
+                if (isUpdate) StaffRequirementForm(data: data),
+                if (isUpdate) QualificationReqForm(data: data),
+              ],
+            ),
           ),
         ),
       ),
@@ -190,6 +224,7 @@ class _JobEditFormState extends State<JobEditForm>
     switch (type) {
       case ScheduleCreatePopupMenus.job:
         _saveJob(state);
+
         break;
       default:
     }
@@ -201,11 +236,11 @@ class _JobEditFormState extends State<JobEditForm>
           final ApiResponse? newJob =
               await appStore.dispatch(CreateJobAction(data));
           if (newJob?.success == true) {
-            logger('Job created successfully ${newJob?.data}');
-            // exit(context).then((value) {
-            //   showError("Quote ${quote.id == 0 ? "created" : "updated"} successfully",
-            //       titleMsg: "Success");
-            // });
+            exit(context).then((value) {
+              showError(
+                  "Job ${data.shiftId == null ? "created" : "updated"} successfully",
+                  titleMsg: "Success");
+            });
           }
         },
         loadingWidget: const Center(
@@ -236,8 +271,7 @@ class _JobEditFormState extends State<JobEditForm>
   void _editInvoiceAddress() async {
     final CreatedClientReturnValue? res = await appStore.dispatch(
         OnCreateNewClientTap(context,
-            type: ClientFormType.location,
-            clientInfo: ClientInfoMd.init(id: data.client?.id)));
+            type: ClientFormType.location, clientInfo: data.client));
     if (res == null) return;
     setState(() {
       if (res.locationId != null) {
@@ -252,8 +286,7 @@ class _JobEditFormState extends State<JobEditForm>
   void _editWorkAddress() async {
     final CreatedClientReturnValue? res = await appStore.dispatch(
         OnCreateNewClientTap(context,
-            type: ClientFormType.location,
-            clientInfo: ClientInfoMd.init(id: data.client?.id)));
+            type: ClientFormType.location, clientInfo: data.client));
     if (res == null) return;
     setState(() {
       if (res.locationId != null) {
@@ -525,31 +558,33 @@ class _JobEditFormState extends State<JobEditForm>
                           TitleContainer(
                             titleOverride: "Create New Client",
                             titleIcon: HeroIcons.add,
-                            onEdit: _onCreateNewClient,
+                            onEdit: isUpdate ? null : _onCreateNewClient,
                             title: "Personal Information",
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CustomAutocompleteTextField<ClientInfoMd>(
-                                    width: 400,
-                                    height: 50,
-                                    hintText: "Select Client",
-                                    listItemWidget: (p0) => Text(p0.name),
-                                    onSelected: (p0) {
-                                      data.client = p0;
-                                      data.selectedClientId = p0.id;
-                                      data.location = null;
-                                      data.tempAllowedLocationId = null;
-                                      setState(() {});
-                                    },
-                                    displayStringForOption: (option) {
-                                      return option.name;
-                                    },
-                                    options: (p0) => state
-                                        .generalState.clientInfos
-                                        .where((element) => element.name
-                                            .toLowerCase()
-                                            .contains(p0.text.toLowerCase()))),
+                                if (isCreate)
+                                  CustomAutocompleteTextField<ClientInfoMd>(
+                                      width: 400,
+                                      height: 50,
+                                      hintText: "Select Client",
+                                      listItemWidget: (p0) => Text(p0.name),
+                                      onSelected: (p0) {
+                                        data.client = p0;
+                                        data.selectedClientId = p0.id;
+                                        data.location = null;
+                                        data.tempAllowedLocationId = null;
+                                        setState(() {});
+                                      },
+                                      displayStringForOption: (option) {
+                                        return option.name;
+                                      },
+                                      options: (p0) => state
+                                          .generalState.clientInfos
+                                          .where((element) => element.name
+                                              .toLowerCase()
+                                              .contains(
+                                                  p0.text.toLowerCase()))),
                                 const SizedBox(height: 16),
                                 SpacedColumn(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -654,7 +689,11 @@ class _JobEditFormState extends State<JobEditForm>
                     verticalSpace: 16,
                     children: [
                       TitleContainer(
-                        onEdit: !isClientSelected ? null : _editInvoiceAddress,
+                        onEdit: !isClientSelected
+                            ? null
+                            : isUpdate
+                                ? null
+                                : (_editInvoiceAddress),
                         titleOverride: "Create New Location",
                         titleIcon: HeroIcons.add,
                         title: "Address",
@@ -662,36 +701,38 @@ class _JobEditFormState extends State<JobEditForm>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (!isClientSelected)
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: Text(
-                                    isClientSelected
-                                        ? ""
-                                        : "Select Client First!",
-                                    style: ThemeText.bold14,
+                              if (isCreate)
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Text(
+                                      isClientSelected
+                                          ? ""
+                                          : "Select Client First!",
+                                      style: ThemeText.bold14,
+                                    ),
                                   ),
                                 ),
-                              ),
                             if (isClientSelected)
-                              CustomAutocompleteTextField<LocationAddress>(
-                                  width: 400,
-                                  height: 50,
-                                  hintText: "Select Location",
-                                  listItemWidget: (p0) => Text(p0.name ?? ""),
-                                  onSelected: (p0) {
-                                    setState(() {
-                                      data.location = p0;
-                                      data.selectedLocationId = p0.id;
-                                    });
-                                  },
-                                  displayStringForOption: (option) {
-                                    return option.name ?? "";
-                                  },
-                                  options: (p0) => locations.where((element) =>
-                                      (element.name ?? "")
-                                          .toLowerCase()
-                                          .contains(p0.text.toLowerCase()))),
+                              if (isCreate)
+                                CustomAutocompleteTextField<LocationAddress>(
+                                    width: 400,
+                                    height: 50,
+                                    hintText: "Select Location",
+                                    listItemWidget: (p0) => Text(p0.name ?? ""),
+                                    onSelected: (p0) {
+                                      setState(() {
+                                        data.location = p0;
+                                        data.selectedLocationId = p0.id;
+                                      });
+                                    },
+                                    displayStringForOption: (option) {
+                                      return option.name ?? "";
+                                    },
+                                    options: (p0) => locations.where(
+                                        (element) => (element.name ?? "")
+                                            .toLowerCase()
+                                            .contains(p0.text.toLowerCase()))),
                             const SizedBox(height: 16),
                             labelWithField(
                               labelWidth: 160,
@@ -1128,21 +1169,6 @@ class _JobEditFormState extends State<JobEditForm>
         ),
       ];
 
-  PlutoRow _buildRow(StorageItemMd contractShiftItem,
-      {bool checked = false, int? qty}) {
-    return PlutoRow(
-      checked: checked,
-      cells: {
-        "id": PlutoCell(value: contractShiftItem.id),
-        "title": PlutoCell(value: contractShiftItem.name),
-        "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
-        "quantity": PlutoCell(value: qty ?? 1),
-        "delete_action": PlutoCell(value: ""),
-        "include_in_service": PlutoCell(value: "Included in service"),
-      },
-    );
-  }
-
   Widget _products(AppState state) {
     return labelWithField(
         labelWidth: 160,
@@ -1152,15 +1178,12 @@ class _JobEditFormState extends State<JobEditForm>
           height: 300,
           child: UsersListTable(
               enableEditing: true,
-              rows: [],
+              rows: data.isGridInitialized ? gridStateManager.rows : [],
               mode: PlutoGridMode.normal,
               gridBorderColor: Colors.grey[300]!,
               noRowsText: "No product or service added yet",
               onSmReady: (e) {
                 gridStateManager = e;
-                gridStateManager.addListener(() {
-                  onTableChangeDone();
-                });
               },
               cols: cols(state)),
         ),
@@ -1178,7 +1201,7 @@ class _JobEditFormState extends State<JobEditForm>
                       .firstWhereOrNull((element) => element.id == resId);
                   if (item == null) return;
                   gridStateManager
-                      .insertRows(0, [_buildRow(item, checked: true)]);
+                      .insertRows(0, [data.buildRow(item, checked: true)]);
                 },
                 icon: HeroIcons.add),
             const SizedBox(width: 10),
@@ -1188,7 +1211,7 @@ class _JobEditFormState extends State<JobEditForm>
                   listItemWidget: (p0) => Text(p0.name),
                   onSelected: (p0) {
                     gridStateManager
-                        .insertRows(0, [_buildRow(p0, checked: true)]);
+                        .insertRows(0, [data.buildRow(p0, checked: true)]);
                   },
                   displayStringForOption: (option) {
                     return option.name;

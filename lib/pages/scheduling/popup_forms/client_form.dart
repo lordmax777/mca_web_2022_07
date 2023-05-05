@@ -163,8 +163,14 @@ class _ClientFormState extends State<ClientForm> {
           ?.id;
       contactName.text = selectedClient?.name ?? "";
       companyName.text = selectedClient?.company ?? "";
-      phoneNumber.text = selectedClient?.phone ?? "";
-      email.text = selectedClient?.email ?? "";
+      if (isClient) {
+        phoneNumber.text = selectedClient?.phone ?? "";
+        email.text = selectedClient?.email ?? "";
+      }
+      if (isLocation) {
+        phoneNumber.text = "";
+        email.text = "";
+      }
       payingDays = selectedClient?.payingDays;
       paymentMethodId = int.tryParse(selectedClient?.paymentMethodId ?? "");
       notes.text = selectedClient?.notes ?? "";
@@ -302,7 +308,7 @@ class _ClientFormState extends State<ClientForm> {
                             TextInputWidget(
                               width: fieldWidth,
                               controller: phoneNumber,
-                              isRequired: isClient || isLocation,
+                              isRequired: isClient,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                               ],

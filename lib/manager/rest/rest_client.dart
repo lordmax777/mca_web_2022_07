@@ -585,6 +585,14 @@ abstract class RestClient {
     @Field() required String ip_address,
     @Field() required String browser,
   });
+
+  @GET("/api/fe/quotes/{id}")
+  Future<HttpResponse> getQuoteBy(
+    @Path() int id, {
+    @Query("date") required String date,
+    @Query("location_id") required int location_id,
+    @Query("shift_id") required int shift_id,
+  });
 }
 
 RestClient restClient() => RestClient(
