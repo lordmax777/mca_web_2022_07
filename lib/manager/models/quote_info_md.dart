@@ -645,7 +645,7 @@ class QuoteMessageInfo {
 class UserInfo {
   //{user_id: 878, special_start_time: null, special_finish_time: null, special_rate: null, user_order: null, service_shift: null, published: false}
 
-  final int userId;
+  final int? userId;
   final String? specialStartTime;
   final String? specialFinishTime;
   final num? specialRate;

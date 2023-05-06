@@ -84,9 +84,9 @@ class _JobEditFormState extends State<JobEditForm>
   @override
   void initState() {
     super.initState();
-    if (isCreate) {
-      _tabs.removeRange(1, 3);
-    }
+    // if (isCreate) {
+    //   _tabs.removeRange(1, 3);
+    // }
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -105,8 +105,7 @@ class _JobEditFormState extends State<JobEditForm>
             final res = await restClient()
                 .getQuoteBy(
                   0,
-                  date: DateFormat("dd/MM/yyyy")
-                      .format(appointment!.allocation.dateTimeDate!),
+                  date: appointment!.allocation.dateTimeDate!.formatDateForApi,
                   location_id: appointment!.property.locationId!,
                   shift_id: appointment!.property.id!,
                 )
@@ -209,8 +208,10 @@ class _JobEditFormState extends State<JobEditForm>
               controller: _tabController,
               children: [
                 _Form(state),
-                if (isUpdate) StaffRequirementForm(data: data),
-                if (isUpdate) QualificationReqForm(data: data),
+                // if (isUpdate)
+                StaffRequirementForm(data: data),
+                // if (isUpdate)
+                QualificationReqForm(data: data),
               ],
             ),
           ),
