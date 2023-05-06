@@ -400,13 +400,13 @@ Future<ApiResponse?> _createQuoteAction(
     }
 
     if (action.workStartDate != null && action.workStartDate!.isNotEmpty) {
-      formData.fields.add(MapEntry(
-          'workStartDate', action.workStartDate!.toDate()!.formattedDate));
+      formData.fields.add(MapEntry('workStartDate',
+          DateFormat("dd/MM/yyyy").format(action.workStartDate!.toDate()!)));
     }
     if (action.altWorkStartDate != null &&
         action.altWorkStartDate!.isNotEmpty) {
       formData.fields.add(MapEntry('altWorkStartDate',
-          action.altWorkStartDate!.toDate()!.formattedDate));
+          DateFormat("dd/MM/yyyy").format(action.altWorkStartDate!.toDate()!)));
     }
     if (action.workStartTime != null && action.workStartTime!.isNotEmpty) {
       formData.fields.add(MapEntry('workStartTime', action.workStartTime!));
@@ -414,9 +414,6 @@ Future<ApiResponse?> _createQuoteAction(
     if (action.workFinishTime != null && action.workFinishTime!.isNotEmpty) {
       formData.fields.add(MapEntry('workFinishTime', action.workFinishTime!));
     }
-
-    formData.fields
-        .add(MapEntry('workRepeatId', action.workRepeatId.toString()));
 
     if (action.workDays != null && action.workDays!.isNotEmpty) {
       String week1 = "";
@@ -498,8 +495,8 @@ Future<ApiResponse?> _createQuoteAction(
     switch (res.statusCode) {
       case 200:
         if (res.data != null) {
-          await appStore.dispatch(GetAllStorageItemsAction());
-          await appStore.dispatch(GetQuotesAction());
+          // await appStore.dispatch(GetAllStorageItemsAction());
+          // await appStore.dispatch(GetQuotesAction());
           return apiResponse;
         }
         showError(res.data ?? 'Error');
@@ -665,7 +662,6 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
     final client = data.client;
     final location = data.location;
     final timing = data.timingInfo;
-    final gridStateManager = data.gridStateManager;
     final team = data.addedChildren;
     final quote = data.fetchedQuote;
     final bool isUpdate = !data.isCreate;

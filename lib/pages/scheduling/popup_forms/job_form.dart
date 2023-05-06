@@ -75,17 +75,17 @@ class _JobEditFormState extends State<JobEditForm>
 
   //Vars
   late final TabController _tabController;
-  List<Tab> _tabs = [];
+  final List<Tab> _tabs = [
+    Tab(text: "${Constants.propertyName.capitalizeFirst} details"),
+    const Tab(text: "Staff Requirements"),
+    const Tab(text: "Qualification Requirements"),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _tabs = [
-      Tab(text: "${Constants.propertyName.capitalizeFirst} details"),
-    ];
-    if (!isCreate) {
-      _tabs.add(const Tab(text: "Staff Requirements"));
-      _tabs.add(const Tab(text: "Qualification Requirements"));
+    if (isCreate) {
+      _tabs.removeRange(1, 3);
     }
     _tabController = TabController(length: _tabs.length, vsync: this);
 
@@ -105,16 +105,16 @@ class _JobEditFormState extends State<JobEditForm>
             final res = await restClient()
                 .getQuoteBy(
                   0,
-                  date: appointment!.allocation.dateTimeDate!.formatDateForApi,
+                  date: DateFormat("dd/MM/yyyy")
+                      .format(appointment!.allocation.dateTimeDate!),
                   location_id: appointment!.property.locationId!,
                   shift_id: appointment!.property.id!,
                 )
                 .nocodeErrorHandler();
             if (res.success) {
-              setState(() {
-                final q = res.data['quotes'][0];
-                data.fetchedQuote = QuoteInfoMd.fromJson(q);
-              });
+              final q = res.data['quotes'][0];
+              data.fetchedQuote = QuoteInfoMd.fromJson(q);
+              setState(() {});
             }
           }
         },

@@ -185,17 +185,18 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       for (var item in res.data['allocations']) {
         final ShiftMd shift = ShiftMd.fromJson(item);
         list.add(shift);
-
         final pr = properties
             .firstWhereOrNull((element) => element.id == shift.shiftId);
-        logger(pr?.startTime, hint: "pr.startTime");
         if (pr == null) continue;
         final us =
             users.firstWhereOrNull((element) => element.id == shift.userId);
+
         if (us == null) continue;
         final loc =
             locs.firstWhereOrNull((element) => element.id == pr.locationId);
-        if (loc == null) continue;
+        logger(loc, hint: "loc.name");
+
+        // if (loc == null) continue;
         final startTime = TimeOfDay(
             hour: int.parse(pr.startTime!.substring(0, 2)),
             minute: int.parse(pr.startTime!.substring(3, 5)));
@@ -210,6 +211,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           et = DateTime(
               date.year, date.month, date.day, endTime.hour, endTime.minute);
         }
+
         final AppointmentIdMd id = AppointmentIdMd(
           user: us,
           allocation: shift,
@@ -225,20 +227,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           resourceIds: [us],
         ));
       }
-
-      for (var e in list) {
-        int max = 0;
-        for (var a in list) {
-          if (e.userId == a.userId) {
-            max++;
-          }
-        }
-        if (max > largestAppointmentCountDay) {
-          largestAppointmentCountDay = max;
-        }
-      }
-
-      logger("Largest Appointment Count Day: $largestAppointmentCountDay");
 
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.day] = appointments;

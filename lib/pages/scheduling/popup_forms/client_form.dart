@@ -118,14 +118,10 @@ class _ClientFormState extends State<ClientForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController contactName =
-      TextEditingController(text: kDebugMode ? "testName" : "");
-  final TextEditingController companyName =
-      TextEditingController(text: kDebugMode ? "testCompany" : "");
-  final TextEditingController phoneNumber =
-      TextEditingController(text: kDebugMode ? "111111" : "");
-  final TextEditingController email =
-      TextEditingController(text: kDebugMode ? "test@gmail.com" : "");
+  final TextEditingController contactName = TextEditingController();
+  final TextEditingController companyName = TextEditingController();
+  final TextEditingController phoneNumber = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController notes = TextEditingController();
   final ClientAddressForm address = ClientAddressForm();
   final TextEditingController ipAddress = TextEditingController();
@@ -154,32 +150,26 @@ class _ClientFormState extends State<ClientForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // if (kDebugMode) {
-      //   await lookupAddress();
-      // }
       onIpLookup();
-      currencyId = currencies
-          .firstWhereOrNull((element) => element.code == company.currency.code)
-          ?.id;
-      contactName.text = selectedClient?.name ?? "";
-      companyName.text = selectedClient?.company ?? "";
       if (isClient) {
+        currencyId = currencies
+            .firstWhereOrNull(
+                (element) => element.code == company.currency.code)
+            ?.id;
+        contactName.text = selectedClient?.name ?? "";
+        companyName.text = selectedClient?.company ?? "";
         phoneNumber.text = selectedClient?.phone ?? "";
         email.text = selectedClient?.email ?? "";
+        payingDays = selectedClient?.payingDays;
+        paymentMethodId = int.tryParse(selectedClient?.paymentMethodId ?? "");
+        notes.text = selectedClient?.notes ?? "";
+        address.addressLine1 = selectedClient?.address.line1;
+        address.addressLine2 = selectedClient?.address.line2;
+        address.addressCity = selectedClient?.address.city;
+        address.addressCounty = selectedClient?.address.county;
+        address.addressPostcode = selectedClient?.address.postcode;
+        address.addressCountryId = selectedClient?.address.country;
       }
-      if (isLocation) {
-        phoneNumber.text = "";
-        email.text = "";
-      }
-      payingDays = selectedClient?.payingDays;
-      paymentMethodId = int.tryParse(selectedClient?.paymentMethodId ?? "");
-      notes.text = selectedClient?.notes ?? "";
-      address.addressLine1 = selectedClient?.address.line1;
-      address.addressLine2 = selectedClient?.address.line2;
-      address.addressCity = selectedClient?.address.city;
-      address.addressCounty = selectedClient?.address.county;
-      address.addressPostcode = selectedClient?.address.postcode;
-      address.addressCountryId = selectedClient?.address.country;
     });
   }
 
