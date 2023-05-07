@@ -23,6 +23,7 @@ extension TimeExtensionsForNum on num {
 
 extension DateTimeExtensions on DateTime {
   String get formattedDate => "$day/$month/$year";
+
   String get formatDateForApi => "$year-$month-$day";
 }
 
@@ -155,6 +156,29 @@ class GridTableHelpers {
       ),
     );
   }
+
+  static Widget getActionRendererForApproval(
+    PlutoColumnRendererContext ctx, {
+    ValueChanged<PlutoColumnRendererContext>? approveBtnTap,
+    ValueChanged<PlutoColumnRendererContext>? declineBtnTap,
+  }) {
+    return SpacedRow(
+      children: [
+        ButtonSmall(
+            icon: const HeroIcon(HeroIcons.bin,
+                color: ThemeColors.white, size: 16),
+            text: "Approve",
+            onPressed: approveBtnTap != null ? () => approveBtnTap(ctx) : null,
+            bgColor: ThemeColors.green2),
+        ButtonSmall(
+            icon: const HeroIcon(HeroIcons.plusCircle,
+                color: ThemeColors.white, size: 16),
+            text: "Decline",
+            onPressed: declineBtnTap != null ? () => declineBtnTap(ctx) : null,
+            bgColor: ThemeColors.red3),
+      ],
+    );
+  }
 }
 
 class ApiErrorResponseModel {
@@ -235,11 +259,13 @@ class ModelFormatter {
 
 extension BuildContextHelper on BuildContext {
   Size get screenSize => MediaQuery.of(this).size;
+
   Orientation get orientation => MediaQuery.of(this).orientation;
 }
 
 extension NumHelpers on num {
   SizedBox get hs => SizedBox(height: toDouble());
+
   SizedBox get ws => SizedBox(width: toDouble());
 }
 
