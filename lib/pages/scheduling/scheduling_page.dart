@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../comps/autocomplete_input_field.dart';
 import '../../comps/modals/custom_date_picker.dart';
 import '../../comps/modals/custom_date_range_picker.dart';
 import '../../comps/modals/custom_month_picker.dart';
@@ -58,55 +59,110 @@ class _SchedulingPageState extends State<SchedulingPage> {
   Widget _usersListDropdown(AppState state) {
     final scheduleState = state.scheduleState;
     final u = [...(state.usersState.usersList.data ?? [])];
-    final users = [UserRes.all(), ...u];
+    final List<UserRes> users = [UserRes.all(), ...u];
     return Visibility(
       visible: scheduleState.sidebarType == SidebarType.user &&
           u.isNotEmpty &&
           scheduleState.calendarView != CalendarView.month,
-      child: DropdownWidget1(
-        hasSearchBox: true,
-        dropdownOptionsWidth: 250,
-        dropdownBtnWidth: 250,
-        hintText: "User",
-        items: users.map((e) => e.fullname).toList(),
-        objItems: users,
-        customItemIcons: {
-          for (var i = 0; i < scheduleState.filteredUsers.length; i++)
-            users.indexOf(scheduleState.filteredUsers[i]): HeroIcons.check
+      child: CustomAutocompleteTextField<UserRes>(
+        height: 50,
+        options: (p0) => users,
+        onSelected: (p0) {
+          appStore.dispatch(SCAddFilter(user: p0));
         },
-        value: scheduleState.filteredUsers.isEmpty
-            ? "All"
-            : scheduleState.filteredUsers.first.fullname,
-        onChangedWithObj: (p0) => appStore.dispatch(SCAddFilter(user: p0.item)),
+        initialValue: TextEditingValue(
+          text: scheduleState.filteredUsers.isEmpty
+              ? "All"
+              : scheduleState.filteredUsers.first.fullname,
+        ),
+        width: 250,
+        hintText: "User",
+        displayStringForOption: (p0) => p0.fullname,
+        listItemWidget: (p0) {
+          return ListTile(
+            title: Text(p0.fullname),
+            trailing: state.scheduleState.filteredUsers
+                    .any((element) => element == p0)
+                ? HeroIcon(
+                    HeroIcons.check,
+                    color: ThemeColors.MAIN_COLOR,
+                  )
+                : null,
+          );
+        },
       ),
+      // DropdownWidget1(
+      //   hasSearchBox: true,
+      //   dropdownOptionsWidth: 250,
+      //   dropdownBtnWidth: 250,
+      //   hintText: "User",
+      //   items: users.map((e) => e.fullname).toList(),
+      //   objItems: users,
+      //   customItemIcons: {
+      //     for (var i = 0; i < scheduleState.filteredUsers.length; i++)
+      //       users.indexOf(scheduleState.filteredUsers[i]): HeroIcons.check
+      //   },
+      //   value:
+      //   scheduleState.filteredUsers.isEmpty
+      //       ? "All"
+      //       : scheduleState.filteredUsers.first.fullname,
+      //   onChangedWithObj: (p0) => appStore.dispatch(SCAddFilter(user: p0.item)),
+      // ),
     );
   }
 
   Widget _locsListDropdown(AppState state) {
     final scheduleState = state.scheduleState;
     final l = [...(state.generalState.properties.data ?? [])];
-    final locs = [PropertiesMd.all(), ...l];
+    final List<PropertiesMd> locs = [PropertiesMd.all(), ...l];
     return Visibility(
       visible: scheduleState.sidebarType == SidebarType.location &&
           l.isNotEmpty &&
           scheduleState.calendarView == CalendarView.week,
-      child: DropdownWidget1(
-          hasSearchBox: true,
-          dropdownOptionsWidth: 300,
-          dropdownBtnWidth: 300,
-          hintText: "Location",
-          items: locs.map((e) => "${e.title}").toList(),
-          objItems: locs,
-          customItemIcons: {
-            for (var i = 0; i < scheduleState.filteredLocations.length; i++)
-              locs.indexOf(scheduleState.filteredLocations[i]): HeroIcons.check
-          },
-          value: scheduleState.filteredLocations.isEmpty
+      child: CustomAutocompleteTextField<PropertiesMd>(
+        height: 50,
+        options: (p0) => locs,
+        onSelected: (p0) {
+          appStore.dispatch(SCAddFilter(location: p0));
+        },
+        initialValue: TextEditingValue(
+          text: scheduleState.filteredLocations.isEmpty
               ? "All"
-              : scheduleState.filteredLocations.first.title,
-          onChangedWithObj: (p0) {
-            appStore.dispatch(SCAddFilter(location: p0.item));
-          }),
+              : scheduleState.filteredLocations.first.title ?? "",
+        ),
+        width: 250,
+        hintText: "Location",
+        displayStringForOption: (p0) => p0.title ?? "",
+        listItemWidget: (p0) {
+          return ListTile(
+            title: Text(p0.title ?? ""),
+            trailing: state.scheduleState.filteredLocations
+                    .any((element) => element == p0)
+                ? HeroIcon(
+                    HeroIcons.check,
+                    color: ThemeColors.MAIN_COLOR,
+                  )
+                : null,
+          );
+        },
+      ),
+      // DropdownWidget1(
+      //     hasSearchBox: true,
+      //     dropdownOptionsWidth: 300,
+      //     dropdownBtnWidth: 300,
+      //     hintText: "Location",
+      //     items: locs.map((e) => "${e.title}").toList(),
+      //     objItems: locs,
+      //     customItemIcons: {
+      //       for (var i = 0; i < scheduleState.filteredLocations.length; i++)
+      //         locs.indexOf(scheduleState.filteredLocations[i]): HeroIcons.check
+      //     },
+      //     value: scheduleState.filteredLocations.isEmpty
+      //         ? "All"
+      //         : scheduleState.filteredLocations.first.title,
+      //     onChangedWithObj: (p0) {
+      //       appStore.dispatch(SCAddFilter(location: p0.item));
+      //     }),
     );
   }
 
