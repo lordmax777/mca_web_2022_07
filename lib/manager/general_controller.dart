@@ -30,11 +30,11 @@ class GeneralController extends GetxController {
 
   bool get isLoggedIn =>
       loggedInUserValue.username != null &&
-          loggedInUserValue.username!.isNotEmpty;
+      loggedInUserValue.username!.isNotEmpty;
 
   Future<void> getLoggedInUser() async {
     final ApiResponse res =
-    await restClient().getLoggedInUserDetails().nocodeErrorHandler();
+        await restClient().getLoggedInUserDetails().nocodeErrorHandler();
 
     if (res.success) {
       final r = res.data;
@@ -44,7 +44,7 @@ class GeneralController extends GetxController {
 
   Future<void> getCompanyInfo() async {
     final ApiResponse res =
-    await restClient().getCompanyInfo().nocodeErrorHandler();
+        await restClient().getCompanyInfo().nocodeErrorHandler();
 
     if (res.success) {
       final r = res.data;
@@ -69,7 +69,6 @@ class GeneralController extends GetxController {
       appStore.dispatch(GetClientInfosAction()) as Future,
       appStore.dispatch(GetQuotesAction()) as Future,
       appStore.dispatch(GetApprovalAction()) as Future,
-      appStore.dispatch(GetApprovalUserQualificationsAction()) as Future,
       fetch(GetAllParamListAction()),
       fetch(GetUsersListAction()),
       fetch(GetPropertiesAction()),

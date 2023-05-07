@@ -5,7 +5,6 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/approval_md.dart';
-import 'package:mca_web_2022_07/manager/models/approval_user_qualification_md.dart';
 
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
@@ -77,8 +76,6 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
 
       case GetApprovalAction:
         return _getApprovalAction(store.state, action, next);
-      case GetApprovalUserQualificationsAction:
-        return _getApprovalUserQualificationsAction(store.state, action, next);
       case GetInventoryList:
         return _getInventoryList(store.state, action, next);
       case CreateJobAction:
@@ -590,7 +587,7 @@ Future _onCreateNewClientTap(
   return data;
 }
 
-Future<bool> _getApprovalAction(
+Future<ApprovalMd> _getApprovalAction(
     AppState state, GetApprovalAction action, NextDispatcher next) async {
   try {
     final ApiResponse res =
@@ -599,37 +596,21 @@ Future<bool> _getApprovalAction(
     if (res.success) {
       final r = ApprovalMd.fromJson(res.data);
       next(UpdateGeneralStateAction(approvals: r));
-      return true;
+      logger("Response: ${res.data['pending_user_qualifications']}");
+      return r;
     }
-    return false;
+    return ApprovalMd(
+      pendingUserQualifications: [],
+      requests: [],
+      releasable: [],
+    );
   } catch (e) {
     Logger.e(e.toString(), tag: "GetApprovalAction");
-    return false;
-  }
-}
-
-Future<List<ApprovalUserQualificationMd>> _getApprovalUserQualificationsAction(
-    AppState state,
-    GetApprovalUserQualificationsAction action,
-    NextDispatcher next) async {
-  try {
-    //
-    // final ApiResponse res =
-    // await restClient().getQuotes(action.id ?? 0).nocodeErrorHandler();
-    //
-    // if (res.success) {
-    //   final r = res.data['quotes'];
-    //   final List<QuoteInfoMd> list = [];
-    //   for (var e in r) {
-    //     list.add(QuoteInfoMd.fromJson(e));
-    //   }
-    //   next(UpdateGeneralStateAction(quotes: list));
-    //   return list;
-    // }
-    return [];
-  } catch (e) {
-    Logger.e(e.toString(), tag: "GetApprovalAction");
-    return [];
+    return ApprovalMd(
+      pendingUserQualifications: [],
+      requests: [],
+      releasable: [],
+    );
   }
 }
 
