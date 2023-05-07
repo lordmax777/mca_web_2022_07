@@ -66,7 +66,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
           scheduleState.calendarView != CalendarView.month,
       child: CustomAutocompleteTextField<UserRes>(
         height: 50,
-        options: (p0) => users,
+        options: (p0) => users
+            .where((element) =>
+                element.fullname.toLowerCase().contains(p0.text.toLowerCase()))
+            .toList(),
         onSelected: (p0) {
           appStore.dispatch(SCAddFilter(user: p0));
         },
@@ -121,7 +124,11 @@ class _SchedulingPageState extends State<SchedulingPage> {
           scheduleState.calendarView == CalendarView.week,
       child: CustomAutocompleteTextField<PropertiesMd>(
         height: 50,
-        options: (p0) => locs,
+        options: (p0) => locs
+            .where((element) => (element.title ?? "")
+                .toLowerCase()
+                .contains(p0.text.toLowerCase()))
+            .toList(),
         onSelected: (p0) {
           appStore.dispatch(SCAddFilter(location: p0));
         },
