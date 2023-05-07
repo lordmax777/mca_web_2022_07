@@ -98,6 +98,8 @@ class GeneralState {
 
   List<ApprovalRequest> get approvalRequest => approvals.requests;
 
+  List? get approvalShiftRelease => approvals.releasable;
+
   final List<InventoryMd> inventoryList;
 
   GeneralState({
