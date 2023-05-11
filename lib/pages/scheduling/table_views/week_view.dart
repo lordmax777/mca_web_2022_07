@@ -172,11 +172,14 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapUp: (details) async {
-          final jobCreated = await showFormsMenus(context,
-              globalPosition: details.globalPosition,
-              data: CreateShiftData(
-                date: appointment.startTime,
-              ));
+          await showFormsMenus(
+            context,
+            globalPosition: details.globalPosition,
+            data: CreateShiftData(
+              editAppointment: appointment.id as AppointmentIdMd,
+              date: appointment.startTime,
+            ),
+          );
         },
         child: Container(
           decoration: BoxDecoration(

@@ -119,11 +119,14 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapUp: (details) async {
-          final jobCreated = await showFormsMenus(context,
-              globalPosition: details.globalPosition,
-              data: CreateShiftData(
-                date: appointment.startTime,
-              ));
+          await showFormsMenus(
+            context,
+            globalPosition: details.globalPosition,
+            data: CreateShiftData(
+              editAppointment: appointlement.id as AppointmentIdMd,
+              date: appointment.startTime,
+            ),
+          );
         },
         child: Container(
           decoration: BoxDecoration(
