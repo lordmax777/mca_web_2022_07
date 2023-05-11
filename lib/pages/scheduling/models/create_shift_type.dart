@@ -125,8 +125,6 @@ class CreateShiftData extends CreateShiftDataType {
     timingInfo.startDate = quote.workStartDate?.toDate();
     timingInfo.startTime = quote.workStartTime?.formattedTime;
     timingInfo.endTime = quote.workFinishTime?.formattedTime;
-    logger(quote.workRepeat);
-    logger(appStore.state.generalState.workRepeats.map((e) => e.toJson()));
     final foundWorkRepeat = appStore.state.generalState.workRepeats
         .indexWhere((element) => element.days == quote.workRepeat);
     if (foundWorkRepeat != -1) {
