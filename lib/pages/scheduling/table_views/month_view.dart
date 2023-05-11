@@ -123,7 +123,7 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
             context,
             globalPosition: details.globalPosition,
             data: CreateShiftData(
-              editAppointment: appointlement.id as AppointmentIdMd,
+              editAppointment: appointment.id as AppointmentIdMd,
               date: appointment.startTime,
             ),
           );
