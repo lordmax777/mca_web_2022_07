@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -124,6 +125,14 @@ class CreateShiftData extends CreateShiftDataType {
     timingInfo.startDate = quote.workStartDate?.toDate();
     timingInfo.startTime = quote.workStartTime?.formattedTime;
     timingInfo.endTime = quote.workFinishTime?.formattedTime;
+    logger(quote.workRepeat);
+    logger(appStore.state.generalState.workRepeats.map((e) => e.toJson()));
+    final foundWorkRepeat = appStore.state.generalState.workRepeats
+        .indexWhere((element) => element.days == quote.workRepeat);
+    if (foundWorkRepeat != -1) {
+      timingInfo.repeatTypeIndex = foundWorkRepeat;
+      timingInfo.repeatDays = [...quote.workDays];
+    }
     isActive = quote.active;
     title = quote.name;
     for (UserInfo user in (quote.users ?? [])) {
