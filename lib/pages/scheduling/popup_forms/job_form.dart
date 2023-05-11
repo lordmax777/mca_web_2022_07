@@ -73,6 +73,8 @@ class _JobEditFormState extends State<JobEditForm>
   set addedChildren(List<UserRes> value) => data.addedChildren = value;
   set comment(String value) => data.comment = value;
 
+  bool resetLocation = true;
+
   //Vars
   late final TabController _tabController;
   final List<Tab> _tabs = [
@@ -571,11 +573,21 @@ class _JobEditFormState extends State<JobEditForm>
                                       hintText: "Select Client",
                                       listItemWidget: (p0) => Text(p0.name),
                                       onSelected: (p0) {
+                                        setState(() {
+                                          resetLocation = false;
+                                        });
                                         data.client = p0;
                                         data.selectedClientId = p0.id;
                                         data.location = null;
                                         data.tempAllowedLocationId = null;
                                         setState(() {});
+                                        Future.delayed(
+                                            const Duration(milliseconds: 100),
+                                            () {
+                                          setState(() {
+                                            resetLocation = true;
+                                          });
+                                        });
                                       },
                                       displayStringForOption: (option) {
                                         return option.name;
@@ -716,24 +728,30 @@ class _JobEditFormState extends State<JobEditForm>
                                 ),
                             if (isClientSelected)
                               if (isCreate)
-                                CustomAutocompleteTextField<LocationAddress>(
-                                    width: 400,
-                                    height: 50,
-                                    hintText: "Select Location",
-                                    listItemWidget: (p0) => Text(p0.name ?? ""),
-                                    onSelected: (p0) {
-                                      setState(() {
-                                        data.location = p0;
-                                        data.selectedLocationId = p0.id;
-                                      });
-                                    },
-                                    displayStringForOption: (option) {
-                                      return option.name ?? "";
-                                    },
-                                    options: (p0) => locations.where(
-                                        (element) => (element.name ?? "")
-                                            .toLowerCase()
-                                            .contains(p0.text.toLowerCase()))),
+                                Visibility(
+                                  visible: resetLocation,
+                                  child: CustomAutocompleteTextField<
+                                          LocationAddress>(
+                                      width: 400,
+                                      height: 50,
+                                      hintText: "Select Location",
+                                      listItemWidget: (p0) =>
+                                          Text(p0.name ?? ""),
+                                      onSelected: (p0) {
+                                        setState(() {
+                                          data.location = p0;
+                                          data.selectedLocationId = p0.id;
+                                        });
+                                      },
+                                      displayStringForOption: (option) {
+                                        return option.name ?? "";
+                                      },
+                                      options: (p0) => locations.where(
+                                          (element) => (element.name ?? "")
+                                              .toLowerCase()
+                                              .contains(
+                                                  p0.text.toLowerCase()))),
+                                ),
                             const SizedBox(height: 16),
                             labelWithField(
                               labelWidth: 160,
@@ -1138,6 +1156,13 @@ class _JobEditFormState extends State<JobEditForm>
           title: "Quantity",
           field: "quantity",
           enableAutoEditing: true,
+          checkReadOnly: (row, cell) {
+            final id = (row.cells['id'])?.value;
+            final item = state.generalState.storage_items
+                .firstWhereOrNull((element) => element.id == id);
+            if (item == null) return true;
+            return item.service;
+          },
           type: PlutoColumnType.number(),
         ),
         PlutoColumn(

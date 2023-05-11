@@ -59,7 +59,10 @@ abstract class CreateShiftDataType {
       checked: checked,
       cells: {
         "id": PlutoCell(value: contractShiftItem.id),
-        "title": PlutoCell(value: contractShiftItem.name),
+        "title": PlutoCell(
+            value: contractShiftItem.name +
+                " - " +
+                contractShiftItem.service.toString()),
         "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
         "quantity": PlutoCell(value: qty ?? 1),
         "delete_action": PlutoCell(value: ""),
