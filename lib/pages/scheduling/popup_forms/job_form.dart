@@ -165,20 +165,21 @@ class _JobEditFormState extends State<JobEditForm>
                 ),
               ],
             ),
-            TabBar(
-              controller: _tabController,
-              tabs: _tabs,
-              labelColor: ThemeColors.MAIN_COLOR,
-              indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: ThemeColors.MAIN_COLOR.withOpacity(0.1),
+            if (isUpdate)
+              TabBar(
+                controller: _tabController,
+                tabs: _tabs,
+                labelColor: ThemeColors.MAIN_COLOR,
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: ThemeColors.MAIN_COLOR.withOpacity(0.1),
+                ),
+                splashBorderRadius: BorderRadius.circular(30),
+                unselectedLabelColor: ThemeColors.gray7,
+                indicatorColor: ThemeColors.MAIN_COLOR,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: Theme.of(context).textTheme.headlineSmall,
               ),
-              splashBorderRadius: BorderRadius.circular(30),
-              unselectedLabelColor: ThemeColors.gray7,
-              indicatorColor: ThemeColors.MAIN_COLOR,
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: Theme.of(context).textTheme.headlineSmall,
-            ),
           ],
         ),
         actions: [
@@ -210,9 +211,7 @@ class _JobEditFormState extends State<JobEditForm>
               controller: _tabController,
               children: [
                 _Form(state),
-                // if (isUpdate)
                 StaffRequirementForm(data: data),
-                // if (isUpdate)
                 QualificationReqForm(data: data),
               ],
             ),
@@ -951,8 +950,8 @@ class _JobEditFormState extends State<JobEditForm>
                           labelWidth: 160,
                           "Active:",
                           null,
-                          customLabel:
-                              checkbox(data.client?.active ?? false, (p0) {
+                          customLabel: checkbox(
+                              data.client?.active ?? data.isActive, (p0) {
                             setState(() {
                               data.client?.active = p0;
                             });
