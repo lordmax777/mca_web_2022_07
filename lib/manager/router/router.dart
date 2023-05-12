@@ -11,6 +11,7 @@ import '../../pages/approvals/approval_template_page.dart';
 import '../../pages/auth/login_page.dart';
 import '../../pages/inventory/inventory_list_page.dart';
 import '../../pages/settings/settings_page.dart';
+import '../../pages/tiemsheet/tiemesheet_list_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
 import '../models/contract_md.dart';
@@ -40,6 +41,7 @@ part 'router.gr.dart';
       AutoRoute(page: ChecklistTemplatesPage, path: "checklist-templates"),
       AutoRoute(page: NewChecklistTemplatePage, path: "new-checklist-template"),
       AutoRoute(page: HandoverTypesPage, path: "handover-types"),
+      AutoRoute(page: TimesheetListPage, path: "timesheet"),
       AutoRoute(page: SettingsPage, path: "settings-page"),
       AutoRoute(page: PropertiesPage, path: "properties"),
       AutoRoute(page: NewPropertyPage, path: "property"),
