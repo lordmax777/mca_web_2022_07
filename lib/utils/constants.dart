@@ -59,7 +59,15 @@ class Constants {
         {
           "title": "Scheduling",
           "name": const SchedulingRoute(),
-        }
+        },
+        {
+          "title": "Timesheet",
+          "name": const TimesheetListRoute(),
+        },
+        {
+          "title": "Approval",
+          "name": const ApprovalTemplateRoute(),
+        },
       ]
     },
     {
@@ -102,14 +110,6 @@ class Constants {
         {
           "title": "Checklist Templates",
           "name": const ChecklistTemplatesRoute(),
-        },
-        {
-          "title": "Timesheet",
-          "name": const TimesheetListRoute(),
-        },
-        {
-          "title": "Approval",
-          "name": const ApprovalTemplateRoute(),
         },
         {
           "title": "Inventory",
