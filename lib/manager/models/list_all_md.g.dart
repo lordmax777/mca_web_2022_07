@@ -504,7 +504,7 @@ ListClients _$ListClientsFromJson(Map<String, dynamic> json) => ListClients(
       name: json['name'] as String,
       company: json['company'] as String,
       contact: json['contact'] as String?,
-      notes: json['notes'] as String,
+      notes: json['notes'] as String?,
       active: json['active'] as bool,
     );
 

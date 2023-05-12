@@ -23,6 +23,24 @@ import 'table_views/day_view.dart';
 import 'table_views/month_view.dart';
 import 'table_views/week_view.dart';
 
+extension TimeExtenstion on DateTime {
+  DateTime get startOfDay => DateTime(year, month, day);
+  DateTime get endOfDay => DateTime(year, month, day, 23, 59, 59);
+  DateTime get startOfWeek => subtract(Duration(days: weekday - 1));
+  DateTime get endOfWeek => add(Duration(days: 7 - weekday));
+  DateTime get startOfMonth => DateTime(year, month);
+  DateTime get endOfMonth =>
+      DateTime(year, month + 1).subtract(const Duration(days: 1));
+
+  operator -(Duration other) {
+    return subtract(other);
+  }
+
+  operator +(Duration other) {
+    return add(other);
+  }
+}
+
 class SchedulingPage extends StatefulWidget {
   const SchedulingPage({Key? key}) : super(key: key);
 
@@ -36,9 +54,9 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
   //Week
   DateTime firstDayOfWeek =
-      DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+      DateTime.now().subtract(Duration(days: DateTime.now().weekday));
 
-  DateTime get lastDayOfWeek => firstDayOfWeek.add(const Duration(days: 6));
+  DateTime get lastDayOfWeek => firstDayOfWeek.add(const Duration(days: 7));
 
   // Month
   DateTime firstDayOfMonth =
@@ -124,11 +142,12 @@ class _SchedulingPageState extends State<SchedulingPage> {
           scheduleState.calendarView == CalendarView.week,
       child: CustomAutocompleteTextField<PropertiesMd>(
         height: 50,
-        options: (p0) => locs
-            .where((element) => (element.title ?? "")
-                .toLowerCase()
-                .contains(p0.text.toLowerCase()))
-            .toList(),
+        options: (p0) => locs.where((element) {
+          final title = element.title?.toLowerCase() ?? "";
+          final locationName = element.locationName?.toLowerCase() ?? "";
+          return title.contains(p0.text.toLowerCase()) ||
+              locationName.contains(p0.text.toLowerCase());
+        }).toList(),
         onSelected: (p0) {
           appStore.dispatch(SCAddFilter(location: p0));
         },
@@ -137,12 +156,13 @@ class _SchedulingPageState extends State<SchedulingPage> {
               ? "All"
               : scheduleState.filteredLocations.first.title ?? "",
         ),
-        width: 250,
+        width: 300,
         hintText: "Location",
         displayStringForOption: (p0) => p0.title ?? "",
         listItemWidget: (p0) {
           return ListTile(
-            title: Text(p0.title ?? ""),
+            title: Text(
+                p0.title == "All" ? "All" : "${p0.title} - ${p0.locationName}"),
             trailing: state.scheduleState.filteredLocations
                     .any((element) => element == p0)
                 ? HeroIcon(
@@ -276,7 +296,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
               firstDayOfWeek = firstDayOfWeek.subtract(const Duration(days: 7));
               await appStore.dispatch(SCFetchShiftsWeekAction(
                 startDate: firstDayOfWeek,
-                endDate: lastDayOfWeek,
+                endDate: lastDayOfWeek - const Duration(days: 1),
               ));
             },
             icon: const HeroIcon(
@@ -292,7 +312,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 initialDate: firstDayOfWeek,
                 initialDateRange: DateTimeRange(
                   start: firstDayOfWeek,
-                  end: lastDayOfWeek,
+                  end: lastDayOfWeek - const Duration(days: 1),
                 ),
               );
               if (range != null) {
@@ -300,14 +320,14 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 firstDayOfWeek = range.start;
                 await appStore.dispatch(SCFetchShiftsWeekAction(
                   startDate: firstDayOfWeek,
-                  endDate: lastDayOfWeek,
+                  endDate: lastDayOfWeek - const Duration(days: 1),
                 ));
               }
             },
             isSelectable: false,
             textAlign: TextAlign.center,
             text:
-                "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
+                "${DateFormat("d").format(firstDayOfWeek)}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(firstDayOfWeek)))} - ${DateFormat("d").format(lastDayOfWeek - const Duration(days: 1))}${getDayOfMonthSuffix(int.parse(DateFormat("d").format(lastDayOfWeek)))}${DateFormat(" MMM").format(lastDayOfWeek)}",
             fontSize: 16,
             textColor: ThemeColors.gray2,
             fontWeight: FWeight.medium,
@@ -317,7 +337,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
               firstDayOfWeek = firstDayOfWeek.add(const Duration(days: 7));
               await appStore.dispatch(SCFetchShiftsWeekAction(
                 startDate: firstDayOfWeek,
-                endDate: lastDayOfWeek,
+                endDate: lastDayOfWeek - const Duration(days: 1),
               ));
             },
             icon: const HeroIcon(

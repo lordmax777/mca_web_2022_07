@@ -707,7 +707,7 @@ class ListClients {
   final String name;
   final String company;
   final String? contact;
-  final String notes;
+  final String? notes;
   final bool active;
 
   @override
