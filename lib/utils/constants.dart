@@ -104,6 +104,10 @@ class Constants {
           "name": const ChecklistTemplatesRoute(),
         },
         {
+          "title": "Timesheet",
+          "name": const TimesheetListRoute(),
+        },
+        {
           "title": "Approval",
           "name": const ApprovalTemplateRoute(),
         },

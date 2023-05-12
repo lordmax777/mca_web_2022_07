@@ -121,6 +121,12 @@ class _$AppRouter extends RootStackRouter {
         child: const HandoverTypesPage(),
       );
     },
+    TimesheetListRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const TimesheetListPage(),
+      );
+    },
     SettingsRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
@@ -239,6 +245,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               HandoverTypesRoute.name,
               path: 'handover-types',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              TimesheetListRoute.name,
+              path: 'timesheet',
               parent: HomeRoute.name,
             ),
             RouteConfig(
@@ -516,6 +527,18 @@ class HandoverTypesRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'HandoverTypesRoute';
+}
+
+/// generated route for
+/// [TimesheetListPage]
+class TimesheetListRoute extends PageRouteInfo<void> {
+  const TimesheetListRoute()
+      : super(
+          TimesheetListRoute.name,
+          path: 'timesheet',
+        );
+
+  static const String name = 'TimesheetListRoute';
 }
 
 /// generated route for
