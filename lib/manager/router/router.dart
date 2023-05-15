@@ -12,6 +12,7 @@ import '../../pages/auth/login_page.dart';
 import '../../pages/inventory/inventory_list_page.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/tiemsheet/tiemesheet_list_page.dart';
+import '../../pages/tiemsheet/timesheet_summary_page.dart';
 import '../../pages/tiemsheet/timesheet_user_shift_details_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
@@ -53,6 +54,7 @@ part 'router.gr.dart';
       AutoRoute(page: InventoryListPage, path: "inventory"),
       AutoRoute(
           page: TimesheetUserShiftDetailsPage, path: "timesheet-shift-details"),
+      AutoRoute(page: TimesheetSummaryPage, path: "timesheet-summary"),
     ]),
   ],
 )
