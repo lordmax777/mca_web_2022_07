@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
+import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
 
 class AllocationModel {
@@ -9,6 +10,7 @@ class AllocationModel {
   String date;
   DateTime get dateAsDateTime => Constants.isoDateTime(date);
   ListShift shift;
+  late final LocationAddress location;
   PropertiesMd get property => shift.property;
   bool published;
   UserRes? user;
@@ -19,7 +21,9 @@ class AllocationModel {
     this.published = false,
     required this.id,
     required this.date,
-  });
+  }) {
+    location = shift.location;
+  }
 
   factory AllocationModel.fromJson(Map<String, dynamic> json) {
     try {
@@ -54,7 +58,9 @@ class AllocationModel {
         other.date == date &&
         other.shift == shift &&
         other.published == published &&
-        other.user == user;
+        other.user == user &&
+        other.location == location &&
+        other.property == property;
   }
 
   @override
@@ -63,5 +69,7 @@ class AllocationModel {
       date.hashCode ^
       shift.hashCode ^
       published.hashCode ^
-      user.hashCode;
+      user.hashCode ^
+      location.hashCode ^
+      property.hashCode;
 }

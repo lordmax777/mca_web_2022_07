@@ -19,6 +19,7 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
 import 'models/create_shift_type.dart';
+import 'models/job_model.dart';
 import 'table_views/day_view.dart';
 import 'table_views/month_view.dart';
 import 'table_views/week_view.dart';
@@ -599,7 +600,7 @@ Widget addIcon(
 }
 
 Future<ApiResponse?> showFormsMenus(BuildContext context,
-    {required Offset globalPosition, required CreateShiftData data}) async {
+    {required Offset globalPosition, required JobModel data}) async {
   //Positions the menu
   final RenderBox overlay =
       Overlay.of(context)!.context.findRenderObject() as RenderBox;
@@ -618,7 +619,7 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
       context: context,
       position: RelativeRect.fromLTRB(left, top, right, bottom),
-      items: getPopupCreateMenus(hasEditJob: data.editAppointment != null));
+      items: getPopupCreateMenus(hasEditJob: data.allocation != null));
 
   if (createTapResult == null) return null;
 

@@ -3,6 +3,11 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/comps/custom_loading_widget.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
@@ -68,15 +73,17 @@ class GeneralController extends GetxController {
 
   Future<void> initAll() async {
     await getCompanyInfo();
-    await appStore.dispatch(GetLocationAddressesAction());
-    await appStore.dispatch(GetClientInfosAction());
-    await appStore.dispatch(GetQuotesAction());
-    await appStore.dispatch(GetApprovalAction());
-    await appStore.dispatch(GetUsersListAction());
-    await appStore.dispatch(GetPropertiesAction());
-    await appStore.dispatch(GetChecklistTemplatesAction());
-    await appStore.dispatch(GetWarehousesAction());
-    await appStore.dispatch(GetAllStorageItemsAction());
+    await Future.wait([
+      appStore.dispatch(GetLocationAddressesAction()) as Future,
+      appStore.dispatch(GetClientInfosAction()) as Future,
+      appStore.dispatch(GetQuotesAction()) as Future,
+      appStore.dispatch(GetApprovalAction()) as Future,
+      fetch(GetUsersListAction()),
+      fetch(GetPropertiesAction()),
+      fetch(GetChecklistTemplatesAction()),
+      fetch(GetWarehousesAction()),
+      fetch(GetAllStorageItemsAction()),
+    ]);
     await appStore.dispatch(GetAllParamListAction());
   }
 }

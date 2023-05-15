@@ -121,6 +121,8 @@ class ListCurrency {
   final bool front;
   final int digits;
 
+  String get title => '$code ($sign)';
+
   @override
   ListCurrency({
     required this.id,

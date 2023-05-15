@@ -1,4 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+
+import '../redux/sets/app_state.dart';
 
 class QuoteInfoMd {
   // {
@@ -102,13 +105,16 @@ class QuoteInfoMd {
   bool active;
   String? phone;
   String? email;
-  String? addressCountry;
-  String? workAddressCountry;
   String? workStartDate;
   String? altWorkStartDate;
   String? workStartTime;
   String? workFinishTime;
-  int? workRepeat;
+
+  //number of days
+  int workRepeat;
+  ListWorkRepeats get getWorkRepeat => appStore.state.generalState.workRepeats
+      .firstWhere((element) => element.days == workRepeat);
+
   List<int> workDays;
   String validUntil;
   num quoteValue;
@@ -131,12 +137,14 @@ class QuoteInfoMd {
   String? addressLine2;
   String? addressCity;
   String? addressCounty;
+  String? addressCountry;
   String? addressPostcode;
   String? notes;
   String? workAddressLine1;
   String? workAddressLine2;
   String? workAddressCity;
   String? workAddressCounty;
+  String? workAddressCountry;
   String? workAddressPostcode;
   String? acceptedOn;
   bool? quoteStatus;
@@ -189,7 +197,7 @@ class QuoteInfoMd {
     this.altWorkStartDate,
     this.workStartTime,
     this.workFinishTime,
-    this.workRepeat,
+    required this.workRepeat,
     required this.workDays,
     required this.validUntil,
     this.acceptedOn,
@@ -242,7 +250,7 @@ class QuoteInfoMd {
         altWorkStartDate: json['alt_work_start_date'],
         workStartTime: json['work_start_time'],
         workFinishTime: json['work_finish_time'],
-        workRepeat: json['work_repeat'],
+        workRepeat: json['work_repeat'] ?? 0,
         workDays: List<int>.from(json['work_days'].map((x) => x)),
         validUntil: json['valid_until'],
         acceptedOn: json['accepted_on'],
@@ -391,11 +399,6 @@ class QuoteInfoMd {
       items: [],
       lastSent: '',
     );
-  }
-
-  @override
-  String toString() {
-    return 'QuoteInfoMd{id: $id, customerId: $customerId, name: $name, company: $company, contact: $contact, companyRegNumber: $companyRegNumber, vatNumber: $vatNumber, vatCalc: $vatCalc, active: $active, phone: $phone, fax: $fax, email: $email, addressLine1: $addressLine1, addressLine2: $addressLine2, addressCity: $addressCity, addressCounty: $addressCounty, addressCountry: $addressCountry, addressPostcode: $addressPostcode, notes: $notes, workAddressLine1: $workAddressLine1, workAddressLine2: $workAddressLine2, workAddressCity: $workAddressCity, workAddressCounty: $workAddressCounty, workAddressCountry: $workAddressCountry, workAddressPostcode: $workAddressPostcode, workStartDate: $workStartDate, altWorkStartDate: $altWorkStartDate, workStartTime: $workStartTime, workFinishTime: $workFinishTime, workRepeat: $workRepeat, workDays: $workDays, validUntil: $validUntil, acceptedOn: $acceptedOn, quoteStatus: $quoteStatus, quoteComments: $quoteComments, quoteValue: $quoteValue, quoteTax: $quoteTax, currencyId: $currencyId, paymentMethodId: $paymentMethodId, payingDays: $payingDays, createdOn: $createdOn, updatedOn: $updatedOn, createdBy: $createdBy, updatedBy: $updatedBy, items: $items, lastSent: $lastSent}';
   }
 
   @override

@@ -10,6 +10,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
+import '../models/job_model.dart';
 import '../scheduling_page.dart';
 
 class DailyViewCalendar extends StatelessWidget {
@@ -61,9 +62,7 @@ class DailyViewCalendar extends StatelessWidget {
                   if (offset != null) {
                     final jobCreated = await showFormsMenus(context,
                         globalPosition: offset,
-                        data: CreateShiftData(
-                          date: calendarTapDetails.date,
-                        ));
+                        data: JobModel(customDate: calendarTapDetails.date));
                   } else {
                     showError("There was an unexpected error!");
                   }
@@ -106,14 +105,9 @@ class DailyViewCalendar extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapUp: (details) async {
-          await showFormsMenus(
-            context,
-            globalPosition: details.globalPosition,
-            data: CreateShiftData(
-              editAppointment: appointment.id as AllocationModel,
-              date: appointment.startTime,
-            ),
-          );
+          await showFormsMenus(context,
+              globalPosition: details.globalPosition,
+              data: JobModel(allocation: ap));
         },
         child: Container(
           alignment: Alignment.centerLeft,

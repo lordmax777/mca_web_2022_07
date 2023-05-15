@@ -80,6 +80,37 @@ class LocationAddress {
       members: [],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is LocationAddress &&
+        other.id == id &&
+        other.name == name &&
+        other.anywhere == anywhere &&
+        other.address == address &&
+        other.phone == phone &&
+        other.email == email &&
+        other.active == active &&
+        other.fixedipaddress == fixedipaddress &&
+        other.ipaddress == ipaddress &&
+        other.members == members;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        anywhere.hashCode ^
+        address.hashCode ^
+        phone.hashCode ^
+        email.hashCode ^
+        active.hashCode ^
+        fixedipaddress.hashCode ^
+        ipaddress.hashCode ^
+        members.hashCode;
+  }
 }
 
 class Address {
@@ -185,6 +216,35 @@ class Address {
       rethrow;
     }
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Address &&
+        other.line1 == line1 &&
+        other.line2 == line2 &&
+        other.city == city &&
+        other.county == county &&
+        other.country == country &&
+        other.postcode == postcode &&
+        other.latitude == latitude &&
+        other.longitude == longitude &&
+        other.radius == radius;
+  }
+
+  @override
+  int get hashCode {
+    return line1.hashCode ^
+        line2.hashCode ^
+        city.hashCode ^
+        county.hashCode ^
+        country.hashCode ^
+        postcode.hashCode ^
+        latitude.hashCode ^
+        longitude.hashCode ^
+        radius.hashCode;
+  }
 }
 
 class Phone {
@@ -219,6 +279,21 @@ class Phone {
   factory Phone.init() {
     return Phone(landline: "", mobile: "", fax: "");
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Phone &&
+        other.landline == landline &&
+        other.mobile == mobile &&
+        other.fax == fax;
+  }
+
+  @override
+  int get hashCode {
+    return landline.hashCode ^ mobile.hashCode ^ fax.hashCode;
+  }
 }
 
 class Members {
@@ -247,6 +322,21 @@ class Members {
     data['min'] = min;
     data['max'] = max;
     return data;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Members &&
+        other.name == name &&
+        other.min == min &&
+        other.max == max;
+  }
+
+  @override
+  int get hashCode {
+    return name.hashCode ^ min.hashCode ^ max.hashCode;
   }
 }
 
@@ -290,5 +380,26 @@ class IpAddress {
     data['startTime'] = startTime;
     data['endTime'] = endTime;
     return data;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is IpAddress &&
+        other.id == id &&
+        other.locationId == locationId &&
+        other.ipAddress == ipAddress &&
+        other.startTime == startTime &&
+        other.endTime == endTime;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        locationId.hashCode ^
+        ipAddress.hashCode ^
+        startTime.hashCode ^
+        endTime.hashCode;
   }
 }

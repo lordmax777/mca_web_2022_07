@@ -38,6 +38,7 @@ class ClientInfoMd {
   //     }
 
   int id;
+  bool get isClientTrue => id != -10;
   String name;
   String? contact;
   String? company;
@@ -166,7 +167,7 @@ class ClientInfoMd {
     CompanyMd companyInfo = GeneralController.to.companyInfo;
 
     return ClientInfoMd(
-      id: id ?? 0,
+      id: id ?? -10,
       name: name ?? '',
       currencyId: companyInfo.currency.code,
       payingDays: companyInfo.paying_days,
@@ -190,17 +191,56 @@ class ClientInfoMd {
     );
   }
 
-  // //from PropertiesMd
-  // static ClientInfoMd fromPropertiesMd(PropertiesMd p) {
-  //   try{
-  //
-  //   return ClientInfoMd(
-  //     id: p.clientId!,
-  //     payingDays:
-  //   );
-  //   } on TypeError catch (e) {
-  //     Logger.e('ClientInfoMd.fromPropertiesMd: ${e.stackTrace}');
-  //     rethrow;
-  //   }
-  // }
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ClientInfoMd &&
+        other.id == id &&
+        other.name == name &&
+        other.contact == contact &&
+        other.company == company &&
+        other.active == active &&
+        other.notes == notes &&
+        other.email == email &&
+        other.phone == phone &&
+        other.fax == fax &&
+        other.startDate == startDate &&
+        other.endDate == endDate &&
+        other.creditLimit == creditLimit &&
+        other.invoices == invoices &&
+        other.payments == payments &&
+        other.address == address &&
+        other.companyRegNumber == companyRegNumber &&
+        other.VATnumber == VATnumber &&
+        other.VATcalc == VATcalc &&
+        other.currencyId == currencyId &&
+        other.paymentMethodId == paymentMethodId &&
+        other.payingDays == payingDays;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        contact.hashCode ^
+        company.hashCode ^
+        active.hashCode ^
+        notes.hashCode ^
+        email.hashCode ^
+        phone.hashCode ^
+        fax.hashCode ^
+        startDate.hashCode ^
+        endDate.hashCode ^
+        creditLimit.hashCode ^
+        invoices.hashCode ^
+        payments.hashCode ^
+        address.hashCode ^
+        companyRegNumber.hashCode ^
+        VATnumber.hashCode ^
+        VATcalc.hashCode ^
+        currencyId.hashCode ^
+        paymentMethodId.hashCode ^
+        payingDays.hashCode;
+  }
 }

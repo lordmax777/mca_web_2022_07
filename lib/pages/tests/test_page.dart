@@ -1,3 +1,6 @@
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 
@@ -45,6 +48,20 @@ class TestPage extends StatelessWidget {
     for (var shift in allShifts) {}
   }
 
+  void testQuotes() async {
+    final ApiResponse res =
+        await restClient().getQuotes(0).nocodeErrorHandler();
+    if (res.success) {
+      final List<QuoteInfoMd> list = [];
+      list.addAll(res.data['quotes']
+          .map<QuoteInfoMd>((e) => QuoteInfoMd.fromJson(e))
+          .toList());
+      for (var e in list) {
+        print(e);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageWrapper(
@@ -56,6 +73,7 @@ class TestPage extends StatelessWidget {
               _button(_testProperties, title: 'Test Properties'),
               _button(_testShifts, title: 'Test Shifts'),
               _button(testLocations, title: 'Test Locations'),
+              _button(testQuotes, title: 'Test Quotes'),
             ],
           ),
         ),
