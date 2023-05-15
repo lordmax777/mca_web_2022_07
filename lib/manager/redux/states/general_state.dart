@@ -76,6 +76,8 @@ class GeneralState {
   final StateValue<List<StorageItemMd>> storageItems;
   final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
   final StateValue<List<PropertiesMd>> properties;
+  List<PropertiesMd> get allSortedProperties => (properties.data ?? [])
+    ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
   final List<LocationAddress> locations;
   final List<ClientInfoMd> clientInfos;
 

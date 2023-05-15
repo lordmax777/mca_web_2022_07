@@ -1,5 +1,6 @@
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 
+import '../../manager/models/list_all_md.dart';
 import '../../manager/models/property_md.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../manager/redux/sets/state_value.dart';
@@ -9,9 +10,9 @@ import '../../theme/theme.dart';
 class TestPage extends StatelessWidget {
   const TestPage({Key? key}) : super(key: key);
 
-  void _testProperties() async {
-    final allShifts = appStore.state.generalState.shifts;
+  List<ListShift> get allShifts => appStore.state.generalState.shifts;
 
+  void _testProperties() async {
     // for (int i = 0; i < allShifts.length; i++) {
     final ApiResponse res =
         await restClient().getProperties(0.toString()).nocodeErrorHandler();
@@ -28,6 +29,10 @@ class TestPage extends StatelessWidget {
     // }
   }
 
+  void _testShifts() {
+    for (var shift in allShifts) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageWrapper(
@@ -36,6 +41,7 @@ class TestPage extends StatelessWidget {
           child: Column(
             children: [
               _button(_testProperties, title: 'Test Properties'),
+              _button(_testShifts, title: 'Test Shifts'),
             ],
           ),
         ),

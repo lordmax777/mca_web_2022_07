@@ -39,7 +39,7 @@ class ClientInfoMd {
   String? contact;
   String? company;
   bool active;
-  String notes;
+  String? notes;
   String? email;
   String? phone;
   String? fax;
@@ -62,7 +62,7 @@ class ClientInfoMd {
     this.contact,
     this.company,
     required this.active,
-    required this.notes,
+    this.notes,
     this.email,
     this.phone,
     this.fax,

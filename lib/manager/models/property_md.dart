@@ -41,7 +41,6 @@ class PropertiesMd {
   int? minWorkTime;
   bool splitTime;
   bool checklist;
-  dynamic linked;
   dynamic days;
   Map<int, String> get parsedDays =>
       days != null ? Constants.parseDays(days) : {};
@@ -71,7 +70,6 @@ class PropertiesMd {
     this.minWorkTime,
     required this.splitTime,
     required this.checklist,
-    this.linked,
     this.days,
     required this.active,
   });
@@ -103,7 +101,6 @@ class PropertiesMd {
         minWorkTime: json['minWorkTime'],
         splitTime: json['splitTime'] ?? false,
         checklist: json['checklist'] ?? false,
-        linked: json['linked'],
         days: json['days'],
         active: json['active'] ?? false,
       );
@@ -138,7 +135,6 @@ class PropertiesMd {
     data['minWorkTime'] = minWorkTime;
     data['splitTime'] = splitTime;
     data['checklist'] = checklist;
-    data['linked'] = linked;
     data['days'] = days;
     data['active'] = active;
     return data;
@@ -169,7 +165,6 @@ class PropertiesMd {
       minWorkTime: 0,
       splitTime: false,
       checklist: false,
-      linked: null,
       days: null,
       active: true,
     );
@@ -203,7 +198,6 @@ class PropertiesMd {
         other.minWorkTime == minWorkTime &&
         other.splitTime == splitTime &&
         other.checklist == checklist &&
-        other.linked == linked &&
         other.days == days &&
         other.active == active;
   }
@@ -233,7 +227,6 @@ class PropertiesMd {
         minWorkTime.hashCode ^
         splitTime.hashCode ^
         checklist.hashCode ^
-        linked.hashCode ^
         days.hashCode ^
         active.hashCode;
   }

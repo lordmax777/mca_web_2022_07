@@ -220,7 +220,10 @@ class Constants {
   }
 
   static Map<int, String> parseDays(days) {
-    bool isList = days is List;
+    final bool isList = days is List;
+    //if list [1,1,1,1,1,1,1]
+    //if Map {"0":1, "1":1, "2":1, "3":1, "4":1, "5":1, "6":1}
+
     const Map<int, String> _days = {
       0: "Sunday",
       1: "Monday",
@@ -230,8 +233,6 @@ class Constants {
       5: "Friday",
       6: "Saturday",
     };
-    //if list [1,1,1,1,1,1,1]
-    //if Map {"0":1, "1":1, "2":1, "3":1, "4":1, "5":1, "6":1}
     try {
       if (isList) {
         return {for (int i = 0; i < days.length; i++) i: _days[i]!};

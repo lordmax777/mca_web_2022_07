@@ -366,12 +366,14 @@ class ListShift {
 
   //Getters
   GeneralState get state => appStore.state.generalState;
-  LocationAddress get address =>
+  LocationAddress get location =>
       state.locations.firstWhere((element) => element.id == location_id);
-  ClientInfoMd get client =>
-      state.clientInfos.firstWhere((element) => element.id == client_id);
-  WarehouseMd get warehouse =>
-      state.storages.firstWhere((element) => element.id == warehouse_id);
+  ClientInfoMd? get client =>
+      state.clientInfos.firstWhereOrNull((element) => element.id == client_id);
+  WarehouseMd? get warehouse =>
+      state.storages.firstWhereOrNull((element) => element.id == warehouse_id);
+  PropertiesMd get property =>
+      state.allSortedProperties.firstWhere((element) => element.id == id);
 
   @override
   ListShift({
