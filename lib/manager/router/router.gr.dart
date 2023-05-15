@@ -175,9 +175,13 @@ class _$AppRouter extends RootStackRouter {
       );
     },
     TimesheetUserShiftDetailsRoute.name: (routeData) {
+      final args = routeData.argsAs<TimesheetUserShiftDetailsRouteArgs>();
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const TimesheetUserShiftDetailsPage(),
+        child: TimesheetUserShiftDetailsPage(
+          key: args.key,
+          timesheetDep: args.timesheetDep,
+        ),
       );
     },
   };
@@ -660,12 +664,35 @@ class InventoryListRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [TimesheetUserShiftDetailsPage]
-class TimesheetUserShiftDetailsRoute extends PageRouteInfo<void> {
-  const TimesheetUserShiftDetailsRoute()
-      : super(
+class TimesheetUserShiftDetailsRoute
+    extends PageRouteInfo<TimesheetUserShiftDetailsRouteArgs> {
+  TimesheetUserShiftDetailsRoute({
+    Key? key,
+    required TimesheetDepMd timesheetDep,
+  }) : super(
           TimesheetUserShiftDetailsRoute.name,
           path: 'timesheet-shift-details',
+          args: TimesheetUserShiftDetailsRouteArgs(
+            key: key,
+            timesheetDep: timesheetDep,
+          ),
         );
 
   static const String name = 'TimesheetUserShiftDetailsRoute';
+}
+
+class TimesheetUserShiftDetailsRouteArgs {
+  const TimesheetUserShiftDetailsRouteArgs({
+    this.key,
+    required this.timesheetDep,
+  });
+
+  final Key? key;
+
+  final TimesheetDepMd timesheetDep;
+
+  @override
+  String toString() {
+    return 'TimesheetUserShiftDetailsRouteArgs{key: $key, timesheetDep: $timesheetDep}';
+  }
 }

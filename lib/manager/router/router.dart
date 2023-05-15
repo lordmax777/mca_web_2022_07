@@ -17,6 +17,7 @@ import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
 import '../models/contract_md.dart';
 import '../models/property_md.dart';
+import '../models/timesheet_dep_md.dart';
 
 part 'router.gr.dart';
 
