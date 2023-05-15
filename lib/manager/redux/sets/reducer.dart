@@ -115,6 +115,7 @@ GeneralState _updateGeneralStateAction(
     quotes: action.quotes ?? state.quotes,
     approvals: action.approvals ?? state.approvals,
     inventoryList: action.inventoryList ?? state.inventoryList,
+    timesheetDepList: action.timesheetDepList ?? state.timesheetDepList,
   );
 }
 

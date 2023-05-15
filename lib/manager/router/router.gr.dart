@@ -174,6 +174,12 @@ class _$AppRouter extends RootStackRouter {
         child: const InventoryListPage(),
       );
     },
+    TimesheetUserShiftDetailsRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const TimesheetUserShiftDetailsPage(),
+      );
+    },
   };
 
   @override
@@ -285,6 +291,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               InventoryListRoute.name,
               path: 'inventory',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              TimesheetUserShiftDetailsRoute.name,
+              path: 'timesheet-shift-details',
               parent: HomeRoute.name,
             ),
           ],
@@ -645,4 +656,16 @@ class InventoryListRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'InventoryListRoute';
+}
+
+/// generated route for
+/// [TimesheetUserShiftDetailsPage]
+class TimesheetUserShiftDetailsRoute extends PageRouteInfo<void> {
+  const TimesheetUserShiftDetailsRoute()
+      : super(
+          TimesheetUserShiftDetailsRoute.name,
+          path: 'timesheet-shift-details',
+        );
+
+  static const String name = 'TimesheetUserShiftDetailsRoute';
 }

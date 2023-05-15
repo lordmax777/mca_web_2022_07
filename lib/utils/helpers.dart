@@ -139,6 +139,7 @@ class GridTableHelpers {
       {dynamic title = "Edit",
       ValueChanged<PlutoColumnRendererContext>? onTap,
       HeroIcons? icon,
+      bool? disableIcon = false,
       Color? color}) {
     return KText(
       text: title,
@@ -149,11 +150,13 @@ class GridTableHelpers {
       isSelectable: false,
       onTap: onTap != null ? () => onTap(ctx) : null,
       // rowCenter: ctx.column.textAlign.value == TextAlign.center,
-      icon: HeroIcon(
-        icon ?? HeroIcons.edit,
-        color: color ?? ThemeColors.MAIN_COLOR,
-        size: 12,
-      ),
+      icon: disableIcon!
+          ? null
+          : HeroIcon(
+              icon ?? HeroIcons.edit,
+              color: color ?? ThemeColors.MAIN_COLOR,
+              size: 12,
+            ),
     );
   }
 
