@@ -11,11 +11,13 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
   final double? width;
   final double? height;
   final TextEditingValue? initialValue;
+  final VoidCallback? onCleared;
   const CustomAutocompleteTextField({
     Key? key,
     required this.options,
     required this.onSelected,
     this.hintText,
+    this.onCleared,
     this.initialValue,
     this.width,
     this.height,
@@ -73,6 +75,9 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
             return TextField(
               controller: textEditingController,
               focusNode: focusNode,
+              onChanged: (value) {
+                if (value.isEmpty) onCleared?.call();
+              },
               onSubmitted: (value) {
                 onFieldSubmitted();
               },
@@ -82,6 +87,7 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                   onPressed: () {
                     textEditingController.clear();
                     FocusScope.of(context).unfocus();
+                    onCleared?.call();
                   },
                 ),
                 border: const OutlineInputBorder(),

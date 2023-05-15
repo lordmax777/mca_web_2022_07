@@ -16,29 +16,41 @@ class JobModel {
 
   DateTime? customDate;
 
-  ClientInfoMd get client {
-    final cl = allocation?.shift.client;
-    if (cl == null) {
-      return ClientInfoMd.init();
+  ClientInfoMd client = ClientInfoMd.init();
+
+  void setClient(ClientInfoMd? clientInfoMd) {
+    if (clientInfoMd == null) {
+      client = ClientInfoMd.init();
+    } else {
+      client = clientInfoMd;
     }
-    return cl;
+    setAddress(null);
+    setWorkAddress(null);
   }
 
   bool get isClientSelected => client.isClientTrue;
 
-  set client(ClientInfoMd? clientInfoMd) {
-    allocation?.shift.client = clientInfoMd;
-  }
-
   bool active = true;
 
-  LocationAddress? get address => allocation?.location;
-  set address(LocationAddress? loc) {
-    if (loc == null) return;
-    allocation?.location = loc;
+  LocationAddress _address = LocationAddress.init();
+  LocationAddress get address => _address;
+  void setAddress(LocationAddress? loc) {
+    if (loc == null) {
+      _address = LocationAddress.init();
+      return;
+    }
+    _address = loc;
   }
 
-  LocationAddress? workAddress;
+  LocationAddress _workAddress = LocationAddress.init();
+  LocationAddress get workAddress => _workAddress;
+  void setWorkAddress(LocationAddress? loc) {
+    if (loc == null) {
+      _workAddress = LocationAddress.init();
+      return;
+    }
+    _workAddress = loc;
+  }
 
   bool get hasWorkAddress => type == ScheduleCreatePopupMenus.quote;
 
@@ -56,8 +68,13 @@ class JobModel {
       {this.allocation,
       this.customDate,
       this.type = ScheduleCreatePopupMenus.job}) {
+    if (allocation != null) {
+      final cl = allocation!.shift.client;
+      setClient(cl);
+      setAddress(allocation!.location);
+      // setWorkAddress(allocation!.location);
+    }
     if (customDate != null) {
-      print(customDate);
       timingInfo.date = customDate!;
       timingInfo.startTime =
           TimeOfDay(hour: customDate!.hour, minute: customDate!.minute);

@@ -49,8 +49,8 @@ class _JobEditFormState extends State<JobEditForm>
   bool get isClientSelected => data.isClientSelected;
   Map<UserRes, double> get addedChildren => data.addedChildren;
   TimingModel get timing => data.timingInfo;
-  LocationAddress? get address => data.address;
-  LocationAddress? get workAddress => data.workAddress;
+  LocationAddress get address => data.address;
+  LocationAddress get workAddress => data.workAddress;
   DateTime? get date => data.date;
   // AllocationModel? get allocation => data.allocation;
 
@@ -70,33 +70,33 @@ class _JobEditFormState extends State<JobEditForm>
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Get.showOverlay(
-        asyncFunction: () async {
-          final unavUsers = await appStore
-              .dispatch(GetUnavailableUsersAction(date ?? DateTime.now()));
-          if (mounted) {
-            setState(() {
-              unavailableUsers.users = unavUsers;
-            });
-          }
-          if (isUpdate) {
-            final res = await restClient()
-                .getQuoteBy(
-                  0,
-                  date: data.dateAsString!,
-                  location_id: data.allocation!.location.id,
-                  shift_id: data.allocation!.shift.id,
-                )
-                .nocodeErrorHandler();
-            if (res.success) {
-              final q = res.data['quotes'][0];
-              data.quote = QuoteInfoMd.fromJson(q);
-              setState(() {});
-            }
-          }
-        },
-        loadingWidget: const CustomLoadingWidget(),
-      );
+      // Get.showOverlay(
+      //   asyncFunction: () async {
+      final unavUsers = await appStore
+          .dispatch(GetUnavailableUsersAction(date ?? DateTime.now()));
+      if (mounted) {
+        setState(() {
+          unavailableUsers.users = unavUsers;
+        });
+      }
+      if (isUpdate) {
+        final res = await restClient()
+            .getQuoteBy(
+              0,
+              date: data.dateAsString!,
+              location_id: data.allocation!.location.id,
+              shift_id: data.allocation!.shift.id,
+            )
+            .nocodeErrorHandler();
+        if (res.success) {
+          final q = res.data['quotes'][0];
+          data.quote = QuoteInfoMd.fromJson(q);
+          setState(() {});
+        }
+      }
+      // },
+      // loadingWidget: const CustomLoadingWidget(),
+      // );
     });
   }
 
@@ -489,8 +489,6 @@ class _JobEditFormState extends State<JobEditForm>
     //           !locations.contains(element))
     //       .toList(),
     // );
-    logger(data.client.currencyId);
-    logger(currencies.map((e) => e.code));
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: CustomScrollbar(
@@ -526,14 +524,18 @@ class _JobEditFormState extends State<JobEditForm>
                                       height: 50,
                                       hintText: "Select Client",
                                       listItemWidget: (p0) => Text(p0.name),
+                                      onCleared: () {
+                                        setState(() {
+                                          data.setClient(null);
+                                        });
+                                      },
                                       onSelected: (p0) {
                                         setState(() {
                                           resetLocation = false;
                                         });
-                                        data.client = p0;
-                                        data.address = null;
-                                        data.workAddress = null;
-                                        setState(() {});
+                                        setState(() {
+                                          data.setClient(p0);
+                                        });
                                         Future.delayed(
                                             const Duration(milliseconds: 100),
                                             () {
@@ -629,21 +631,21 @@ class _JobEditFormState extends State<JobEditForm>
                               ],
                             ),
                           ),
-                          // if (hasComment)
-                          //   labelWithField(
-                          //     labelWidth: 160,
-                          //     "Quote Comments",
-                          //     TextInputWidget(
-                          //       width: 400,
-                          //       maxLines: 4,
-                          //       hintText: "Add quote comments",
-                          //       controller:
-                          //           TextEditingController(text: comment),
-                          //       onChanged: (value) {
-                          //         comment = value;
-                          //       },
-                          //     ),
-                          //   ),
+                          if (data.type == ScheduleCreatePopupMenus.quote)
+                            labelWithField(
+                              labelWidth: 160,
+                              "Quote Comments",
+                              TextInputWidget(
+                                width: 400,
+                                maxLines: 4,
+                                hintText: "Add quote comments",
+                                controller: TextEditingController(
+                                    text: data.quote?.quoteComments ?? ""),
+                                onChanged: (value) {
+                                  data.quote?.quoteComments = value;
+                                },
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -688,7 +690,7 @@ class _JobEditFormState extends State<JobEditForm>
                                       listItemWidget: (p0) => Text(p0.name),
                                       onSelected: (p0) {
                                         setState(() {
-                                          data.address = p0;
+                                          data.setAddress(p0);
                                         });
                                       },
                                       displayStringForOption: (option) {
@@ -706,7 +708,7 @@ class _JobEditFormState extends State<JobEditForm>
                               "Address Line 1:",
                               null,
                               customLabel:
-                                  _textField(data.address?.address.line1),
+                                  _textField(data.address.address.line1),
                             ),
                             const Divider(),
                             labelWithField(
@@ -714,7 +716,7 @@ class _JobEditFormState extends State<JobEditForm>
                               "Address Line 2:",
                               null,
                               customLabel:
-                                  _textField(data.address?.address.line2),
+                                  _textField(data.address.address.line2),
                             ),
                             const Divider(),
                             labelWithField(
@@ -722,7 +724,7 @@ class _JobEditFormState extends State<JobEditForm>
                               "City:",
                               null,
                               customLabel:
-                                  _textField(data.address?.address.city),
+                                  _textField(data.address.address.city),
                             ),
                             const Divider(),
                             labelWithField(
@@ -730,7 +732,7 @@ class _JobEditFormState extends State<JobEditForm>
                               "County:",
                               null,
                               customLabel:
-                                  _textField(data.address?.address.county),
+                                  _textField(data.address.address.county),
                             ),
                             const Divider(),
                             labelWithField(
@@ -740,7 +742,7 @@ class _JobEditFormState extends State<JobEditForm>
                               customLabel: _textField(countries
                                   .firstWhereOrNull((element) =>
                                       element.code ==
-                                      data.address?.address.country)
+                                      data.address.address.country)
                                   ?.name),
                             ),
                             const Divider(),
@@ -749,7 +751,7 @@ class _JobEditFormState extends State<JobEditForm>
                               "Postcode:",
                               null,
                               customLabel:
-                                  _textField(data.address?.address.country),
+                                  _textField(data.address.address.postcode),
                             ),
                           ],
                         ),
@@ -780,17 +782,17 @@ class _JobEditFormState extends State<JobEditForm>
                                     width: 400,
                                     height: 50,
                                     hintText: "Select Location",
-                                    listItemWidget: (p0) => Text(p0.name ?? ""),
+                                    listItemWidget: (p0) => Text(p0.name),
                                     onSelected: (p0) {
                                       setState(() {
-                                        data.workAddress = p0;
+                                        data.setWorkAddress(p0);
                                       });
                                     },
                                     displayStringForOption: (option) {
                                       return option.name;
                                     },
                                     options: (p0) => locations.where(
-                                        (element) => (element.name ?? "")
+                                        (element) => (element.name)
                                             .toLowerCase()
                                             .contains(p0.text.toLowerCase()))),
                               const SizedBox(height: 16),
@@ -799,7 +801,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 "Address Line 1:",
                                 null,
                                 customLabel:
-                                    _textField(workAddress?.address.line1),
+                                    _textField(workAddress.address.line1),
                               ),
                               const Divider(),
                               labelWithField(
@@ -807,7 +809,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 "Address Line 2:",
                                 null,
                                 customLabel:
-                                    _textField(workAddress?.address.line2),
+                                    _textField(workAddress.address.line2),
                               ),
                               const Divider(),
                               labelWithField(
@@ -815,7 +817,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 "City:",
                                 null,
                                 customLabel:
-                                    _textField(workAddress?.address.city),
+                                    _textField(workAddress.address.city),
                               ),
                               const Divider(),
                               labelWithField(
@@ -823,7 +825,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 "County:",
                                 null,
                                 customLabel:
-                                    _textField(workAddress?.address.county),
+                                    _textField(workAddress.address.county),
                               ),
                               const Divider(),
                               labelWithField(
@@ -833,7 +835,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 customLabel: _textField(countries
                                     .firstWhereOrNull((element) =>
                                         element.code ==
-                                        workAddress?.address.country)
+                                        workAddress.address.country)
                                     ?.name),
                               ),
                               const Divider(),
@@ -842,7 +844,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 "Postcode:",
                                 null,
                                 customLabel:
-                                    _textField(workAddress?.address.postcode),
+                                    _textField(workAddress.address.postcode),
                               ),
                             ],
                           ),

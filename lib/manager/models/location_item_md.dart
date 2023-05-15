@@ -1,6 +1,8 @@
 import 'package:mca_web_2022_07/manager/models/users_list.dart';
 
 import '../../pages/scheduling/popup_forms/client_form.dart';
+import '../general_controller.dart';
+import 'company_md.dart';
 
 class LocationAddress {
   int id;
@@ -78,6 +80,32 @@ class LocationAddress {
       ipaddress: [],
       fixedipaddress: false,
       members: [],
+    );
+  }
+
+  // init
+  factory LocationAddress.init(
+      {int? id,
+      String? name,
+      bool? anywhere,
+      Address? address,
+      Phone? phone,
+      String? email,
+      bool? active,
+      bool? fixedipaddress,
+      List<IpAddress>? ipaddress,
+      List<Members>? members}) {
+    return LocationAddress(
+      id: id ?? -10,
+      name: name ?? "",
+      anywhere: anywhere ?? false,
+      address: address ?? Address.init(),
+      phone: phone ?? Phone.init(),
+      email: email ?? "",
+      active: active ?? false,
+      fixedipaddress: fixedipaddress ?? false,
+      ipaddress: ipaddress ?? [],
+      members: members ?? [],
     );
   }
 
@@ -170,12 +198,14 @@ class Address {
 
   // init
   factory Address.init() {
+    CompanyMd companyInfo = GeneralController.to.companyInfo;
+
     return Address(
         line1: "",
         line2: "",
         city: "",
         county: "",
-        country: "",
+        country: companyInfo.country,
         postcode: "",
         latitude: 0,
         longitude: 0,
