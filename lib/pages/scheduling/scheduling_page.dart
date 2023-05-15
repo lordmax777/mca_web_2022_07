@@ -112,23 +112,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
           );
         },
       ),
-      // DropdownWidget1(
-      //   hasSearchBox: true,
-      //   dropdownOptionsWidth: 250,
-      //   dropdownBtnWidth: 250,
-      //   hintText: "User",
-      //   items: users.map((e) => e.fullname).toList(),
-      //   objItems: users,
-      //   customItemIcons: {
-      //     for (var i = 0; i < scheduleState.filteredUsers.length; i++)
-      //       users.indexOf(scheduleState.filteredUsers[i]): HeroIcons.check
-      //   },
-      //   value:
-      //   scheduleState.filteredUsers.isEmpty
-      //       ? "All"
-      //       : scheduleState.filteredUsers.first.fullname,
-      //   onChangedWithObj: (p0) => appStore.dispatch(SCAddFilter(user: p0.item)),
-      // ),
     );
   }
 
@@ -249,7 +232,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
           KText(
             isSelectable: false,
             onTap: () async {
-              final date = await showCustomDatePicker(context);
+              final date =
+                  await showCustomDatePicker(context, initialTime: day);
               if (date != null) {
                 day = date;
                 appStore.dispatch(SCFetchShiftsAction(date: day));

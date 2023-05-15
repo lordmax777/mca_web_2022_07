@@ -1,11 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
-import 'package:mca_web_2022_07/manager/redux/states/users_state/users_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../../manager/redux/sets/app_state.dart';
-import '../../../manager/redux/states/general_state.dart';
 
 class AllocationModel {
   int id;
@@ -15,7 +12,6 @@ class AllocationModel {
   PropertiesMd get property => shift.property;
   bool published;
   UserRes? user;
-  // JobModel job;
 
   AllocationModel({
     required this.shift,
@@ -23,7 +19,6 @@ class AllocationModel {
     this.published = false,
     required this.id,
     required this.date,
-    // required this.job,
   });
 
   factory AllocationModel.fromJson(Map<String, dynamic> json) {
@@ -37,15 +32,12 @@ class AllocationModel {
       final int? userId = json['userId'];
       final UserRes? user = appStore.state.usersState.users
           .firstWhereOrNull((e) => e.id == userId);
-      //TODO: Add job
-      // final JobModel job = JobModel.fromJson(json['job']);
       return AllocationModel(
         shift: shift,
         date: date,
         id: id,
         published: published,
         user: user,
-        // job: job,
       );
     } on Exception catch (e) {
       print("AllocationModel.fromJson: $e");

@@ -90,13 +90,16 @@ class DailyViewCalendar extends StatelessWidget {
 
   Widget _appWidget(Appointment appointment, BuildContext context) {
     final ap = appointment.id as AllocationModel;
+    final resource = appointment.resourceIds?.first as UserRes;
     final location = ap.property;
-    final user = ap.user;
     final formatter = DateFormat('h:mm a');
     final start = appointment.startTime;
     final end = appointment.endTime;
-    final title =
+    String title =
         "${formatter.format(start)} - ${formatter.format(end)} / ${location.title ?? "-"} / ${location.locationName}";
+    if (resource.isOpenShiftResource) {
+      title = "(Open Shift) $title";
+    }
     return Tooltip(
       verticalOffset: 10,
       message: title,
@@ -125,7 +128,9 @@ class DailyViewCalendar extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  color: Colors.white,
+                  color: resource.isOpenShiftResource
+                      ? Colors.black
+                      : Colors.white,
                   fontFamily: ThemeText.fontFamilyM,
                 ),
           ),

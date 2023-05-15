@@ -198,7 +198,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           startTime: stDate,
           endTime: et,
           isAllDay: false,
-          color: us?.userRandomBgColor ?? Colors.blue,
+          color: us?.userRandomBgColor ?? Colors.lime[300]!,
           subject: pr.title,
           id: shift,
           resourceIds: [

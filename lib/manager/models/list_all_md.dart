@@ -366,14 +366,12 @@ class ListShift {
 
   //Getters
   GeneralState get state => appStore.state.generalState;
-  LocationAddress get location =>
-      state.locations.firstWhere((element) => element.id == location_id);
-  ClientInfoMd? get client =>
-      state.clientInfos.firstWhereOrNull((element) => element.id == client_id);
-  WarehouseMd? get warehouse =>
-      state.storages.firstWhereOrNull((element) => element.id == warehouse_id);
-  PropertiesMd get property =>
-      state.allSortedProperties.firstWhere((element) => element.id == id);
+
+  //Late initialized variables
+  late final LocationAddress location;
+  late final ClientInfoMd? client;
+  late final WarehouseMd? warehouse;
+  late final PropertiesMd property;
 
   @override
   ListShift({
@@ -383,7 +381,17 @@ class ListShift {
     required this.active,
     this.client_id,
     this.warehouse_id,
-  });
+  }) {
+    property =
+        state.allSortedProperties.firstWhere((element) => element.id == id);
+    warehouse = state.storages
+        .firstWhereOrNull((element) => element.id == warehouse_id);
+    client = state.clientInfos
+        .firstWhereOrNull((element) => element.id == client_id);
+    location =
+        state.locations.firstWhere((element) => element.id == location_id);
+  }
+
   factory ListShift.fromJson(Map<String, dynamic> json) =>
       _$ListShiftFromJson(json);
 

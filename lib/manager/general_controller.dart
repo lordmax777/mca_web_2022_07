@@ -55,26 +55,24 @@ class GeneralController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    loggedInUser.listen((_) {
+    loggedInUser.listen((_) async {
       if (isLoggedIn) {
-        initAll();
+        await initAll();
       }
     });
   }
 
-  void initAll() async {
+  Future<void> initAll() async {
     await getCompanyInfo();
-    await Future.wait([
-      appStore.dispatch(GetLocationAddressesAction()) as Future,
-      appStore.dispatch(GetClientInfosAction()) as Future,
-      appStore.dispatch(GetQuotesAction()) as Future,
-      appStore.dispatch(GetApprovalAction()) as Future,
-      fetch(GetAllParamListAction()),
-      fetch(GetUsersListAction()),
-      fetch(GetPropertiesAction()),
-      fetch(GetChecklistTemplatesAction()),
-      fetch(GetWarehousesAction()),
-      fetch(GetAllStorageItemsAction()),
-    ]);
+    await appStore.dispatch(GetLocationAddressesAction());
+    await appStore.dispatch(GetClientInfosAction());
+    await appStore.dispatch(GetQuotesAction());
+    await appStore.dispatch(GetApprovalAction());
+    await appStore.dispatch(GetUsersListAction());
+    await appStore.dispatch(GetPropertiesAction());
+    await appStore.dispatch(GetChecklistTemplatesAction());
+    await appStore.dispatch(GetWarehousesAction());
+    await appStore.dispatch(GetAllStorageItemsAction());
+    await appStore.dispatch(GetAllParamListAction());
   }
 }

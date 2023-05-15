@@ -7,8 +7,6 @@ import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import '../../../manager/models/location_item_md.dart';
 import '../popup_forms/timing_form.dart';
 
@@ -62,9 +60,7 @@ abstract class CreateShiftDataType {
       cells: {
         "id": PlutoCell(value: contractShiftItem.id),
         "title": PlutoCell(
-            value: contractShiftItem.name +
-                " - " +
-                contractShiftItem.service.toString()),
+            value: "${contractShiftItem.name} - ${contractShiftItem.service}"),
         "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
         "quantity": PlutoCell(value: qty ?? 1),
         "delete_action": PlutoCell(value: ""),

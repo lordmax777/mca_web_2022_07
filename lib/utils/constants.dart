@@ -197,7 +197,7 @@ class Constants {
   };
 
   static String get isoDateFormat {
-    const String format = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    const String format = "yyyy-MM-dd";
     return format;
   }
 
