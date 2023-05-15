@@ -5,6 +5,8 @@ import 'package:retrofit/retrofit.dart';
 import '../../theme/theme.dart';
 import 'dio_client_for_retrofit.dart';
 
+export 'nocode_helpers.dart';
+
 part 'rest_client.g.dart';
 
 @RestApi(parser: Parser.JsonSerializable)

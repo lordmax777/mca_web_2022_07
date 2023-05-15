@@ -11,6 +11,7 @@ import '../../pages/approvals/approval_template_page.dart';
 import '../../pages/auth/login_page.dart';
 import '../../pages/inventory/inventory_list_page.dart';
 import '../../pages/settings/settings_page.dart';
+import '../../pages/tests/test_page.dart';
 import '../../pages/tiemsheet/tiemesheet_list_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
@@ -28,6 +29,7 @@ part 'router.gr.dart';
     AutoRoute(page: Home, name: "HomeRoute", initial: true, guards: [
       AuthGuard
     ], children: [
+      AutoRoute(page: TestPage, path: "test"),
       AutoRoute(page: UsersListPage, path: ""),
       AutoRoute(page: UserDetailsPage, path: "user-detail"),
       AutoRoute(

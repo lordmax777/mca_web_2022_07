@@ -1,8 +1,11 @@
 import 'package:get/get.dart';
 import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
 import '../redux/sets/app_state.dart';
+import '../redux/states/general_state.dart';
+import 'location_item_md.dart';
 part 'list_all_md.g.dart';
 
 @JsonSerializable()
@@ -360,6 +363,15 @@ class ListShift {
   final bool active;
   final int? client_id;
   final int? warehouse_id;
+
+  //Getters
+  GeneralState get state => appStore.state.generalState;
+  LocationAddress get address =>
+      state.locations.firstWhere((element) => element.id == location_id);
+  ClientInfoMd get client =>
+      state.clientInfos.firstWhere((element) => element.id == client_id);
+  WarehouseMd get warehouse =>
+      state.storages.firstWhere((element) => element.id == warehouse_id);
 
   @override
   ListShift({

@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/pages/quotes/quotes_list_page.dart';
 import 'package:mca_web_2022_07/utils/global_functions.dart';
 
@@ -75,6 +78,11 @@ class Constants {
       "title": "Administrations",
       "name": "administrations",
       "children": [
+        if (kDebugMode)
+          {
+            "title": "Test Page",
+            "name": const TestRoute(),
+          },
         {
           "title": "Users Management",
           "name": const UsersListRoute(),
@@ -187,4 +195,55 @@ class Constants {
     "shift": "Shift",
     "color_theme": "Color Theme"
   };
+
+  static String get isoDateFormat {
+    const String format = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    return format;
+  }
+
+  static DateTime isoDateTime(String date) {
+    try {
+      return DateFormat(isoDateFormat).parse(date);
+    } on Exception catch (e) {
+      logger(e, hint: "isoDateTime");
+      rethrow;
+    }
+  }
+
+  static TimeOfDay isoTimeOfDay(String time) {
+    try {
+      return TimeOfDay.fromDateTime(DateFormat("HH:mm").parse(time));
+    } on Exception catch (e) {
+      logger(e, hint: "isoTimeOfDay");
+      rethrow;
+    }
+  }
+
+  static Map<int, String> parseDays(days) {
+    bool isList = days is List;
+    const Map<int, String> _days = {
+      0: "Sunday",
+      1: "Monday",
+      2: "Tuesday",
+      3: "Wednesday",
+      4: "Thursday",
+      5: "Friday",
+      6: "Saturday",
+    };
+    //if list [1,1,1,1,1,1,1]
+    //if Map {"0":1, "1":1, "2":1, "3":1, "4":1, "5":1, "6":1}
+    try {
+      if (isList) {
+        return {for (int i = 0; i < days.length; i++) i: _days[i]!};
+      }
+      return {
+        for (int i = 0; i < days.length; i++)
+          int.parse(days.keys.toList()[i]):
+              _days[(int.parse(days.keys.toList()[i]))]!
+      };
+    } on Exception catch (e) {
+      logger(e, hint: "parseDays");
+      rethrow;
+    }
+  }
 }

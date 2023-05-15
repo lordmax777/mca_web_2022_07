@@ -34,6 +34,12 @@ class _$AppRouter extends RootStackRouter {
         child: const Home(),
       );
     },
+    TestRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const TestPage(),
+      );
+    },
     UsersListRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
@@ -188,6 +194,11 @@ class _$AppRouter extends RootStackRouter {
           guards: [authGuard],
           children: [
             RouteConfig(
+              TestRoute.name,
+              path: 'test',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
               UsersListRoute.name,
               path: '',
               parent: HomeRoute.name,
@@ -315,6 +326,18 @@ class HomeRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'HomeRoute';
+}
+
+/// generated route for
+/// [TestPage]
+class TestRoute extends PageRouteInfo<void> {
+  const TestRoute()
+      : super(
+          TestRoute.name,
+          path: 'test',
+        );
+
+  static const String name = 'TestRoute';
 }
 
 /// generated route for
