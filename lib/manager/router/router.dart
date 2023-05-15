@@ -12,10 +12,12 @@ import '../../pages/auth/login_page.dart';
 import '../../pages/inventory/inventory_list_page.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/tiemsheet/tiemesheet_list_page.dart';
+import '../../pages/tiemsheet/timesheet_user_shift_details_page.dart';
 import '../../pages/user/user_details_page.dart';
 import '../models/checklist_template_md.dart';
 import '../models/contract_md.dart';
 import '../models/property_md.dart';
+import '../models/timesheet_dep_md.dart';
 
 part 'router.gr.dart';
 
@@ -49,6 +51,8 @@ part 'router.gr.dart';
       AutoRoute(page: QuotesListPage, path: "quotes"),
       AutoRoute(page: ApprovalTemplatePage, path: "approval"),
       AutoRoute(page: InventoryListPage, path: "inventory"),
+      AutoRoute(
+          page: TimesheetUserShiftDetailsPage, path: "timesheet-shift-details"),
     ]),
   ],
 )

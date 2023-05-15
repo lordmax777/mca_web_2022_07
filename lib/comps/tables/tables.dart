@@ -627,3 +627,82 @@ class InventoryBodyTable extends StatelessWidget {
     );
   }
 }
+
+class TimesheetListDepTable extends StatelessWidget {
+  final List<PlutoColumn> cols;
+  final List<PlutoRow> rows;
+  final void Function(PlutoGridStateManager) onSmReady;
+  final void Function(PlutoGridOnChangedEvent)? onChanged;
+
+  const TimesheetListDepTable(
+      {Key? key,
+      required this.rows,
+      required this.onSmReady,
+      this.onChanged,
+      required this.cols})
+      : super(key: key);
+
+  static Widget defaultTextWidget(String text) {
+    return KText(
+      text: text.contains("null") ? "-" : text,
+      textColor: ThemeColors.gray2,
+      fontWeight: FWeight.regular,
+      fontSize: 14,
+      isSelectable: false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<PlutoColumn> _cols = [];
+    for (PlutoColumn col in cols) {
+      col.enableContextMenu = false;
+      col.backgroundColor = ThemeColors.gray12;
+      col.enableDropToResize = false;
+      col.enableColumnDrag = false;
+      col.renderer ??= (ctx) {
+        return KText(
+          text: ctx.cell.value,
+          textColor: ThemeColors.gray2,
+          fontWeight: FWeight.regular,
+          fontSize: 14,
+          isSelectable: false,
+        );
+      };
+      _cols.add(col);
+    }
+    var _w = MediaQuery.of(context).size.width;
+    var _tableSize = 0.0;
+    for (var c in cols) {
+      _tableSize += c.width;
+    }
+    bool isEqual = _tableSize == _w;
+
+    double _h = 625;
+
+    return SizedBox(
+      height: _h,
+      child: PlutoGrid(
+        configuration: PlutoGridConfiguration(
+            style: PlutoGridStyleConfig(
+              columnHeight: 48.0,
+              rowHeight: 48.0,
+              borderColor: ThemeColors.gray11,
+              gridBorderColor: ThemeColors.gray11,
+              activatedBorderColor: ThemeColors.transparent,
+              activatedColor: ThemeColors.blue12.withOpacity(0.5),
+              columnTextStyle: ThemeText.tableColumnTextStyle,
+              enableRowColorAnimation: true,
+            ),
+            columnSize: PlutoGridColumnSizeConfig(
+                autoSizeMode: isEqual
+                    ? PlutoAutoSizeMode.none
+                    : PlutoAutoSizeMode.scale)),
+        columns: _cols,
+        rows: rows,
+        onChanged: onChanged,
+        onLoaded: (e) => onSmReady(e.stateManager),
+      ),
+    );
+  }
+}
