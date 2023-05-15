@@ -1,6 +1,9 @@
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/models/property_md.dart';
+
+import 'company_md.dart';
 
 class ClientInfoMd {
   // {
@@ -138,7 +141,7 @@ class ClientInfoMd {
   }
 
   // init
-  static ClientInfoMd init(
+  factory ClientInfoMd.init(
       {int? id,
       String? name,
       String? contact,
@@ -160,11 +163,13 @@ class ClientInfoMd {
       String? currencyId,
       String? paymentMethodId,
       int? payingDays}) {
+    CompanyMd companyInfo = GeneralController.to.companyInfo;
+
     return ClientInfoMd(
       id: id ?? 0,
       name: name ?? '',
-      currencyId: currencyId ?? '',
-      payingDays: payingDays ?? 0,
+      currencyId: companyInfo.currency.code,
+      payingDays: companyInfo.paying_days,
       active: active ?? false,
       notes: notes ?? '',
       address: address ?? Address.init(),
@@ -181,7 +186,7 @@ class ClientInfoMd {
       companyRegNumber: companyRegNumber ?? '',
       VATnumber: VATnumber ?? '',
       VATcalc: VATcalc ?? false,
-      paymentMethodId: paymentMethodId ?? '',
+      paymentMethodId: companyInfo.payment_method_id.toString(),
     );
   }
 

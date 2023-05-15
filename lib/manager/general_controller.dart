@@ -1,12 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/app.dart';
+import 'package:mca_web_2022_07/comps/custom_loading_widget.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/redux/middlewares/auth_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
-import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:mca_web_2022_07/utils/constants.dart';
-
+import 'redux/middlewares/users_middleware.dart';
 import 'redux/states/users_state/users_state.dart';
 
 class GeneralController extends GetxController {
@@ -16,7 +18,9 @@ class GeneralController extends GetxController {
 
   LoggedInUserMd get loggedInUserValue => loggedInUser.value;
 
-  set setLoggedInUser(LoggedInUserMd value) => loggedInUser.value = value;
+  set setLoggedInUser(LoggedInUserMd value) {
+    loggedInUser.value = value;
+  }
 
   final Rx<CompanyMd> _companyInfo = Rx<CompanyMd>(CompanyMd.init());
 

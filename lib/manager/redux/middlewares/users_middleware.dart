@@ -97,7 +97,7 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
 
 Future<void> showLoading({bool? barrierDismissible = false}) async {
   final TalkerController talker = TalkerController.to;
-  showDialog(
+  return showDialog(
     barrierDismissible: barrierDismissible!,
     context: appRouter.navigatorKey.currentContext!,
     builder: (context) {
