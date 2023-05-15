@@ -3,49 +3,52 @@ import 'package:mca_web_2022_07/manager/models/users_list.dart';
 import '../../pages/scheduling/popup_forms/client_form.dart';
 
 class LocationAddress {
-  int? id;
-  String? name;
-  bool? anywhere;
-  Address? address;
-  Phone? phone;
+  int id;
+  String name;
+  bool anywhere;
+  Address address;
+  Phone phone;
   String? email;
-  bool? active;
-  bool? fixedipaddress;
-  List<IpAddress>? ipaddress;
-  List<Members>? members;
+  bool active;
+  bool fixedipaddress;
+  List<IpAddress> ipaddress;
+  List<Members> members;
 
   LocationAddress(
-      {this.id,
-      this.name,
-      this.anywhere,
-      this.address,
-      this.phone,
+      {required this.id,
+      required this.name,
+      required this.anywhere,
+      required this.address,
+      required this.phone,
       this.email,
-      this.active,
-      this.fixedipaddress,
-      this.ipaddress,
-      this.members});
+      required this.active,
+      required this.fixedipaddress,
+      required this.ipaddress,
+      required this.members});
 
-  LocationAddress.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    anywhere = json['anywhere'];
-    address = Address.fromJson(json['address']);
-    phone = Phone.fromJson(json['phone']);
-    email = json['email'];
-    active = json['active'];
-    fixedipaddress = json['fixedipaddress'];
-    if (json['ipaddress'] != null) {
-      ipaddress = <IpAddress>[];
-      json['ipaddress'].forEach((v) {
-        ipaddress!.add(IpAddress.fromJson(v));
-      });
-    }
-    if (json['members'] != null) {
-      members = <Members>[];
-      json['members'].forEach((v) {
-        members!.add(Members.fromJson(v));
-      });
+  factory LocationAddress.fromJson(Map<String, dynamic> json) {
+    try {
+      return LocationAddress(
+        id: json['id'],
+        name: json['name'],
+        anywhere: json['anywhere'],
+        address: Address.fromJson(json['address']),
+        phone: Phone.fromJson(json['phone']),
+        email: json['email'],
+        active: json['active'] ?? false,
+        fixedipaddress: json['fixedipaddress'] ?? false,
+        ipaddress: json['ipaddress'] != null
+            ? (json['ipaddress'] as List)
+                .map((e) => IpAddress.fromJson(e))
+                .toList()
+            : [],
+        members: json['members'] != null
+            ? (json['members'] as List).map((e) => Members.fromJson(e)).toList()
+            : [],
+      );
+    } on TypeError catch (e) {
+      print("LocationAddress.fromJson: ${e.stackTrace}");
+      rethrow;
     }
   }
 
@@ -59,52 +62,65 @@ class LocationAddress {
     data['email'] = email;
     data['active'] = active;
     data['fixedipaddress'] = fixedipaddress;
-    if (members != null) {
-      data['members'] = members!.map((v) => v.toJson()).toList();
-    }
-    if (ipaddress != null) {
-      data['ipaddress'] = ipaddress!.map((v) => v.toJson()).toList();
-    }
+    data['members'] = members.map((v) => v.toJson()).toList();
+    data['ipaddress'] = ipaddress.map((v) => v.toJson()).toList();
     return data;
   }
 
   factory LocationAddress.all() {
-    return LocationAddress(name: "All");
+    return LocationAddress(
+      name: "All",
+      id: 0,
+      anywhere: false,
+      address: Address.init(),
+      phone: Phone.init(),
+      active: false,
+      ipaddress: [],
+      fixedipaddress: false,
+      members: [],
+    );
   }
 }
 
 class Address {
-  String? line1;
-  String? line2;
-  String? city;
-  String? county;
-  String? country;
-  String? postcode;
-  num? latitude;
-  num? longitude;
-  num? radius;
+  String line1;
+  String line2;
+  String city;
+  String county;
+  String country;
+  String postcode;
+  num latitude;
+  num longitude;
+  num radius;
 
   Address(
-      {this.line1,
-      this.line2,
-      this.city,
-      this.county,
-      this.country,
-      this.postcode,
-      this.latitude,
-      this.longitude,
-      this.radius});
+      {required this.line1,
+      required this.line2,
+      required this.city,
+      required this.county,
+      required this.country,
+      required this.postcode,
+      required this.latitude,
+      required this.longitude,
+      required this.radius});
 
-  Address.fromJson(Map<String, dynamic> json) {
-    line1 = json['line1'];
-    line2 = json['line2'];
-    city = json['city'];
-    county = json['county'];
-    country = json['country'];
-    postcode = json['postcode'];
-    latitude = json['latitude'];
-    longitude = json['longitude'];
-    radius = json['radius'];
+  factory Address.fromJson(Map<String, dynamic> json) {
+    try {
+      return Address(
+        line1: json['line1'],
+        line2: json['line2'],
+        city: json['city'],
+        county: json['county'],
+        country: json['country'],
+        postcode: json['postcode'],
+        latitude: json['latitude'] ?? 0,
+        longitude: json['longitude'] ?? 0,
+        radius: json['radius'] ?? 0,
+      );
+    } on TypeError catch (e) {
+      print("Address.fromJson: ${e.stackTrace}");
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -138,45 +154,57 @@ class Address {
   // from ClientAddressForm
   factory Address.fromClientAddressForm(ClientAddressForm clientAddressForm) {
     return Address(
-      line1: clientAddressForm.addressLine1,
-      line2: clientAddressForm.addressLine2,
-      city: clientAddressForm.addressCity,
-      county: clientAddressForm.addressCounty,
-      country: clientAddressForm.addressCountryId,
-      postcode: clientAddressForm.addressPostcode,
-      latitude: clientAddressForm.latitude,
-      longitude: clientAddressForm.longitude,
-      radius: clientAddressForm.radius,
+      line1: clientAddressForm.addressLine1 ?? "",
+      line2: clientAddressForm.addressLine2 ?? "",
+      city: clientAddressForm.addressCity ?? "",
+      county: clientAddressForm.addressCounty ?? "",
+      country: clientAddressForm.addressCountryId ?? "",
+      postcode: clientAddressForm.addressPostcode ?? "",
+      latitude: clientAddressForm.latitude ?? 0,
+      longitude: clientAddressForm.longitude ?? 0,
+      radius: clientAddressForm.radius ?? 0,
     );
   }
 
   // from LocationAddress
   factory Address.fromLocationAddress(LocationAddress locationAddress) {
-    return Address(
-      line1: locationAddress.address!.line1,
-      line2: locationAddress.address!.line2,
-      city: locationAddress.address!.city,
-      county: locationAddress.address!.county,
-      country: locationAddress.address!.country,
-      postcode: locationAddress.address!.postcode,
-      latitude: locationAddress.address!.latitude,
-      longitude: locationAddress.address!.longitude,
-      radius: locationAddress.address!.radius,
-    );
+    try {
+      return Address(
+        line1: locationAddress.address!.line1,
+        line2: locationAddress.address!.line2,
+        city: locationAddress.address!.city,
+        county: locationAddress.address!.county,
+        country: locationAddress.address!.country,
+        postcode: locationAddress.address!.postcode,
+        latitude: locationAddress.address!.latitude,
+        longitude: locationAddress.address!.longitude,
+        radius: locationAddress.address!.radius,
+      );
+    } on TypeError catch (e) {
+      print("Address.fromLocationAddress:${e.stackTrace}");
+      rethrow;
+    }
   }
 }
 
 class Phone {
-  String? landline;
-  String? mobile;
-  String? fax;
+  String landline;
+  String mobile;
+  String fax;
 
-  Phone({this.landline, this.mobile, this.fax});
+  Phone({required this.landline, required this.mobile, required this.fax});
 
-  Phone.fromJson(Map<String, dynamic> json) {
-    landline = json['landline'];
-    mobile = json['mobile'];
-    fax = json['fax'];
+  factory Phone.fromJson(Map<String, dynamic> json) {
+    try {
+      return Phone(
+        landline: json['landline'],
+        mobile: json['mobile'],
+        fax: json['fax'],
+      );
+    } on TypeError catch (e) {
+      print("Phone.fromJson: ${e.stackTrace}");
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -186,19 +214,31 @@ class Phone {
     data['fax'] = fax;
     return data;
   }
+
+  // init
+  factory Phone.init() {
+    return Phone(landline: "", mobile: "", fax: "");
+  }
 }
 
 class Members {
-  String? name;
-  int? min;
+  String name;
+  int min;
   int? max;
 
-  Members({this.name, this.min, this.max});
+  Members({required this.name, required this.min, required this.max});
 
-  Members.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    min = json['min'];
-    max = json['max'];
+  factory Members.fromJson(Map<String, dynamic> json) {
+    try {
+      return Members(
+        name: json['name'],
+        min: json['min'],
+        max: json['max'],
+      );
+    } on TypeError catch (e) {
+      print("Memebers.fromJson: ${e.stackTrace}");
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -212,23 +252,34 @@ class Members {
 
 class IpAddress {
   //{id: 33, locationId: 167, ipAddress: 115.91.214.12, startTime: {date: 2022-11-09 06:25:49.000000, timezone_type: 3, timezone: UTC}, endTime: null}
-  int? id;
-  String? locationId;
-  String? ipAddress;
-  LastTime? startTime;
+  int id;
+  String locationId;
+  String ipAddress;
+  LastTime startTime;
   LastTime? endTime;
 
-  IpAddress(
-      {this.id, this.locationId, this.ipAddress, this.startTime, this.endTime});
+  IpAddress({
+    required this.id,
+    required this.locationId,
+    required this.ipAddress,
+    required this.startTime,
+    required this.endTime,
+  });
 
-  IpAddress.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    locationId = json['locationId'];
-    ipAddress = json['ipAddress'];
-    startTime =
-        json['startTime'] != null ? LastTime.fromJson(json['startTime']) : null;
-    endTime =
-        json['endTime'] != null ? LastTime.fromJson(json['endTime']) : null;
+  factory IpAddress.fromJson(Map<String, dynamic> json) {
+    try {
+      return IpAddress(
+        id: json['id'],
+        locationId: json['locationId'],
+        ipAddress: json['ipAddress'],
+        startTime: LastTime.fromJson(json['startTime']),
+        endTime:
+            json['endTime'] != null ? LastTime.fromJson(json['endTime']) : null,
+      );
+    } on TypeError catch (e) {
+      print("IpAddress.fromJson: ${e.stackTrace}");
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {

@@ -244,6 +244,7 @@ class OpenDrawerAction {
   }
 }
 
+///Must always be called after all fetched list actions
 class GetAllParamListAction {}
 
 class GetWarehousesAction {

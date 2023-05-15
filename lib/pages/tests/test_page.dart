@@ -1,3 +1,4 @@
+import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 
 import '../../manager/models/list_all_md.dart';
@@ -26,6 +27,20 @@ class TestPage extends StatelessWidget {
     // }
   }
 
+  void testLocations() async {
+    final ApiResponse res =
+        await restClient().getLocationsOrSingle(id: 0).nocodeErrorHandler();
+    if (res.success) {
+      final List<LocationAddress> list = [];
+      list.addAll(res.data
+          .map<LocationAddress>((e) => LocationAddress.fromJson(e))
+          .toList());
+      for (var e in list) {
+        print(e);
+      }
+    }
+  }
+
   void _testShifts() {
     for (var shift in allShifts) {}
   }
@@ -35,10 +50,12 @@ class TestPage extends StatelessWidget {
     return PageWrapper(
       child: TableWrapperWidget(
         child: Center(
-          child: Column(
+          child: SpacedColumn(
+            verticalSpace: 32,
             children: [
               _button(_testProperties, title: 'Test Properties'),
               _button(_testShifts, title: 'Test Shifts'),
+              _button(testLocations, title: 'Test Locations'),
             ],
           ),
         ),

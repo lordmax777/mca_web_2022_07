@@ -178,7 +178,6 @@ class UserRes {
   }
 }
 
-@JsonSerializable(anyMap: true)
 class LastTime {
   String date;
   int timezone_type;
@@ -191,8 +190,18 @@ class LastTime {
     required this.timezone_type,
   });
 
-  factory LastTime.fromJson(Map<String, dynamic> json) =>
-      _$LastTimeFromJson(json);
+  factory LastTime.fromJson(Map<String, dynamic> json) {
+    try {
+      return LastTime(
+        date: json['date'] as String,
+        timezone_type: json['timezone_type'] as int,
+        timezone: json['timezone'] as String,
+      );
+    } on TypeError catch (e) {
+      print("LasTime.fromJson: ${e.stackTrace}");
+      rethrow;
+    }
+  }
 
   Map<String, dynamic> toJson() => _$LastTimeToJson(this);
 

@@ -92,7 +92,6 @@ class DioClientForRetrofit {
     if (customInterceptors != null && customInterceptors.isNotEmpty) {
       dio.interceptors.addAll(customInterceptors);
     }
-    // _dio.interceptors.add(tokenInterceptor);
     BaseOptions options = BaseOptions(
       baseUrl: baseUrl ?? Constants.apiBaseUrl,
       headers: headers,
@@ -118,15 +117,28 @@ final loggerInterceptor =
 
   handler.next(options); //continue
 }, onResponse: (Response response, handler) async {
-  bool skip = false;
-  if (response.requestOptions.path == "/fe/lists") skip = true;
+  try {
+    bool skip = false;
+    String data = response.data.toString();
+    if (response.requestOptions.path == "/fe/lists") skip = true;
 
-  if (!skip) {
-    Logger.i(
-        "| [API_Response] [code ${response.statusCode}]: ${response.data}"); //:
+    if (!skip) {
+      if (data.length > 300) {
+        data = data.substring(0, 300);
+      }
+      Logger.i("| [API_Response] [code ${response.statusCode}]: $data"); //:
+    }
+    handler.next(response);
+  } catch (e) {
+    bool skip = false;
+    String data = response.data.toString();
+    if (response.requestOptions.path == "/fe/lists") skip = true;
+
+    if (!skip) {
+      Logger.i("| [API_Response] [code ${response.statusCode}]: $data"); //:
+    }
+    handler.next(response);
   }
-  handler.next(response);
-  // return response; // continue
 }, onError: (DioError error, handler) async {
   Logger.e("| [API_Error]: ${error.error}: ${error.response?.toString()}");
   handler.next(error); //continue

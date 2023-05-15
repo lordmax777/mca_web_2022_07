@@ -203,12 +203,15 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
             type: ClientFormType.quoteLocation,
             clientInfo: ClientInfoMd.init(
                 address: Address(
-              line1: data.quote.addressLine1,
-              line2: data.quote.addressLine2,
-              city: data.quote.addressCity,
-              county: data.quote.addressCounty,
-              postcode: data.quote.addressPostcode,
-              country: data.quote.addressCountry,
+              line1: data.quote.addressLine1 ?? "",
+              line2: data.quote.addressLine2 ?? "",
+              city: data.quote.addressCity ?? "",
+              county: data.quote.addressCounty ?? "",
+              postcode: data.quote.addressPostcode ?? "",
+              country: data.quote.addressCountry ?? "",
+              latitude: 0,
+              longitude: 0,
+              radius: 0,
             ))));
     if (res == null) return;
     setState(() {
@@ -227,12 +230,15 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
             type: ClientFormType.quoteLocation,
             clientInfo: ClientInfoMd.init(
                 address: Address(
-              line1: data.quote.workAddressLine1,
-              line2: data.quote.workAddressLine2,
-              city: data.quote.workAddressCity,
-              county: data.quote.workAddressCounty,
-              postcode: data.quote.workAddressPostcode,
-              country: data.quote.workAddressCountry,
+              line1: data.quote.workAddressLine1 ?? "",
+              line2: data.quote.workAddressLine2 ?? "",
+              city: data.quote.workAddressCity ?? "",
+              county: data.quote.workAddressCounty ?? "",
+              postcode: data.quote.workAddressPostcode ?? "",
+              country: data.quote.workAddressCountry ?? "",
+              latitude: 0,
+              longitude: 0,
+              radius: 0,
             ))));
     if (res == null) return;
     setState(() {
