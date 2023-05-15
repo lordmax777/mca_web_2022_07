@@ -26,6 +26,8 @@ class UserRes {
   dynamic locked;
   String fullname;
 
+  bool get isOpenShiftResource => id == -10;
+
   @JsonKey(ignore: true)
   late Color userRandomBgColor;
 
@@ -82,6 +84,36 @@ class UserRes {
         firstName: "All",
         id: -1,
         title: "");
+  }
+
+  factory UserRes.init({
+    int? id,
+    String? username,
+    String? fullname,
+    String? firstName,
+    String? lastName,
+  }) {
+    return UserRes(
+        username: username ?? "",
+        loginRequired: false,
+        locationAdmin: false,
+        lastStatus: "",
+        lastName: lastName ?? "",
+        groupAdmin: false,
+        fullname: fullname ?? "",
+        firstName: firstName ?? "",
+        id: id ?? -1,
+        title: "");
+  }
+
+  factory UserRes.openShiftResource() {
+    return UserRes.init(
+      id: -10,
+      firstName: "Open",
+      fullname: "Open Shift",
+      lastName: "Shift",
+      username: "Open Shift",
+    );
   }
 
   factory UserRes.fromJson(Map<String, dynamic> json) =>

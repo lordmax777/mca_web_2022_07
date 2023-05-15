@@ -1,21 +1,15 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
-import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
+import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../../manager/models/location_item_md.dart';
-import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
-import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
-import '../popup_forms/job_form.dart';
 import '../scheduling_page.dart';
 
 class DailyViewCalendar extends StatelessWidget {
@@ -84,7 +78,7 @@ class DailyViewCalendar extends StatelessWidget {
               final appointment = calendarAppointmentDetails.appointments
                   .toList()
                   .first as Appointment?;
-              final ap = appointment?.id as AppointmentIdMd?;
+              final ap = appointment?.id as AllocationModel?;
               if (ap == null) {
                 return const SizedBox();
               }
@@ -95,7 +89,7 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   Widget _appWidget(Appointment appointment, BuildContext context) {
-    final ap = appointment.id as AppointmentIdMd;
+    final ap = appointment.id as AllocationModel;
     final location = ap.property;
     final user = ap.user;
     final formatter = DateFormat('h:mm a');
@@ -113,7 +107,7 @@ class DailyViewCalendar extends StatelessWidget {
             context,
             globalPosition: details.globalPosition,
             data: CreateShiftData(
-              editAppointment: appointment.id as AppointmentIdMd,
+              editAppointment: appointment.id as AllocationModel,
               date: appointment.startTime,
             ),
           );
@@ -122,7 +116,7 @@ class DailyViewCalendar extends StatelessWidget {
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4.0),
-            color: user.userRandomBgColor,
+            color: appointment.color,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
@@ -142,8 +136,8 @@ class DailyViewCalendar extends StatelessWidget {
 
   Widget _userWidget(UserRes user) {
     return Container(
-        decoration: const BoxDecoration(
-          border: Border(
+        decoration: BoxDecoration(
+          border: const Border(
             right: BorderSide(
               color: ThemeColors.gray11,
               width: 1,
@@ -153,6 +147,7 @@ class DailyViewCalendar extends StatelessWidget {
               width: 1,
             ),
           ),
+          color: user.isOpenShiftResource ? Colors.lime[200]! : null,
         ),
         padding: const EdgeInsets.only(left: 24.0),
         child: SpacedRow(
@@ -204,7 +199,7 @@ class DailyViewCalendar extends StatelessWidget {
   }
 
   CalendarDataSource getDataSource(ScheduleState state) {
-    dynamic users = state.userResources;
+    List<UserRes> users = [UserRes.openShiftResource(), ...state.userResources];
     return ShiftDataSource(state.getDayShifts,
         users.map<CalendarResource>((e) => CalendarResource(id: e)).toList());
   }

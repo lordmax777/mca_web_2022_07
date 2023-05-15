@@ -494,10 +494,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
         return DailyViewCalendar(day: day);
       case CalendarView.week:
       case CalendarView.timelineWeek:
-        return WeeklyViewCalendar(
-            lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
-      case CalendarView.month:
-        return MonthlyViewCalendar(month: firstDayOfMonth);
+      // return WeeklyViewCalendar(
+      //     lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
+      // case CalendarView.month:
+      //   return MonthlyViewCalendar(month: firstDayOfMonth);
       default:
         return const Center(
           child: Text("Cannot find calendar view"),

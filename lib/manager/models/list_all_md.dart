@@ -388,6 +388,29 @@ class ListShift {
       _$ListShiftFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListShiftToJson(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ListShift &&
+        other.id == id &&
+        other.name == name &&
+        other.location_id == location_id &&
+        other.active == active &&
+        other.client_id == client_id &&
+        other.warehouse_id == warehouse_id;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        location_id.hashCode ^
+        active.hashCode ^
+        client_id.hashCode ^
+        warehouse_id.hashCode;
+  }
 }
 
 @JsonSerializable()

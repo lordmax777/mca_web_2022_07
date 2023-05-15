@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
@@ -55,7 +56,7 @@ class _JobEditFormState extends State<JobEditForm>
   bool get hasWorkAddress => data.hasWorkAddress;
   Address? get workAddress => data.workAddress;
   QuoteInfoMd? get fetchedQuote => data.fetchedQuote;
-  AppointmentIdMd? get appointment => data.editAppointment;
+  AllocationModel? get appointment => data.editAppointment;
   bool get isUpdate => !isCreate;
 
   //Setters
@@ -107,9 +108,9 @@ class _JobEditFormState extends State<JobEditForm>
             final res = await restClient()
                 .getQuoteBy(
                   0,
-                  date: appointment!.allocation.dateTimeDate!.formatDateForApi,
-                  location_id: appointment!.property.locationId!,
-                  shift_id: appointment!.property.id!,
+                  date: appointment!.date,
+                  location_id: appointment!.property.locationId,
+                  shift_id: appointment!.property.id,
                 )
                 .nocodeErrorHandler();
             if (res.success) {

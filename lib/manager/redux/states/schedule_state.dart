@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../../pages/scheduling/models/allocation_model.dart';
 import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
-import '../../models/shift_md.dart';
 
 enum SidebarType { user, location }
 
@@ -135,44 +135,6 @@ class UpdateScheduleState {
   });
 }
 
-class AppointmentIdMd {
-  final PropertiesMd property;
-  final UserRes user;
-  final ShiftMd allocation;
-
-  AppointmentIdMd({
-    required this.property,
-    required this.user,
-    required this.allocation,
-  });
-
-  AppointmentIdMd copyWith({
-    PropertiesMd? property,
-    UserRes? user,
-    ShiftMd? allocation,
-    PropertiesMd? location,
-  }) {
-    return AppointmentIdMd(
-      property: property ?? this.property,
-      user: user ?? this.user,
-      allocation: allocation ?? this.allocation,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is AppointmentIdMd &&
-        other.property == property &&
-        other.user == user &&
-        other.allocation == allocation;
-  }
-
-  @override
-  int get hashCode => property.hashCode ^ user.hashCode ^ allocation.hashCode;
-}
-
 class SCDragEndAction {
   final AppointmentDragEndDetails details;
   SCDragEndAction(this.details);
@@ -258,7 +220,7 @@ class SCChangeSidebarType {}
 // Multiple Different 0
 
 class SCCopyAllocationAction {
-  final AppointmentIdMd allocation;
+  final AllocationModel allocation;
   final DateTime targetDate;
   final dynamic fetchAction;
   final int? targetUserId;
@@ -276,7 +238,7 @@ class SCCopyAllocationAction {
 }
 
 class SCCopyAllAllocationAction {
-  final AppointmentIdMd allocation;
+  final AllocationModel allocation;
   final DateTime targetDate;
   final dynamic fetchAction;
   final int? targetUserId;
@@ -296,7 +258,7 @@ class SCCopyAllAllocationAction {
 }
 
 class SCRemoveAllocationAction<T> {
-  final AppointmentIdMd allocation;
+  final AllocationModel allocation;
   final dynamic fetchAction;
 
   const SCRemoveAllocationAction({

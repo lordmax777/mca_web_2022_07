@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -110,7 +111,7 @@ class CreateShiftData extends CreateShiftDataType {
 
   int? shiftId;
 
-  AppointmentIdMd? editAppointment;
+  AllocationModel? editAppointment;
 
   QuoteInfoMd? _fetchedQuote;
   QuoteInfoMd? get fetchedQuote => _fetchedQuote;
@@ -188,16 +189,16 @@ class CreateShiftData extends CreateShiftDataType {
     if (editAppointment != null) {
       final id = editAppointment!;
       final p = id.property;
-      final sh = id.allocation;
+      final sh = id.shift;
       shiftId = p.id;
       client = appStore.state.generalState.clientInfos
           .firstWhereOrNull((element) => element.id == p.clientId);
       location = appStore.state.generalState.locations
           .firstWhereOrNull((element) => element.id == p.locationId);
-      timingInfo.startDate = sh.dateTimeDate;
-      timingInfo.startTime = p.startTime?.formattedTime;
-      timingInfo.endTime = p.finishTime?.formattedTime;
-      isActive = p.active ?? false;
+      timingInfo.startDate = id.dateAsDateTime;
+      timingInfo.startTime = p.startTime.formattedTime;
+      timingInfo.endTime = p.finishTime.formattedTime;
+      isActive = p.active;
     }
   }
 

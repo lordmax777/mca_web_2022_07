@@ -21,10 +21,7 @@ class TestPage extends StatelessWidget {
       list.addAll(res.data['shifts']
           .map<PropertiesMd>((e) => PropertiesMd.fromJson(e))
           .toList());
-      for (var e in list) {
-        print(e.title);
-        print(e.parsedDays);
-      }
+      for (var e in list) {}
     }
     // }
   }
