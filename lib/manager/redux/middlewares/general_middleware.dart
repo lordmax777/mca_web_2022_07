@@ -68,7 +68,6 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _onCreateNewStorageItemAction(store.state, action);
       case OnCreateNewClientTap:
         return _onCreateNewClientTap(store.state, action);
-
       // case OnAddLocationAction:
       //   return _onAddLocationAction(store.state, action);
       // case OnAddClientAction:
@@ -82,6 +81,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _createJobAction(store.state, action);
       case ChangeQuoteStatusAction:
         return _changeQuoteStatusAction(store.state, action);
+      case GetTimesheetDepListAction:
+        return _getTimesheetDepListAction(store.state, action);
       default:
         return next(action);
     }
@@ -770,3 +771,6 @@ Future<ApiResponse?> _changeQuoteStatusAction(
     throw Exception("Cannot change Quote status ${e.toString()}");
   }
 }
+
+Future<ApiResponse?> _getTimesheetDepListAction(
+    AppState state, GetTimesheetDepListAction action) async {}

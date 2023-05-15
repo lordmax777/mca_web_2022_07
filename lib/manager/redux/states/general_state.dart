@@ -18,6 +18,7 @@ import '../../model_exporter.dart';
 import '../../models/approval_md.dart';
 import '../../models/inventory_md.dart';
 import '../../models/location_item_md.dart';
+import '../../models/timesheet_dep_md.dart';
 import '../../rest/nocode_helpers.dart';
 import '../../rest/rest_client.dart';
 import '../../router/router.dart';
@@ -124,6 +125,7 @@ class GeneralState {
   List? get approvalShiftRelease => approvals.releasable;
 
   final List<InventoryMd> inventoryList;
+  final List<TimesheetDepMd> timesheetDepList;
 
   GeneralState({
     required this.paramList,
@@ -138,6 +140,7 @@ class GeneralState {
     required this.quotes,
     required this.approvals,
     required this.inventoryList,
+    required this.timesheetDepList,
   });
 
   CodeMap<String> findCountryByName(String? name) {
@@ -183,6 +186,7 @@ class GeneralState {
       quotes: [],
       approvals: ApprovalMd(pendingUserQualifications: [], requests: []),
       inventoryList: [],
+      timesheetDepList: [],
     );
   }
 
@@ -199,6 +203,7 @@ class GeneralState {
     List<QuoteInfoMd>? quotes,
     ApprovalMd? approvals,
     List<InventoryMd>? inventoryList,
+    List<TimesheetDepMd>? timesheetDepList,
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
@@ -213,6 +218,7 @@ class GeneralState {
       quotes: quotes ?? this.quotes,
       approvals: approvals ?? this.approvals,
       inventoryList: inventoryList ?? this.inventoryList,
+      timesheetDepList: timesheetDepList ?? this.timesheetDepList,
     );
   }
 }
@@ -231,6 +237,7 @@ class UpdateGeneralStateAction {
   final List<QuoteInfoMd>? quotes;
   final ApprovalMd? approvals;
   final List<InventoryMd>? inventoryList;
+  final List<TimesheetDepMd>? timesheetDepList;
 
   UpdateGeneralStateAction({
     this.paramList,
@@ -246,6 +253,7 @@ class UpdateGeneralStateAction {
     this.quotes,
     this.approvals,
     this.inventoryList,
+    this.timesheetDepList,
   });
 }
 
@@ -662,4 +670,8 @@ class ChangeQuoteStatusAction {
   final String status;
 
   ChangeQuoteStatusAction({required this.status, required this.quoteId});
+}
+
+class GetTimesheetDepListAction {
+  GetTimesheetDepListAction();
 }
