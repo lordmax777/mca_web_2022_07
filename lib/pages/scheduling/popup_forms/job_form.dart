@@ -498,44 +498,62 @@ class _JobEditFormState extends State<JobEditForm>
       week = "$week1\n$week2";
     }
 
-    List<LocationAddress> locations = [];
+    List<LocationAddress> locations = [
+      ...state.generalState.clientBasedLocations(data.client?.id),
+    ];
+    //find and add the location which is equal to tempAllowedLocationId
+    locations.addAll(state.generalState.locations
+        .where((element) =>
+            element.id == data.tempAllowedLocationId &&
+            !locations.contains(element))
+        .toList());
+    locations.addAll(
+      state.generalState.locations
+          .where((element) =>
+              element.id == data.tempAllowedLocIdWorkAddress &&
+              !locations.contains(element))
+          .toList(),
+    );
+    logger("Locations: ${state.generalState.locations.length}");
+    logger(
+        "Locations: ${state.generalState.clientBasedLocations(data.client?.id).length}");
 
-    // using this we find the locations which can be used by the selected client
-    List<ListShift> selectedClientShifts = [];
-    if (type == ScheduleCreatePopupMenus.job) {
-      if (data.client?.id == null) {
-        selectedClientShifts = [];
-      }
-      selectedClientShifts = [
-        ...(state.generalState.shifts
-            .where((element) =>
-                element.client_id != null &&
-                element.client_id == data.client?.id)
-            .toList())
-      ];
-
-      if (data.client?.id == null) {
-        locations = [];
-      }
-      if (selectedClientShifts.isEmpty) locations = [];
-      locations = [
-        ...(state.generalState.locations
-            .where((element) => selectedClientShifts
-                .any((shift) => shift.location_id == element.id))
-            .toList()),
-        //find and add the location which is equal to tempAllowedLocationId
-        ...(state.generalState.locations
-            .where((element) =>
-                element.id == data.tempAllowedLocationId &&
-                !locations.contains(element))
-            .toList()),
-        ...(state.generalState.locations
-            .where((element) =>
-                element.id == data.tempAllowedLocIdWorkAddress &&
-                !locations.contains(element))
-            .toList()),
-      ];
-    }
+    // // using this we find the locations which can be used by the selected client
+    // List<ListShift> selectedClientShifts = [];
+    // if (type == ScheduleCreatePopupMenus.job) {
+    //   if (data.client?.id == null) {
+    //     selectedClientShifts = [];
+    //   }
+    //   selectedClientShifts = [
+    //     ...(state.generalState.shifts
+    //         .where((element) =>
+    //             element.client_id != null &&
+    //             element.client_id == data.client?.id)
+    //         .toList())
+    //   ];
+    //
+    //   if (data.client?.id == null) {
+    //     locations = [];
+    //   }
+    //   if (selectedClientShifts.isEmpty) locations = [];
+    //   locations = [
+    //     ...(state.generalState.locations
+    //         .where((element) => selectedClientShifts
+    //             .any((shift) => shift.location_id == element.id))
+    //         .toList()),
+    //     //find and add the location which is equal to tempAllowedLocationId
+    //     ...(state.generalState.locations
+    //         .where((element) =>
+    //             element.id == data.tempAllowedLocationId &&
+    //             !locations.contains(element))
+    //         .toList()),
+    //     ...(state.generalState.locations
+    //         .where((element) =>
+    //             element.id == data.tempAllowedLocIdWorkAddress &&
+    //             !locations.contains(element))
+    //         .toList()),
+    //   ];
+    // }
 
     return SizedBox(
       width: MediaQuery.of(context).size.width,

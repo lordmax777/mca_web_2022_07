@@ -33,6 +33,8 @@ class JobModel {
 
   TimingModel timingInfo = TimingModel();
 
+  Map<UserRes, double> addedChildren = {};
+
   //Getters
   bool get isCreate => allocation == null;
   bool get isUpdate => allocation != null;

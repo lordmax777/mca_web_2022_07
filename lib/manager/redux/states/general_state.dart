@@ -79,6 +79,27 @@ class GeneralState {
   List<PropertiesMd> get allSortedProperties => (properties.data ?? [])
     ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
   final List<LocationAddress> locations;
+  List<LocationAddress> clientBasedLocations(int? clientId) {
+    if (clientId == null) return [];
+    List<LocationAddress> locs = [];
+    List<ListShift> selectedClientShifts = [];
+    selectedClientShifts = [
+      ...(shifts
+          .where((element) =>
+              element.client_id != null && element.client_id == clientId)
+          .toList())
+    ];
+    if (selectedClientShifts.isEmpty) locs = [];
+    locs = [
+      ...(locations
+          .where((element) => selectedClientShifts
+              .any((shift) => shift.location_id == element.id))
+          .toList()),
+    ];
+
+    return locs;
+  }
+
   final List<ClientInfoMd> clientInfos;
 
   final List<QuoteInfoMd> quotes;
