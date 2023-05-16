@@ -82,6 +82,9 @@ class JobModel {
     client.currencyId = q.currencyId.toString();
     client.paymentMethodId = q.paymentMethodId.toString();
     client.notes = q.clientInfo?.notes;
+    if (q.clientId != null) {
+      client.id = q.clientId!;
+    }
     quoteComment = q.quoteComments;
     setAddress(q.addressModel, q.locationId);
     setWorkAddress(q.workAddressModel);
@@ -263,7 +266,7 @@ class JobModel {
       this.customStartDate,
       this.customEndDate,
       this.customResource,
-      this.type = ScheduleCreatePopupMenus.job}) {
+      this.type = ScheduleCreatePopupMenus.jobNew}) {
     if (customStartDate != null) {
       timingInfo.date = customStartDate!;
       timingInfo.startTime = TimeOfDay(

@@ -60,7 +60,7 @@ class DailyViewCalendar extends StatelessWidget {
                 case CalendarElement.calendarCell:
                   //Create shift
                   if (offset != null) {
-                    final jobCreated = await showFormsMenus(context,
+                    await showFormsMenus(context,
                         globalPosition: offset,
                         data: JobModel(
                           customStartDate: calendarTapDetails.date,

@@ -527,12 +527,14 @@ List<SimplePopupMenu> getPopupAppointmentMenus(
 }
 
 enum ScheduleCreatePopupMenus {
-  job,
+  jobNew,
+  jobUpdate,
   quote;
 
   String get label {
     switch (this) {
-      case ScheduleCreatePopupMenus.job:
+      case ScheduleCreatePopupMenus.jobNew:
+      case ScheduleCreatePopupMenus.jobUpdate:
         return "Job";
       case ScheduleCreatePopupMenus.quote:
         return "Quote";
@@ -547,7 +549,7 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
   return [
     if (hasEditJob)
       PopupMenuItem(
-        value: ScheduleCreatePopupMenus.job,
+        value: ScheduleCreatePopupMenus.jobUpdate,
         child: SpacedRow(
           crossAxisAlignment: CrossAxisAlignment.center,
           horizontalSpace: 8,
@@ -562,7 +564,7 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
         ),
       ),
     PopupMenuItem(
-      value: ScheduleCreatePopupMenus.job,
+      value: ScheduleCreatePopupMenus.jobNew,
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 8,
@@ -615,17 +617,29 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   right = MediaQuery.of(context).size.width - left;
   bottom = MediaQuery.of(context).size.height - top;
 
+  final bool hasEditJob = data.allocation != null;
+
   //Shows the menu
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
       context: context,
       position: RelativeRect.fromLTRB(left, top, right, bottom),
-      items: getPopupCreateMenus(hasEditJob: data.allocation != null));
+      items: getPopupCreateMenus(hasEditJob: hasEditJob));
+
+  logger(createTapResult, hint: "createTapResult");
 
   if (createTapResult == null) return null;
 
   //Shows the form based on the menu selected
   switch (createTapResult) {
-    case ScheduleCreatePopupMenus.job:
+    case ScheduleCreatePopupMenus.jobUpdate:
+      //Shows the form
+      final jobCreated = await showDialog<ApiResponse?>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => JobEditForm(data: data));
+      return jobCreated;
+    case ScheduleCreatePopupMenus.jobNew:
+      data.allocation = null;
       //Shows the form
       final jobCreated = await showDialog<ApiResponse?>(
           context: context,
@@ -633,7 +647,6 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
           builder: (context) => JobEditForm(data: data));
       return jobCreated;
     case ScheduleCreatePopupMenus.quote:
-      // TODO: Handle this case.
       return null;
   }
 }

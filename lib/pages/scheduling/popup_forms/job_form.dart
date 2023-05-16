@@ -220,7 +220,8 @@ class _JobEditFormState extends State<JobEditForm>
   // //Functions
   void _save(AppState state) async {
     switch (type) {
-      case ScheduleCreatePopupMenus.job:
+      case ScheduleCreatePopupMenus.jobNew:
+      case ScheduleCreatePopupMenus.jobUpdate:
         _saveJob(state);
         break;
       default:

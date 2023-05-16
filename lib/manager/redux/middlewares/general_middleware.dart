@@ -767,9 +767,8 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
     final client = data.client;
     final location = data.address;
     final timing = data.timingInfo;
-    final team = data.addedChildren;
     final quote = data.quote;
-    final bool isUpdate = !data.isCreate;
+    final bool isUpdate = data.isUpdate;
 
     if (!data.isClientSelected) {
       showError("Please select client");
@@ -790,10 +789,10 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
 
     //1. Create Quote
     ApiResponse? createdQuote;
-    // if (isUpdate) {
-    //   final ApiResponse? changedQuoteStatus = await appStore.dispatch(
-    //       ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
-    // }
+    if (isUpdate) {
+      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+          ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
+    }
     createdQuote = await appStore.dispatch(
       CreateQuoteAction(
         id: data.quote?.id ?? 0,
@@ -822,9 +821,6 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
         company: client.company,
         userIds: data.addedChildren,
       ),
-      //[{"user_id":803},{"user_id":806},{"user_id":805,
-      // "special_start_time":"13:00","special_finish_time":"18:00",
-      // "special_rate":7.99},{"user":1}]
     );
 
     //2. Change Quote Status to accepted
@@ -833,13 +829,12 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
       final ApiResponse? changedQuoteStatus = await appStore.dispatch(
           ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
       if (changedQuoteStatus?.success == true) {
-        // await appStore.dispatch(SCFetchShiftsAction(date: timing.date!));
-        // await appStore.dispatch(SCFetchShiftsWeekAction(
-        //   startDate: timing.date!.subtract(const Duration(days: 7)),
-        //   endDate: timing.date!,
-        // ));
-        // await appStore
-        //     .dispatch(SCFetchShiftsMonthAction(startDate: timing.date!));
+        appStore.dispatch(SCFetchShiftsAction(date: timing.date!));
+        appStore.dispatch(SCFetchShiftsWeekAction(
+          startDate: timing.date!.subtract(const Duration(days: 7)),
+          endDate: timing.date!,
+        ));
+        appStore.dispatch(SCFetchShiftsMonthAction(startDate: timing.date!));
 
         return changedQuoteStatus;
       } else {

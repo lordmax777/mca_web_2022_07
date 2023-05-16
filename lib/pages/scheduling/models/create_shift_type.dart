@@ -167,7 +167,7 @@ class CreateShiftData extends CreateShiftDataType {
     this.hasAltTime = false,
     this.shiftId,
     this.editAppointment,
-    this.type = ScheduleCreatePopupMenus.job,
+    this.type = ScheduleCreatePopupMenus.jobNew,
   }) {
     if (selectedClientId != null) {
       client = appStore.state.generalState.clientInfos
