@@ -48,7 +48,10 @@ class _JobEditFormState extends State<JobEditForm>
   DateTime? get date => data.date;
   // AllocationModel? get allocation => data.allocation;
 
+  //Temp vars
   bool resetLocation = true;
+  LocationAddress? tempAddress;
+  ClientInfoMd? tempClient;
 
   //Vars
   late final TabController _tabController;
@@ -224,7 +227,7 @@ class _JobEditFormState extends State<JobEditForm>
   // }
   //
   void _onCreateNewClient(AppState state) async {
-    final TimingModel? res = await showDialog(
+    final CreatedClientReturnValue? res = await showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
@@ -233,36 +236,67 @@ class _JobEditFormState extends State<JobEditForm>
           );
         });
     if (res == null) return;
-    // setState(() {
-    //   if (res.clientId != null) {
-    //     data.client = appStore.state.generalState.clientInfos
-    //         .firstWhereOrNull((element) => element.id == res.clientId);
-    //   }
-    //   if (res.locationId != null) {
-    //     data.tempAllowedLocationId = res.locationId;
-    //     data.selectedLocationId = res.locationId;
-    //     data.location = appStore.state.generalState.locations
-    //         .firstWhereOrNull((element) => element.id == res.locationId);
-    //   }
-    // });
+    setState(() {
+      resetLocation = false;
+    });
+    if (res.clientId != null) {
+      final foundClient = appStore.state.generalState.clientInfos
+          .firstWhereOrNull((element) => element.id == res.clientId);
+      if (foundClient != null) {
+        setState(() {
+          tempClient = foundClient;
+          data.setClient(foundClient);
+        });
+      }
+    }
+    if (res.locationId != null) {
+      final foundAddress = appStore.state.generalState.locations
+          .firstWhereOrNull((element) => element.id == res.locationId);
+      if (foundAddress != null) {
+        setState(() {
+          tempAddress = foundAddress;
+          data.setAddress(foundAddress.address);
+        });
+        Future.delayed(const Duration(milliseconds: 100), () {
+          setState(() {
+            resetLocation = true;
+          });
+        });
+      }
+    }
   }
 
-  //
-  // void _editInvoiceAddress() async {
-  //   final CreatedClientReturnValue? res = await appStore.dispatch(
-  //       OnCreateNewClientTap(context,
-  //           type: ClientFormType.location, clientInfo: data.client));
-  //   if (res == null) return;
-  //   setState(() {
-  //     if (res.locationId != null) {
-  //       data.tempAllowedLocationId = res.locationId;
-  //       data.selectedLocationId = res.locationId;
-  //       data.location = appStore.state.generalState.locations
-  //           .firstWhereOrNull((element) => element.id == res.locationId);
-  //     }
-  //   });
-  // }
-  //
+  void _editInvoiceAddress(AppState state) async {
+    final CreatedClientReturnValue? res = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return ClientForm(
+            state: state,
+            type: ClientFormType.location,
+          );
+        });
+    if (res == null) return;
+    setState(() {
+      resetLocation = false;
+    });
+    if (res.locationId != null) {
+      final foundAddress = appStore.state.generalState.locations
+          .firstWhereOrNull((element) => element.id == res.locationId);
+      if (foundAddress != null) {
+        setState(() {
+          tempAddress = foundAddress;
+          data.setAddress(foundAddress.address);
+        });
+      }
+    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      setState(() {
+        resetLocation = true;
+      });
+    });
+  }
+
   // void _editWorkAddress() async {
   //   final CreatedClientReturnValue? res = await appStore.dispatch(
   //       OnCreateNewClientTap(context,
@@ -482,11 +516,9 @@ class _JobEditFormState extends State<JobEditForm>
       ...state.generalState.clientBasedLocations(data.client.id),
     ];
     //find and add the location which is equal to tempAllowedLocationId
-    // locations.addAll(state.generalState.locations
-    //     .where((element) =>
-    //         element.id == data.tempAllowedLocationId &&
-    //         !locations.contains(element))
-    //     .toList());
+    if (tempAddress != null) {
+      locations.add(tempAddress!);
+    }
     // locations.addAll(
     //   state.generalState.locations
     //       .where((element) =>
@@ -531,11 +563,11 @@ class _JobEditFormState extends State<JobEditForm>
                                       height: 50,
                                       hintText: "Select Client",
                                       listItemWidget: (p0) => Text(p0.name),
-                                      onCleared: () {
-                                        setState(() {
-                                          data.setClient(null);
-                                        });
-                                      },
+                                      // onCleared: () {
+                                      //   setState(() {
+                                      //     data.setClient(null);
+                                      //   });
+                                      // },
                                       onSelected: (p0) {
                                         setState(() {
                                           resetLocation = false;
@@ -662,11 +694,11 @@ class _JobEditFormState extends State<JobEditForm>
                     verticalSpace: 16,
                     children: [
                       TitleContainer(
-                        // onEdit: !isClientSelected
-                        //     ? null
-                        //     : isUpdate
-                        //         ? null
-                        //         : (_editInvoiceAddress),
+                        onEdit: !isClientSelected
+                            ? null
+                            : isUpdate
+                                ? null
+                                : () => _editInvoiceAddress(state),
                         titleOverride: "Create New Location",
                         titleIcon: HeroIcons.add,
                         title: "Address",
@@ -696,11 +728,11 @@ class _JobEditFormState extends State<JobEditForm>
                                       height: 50,
                                       hintText: "Select Location",
                                       listItemWidget: (p0) => Text(p0.name),
-                                      onCleared: () {
-                                        setState(() {
-                                          data.setAddress(null);
-                                        });
-                                      },
+                                      // onCleared: () {
+                                      //   setState(() {
+                                      //     data.setAddress(null);
+                                      //   });
+                                      // },
                                       onSelected: (p0) {
                                         setState(() {
                                           data.setAddress(p0.address);

@@ -22,6 +22,11 @@ class CreatedClientReturnValue {
   final int? locationId;
 
   const CreatedClientReturnValue({this.clientId, this.locationId});
+
+  @override
+  String toString() {
+    return 'CreatedClientReturnValue(clientId: $clientId, locationId: $locationId)';
+  }
 }
 
 class ClientAddressForm {
@@ -146,6 +151,25 @@ class _ClientFormState extends State<ClientForm> {
       address.addressCountryId = countries
           .firstWhereOrNull((element) => element.code == company.country)
           ?.code;
+      if (kDebugMode) {
+        contactName.text = "Client";
+        companyName.text = "Company";
+        phoneNumber.text = "1234567890";
+        email.text = "kom@gmail.com";
+        payingDays = 20;
+        paymentMethodId = paymentMethods.first.id;
+        currencyId = currencies[2].id;
+        notes.text = "Client Notes";
+        address.addressLine1 = "Address Line 1";
+        address.addressLine2 = "Address Line 2";
+        address.addressCity = "City";
+        address.addressCounty = "County";
+        address.addressPostcode = "NW1 8PR";
+        address.addressCountryId = "GB";
+        address.latitude = 51.5333;
+        address.longitude = -0.1333;
+        address.radius = 10;
+      }
     });
   }
 
@@ -640,28 +664,10 @@ class _ClientFormState extends State<ClientForm> {
     return await Get.showOverlay(
       asyncFunction: () async {
         if (isClient) {
-          final ApiResponse createdClient =
-              await createClient(fetchAllParams: false);
+          final ApiResponse createdClient = await createClient();
           if (createdClient.success) {
-            final ApiResponse createdLocation = await createLocation();
-            if (createdLocation.success) {
-              context.popRoute(CreatedClientReturnValue(
-                  clientId: createdClient.data,
-                  locationId: createdLocation.data));
-            } else {
-              await appStore.dispatch(GetClientInfosAction());
-              //Location already exists
-              if (createdLocation.resCode == 409) {
-                context.popRoute(CreatedClientReturnValue(
-                    clientId: createdClient.data,
-                    locationId: createdLocation.data));
-                return;
-              }
-              showError(
-                  ApiHelpers.getRawDataErrorMessages(createdLocation).isEmpty
-                      ? "Error"
-                      : ApiHelpers.getRawDataErrorMessages(createdLocation));
-            }
+            context.popRoute(CreatedClientReturnValue(
+                clientId: createdClient.data, locationId: null));
           } else {
             showError(
               ApiHelpers.getRawDataErrorMessages(createdClient).isEmpty
@@ -760,7 +766,6 @@ class _ClientFormState extends State<ClientForm> {
     if (res.success) {
       if (fetchAllParams) {
         await appStore.dispatch(GetLocationAddressesAction());
-        await appStore.dispatch(GetClientInfosAction());
       }
     }
     return res;
@@ -782,6 +787,7 @@ class _ClientFormState extends State<ClientForm> {
           currencyId: currencyId!,
           paymentMethodId: paymentMethodId ?? 1,
           payingDays: payingDays!,
+          notes: notes.text,
         )
         .nocodeErrorHandler();
     if (res.success) {
