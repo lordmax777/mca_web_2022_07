@@ -95,11 +95,12 @@ class UsersMiddleware extends MiddlewareClass<AppState> {
   }
 }
 
-Future<void> showLoading({bool? barrierDismissible = false}) async {
+Future<void> showLoading(
+    {bool? barrierDismissible = false, BuildContext? context}) async {
   final TalkerController talker = TalkerController.to;
   return showDialog(
     barrierDismissible: barrierDismissible!,
-    context: appRouter.navigatorKey.currentContext!,
+    context: context ?? appRouter.navigatorKey.currentContext!,
     builder: (context) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,

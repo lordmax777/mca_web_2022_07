@@ -25,17 +25,16 @@ class AllocationModel {
     location = shift.location;
   }
 
-  factory AllocationModel.fromJson(Map<String, dynamic> json) {
+  factory AllocationModel.fromJson(Map<String, dynamic> json,
+      {required List<ListShift> shifts, List<UserRes>? users}) {
     try {
       final int shiftId = json['shiftId'];
-      final ListShift shift =
-          appStore.state.generalState.shifts.firstWhere((e) => e.id == shiftId);
+      final ListShift shift = shifts.firstWhere((e) => e.id == shiftId);
       final String date = json['date'];
       final int id = json['id'];
       final bool published = json['published'];
       final int? userId = json['userId'];
-      final UserRes? user = appStore.state.usersState.users
-          .firstWhereOrNull((e) => e.id == userId);
+      final UserRes? user = users?.firstWhereOrNull((e) => e.id == userId);
       return AllocationModel(
         shift: shift,
         date: date,

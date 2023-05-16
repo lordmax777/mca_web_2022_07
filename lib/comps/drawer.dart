@@ -25,22 +25,35 @@ class DefaultDrawer extends StatelessWidget {
         context.replaceRoute(p0['name']);
         await context.popRoute();
       },
-      children: _buildItems(drawerState),
+      children: _buildItems(drawerState, context),
     );
   }
 
-  _buildItems(DrawerStates drawerState) {
+  _buildItems(DrawerStates drawerState, BuildContext context) {
     return Constants.drawerItems.map<YSSidebarParentItem>((parentE) {
       return YSSidebarParentItem(
         title: parentE['title'],
         icon: parentE['icon'],
-        children: parentE['children'].map<YSSidebarChildItem>((childE) {
-          return YSSidebarChildItem(
-            name: childE['name'],
-            title: childE['title'],
-            isSelected: childE['name'].routeName == drawerState.name.routeName,
-          );
-        }).toList(),
+        onPressed: parentE['children'] != null
+            ? null
+            : () async {
+                appStore.dispatch(UpdateGeneralStateAction(
+                    drawerStates: DrawerStates(
+                        initialIndex: Constants.drawerItems.indexOf(parentE),
+                        name: parentE['name'])));
+                context.replaceRoute(parentE['name']);
+                await context.popRoute();
+              },
+        children: parentE['children'] == null
+            ? null
+            : parentE['children'].map<YSSidebarChildItem>((childE) {
+                return YSSidebarChildItem(
+                  name: childE['name'],
+                  title: childE['title'],
+                  isSelected:
+                      childE['name'].routeName == drawerState.name.routeName,
+                );
+              }).toList(),
       );
     }).toList();
   }

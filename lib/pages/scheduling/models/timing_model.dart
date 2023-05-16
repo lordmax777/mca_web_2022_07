@@ -38,8 +38,6 @@ class TimingModel {
     for (final int i in d) {
       days[i] = Constants.daysOfTheWeek[i]!;
     }
-    logger(d, hint: 'setDays');
-    logger(days, hint: 'setDays');
   }
 
   TimingModel copy() {

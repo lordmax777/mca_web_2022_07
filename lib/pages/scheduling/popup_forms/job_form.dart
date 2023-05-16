@@ -1018,7 +1018,7 @@ class _JobEditFormState extends State<JobEditForm>
                   icon: !isRateAdded ? HeroIcons.dollar : HeroIcons.bin,
                 ),
                 if (isRateAdded)
-                  TextField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       isDense: true,
                       border: OutlineInputBorder(),
@@ -1032,6 +1032,7 @@ class _JobEditFormState extends State<JobEditForm>
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                     ],
+                    initialValue: rate.toStringAsFixed(0),
                     onChanged: (value) {
                       setState(() {
                         final rate = double.tryParse(value);

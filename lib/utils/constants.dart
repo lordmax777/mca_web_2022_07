@@ -55,6 +55,11 @@ class Constants {
 
   static List<Map<String, dynamic>> drawerItems = [
     {
+      "icon": HeroIcons.home,
+      "title": "Dashboard",
+      "name": const DashboardRoute(),
+    },
+    {
       "icon": HeroIcons.clipboard,
       "title": "Operational Tasks",
       "name": "operational_tasks",

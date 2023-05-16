@@ -2,15 +2,18 @@ import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../pages/scheduling/models/allocation_model.dart';
 import '../../../theme/theme.dart';
+import '../../models/list_all_md.dart';
 import '../../models/property_md.dart';
 import '../../models/users_list.dart';
 import '../../rest/rest_client.dart';
+import '../states/general_state.dart';
 
 class ScheduleMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -172,6 +175,10 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         .nocodeErrorHandler();
 
     if (res.success) {
+      StateValue<ListAllMd> allList =
+          await appStore.dispatch(GetAllParamListAction());
+      StateValue<List<PropertiesMd>> newProperties =
+          await appStore.dispatch(GetPropertiesAction());
       final list = <AllocationModel>[];
       final appointments = <Appointment>[];
       final properties = <PropertiesMd>[
@@ -182,11 +189,11 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         ...(state.generalState.properties.data ?? [])
       ];
       for (var item in res.data['allocations']) {
-        final AllocationModel shift = AllocationModel.fromJson(item);
+        final AllocationModel shift = AllocationModel.fromJson(item,
+            shifts: allList.data!.shifts, users: state.usersState.users);
         list.add(shift);
-        final pr = shift.shift.property;
+        final pr = shift.shift.propertyFromNewState(newProperties.data!);
         final us = shift.user;
-        final loc = shift.shift.location;
 
         final stDate = DateTime(date.year, date.month, date.day,
             pr.startTimeAsTimeOfDay.hour, pr.startTimeAsTimeOfDay.minute);
@@ -252,6 +259,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   //       .nocodeErrorHandler();
   //
   //   if (res.success) {
+
+  // await appStore.dispatch(GetAllParamListAction());
   //     final list = <ShiftMd>[];
   //     final appointments = <Appointment>[];
   //     final properties = <PropertiesMd>[
@@ -355,6 +364,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
   //       .nocodeErrorHandler();
   //
   //   if (res.success) {
+  //await appStore.dispatch(GetAllParamListAction());
+
   //     final list = <ShiftMd>[];
   //     final appointments = <Appointment>[];
   //     final properties = <PropertiesMd>[

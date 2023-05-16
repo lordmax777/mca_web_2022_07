@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/router/route_guards.dart';
+import 'package:mca_web_2022_07/pages/dashboard/dashboard_page.dart';
 import 'package:mca_web_2022_07/pages/home.dart';
 import 'package:mca_web_2022_07/pages/properties/new_property_page.dart';
 import 'package:mca_web_2022_07/pages/quotes/quotes_list_page.dart';
@@ -32,8 +33,9 @@ part 'router.gr.dart';
     AutoRoute(page: Home, name: "HomeRoute", initial: true, guards: [
       AuthGuard
     ], children: [
+      AutoRoute(page: DashboardPage, path: ""),
       AutoRoute(page: TestPage, path: "test"),
-      AutoRoute(page: UsersListPage, path: ""),
+      AutoRoute(page: UsersListPage, path: "users"),
       AutoRoute(page: UserDetailsPage, path: "user-detail"),
       AutoRoute(
           page: UserDetailsPayrollTabNewContractPage, path: "new-contract"),

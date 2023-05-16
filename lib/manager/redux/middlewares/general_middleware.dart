@@ -801,6 +801,7 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
         paymentMethodId: int.tryParse(client.paymentMethodId ?? "") ?? 1,
         currencyId: int.tryParse(client.currencyId) ?? 1,
         payingDays: client.payingDays,
+        workDays: data.timingInfo.days.keys.toList(),
         email: client.email ?? "",
         workRepeatId: timing.repeat!.id,
         notes: client.notes,

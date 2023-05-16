@@ -370,10 +370,18 @@ class ListShift {
   GeneralState get state => appStore.state.generalState;
 
   //Late initialized variables
+  @JsonKey(ignore: true)
   late final LocationAddress location;
+  @JsonKey(ignore: true)
   late final ClientInfoMd? client;
+  @JsonKey(ignore: true)
   late final WarehouseMd? warehouse;
+  @JsonKey(ignore: true)
   late final PropertiesMd property;
+
+  PropertiesMd propertyFromNewState(List<PropertiesMd> newProperties) {
+    return newProperties.firstWhere((element) => element.id == id);
+  }
 
   @override
   ListShift({

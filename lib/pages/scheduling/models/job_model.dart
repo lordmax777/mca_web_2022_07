@@ -93,7 +93,6 @@ class JobModel {
     timingInfo.endTime = q.workFinishTimeAsTimeOfDay;
     timingInfo.altStartDate = q.altWorkStartDateAsDateTime;
     timingInfo.repeat = q.getWorkRepeat;
-    //TODO: Check after posting a quote
     timingInfo.setDays(q.workDays);
     final allUsers = [...state.usersState.users];
     if (q.users != null && q.users!.isNotEmpty) {
@@ -101,6 +100,7 @@ class JobModel {
         final foundUser =
             allUsers.firstWhereOrNull((element) => element.id == user.userId);
         if (foundUser != null) {
+          logger(user.toJson());
           addedChildren[foundUser] = user.specialRate?.toDouble() ?? 0;
         }
       }

@@ -21,6 +21,10 @@ class GeneralController extends GetxController {
 
   final Rx<LoggedInUserMd> loggedInUser = Rx<LoggedInUserMd>(LoggedInUserMd());
 
+  final RxBool _initializedAll = false.obs;
+  bool get initializedAll => _initializedAll.value;
+  set initializedAll(bool value) => _initializedAll.value = value;
+
   LoggedInUserMd get loggedInUserValue => loggedInUser.value;
 
   set setLoggedInUser(LoggedInUserMd value) {
@@ -64,6 +68,9 @@ class GeneralController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    _initializedAll.listen((p0) {
+      update(["dashboardPage"]);
+    });
     loggedInUser.listen((_) async {
       if (isLoggedIn) {
         await initAll();
@@ -72,6 +79,7 @@ class GeneralController extends GetxController {
   }
 
   Future<void> initAll() async {
+    initializedAll = false;
     await getCompanyInfo();
     await Future.wait([
       appStore.dispatch(GetLocationAddressesAction()) as Future,
@@ -85,5 +93,6 @@ class GeneralController extends GetxController {
       fetch(GetAllStorageItemsAction()),
     ]);
     await appStore.dispatch(GetAllParamListAction());
+    initializedAll = true;
   }
 }
