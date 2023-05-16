@@ -4,12 +4,14 @@ class PagesTitleWidget extends StatelessWidget {
   final String title;
   final String? btnText;
   final VoidCallback? onRightBtnClick;
-  final List<ButtonMedium>? buttons;
+  final List<Widget>? buttons;
+  final Widget? titleButton;
   const PagesTitleWidget(
       {Key? key,
       required this.title,
       this.btnText,
       this.onRightBtnClick,
+      this.titleButton,
       this.buttons})
       : super(key: key);
 
@@ -22,6 +24,7 @@ class PagesTitleWidget extends StatelessWidget {
         KText(
           text: title,
           fontSize: 24,
+          icon: titleButton,
           fontWeight: FWeight.bold,
           isSelectable: false,
           textColor: ThemeColors.gray1,

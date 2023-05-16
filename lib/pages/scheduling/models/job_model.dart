@@ -17,6 +17,8 @@ class JobModel {
 
   AllocationModel? allocation;
 
+  int? get shiftId => allocation?.shift.id;
+
   DateTime? get date => timingInfo.date;
   String? get dateAsString => timingInfo.date?.toString().substring(0, 10);
 

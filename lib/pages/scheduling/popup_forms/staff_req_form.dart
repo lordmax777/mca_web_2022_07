@@ -12,18 +12,19 @@ import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../properties/new_prop_tabs/edit_shift_staff_req_popup.dart';
 import '../models/create_shift_type.dart';
+import '../scheduling_page.dart';
 
 class StaffRequirementForm extends StatefulWidget {
-  final CreateShiftData data;
-  const StaffRequirementForm({Key? key, required this.data}) : super(key: key);
+  final int shiftId;
+  const StaffRequirementForm({Key? key, required this.shiftId})
+      : super(key: key);
 
   @override
   State<StaffRequirementForm> createState() => _StaffRequirementFormState();
 }
 
 class _StaffRequirementFormState extends State<StaffRequirementForm> {
-  CreateShiftData get data => widget.data;
-  PlutoGridStateManager get gridStateManager => data.staffReqGridManager;
+  late final PlutoGridStateManager gridStateManager;
   List<PlutoRow> get checkedRows => gridStateManager.checkedRows;
 
   List<PlutoColumn> cols(AppState state) {
@@ -82,7 +83,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
           (row.cells['depModel']!.value as ShiftStaffReqMd).groupId;
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
-          .deletePropertiesStaff(data.shiftId!, groupId)
+          .deletePropertiesStaff(widget.shiftId!, groupId)
           .nocodeErrorHandler();
       gridStateManager.setShowLoading(false);
       if (res.success) {
@@ -112,7 +113,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
           .postPropertiesStaff(
-            id: data.shiftId!,
+            id: widget.shiftId!,
             maxOfStaff: item.max,
             groupId: item.groupId,
             numberOfStaff: item.min,
@@ -144,6 +145,11 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
               child: PagesTitleWidget(
                 title: 'Staff Requirements',
                 btnText: "Add",
+                titleButton: addIcon(
+                  tooltip: "Refresh Table",
+                  icon: HeroIcons.refresh,
+                  onPressed: _onLoad,
+                ),
                 buttons: [
                   ButtonMedium(
                       bgColor: ThemeColors.red3,
@@ -187,18 +193,21 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
         gridBorderColor: Colors.grey[300]!,
         noRowsText: "No staff requirements",
         onSmReady: (e) async {
-          data.staffReqGridManager = e;
-
-          gridStateManager.setShowLoading(true);
-          List<ShiftStaffReqMd> res =
-              await GetPropertiesAction.fetchShiftStaff(data.shiftId ?? -1);
-          if (res.isNotEmpty) {
-            for (var item in res) {
-              e.appendRows([_buildRow(item)]);
-            }
-          }
-          gridStateManager.setShowLoading(false);
+          gridStateManager = e;
+          await _onLoad();
         },
         cols: cols(state));
+  }
+
+  Future<void> _onLoad() async {
+    gridStateManager.setShowLoading(true);
+    List<ShiftStaffReqMd> res =
+        await GetPropertiesAction.fetchShiftStaff(widget.shiftId ?? -1);
+    if (res.isNotEmpty) {
+      for (var item in res) {
+        gridStateManager.appendRows([_buildRow(item)]);
+      }
+    }
+    gridStateManager.setShowLoading(false);
   }
 }

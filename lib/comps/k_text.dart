@@ -10,7 +10,7 @@ class KText extends StatelessWidget {
   double? fontSize;
   FWeight? fontWeight;
   final bool isSelectable;
-  final HeroIcon? icon;
+  final Widget? icon;
   final VoidCallback? onTap;
   final bool rowCenter;
   final MainAxisSize mainAxisSize;
