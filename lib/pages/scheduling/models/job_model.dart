@@ -127,6 +127,7 @@ class JobModel {
         }
       }
     }
+    active = q.active;
   }
 
   String? quoteComment;
