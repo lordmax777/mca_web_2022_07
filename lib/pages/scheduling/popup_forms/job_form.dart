@@ -1101,7 +1101,10 @@ class _JobEditFormState extends State<JobEditForm>
         "Products and services",
         SizedBox(
           width: MediaQuery.of(context).size.width * .95,
-          height: MediaQuery.of(context).size.height * .4,
+          height: data.isGridInitialized
+              ? (data.gridStateManager.rows.length * 50) +
+                  (data.gridStateManager.rows.isEmpty ? 150 : 100)
+              : MediaQuery.of(context).size.height * .4,
           child: UsersListTable(
               enableEditing: true,
               rows: data.isGridInitialized ? data.gridStateManager.rows : [],
@@ -1141,8 +1144,24 @@ class _JobEditFormState extends State<JobEditForm>
               child: CustomAutocompleteTextField<StorageItemMd>(
                   listItemWidget: (p0) => Text(p0.name),
                   onSelected: (p0) {
-                    data.gridStateManager.insertRows(
-                        0, [data.buildStorageRowRow(p0, checked: true)]);
+                    final includedItemIdx = data.gridStateManager.rows
+                        .indexWhere(
+                            (element) => element.cells['id']?.value == p0.id);
+                    if (includedItemIdx >= 0) {
+                      if (!p0.service) {
+                        data.gridStateManager.rows[includedItemIdx]
+                            .cells['quantity']?.value = data
+                                .gridStateManager
+                                .rows[includedItemIdx]
+                                .cells['quantity']
+                                ?.value +
+                            1;
+                        setState(() {});
+                      }
+                    } else {
+                      data.gridStateManager.insertRows(
+                          0, [data.buildStorageRowRow(p0, checked: true)]);
+                    }
                   },
                   displayStringForOption: (option) {
                     return option.name;
