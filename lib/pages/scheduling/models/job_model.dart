@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../manager/general_controller.dart';
 import '../../../manager/models/location_item_md.dart';
@@ -21,6 +22,7 @@ class JobModel {
 
   DateTime? customStartDate;
   DateTime? customEndDate;
+  CalendarResource? customResource;
 
   ClientInfoMd client = ClientInfoMd.init();
 
@@ -40,12 +42,14 @@ class JobModel {
 
   Address _address = Address.init();
   Address get address => _address;
-  void setAddress(Address? loc) {
+  int? addressId;
+  void setAddress(Address? loc, [int? locationId]) {
     if (loc == null) {
       _address = Address.init();
       return;
     }
     _address = loc;
+    addressId = locationId;
   }
 
   Address _workAddress = Address.init();
@@ -79,7 +83,7 @@ class JobModel {
     client.paymentMethodId = q.paymentMethodId.toString();
     client.notes = q.clientInfo?.notes;
     quoteComment = q.quoteComments;
-    setAddress(q.addressModel);
+    setAddress(q.addressModel, q.locationId);
     setWorkAddress(q.workAddressModel);
     timingInfo.date = q.workStartDateAsDateTime;
     timingInfo.startTime = q.workStartTimeAsTimeOfDay;
@@ -238,6 +242,7 @@ class JobModel {
       {this.allocation,
       this.customStartDate,
       this.customEndDate,
+      this.customResource,
       this.type = ScheduleCreatePopupMenus.job}) {
     if (customStartDate != null) {
       timingInfo.date = customStartDate!;
@@ -246,7 +251,11 @@ class JobModel {
       timingInfo.endTime =
           TimeOfDay(hour: customEndDate!.hour, minute: customEndDate!.minute);
     }
-    print(allocation?.shift.id);
+    if (customResource != null) {
+      if (customResource!.id is UserRes) {
+        addedChildren.addAll({customResource!.id as UserRes: 0});
+      }
+    }
   }
 
   @override

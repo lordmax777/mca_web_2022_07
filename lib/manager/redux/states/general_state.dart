@@ -12,6 +12,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../comps/drawer.dart';
 import '../../../pages/checklist_templates/controllers/checklist_list_controller.dart';
 import '../../../pages/scheduling/models/create_shift_type.dart';
+import '../../../pages/scheduling/models/job_model.dart';
 import '../../../pages/scheduling/popup_forms/client_form.dart';
 import '../../../pages/scheduling/popup_forms/timing_form.dart';
 import '../../model_exporter.dart';
@@ -564,7 +565,7 @@ class CreateQuoteAction {
   final int? shiftId;
   final int? clientContractId;
 
-  final List<int>? userIds;
+  final Map<UserRes, double>? userIds;
 
   CreateQuoteAction({
     this.id = 0,
@@ -660,10 +661,16 @@ class OnCreateNewClientTap<T> {
 }
 
 class CreateJobAction {
-  final CreateShiftData data;
+  final JobModel data;
 
   CreateJobAction(this.data);
 }
+
+// class CreateJobAction {
+//   final CreateShiftData data;
+//
+//   CreateJobAction(this.data);
+// }
 
 class ChangeQuoteStatusAction {
   final int quoteId;

@@ -14,7 +14,9 @@ import '../../../comps/custom_scrollbar.dart';
 import '../../../comps/title_container.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/models/location_item_md.dart';
+import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
+import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
@@ -99,6 +101,9 @@ class _JobEditFormState extends State<JobEditForm>
     if (mounted) {
       setState(() {
         unavailableUsers.users = unavUsers;
+        for (var u in unavailableUsers.users) {
+          data.addedChildren.removeWhere((user, _) => user.id == u.userId);
+        }
       });
     }
   }
@@ -169,8 +174,7 @@ class _JobEditFormState extends State<JobEditForm>
               }),
           ButtonLarge(
             text: isCreate ? 'Publish' : (isUpdate ? "Update" : "Save"),
-            onPressed: () {},
-            // onPressed: () => _save(state),
+            onPressed: () => _save(state),
           ),
         ],
         content: DecoratedBox(
@@ -213,34 +217,31 @@ class _JobEditFormState extends State<JobEditForm>
   }
 
   // //Functions
-  // void _save(AppState state) async {
-  //   switch (type) {
-  //     case ScheduleCreatePopupMenus.job:
-  //       _saveJob(state);
-  //
-  //       break;
-  //     default:
-  //   }
-  // }
-  //
-  // void _saveJob(AppState state) {
-  //   Get.showOverlay(
-  //       asyncFunction: () async {
-  //         final ApiResponse? newJob =
-  //             await appStore.dispatch(CreateJobAction(data));
-  //         if (newJob?.success == true) {
-  //           exit(context).then((value) {
-  //             showError(
-  //                 "Job ${data.shiftId == null ? "created" : "updated"} successfully",
-  //                 titleMsg: "Success");
-  //           });
-  //         }
-  //       },
-  //       loadingWidget: const Center(
-  //         child: CircularProgressIndicator(),
-  //       ));
-  // }
-  //
+  void _save(AppState state) async {
+    switch (type) {
+      case ScheduleCreatePopupMenus.job:
+        _saveJob(state);
+        break;
+      default:
+    }
+  }
+
+  void _saveJob(AppState state) {
+    Get.showOverlay(
+        asyncFunction: () async {
+          final ApiResponse? newJob =
+              await appStore.dispatch(CreateJobAction(data));
+          if (newJob?.success == true) {
+            exit(context).then((value) {
+              showError(
+                  "Job ${data.isCreate ? "created" : "updated"} successfully",
+                  titleMsg: "Success");
+            });
+          }
+        },
+        loadingWidget: const CustomLoadingWidget());
+  }
+
   void _onCreateNewClient(AppState state) async {
     final CreatedClientReturnValue? res = await showDialog(
         barrierDismissible: false,
@@ -268,7 +269,7 @@ class _JobEditFormState extends State<JobEditForm>
         if (foundAddress != null) {
           setState(() {
             tempAddress = foundAddress;
-            data.setAddress(foundAddress.address);
+            data.setAddress(foundAddress.address, foundAddress.id);
           });
         }
       }
@@ -293,7 +294,7 @@ class _JobEditFormState extends State<JobEditForm>
         if (foundAddress != null) {
           setState(() {
             tempAddress = foundAddress;
-            data.setAddress(foundAddress.address);
+            data.setAddress(foundAddress.address, foundAddress.id);
           });
         }
       }
@@ -734,7 +735,7 @@ class _JobEditFormState extends State<JobEditForm>
                                               text: tempAddress!.name),
                                       onSelected: (p0) {
                                         setState(() {
-                                          data.setAddress(p0.address);
+                                          data.setAddress(p0.address, p0.id);
                                         });
                                       },
                                       displayStringForOption: (option) {

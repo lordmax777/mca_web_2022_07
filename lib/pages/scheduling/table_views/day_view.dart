@@ -66,6 +66,7 @@ class DailyViewCalendar extends StatelessWidget {
                           customStartDate: calendarTapDetails.date,
                           customEndDate: calendarTapDetails.date
                               ?.add(const Duration(hours: 1)),
+                          customResource: calendarTapDetails.resource,
                         ));
                   } else {
                     showError("There was an unexpected error!");

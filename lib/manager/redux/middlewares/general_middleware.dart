@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -446,8 +448,18 @@ Future<ApiResponse?> _createQuoteAction(
       }
     }
     if (action.userIds != null && action.userIds!.isNotEmpty) {
-      final usrs = action.userIds!.join(',');
-      formData.fields.add(MapEntry('user_ids', usrs));
+      final List<Map<String, dynamic>> users = [];
+      for (var u in action.userIds!.entries) {
+        final user = u.key;
+        final rate = u.value;
+        final map = {"user_id": user.id, "special_rate": rate};
+        if (rate <= 0) {
+          map.remove("special_rate");
+        }
+        users.add(map);
+      }
+      formData.fields.add(MapEntry('user_ids',
+          "[${users.map((e) => jsonEncode(e)).toList().join(",")}]"));
     }
     // return null;
 
@@ -636,113 +648,230 @@ Future<List<InventoryMd>> _getInventoryList(
   }
 }
 
+// Future _createJobAction(AppState state, CreateJobAction action) async {
+//   try {
+//     final data = action.data;
+//     final client = data.client;
+//     final location = data.location;
+//     final timing = data.timingInfo;
+//     final team = data.addedChildren;
+//     final quote = data.fetchedQuote;
+//     final bool isUpdate = !data.isCreate;
+//
+//     if (client == null) {
+//       showError("Please select client");
+//       return;
+//     }
+//     if (timing.repeatTypeIndex == null) {
+//       showError("Please select repeat type");
+//       return;
+//     }
+//     if (data.storageItems(state.generalState.storage_items).isEmpty) {
+//       showError("Please add at least one storage item");
+//       return;
+//     }
+//     if (location == null) {
+//       showError("Please add location");
+//       return;
+//     }
+//     //1. Create Quote
+//     ApiResponse? createdQuote;
+//     if (isUpdate) {
+//       final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+//           ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
+//     }
+//     createdQuote = await appStore.dispatch(
+//       CreateQuoteAction(
+//         id: data.quoteId ?? 0,
+//         name: client.name,
+//         active: client.active,
+//         paymentMethodId: int.tryParse(client.paymentMethodId ?? "") ?? 1,
+//         currencyId: int.tryParse(client.currencyId ?? "") ?? 1,
+//         payingDays: client.payingDays,
+//         email: client.email ?? "",
+//         workRepeatId:
+//             state.generalState.workRepeats[timing.repeatTypeIndex!].id,
+//         notes: client.notes,
+//         phone: client.phone,
+//         storageItems: data.storageItems(state.generalState.storage_items),
+//         workStartDate: timing.startDate?.formatDateForApi,
+//         workStartTime: timing.startTime?.formattedTime,
+//         workFinishTime: timing.endTime?.formattedTime,
+//         addressLine1: location.address?.line1,
+//         addressLine2: location.address?.line2,
+//         addressCity: location.address?.city,
+//         addressCounty: location.address?.county,
+//         addressCountry: location.address?.country,
+//         addressPostcode: location.address?.postcode,
+//         clientId: client.id,
+//         locationId: location.id,
+//         company: client.company,
+//         userIds: team.map((e) => e.id).toList(),
+//       ),
+//     );
+//
+//     //2. Change Quote Status to accepted
+//     if (createdQuote != null && createdQuote.success) {
+//       final quoteId = createdQuote.data as int;
+//       final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+//           ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
+//       if (changedQuoteStatus?.success == true) {
+//         await appStore.dispatch(SCFetchShiftsAction(date: timing.startDate!));
+//         await appStore.dispatch(SCFetchShiftsWeekAction(
+//           startDate: timing.startDate!.subtract(const Duration(days: 7)),
+//           endDate: timing.startDate!,
+//         ));
+//         await appStore
+//             .dispatch(SCFetchShiftsMonthAction(startDate: timing.startDate!));
+//
+//         return changedQuoteStatus;
+//       } else {
+//         showError(changedQuoteStatus?.data ?? "Error");
+//       }
+//       //DEPRECATED
+//       // //3. (Optional) Assign users to the allocation
+//       // if (changedQuoteStatus != null && changedQuoteStatus.success) {
+//       //   //TODO: Assign users to the allocation
+//       //   // final allocationId = changedQuoteStatus.data as int;
+//       //   // //Get all allocations and find the shift id using allocation id and date
+//       //   // final ApiResponse res = await restClient()
+//       //   //     .getShifts(
+//       //   //       location?.id ?? 0,
+//       //   //       0,
+//       //   //       0,
+//       //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+//       //   //     )
+//       //   //     .nocodeErrorHandler();
+//       //   // //Use shift id
+//       //   // // final ApiResponse res = await restClient()
+//       //   // //     .postShifts(
+//       //   // //       location?.id ?? 0,
+//       //   // //       805, //TODO: User
+//       //   // //       106,
+//       //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+//       //   // //       AllocationActions.add.name,
+//       //   // //     )
+//       //   // //     .nocodeErrorHandler();
+//       //   // return res;
+//       // }
+//     }
+//   } on Exception catch (e) {
+//     Logger.e(e.toString(), tag: "CreateJobAction");
+//     showError("Something went wrong");
+//   }
+// }
+
 Future _createJobAction(AppState state, CreateJobAction action) async {
   try {
     final data = action.data;
     final client = data.client;
-    final location = data.location;
+    final location = data.address;
     final timing = data.timingInfo;
     final team = data.addedChildren;
-    final quote = data.fetchedQuote;
+    final quote = data.quote;
     final bool isUpdate = !data.isCreate;
 
-    if (client == null) {
+    if (!data.isClientSelected) {
       showError("Please select client");
       return;
     }
-    if (timing.repeatTypeIndex == null) {
+    if (timing.repeat == null) {
       showError("Please select repeat type");
       return;
     }
-    if (data.storageItems(state.generalState.storage_items).isEmpty) {
+    if (data.getAddedStorageItems(state.generalState.storage_items).isEmpty) {
       showError("Please add at least one storage item");
       return;
     }
-    if (location == null) {
-      showError("Please add location");
+    if (data.addressId == null) {
+      showError("Please add address");
       return;
     }
+
     //1. Create Quote
     ApiResponse? createdQuote;
-    if (isUpdate) {
-      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
-          ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
-    }
+    // if (isUpdate) {
+    //   final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+    //       ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
+    // }
     createdQuote = await appStore.dispatch(
       CreateQuoteAction(
-        id: data.quoteId ?? 0,
+        id: data.quote?.id ?? 0,
         name: client.name,
-        active: client.active,
+        active: data.active,
         paymentMethodId: int.tryParse(client.paymentMethodId ?? "") ?? 1,
-        currencyId: int.tryParse(client.currencyId ?? "") ?? 1,
+        currencyId: int.tryParse(client.currencyId) ?? 1,
         payingDays: client.payingDays,
         email: client.email ?? "",
-        workRepeatId:
-            state.generalState.workRepeats[timing.repeatTypeIndex!].id,
+        workRepeatId: timing.repeat!.id,
         notes: client.notes,
         phone: client.phone,
-        storageItems: data.storageItems(state.generalState.storage_items),
-        workStartDate: timing.startDate?.formatDateForApi,
+        storageItems:
+            data.getAddedStorageItems(state.generalState.storage_items),
+        workStartDate: timing.date?.formatDateForApi,
         workStartTime: timing.startTime?.formattedTime,
         workFinishTime: timing.endTime?.formattedTime,
-        addressLine1: location.address?.line1,
-        addressLine2: location.address?.line2,
-        addressCity: location.address?.city,
-        addressCounty: location.address?.county,
-        addressCountry: location.address?.country,
-        addressPostcode: location.address?.postcode,
+        addressLine1: location.line1,
+        addressLine2: location.line2,
+        addressCity: location.city,
+        addressCounty: location.county,
+        addressCountry: location.country,
+        addressPostcode: location.postcode,
         clientId: client.id,
-        locationId: location.id,
+        locationId: data.addressId,
         company: client.company,
-        userIds: team.map((e) => e.id).toList(),
+        userIds: data.addedChildren,
       ),
+      //[{"user_id":803},{"user_id":806},{"user_id":805,
+      // "special_start_time":"13:00","special_finish_time":"18:00",
+      // "special_rate":7.99},{"user":1}]
     );
 
     //2. Change Quote Status to accepted
-    if (createdQuote != null && createdQuote.success) {
-      final quoteId = createdQuote.data as int;
-      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
-          ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
-      if (changedQuoteStatus?.success == true) {
-        await appStore.dispatch(SCFetchShiftsAction(date: timing.startDate!));
-        await appStore.dispatch(SCFetchShiftsWeekAction(
-          startDate: timing.startDate!.subtract(const Duration(days: 7)),
-          endDate: timing.startDate!,
-        ));
-        await appStore
-            .dispatch(SCFetchShiftsMonthAction(startDate: timing.startDate!));
-
-        return changedQuoteStatus;
-      } else {
-        showError(changedQuoteStatus?.data ?? "Error");
-      }
-      //DEPRECATED
-      // //3. (Optional) Assign users to the allocation
-      // if (changedQuoteStatus != null && changedQuoteStatus.success) {
-      //   //TODO: Assign users to the allocation
-      //   // final allocationId = changedQuoteStatus.data as int;
-      //   // //Get all allocations and find the shift id using allocation id and date
-      //   // final ApiResponse res = await restClient()
-      //   //     .getShifts(
-      //   //       location?.id ?? 0,
-      //   //       0,
-      //   //       0,
-      //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
-      //   //     )
-      //   //     .nocodeErrorHandler();
-      //   // //Use shift id
-      //   // // final ApiResponse res = await restClient()
-      //   // //     .postShifts(
-      //   // //       location?.id ?? 0,
-      //   // //       805, //TODO: User
-      //   // //       106,
-      //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
-      //   // //       AllocationActions.add.name,
-      //   // //     )
-      //   // //     .nocodeErrorHandler();
-      //   // return res;
-      // }
-    }
+    // if (createdQuote != null && createdQuote.success) {
+    //   final quoteId = createdQuote.data as int;
+    //   final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+    //       ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
+    //   if (changedQuoteStatus?.success == true) {
+    //     await appStore.dispatch(SCFetchShiftsAction(date: timing.startDate!));
+    //     await appStore.dispatch(SCFetchShiftsWeekAction(
+    //       startDate: timing.startDate!.subtract(const Duration(days: 7)),
+    //       endDate: timing.startDate!,
+    //     ));
+    //     await appStore
+    //         .dispatch(SCFetchShiftsMonthAction(startDate: timing.startDate!));
+    //
+    //     return changedQuoteStatus;
+    //   } else {
+    //     showError(changedQuoteStatus?.data ?? "Error");
+    //   }
+    //   //DEPRECATED
+    //   // //3. (Optional) Assign users to the allocation
+    //   // if (changedQuoteStatus != null && changedQuoteStatus.success) {
+    //   //   //TODO: Assign users to the allocation
+    //   //   // final allocationId = changedQuoteStatus.data as int;
+    //   //   // //Get all allocations and find the shift id using allocation id and date
+    //   //   // final ApiResponse res = await restClient()
+    //   //   //     .getShifts(
+    //   //   //       location?.id ?? 0,
+    //   //   //       0,
+    //   //   //       0,
+    //   //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+    //   //   //     )
+    //   //   //     .nocodeErrorHandler();
+    //   //   // //Use shift id
+    //   //   // // final ApiResponse res = await restClient()
+    //   //   // //     .postShifts(
+    //   //   // //       location?.id ?? 0,
+    //   //   // //       805, //TODO: User
+    //   //   // //       106,
+    //   //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+    //   //   // //       AllocationActions.add.name,
+    //   //   // //     )
+    //   //   // //     .nocodeErrorHandler();
+    //   //   // return res;
+    //   // }
+    // }
   } on Exception catch (e) {
     Logger.e(e.toString(), tag: "CreateJobAction");
     showError("Something went wrong");
