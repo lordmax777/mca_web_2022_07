@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../comps/autocomplete_input_field.dart';
@@ -197,6 +200,18 @@ class _JobEditFormState extends State<JobEditForm>
     );
   }
 
+  void resetLocationDp(Function callback) async {
+    setState(() {
+      resetLocation = false;
+    });
+    await callback();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      setState(() {
+        resetLocation = true;
+      });
+    });
+  }
+
   // //Functions
   // void _save(AppState state) async {
   //   switch (type) {
@@ -236,34 +251,28 @@ class _JobEditFormState extends State<JobEditForm>
           );
         });
     if (res == null) return;
-    setState(() {
-      resetLocation = false;
-    });
-    if (res.clientId != null) {
-      final foundClient = appStore.state.generalState.clientInfos
-          .firstWhereOrNull((element) => element.id == res.clientId);
-      if (foundClient != null) {
-        setState(() {
-          tempClient = foundClient;
-          data.setClient(foundClient);
-        });
-      }
-    }
-    if (res.locationId != null) {
-      final foundAddress = appStore.state.generalState.locations
-          .firstWhereOrNull((element) => element.id == res.locationId);
-      if (foundAddress != null) {
-        setState(() {
-          tempAddress = foundAddress;
-          data.setAddress(foundAddress.address);
-        });
-        Future.delayed(const Duration(milliseconds: 100), () {
+    resetLocationDp(() {
+      if (res.clientId != null) {
+        final foundClient = appStore.state.generalState.clientInfos
+            .firstWhereOrNull((element) => element.id == res.clientId);
+        if (foundClient != null) {
           setState(() {
-            resetLocation = true;
+            tempClient = foundClient;
+            data.setClient(foundClient);
           });
-        });
+        }
       }
-    }
+      if (res.locationId != null) {
+        final foundAddress = appStore.state.generalState.locations
+            .firstWhereOrNull((element) => element.id == res.locationId);
+        if (foundAddress != null) {
+          setState(() {
+            tempAddress = foundAddress;
+            data.setAddress(foundAddress.address);
+          });
+        }
+      }
+    });
   }
 
   void _editInvoiceAddress(AppState state) async {
@@ -277,23 +286,17 @@ class _JobEditFormState extends State<JobEditForm>
           );
         });
     if (res == null) return;
-    setState(() {
-      resetLocation = false;
-    });
-    if (res.locationId != null) {
-      final foundAddress = appStore.state.generalState.locations
-          .firstWhereOrNull((element) => element.id == res.locationId);
-      if (foundAddress != null) {
-        setState(() {
-          tempAddress = foundAddress;
-          data.setAddress(foundAddress.address);
-        });
+    resetLocationDp(() {
+      if (res.locationId != null) {
+        final foundAddress = appStore.state.generalState.locations
+            .firstWhereOrNull((element) => element.id == res.locationId);
+        if (foundAddress != null) {
+          setState(() {
+            tempAddress = foundAddress;
+            data.setAddress(foundAddress.address);
+          });
+        }
       }
-    }
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        resetLocation = true;
-      });
     });
   }
 
@@ -316,6 +319,7 @@ class _JobEditFormState extends State<JobEditForm>
   //   });
   // }
   //
+
   void _editTiming(AppState state) async {
     final TimingModel? res = await showDialog(
         barrierDismissible: false,
@@ -534,7 +538,7 @@ class _JobEditFormState extends State<JobEditForm>
               const EdgeInsets.only(top: 36, bottom: 36, right: 36, left: 36),
           child: SpacedColumn(
             crossAxisAlignment: CrossAxisAlignment.start,
-            verticalSpace: 64,
+            verticalSpace: 32,
             children: [
               SpacedRow(
                 horizontalSpace: 32,
@@ -558,40 +562,36 @@ class _JobEditFormState extends State<JobEditForm>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (isCreate)
-                                  CustomAutocompleteTextField<ClientInfoMd>(
-                                      width: 400,
-                                      height: 50,
-                                      hintText: "Select Client",
-                                      listItemWidget: (p0) => Text(p0.name),
-                                      // onCleared: () {
-                                      //   setState(() {
-                                      //     data.setClient(null);
-                                      //   });
-                                      // },
-                                      onSelected: (p0) {
-                                        setState(() {
-                                          resetLocation = false;
-                                        });
-                                        setState(() {
-                                          data.setClient(p0);
-                                        });
-                                        Future.delayed(
-                                            const Duration(milliseconds: 100),
-                                            () {
-                                          setState(() {
-                                            resetLocation = true;
+                                  Visibility(
+                                    visible: resetLocation,
+                                    child: CustomAutocompleteTextField<
+                                            ClientInfoMd>(
+                                        width: 400,
+                                        height: 50,
+                                        hintText: "Select Client",
+                                        listItemWidget: (p0) => Text(p0.name),
+                                        onSelected: (p0) {
+                                          resetLocationDp(() {
+                                            setState(() {
+                                              data.setClient(p0);
+                                              tempAddress = null;
+                                            });
                                           });
-                                        });
-                                      },
-                                      displayStringForOption: (option) {
-                                        return option.name;
-                                      },
-                                      options: (p0) => state
-                                          .generalState.clientInfos
-                                          .where((element) => element.name
-                                              .toLowerCase()
-                                              .contains(
-                                                  p0.text.toLowerCase()))),
+                                        },
+                                        displayStringForOption: (option) {
+                                          return option.name;
+                                        },
+                                        initialValue: tempClient == null
+                                            ? null
+                                            : TextEditingValue(
+                                                text: tempClient!.name),
+                                        options: (p0) => state
+                                            .generalState.clientInfos
+                                            .where((element) => element.name
+                                                .toLowerCase()
+                                                .contains(
+                                                    p0.text.toLowerCase()))),
+                                  ),
                                 const SizedBox(height: 16),
                                 SpacedColumn(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -728,11 +728,10 @@ class _JobEditFormState extends State<JobEditForm>
                                       height: 50,
                                       hintText: "Select Location",
                                       listItemWidget: (p0) => Text(p0.name),
-                                      // onCleared: () {
-                                      //   setState(() {
-                                      //     data.setAddress(null);
-                                      //   });
-                                      // },
+                                      initialValue: tempAddress == null
+                                          ? null
+                                          : TextEditingValue(
+                                              text: tempAddress!.name),
                                       onSelected: (p0) {
                                         setState(() {
                                           data.setAddress(p0.address);
@@ -962,7 +961,7 @@ class _JobEditFormState extends State<JobEditForm>
                   ),
                 ],
               ),
-              // _products(state),
+              _products(state),
             ],
           ),
         ),
@@ -1086,154 +1085,62 @@ class _JobEditFormState extends State<JobEditForm>
         ));
   }
 
-  // List<PlutoColumn> cols(AppState state) => [
-  //       PlutoColumn(
-  //         title: "",
-  //         field: "id",
-  //         type: PlutoColumnType.text(),
-  //         hide: true,
-  //       ),
-  //       // Items and description - String, ordered - double, rate - double, amount - double, Inc in fixed price - bool => Y/N
-  //       PlutoColumn(
-  //         title: "Title",
-  //         field: "title",
-  //         enableEditingMode: false,
-  //         type: PlutoColumnType.text(),
-  //       ),
-  //       PlutoColumn(
-  //         title: "Customer's price (${company.currency.sign})",
-  //         field: "customer_price",
-  //         enableAutoEditing: true,
-  //         type: PlutoColumnType.currency(),
-  //         footerRenderer: (context) {
-  //           final double total = context.stateManager.rows
-  //               .where((element) => element.checked ?? false)
-  //               .map((e) =>
-  //                   (e.cells["customer_price"]?.value ?? 0) *
-  //                   (e.cells["quantity"]?.value ?? 0))
-  //               .fold(0, (a, b) {
-  //             return a + b;
-  //           });
-  //
-  //           return Center(
-  //             child: Padding(
-  //               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-  //               child: Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   const Text(
-  //                     "Total:",
-  //                     style: TextStyle(fontWeight: FontWeight.w500),
-  //                   ),
-  //                   Text(
-  //                     total.getPriceMap().formattedVer,
-  //                     style: const TextStyle(fontWeight: FontWeight.bold),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       ),
-  //       PlutoColumn(
-  //         title: "Quantity",
-  //         field: "quantity",
-  //         enableAutoEditing: true,
-  //         checkReadOnly: (row, cell) {
-  //           final id = (row.cells['id'])?.value;
-  //           final item = state.generalState.storage_items
-  //               .firstWhereOrNull((element) => element.id == id);
-  //           if (item == null) return true;
-  //           return item.service;
-  //         },
-  //         type: PlutoColumnType.number(),
-  //       ),
-  //       PlutoColumn(
-  //         title: "Included in service (All)",
-  //         field: "include_in_service",
-  //         enableRowChecked: true,
-  //         enableSorting: false,
-  //         enableEditingMode: false,
-  //         type: PlutoColumnType.text(),
-  //       ),
-  //       PlutoColumn(
-  //         title: "",
-  //         field: "delete_action",
-  //         enableEditingMode: false,
-  //         enableSorting: false,
-  //         width: 40,
-  //         type: PlutoColumnType.text(),
-  //         renderer: (rendererContext) {
-  //           return addIcon(
-  //             tooltip: "Delete",
-  //             onPressed: () {
-  //               gridStateManager.removeRows([
-  //                 rendererContext.row,
-  //               ]);
-  //             },
-  //             icon: HeroIcons.bin,
-  //             color: ThemeColors.red3,
-  //           );
-  //         },
-  //       ),
-  //     ];
-
-  // Widget _products(AppState state) {
-  //   return labelWithField(
-  //       labelWidth: 160,
-  //       "Products and services",
-  //       SizedBox(
-  //         width: MediaQuery.of(context).size.width * .95,
-  //         height: 300,
-  //         child: UsersListTable(
-  //             enableEditing: true,
-  //             rows: data.isGridInitialized ? gridStateManager.rows : [],
-  //             mode: PlutoGridMode.normal,
-  //             gridBorderColor: Colors.grey[300]!,
-  //             noRowsText: "No product or service added yet",
-  //             onSmReady: (e) {
-  //               gridStateManager = e;
-  //             },
-  //             cols: cols(state)),
-  //       ),
-  //       customLabel: Row(
-  //         children: [
-  //           addIcon(
-  //               tooltip: "Create service/product",
-  //               onPressed: () async {
-  //                 final resId = await showDialog<int>(
-  //                     barrierDismissible: false,
-  //                     context: context,
-  //                     builder: (context) => StorageItemForm(state: state));
-  //                 if (resId == null) return;
-  //                 final item = appStore.state.generalState.storage_items
-  //                     .firstWhereOrNull((element) => element.id == resId);
-  //                 if (item == null) return;
-  //                 gridStateManager
-  //                     .insertRows(0, [data.buildRow(item, checked: true)]);
-  //               },
-  //               icon: HeroIcons.add),
-  //           const SizedBox(width: 10),
-  //           Padding(
-  //             padding: const EdgeInsets.all(8.0),
-  //             child: CustomAutocompleteTextField<StorageItemMd>(
-  //                 listItemWidget: (p0) => Text(p0.name),
-  //                 onSelected: (p0) {
-  //                   gridStateManager
-  //                       .insertRows(0, [data.buildRow(p0, checked: true)]);
-  //                 },
-  //                 displayStringForOption: (option) {
-  //                   return option.name;
-  //                 },
-  //                 options: (p0) => state.generalState.storage_items
-  //                     .where((element) => element.name
-  //                         .toLowerCase()
-  //                         .contains(p0.text.toLowerCase()))
-  //                     .toList()),
-  //           ),
-  //         ],
-  //       ));
-  // }
+  Widget _products(AppState state) {
+    return labelWithField(
+        labelWidth: 160,
+        "Products and services",
+        SizedBox(
+          width: MediaQuery.of(context).size.width * .95,
+          height: MediaQuery.of(context).size.height * .4,
+          child: UsersListTable(
+              enableEditing: true,
+              rows: data.isGridInitialized ? data.gridStateManager.rows : [],
+              mode: PlutoGridMode.normal,
+              gridBorderColor: Colors.grey[300]!,
+              noRowsText: "No product or service added yet",
+              onSmReady: (e) {
+                data.gridStateManager = e;
+              },
+              cols: data.cols(state)),
+        ),
+        customLabel: Row(
+          children: [
+            addIcon(
+                tooltip: "Create service/product",
+                onPressed: () async {
+                  final resId = await showDialog<int>(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) => StorageItemForm(state: state));
+                  if (resId == null) return;
+                  final item = appStore.state.generalState.storage_items
+                      .firstWhereOrNull((element) => element.id == resId);
+                  if (item == null) return;
+                  data.gridStateManager.insertRows(
+                      0, [data.buildStorageRowRow(item, checked: true)]);
+                },
+                icon: HeroIcons.add),
+            const SizedBox(width: 10),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomAutocompleteTextField<StorageItemMd>(
+                  listItemWidget: (p0) => Text(p0.name),
+                  onSelected: (p0) {
+                    data.gridStateManager.insertRows(
+                        0, [data.buildStorageRowRow(p0, checked: true)]);
+                  },
+                  displayStringForOption: (option) {
+                    return option.name;
+                  },
+                  options: (p0) => state.generalState.storage_items
+                      .where((element) => element.name
+                          .toLowerCase()
+                          .contains(p0.text.toLowerCase()))
+                      .toList()),
+            ),
+          ],
+        ));
+  }
 
   void onTableChangeDone() {
     setState(() {});

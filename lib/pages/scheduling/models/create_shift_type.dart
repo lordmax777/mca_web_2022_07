@@ -29,7 +29,6 @@ abstract class CreateShiftDataType {
 
   bool isGridInitialized = false;
   late PlutoGridStateManager gridStateManager;
-
   List<StorageItemMd> storageItems(List<StorageItemMd> storageItems) {
     return gridStateManager.rows
         .map<StorageItemMd>((row) {
@@ -47,12 +46,6 @@ abstract class CreateShiftDataType {
         .toList();
   }
 
-  late PlutoGridStateManager staffReqGridManager;
-
-  late PlutoGridStateManager qualifReqGridManager;
-
-  CreateShiftDataType({this.date});
-
   PlutoRow buildRow(StorageItemMd contractShiftItem,
       {bool checked = false, int? qty}) {
     return PlutoRow(
@@ -68,6 +61,12 @@ abstract class CreateShiftDataType {
       },
     );
   }
+
+  late PlutoGridStateManager staffReqGridManager;
+
+  late PlutoGridStateManager qualifReqGridManager;
+
+  CreateShiftDataType({this.date});
 }
 
 class UnavailableUserLoad {
