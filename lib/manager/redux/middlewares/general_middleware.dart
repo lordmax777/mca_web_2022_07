@@ -110,6 +110,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       for (var e in r['currencies']) {
         l.currencies.add(ListCurrency.fromJson(e));
       }
+      GeneralController.to.companyInfo.currency.id = l.currencies
+          .firstWhere((element) =>
+              element.code == GeneralController.to.companyInfo.currency.code)
+          .id;
       for (var e in r['countries']) {
         l.countries.add(ListCountry.fromJson(e));
       }
@@ -571,12 +575,6 @@ Future _onCreateNewClientTap(
       context: action.context,
       builder: (context) {
         switch (action.type) {
-          case ClientFormType.timing:
-            return TimingForm(
-              state: state,
-              timingInfo: action.timingInfo,
-              quoteInfo: action.quoteInfo,
-            );
           default:
             return ClientForm(
               state: state,

@@ -399,6 +399,17 @@ class ListShift {
 
   Map<String, dynamic> toJson() => _$ListShiftToJson(this);
 
+  factory ListShift.init() {
+    return ListShift(
+      id: -10,
+      name: '',
+      location_id: 0,
+      active: false,
+      client_id: 0,
+      warehouse_id: 0,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -837,6 +848,11 @@ class ListWorkRepeats {
   final int id;
   final String name;
   final int days;
+
+  bool get isOnce => id == 1;
+  bool get isDaily => id == 2;
+  bool get isWeekly => id == 3;
+  bool get isFortnightly => id == 4;
 
   @override
   ListWorkRepeats({

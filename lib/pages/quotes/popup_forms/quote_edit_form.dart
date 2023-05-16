@@ -171,104 +171,104 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
   }
 
   void _onEditPm() async {
-    final ClientInfoMd? res =
-        await appStore.dispatch(OnCreateNewClientTap(context,
-            type: ClientFormType.quoteClient,
-            clientInfo: ClientInfoMd.init(
-              name: data.quote.name,
-              company: data.quote.company,
-              email: data.quote.email,
-              phone: data.quote.phone,
-              payingDays: data.quote.payingDays,
-              currencyId: data.quote.currencyId.toString(),
-              paymentMethodId: data.quote.paymentMethodId.toString(),
-              notes: data.quote.notes,
-            )));
-    if (res == null) return;
-    setState(() {
-      data.quote.name = res.name;
-      data.quote.company = res.company;
-      data.quote.email = res.email;
-      data.quote.phone = res.phone;
-      data.quote.payingDays = res.payingDays;
-      data.quote.currencyId = int.parse(res.currencyId);
-      data.quote.paymentMethodId = int.parse(res.paymentMethodId!);
-      data.quote.notes = res.notes;
-    });
+    // final ClientInfoMd? res =
+    //     await appStore.dispatch(OnCreateNewClientTap(context,
+    //         type: ClientFormType.quoteClient,
+    //         clientInfo: ClientInfoMd.init(
+    //           name: data.quote.name,
+    //           company: data.quote.company,
+    //           email: data.quote.email,
+    //           phone: data.quote.phone,
+    //           payingDays: data.quote.payingDays,
+    //           currencyId: data.quote.currencyId.toString(),
+    //           paymentMethodId: data.quote.paymentMethodId.toString(),
+    //           notes: data.quote.notes,
+    //         )));
+    // if (res == null) return;
+    // setState(() {
+    //   data.quote.name = res.name;
+    //   data.quote.company = res.company;
+    //   data.quote.email = res.email;
+    //   data.quote.phone = res.phone;
+    //   data.quote.payingDays = res.payingDays;
+    //   data.quote.currencyId = int.parse(res.currencyId);
+    //   data.quote.paymentMethodId = int.parse(res.paymentMethodId!);
+    //   data.quote.notes = res.notes;
+    // });
   }
 
   void _editInvoiceAddress() async {
-    final ClientAddressForm? res =
-        await appStore.dispatch(OnCreateNewClientTap(context,
-            type: ClientFormType.quoteLocation,
-            clientInfo: ClientInfoMd.init(
-                address: Address(
-              line1: data.quote.addressLine1 ?? "",
-              line2: data.quote.addressLine2 ?? "",
-              city: data.quote.addressCity ?? "",
-              county: data.quote.addressCounty ?? "",
-              postcode: data.quote.addressPostcode ?? "",
-              country: data.quote.addressCountry ?? "",
-              latitude: 0,
-              longitude: 0,
-              radius: 0,
-            ))));
-    if (res == null) return;
-    setState(() {
-      data.quote.addressLine1 = res.addressLine1;
-      data.quote.addressLine2 = res.addressLine2;
-      data.quote.addressCity = res.addressCity;
-      data.quote.addressCounty = res.addressCounty;
-      data.quote.addressPostcode = res.addressPostcode;
-      data.quote.addressCountry = res.addressCountryId;
-    });
+    // final ClientAddressForm? res =
+    //     await appStore.dispatch(OnCreateNewClientTap(context,
+    //         type: ClientFormType.quoteLocation,
+    //         clientInfo: ClientInfoMd.init(
+    //             address: Address(
+    //           line1: data.quote.addressLine1 ?? "",
+    //           line2: data.quote.addressLine2 ?? "",
+    //           city: data.quote.addressCity ?? "",
+    //           county: data.quote.addressCounty ?? "",
+    //           postcode: data.quote.addressPostcode ?? "",
+    //           country: data.quote.addressCountry ?? "",
+    //           latitude: 0,
+    //           longitude: 0,
+    //           radius: 0,
+    //         ))));
+    // if (res == null) return;
+    // setState(() {
+    //   data.quote.addressLine1 = res.addressLine1;
+    //   data.quote.addressLine2 = res.addressLine2;
+    //   data.quote.addressCity = res.addressCity;
+    //   data.quote.addressCounty = res.addressCounty;
+    //   data.quote.addressPostcode = res.addressPostcode;
+    //   data.quote.addressCountry = res.addressCountryId;
+    // });
   }
 
   void _editWorkAddress() async {
-    final ClientAddressForm? res =
-        await appStore.dispatch(OnCreateNewClientTap(context,
-            type: ClientFormType.quoteLocation,
-            clientInfo: ClientInfoMd.init(
-                address: Address(
-              line1: data.quote.workAddressLine1 ?? "",
-              line2: data.quote.workAddressLine2 ?? "",
-              city: data.quote.workAddressCity ?? "",
-              county: data.quote.workAddressCounty ?? "",
-              postcode: data.quote.workAddressPostcode ?? "",
-              country: data.quote.workAddressCountry ?? "",
-              latitude: 0,
-              longitude: 0,
-              radius: 0,
-            ))));
-    if (res == null) return;
-    setState(() {
-      data.quote.workAddressLine1 = res.addressLine1;
-      data.quote.workAddressLine2 = res.addressLine2;
-      data.quote.workAddressCity = res.addressCity;
-      data.quote.workAddressCounty = res.addressCounty;
-      data.quote.workAddressPostcode = res.addressPostcode;
-      data.quote.workAddressCountry = res.addressCountryId;
-    });
+    // final ClientAddressForm? res =
+    //     await appStore.dispatch(OnCreateNewClientTap(context,
+    //         type: ClientFormType.quoteLocation,
+    //         clientInfo: ClientInfoMd.init(
+    //             address: Address(
+    //           line1: data.quote.workAddressLine1 ?? "",
+    //           line2: data.quote.workAddressLine2 ?? "",
+    //           city: data.quote.workAddressCity ?? "",
+    //           county: data.quote.workAddressCounty ?? "",
+    //           postcode: data.quote.workAddressPostcode ?? "",
+    //           country: data.quote.workAddressCountry ?? "",
+    //           latitude: 0,
+    //           longitude: 0,
+    //           radius: 0,
+    //         ))));
+    // if (res == null) return;
+    // setState(() {
+    //   data.quote.workAddressLine1 = res.addressLine1;
+    //   data.quote.workAddressLine2 = res.addressLine2;
+    //   data.quote.workAddressCity = res.addressCity;
+    //   data.quote.workAddressCounty = res.addressCounty;
+    //   data.quote.workAddressPostcode = res.addressPostcode;
+    //   data.quote.workAddressCountry = res.addressCountryId;
+    // });
   }
 
   void _editTiming() async {
-    final CreatedTimingReturnValue? res = await appStore.dispatch(
-      OnCreateNewClientTap(
-        context,
-        type: ClientFormType.timing,
-        quoteInfo: data.quote,
-      ),
-    );
-    if (res == null) return;
-    setState(() {
-      data.quote.workStartDate = res.startDate?.formatDateForApi;
-      data.quote.altWorkStartDate = res.altStartDate?.formatDateForApi;
-      data.quote.workStartTime = res.startTime?.formattedTime;
-      data.quote.workFinishTime = res.endTime?.formattedTime;
-      data.quote.workRepeat =
-          appStore.state.generalState.workRepeats[res.repeatTypeIndex!].days;
-      data.quote.workDays = res.repeatDays.sorted((a, b) => a > b ? 1 : -1);
-    });
+    // final CreatedTimingReturnValue? res = await appStore.dispatch(
+    //   OnCreateNewClientTap(
+    //     context,
+    //     type: ClientFormType.timing,
+    //     quoteInfo: data.quote,
+    //   ),
+    // );
+    // if (res == null) return;
+    // setState(() {
+    //   data.quote.workStartDate = res.startDate?.formatDateForApi;
+    //   data.quote.altWorkStartDate = res.altStartDate?.formatDateForApi;
+    //   data.quote.workStartTime = res.startTime?.formattedTime;
+    //   data.quote.workFinishTime = res.endTime?.formattedTime;
+    //   data.quote.workRepeat =
+    //       appStore.state.generalState.workRepeats[res.repeatTypeIndex!].days;
+    //   data.quote.workDays = res.repeatDays.sorted((a, b) => a > b ? 1 : -1);
+    // });
   }
 
 //Widget

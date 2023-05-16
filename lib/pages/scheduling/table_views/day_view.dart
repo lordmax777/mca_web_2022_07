@@ -62,7 +62,11 @@ class DailyViewCalendar extends StatelessWidget {
                   if (offset != null) {
                     final jobCreated = await showFormsMenus(context,
                         globalPosition: offset,
-                        data: JobModel(customDate: calendarTapDetails.date));
+                        data: JobModel(
+                          customStartDate: calendarTapDetails.date,
+                          customEndDate: calendarTapDetails.date
+                              ?.add(const Duration(hours: 1)),
+                        ));
                   } else {
                     showError("There was an unexpected error!");
                   }
@@ -107,7 +111,11 @@ class DailyViewCalendar extends StatelessWidget {
         onTapUp: (details) async {
           await showFormsMenus(context,
               globalPosition: details.globalPosition,
-              data: JobModel(allocation: ap));
+              data: JobModel(
+                allocation: ap,
+                customStartDate: start,
+                customEndDate: end,
+              ));
         },
         child: Container(
           alignment: Alignment.centerLeft,

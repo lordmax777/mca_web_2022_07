@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
-import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../comps/autocomplete_input_field.dart';
@@ -14,15 +11,12 @@ import '../../../comps/custom_scrollbar.dart';
 import '../../../comps/title_container.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/models/location_item_md.dart';
-import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
-import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../../utils/global_functions.dart';
 import '../../scheduling/create_shift_popup.dart';
-import '../../scheduling/popup_forms/storage_item_form.dart';
 import '../models/job_model.dart';
 import 'client_form.dart';
 
@@ -49,8 +43,8 @@ class _JobEditFormState extends State<JobEditForm>
   bool get isClientSelected => data.isClientSelected;
   Map<UserRes, double> get addedChildren => data.addedChildren;
   TimingModel get timing => data.timingInfo;
-  LocationAddress get address => data.address;
-  LocationAddress get workAddress => data.workAddress;
+  Address get address => data.address;
+  Address get workAddress => data.workAddress;
   DateTime? get date => data.date;
   // AllocationModel? get allocation => data.allocation;
 
@@ -72,13 +66,7 @@ class _JobEditFormState extends State<JobEditForm>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Get.showOverlay(
       //   asyncFunction: () async {
-      final unavUsers = await appStore
-          .dispatch(GetUnavailableUsersAction(date ?? DateTime.now()));
-      if (mounted) {
-        setState(() {
-          unavailableUsers.users = unavUsers;
-        });
-      }
+      _getUnavUsers(date ?? DateTime.now());
       if (isUpdate) {
         final res = await restClient()
             .getQuoteBy(
@@ -98,6 +86,15 @@ class _JobEditFormState extends State<JobEditForm>
       // loadingWidget: const CustomLoadingWidget(),
       // );
     });
+  }
+
+  Future<void> _getUnavUsers(DateTime d) async {
+    final unavUsers = await appStore.dispatch(GetUnavailableUsersAction(d));
+    if (mounted) {
+      setState(() {
+        unavailableUsers.users = unavUsers;
+      });
+    }
   }
 
   @override
@@ -226,25 +223,30 @@ class _JobEditFormState extends State<JobEditForm>
   //       ));
   // }
   //
-  // void _onCreateNewClient() async {
-  //   final CreatedClientReturnValue? res = await appStore.dispatch(
-  //       OnCreateNewClientTap(context,
-  //           type: ClientFormType.client,
-  //           clientInfo: ClientInfoMd.init(id: data.client?.id)));
-  //   if (res == null) return;
-  //   setState(() {
-  //     if (res.clientId != null) {
-  //       data.client = appStore.state.generalState.clientInfos
-  //           .firstWhereOrNull((element) => element.id == res.clientId);
-  //     }
-  //     if (res.locationId != null) {
-  //       data.tempAllowedLocationId = res.locationId;
-  //       data.selectedLocationId = res.locationId;
-  //       data.location = appStore.state.generalState.locations
-  //           .firstWhereOrNull((element) => element.id == res.locationId);
-  //     }
-  //   });
-  // }
+  void _onCreateNewClient(AppState state) async {
+    final TimingModel? res = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return ClientForm(
+            state: state,
+          );
+        });
+    if (res == null) return;
+    // setState(() {
+    //   if (res.clientId != null) {
+    //     data.client = appStore.state.generalState.clientInfos
+    //         .firstWhereOrNull((element) => element.id == res.clientId);
+    //   }
+    //   if (res.locationId != null) {
+    //     data.tempAllowedLocationId = res.locationId;
+    //     data.selectedLocationId = res.locationId;
+    //     data.location = appStore.state.generalState.locations
+    //         .firstWhereOrNull((element) => element.id == res.locationId);
+    //   }
+    // });
+  }
+
   //
   // void _editInvoiceAddress() async {
   //   final CreatedClientReturnValue? res = await appStore.dispatch(
@@ -280,154 +282,162 @@ class _JobEditFormState extends State<JobEditForm>
   //   });
   // }
   //
-  // void _editTiming() async {
-  //   timing.hasAltTime = false;
-  //   final CreatedTimingReturnValue? res = await appStore.dispatch(
-  //     OnCreateNewClientTap(context,
-  //         type: ClientFormType.timing, timingInfo: timing),
-  //   );
-  //   if (res == null) return;
-  //   data.timingInfo = res;
-  //   if (hasUnavUsers) {
-  //     setState(() {
-  //       data.unavailableUsers.isLoaded = false;
-  //     });
-  //     final unavUsrs =
-  //         await appStore.dispatch(GetUnavailableUsersAction(res.startDate!));
-  //     if (mounted) {
-  //       data.unavailableUsers.users = unavUsrs;
-  //       for (int i = 0; i < data.unavailableUsers.users.length; i++) {
-  //         if (addedChildren.isEmpty) break;
-  //         try {
-  //           final user = addedChildren[i];
-  //           if (data.unavailableUsers.users
-  //               .any((element) => element.userId == user.id)) {
-  //             addedChildren.remove(user);
-  //             addedChildrenRates.remove(user.id);
-  //           }
-  //         } catch (e) {
-  //           logger(e);
-  //         }
-  //       }
-  //       data.unavailableUsers.isLoaded = true;
-  //     }
-  //   }
-  //   setState(() {});
-  // }
-  //
-  // void onEditTeamMember(List<UserRes> users) {
-  //   //Show a dialog which will allow the user to select team members from users list.
-  //   // The content must contain a search box and a list of users.
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       final filteredUsers = [...users];
-  //       final addedUsers = <UserRes>[...addedChildren];
-  //       return StatefulBuilder(builder: (context, ss) {
-  //         return AlertDialog(
-  //           contentPadding: const EdgeInsets.all(0),
-  //           title: const Text("Select team members"),
-  //           content: SizedBox(
-  //             height: 400,
-  //             width: 400,
-  //             child: Column(
-  //               children: [
-  //                 TextField(
-  //                   decoration: const InputDecoration(
-  //                     hintText: "Search",
-  //                     prefixIcon: Icon(Icons.search),
-  //                   ),
-  //                   onChanged: (val) {
-  //                     //Filter the users list based on the search term.
-  //                     if (val.isEmpty) {
-  //                       ss(() {
-  //                         filteredUsers.clear();
-  //                         filteredUsers.addAll(users);
-  //                       });
-  //                       return;
-  //                     }
-  //                     ss(() {
-  //                       filteredUsers.retainWhere((element) => element.fullname
-  //                           .toLowerCase()
-  //                           .contains(val.toLowerCase()));
-  //                     });
-  //                   },
-  //                 ),
-  //                 Expanded(
-  //                   child: filteredUsers.isEmpty
-  //                       ? const Center(child: Text("Not found"))
-  //                       : ListView.builder(
-  //                           padding: const EdgeInsets.only(top: 8),
-  //                           itemCount: filteredUsers.length,
-  //                           itemBuilder: (context, index) {
-  //                             final user = filteredUsers[index];
-  //                             final bool isAdded = addedUsers
-  //                                 .any((element) => element.id == user.id);
-  //                             final UnavailableUserMd? unavUser =
-  //                                 unavUsers.users.firstWhereOrNull(
-  //                                     (element) => element.userId == user.id);
-  //                             final bool isUnavailable = unavUser != null &&
-  //                                 unavUser.userId == user.id;
-  //                             return ListTile(
-  //                                 onTap: null,
-  //                                 leading: CircleAvatar(
-  //                                   backgroundColor: user.userRandomBgColor,
-  //                                   child: Text(user.first2LettersOfName,
-  //                                       style: TextStyle(
-  //                                           color: user.foregroundColor)),
-  //                                 ),
-  //                                 title: Text(user.fullname,
-  //                                     style: TextStyle(
-  //                                         color: isUnavailable
-  //                                             ? Colors.grey
-  //                                             : Colors.black)),
-  //                                 subtitle: isUnavailable
-  //                                     ? Text(
-  //                                         unavUser.unavailable
-  //                                             .map((e) => e.reason)
-  //                                             .join(", "),
-  //                                         style: const TextStyle(
-  //                                             color: Colors.red))
-  //                                     : null,
-  //                                 trailing: isUnavailable
-  //                                     ? const Chip(
-  //                                         label: Text("Unavailable"),
-  //                                         labelStyle:
-  //                                             TextStyle(color: Colors.grey))
-  //                                     : IconButton(
-  //                                         onPressed: () {
-  //                                           setState(() {
-  //                                             if (isAdded) {
-  //                                               addedChildren.removeWhere(
-  //                                                   (element) =>
-  //                                                       element.id == user.id);
-  //                                               addedUsers.removeWhere(
-  //                                                   (element) =>
-  //                                                       element.id == user.id);
-  //                                             } else {
-  //                                               addedChildren.add(user);
-  //                                               addedUsers.add(user);
-  //                                             }
-  //                                             ss(() {});
-  //                                           });
-  //                                         },
-  //                                         icon: isAdded
-  //                                             ? const Icon(Icons.remove,
-  //                                                 color: Colors.red)
-  //                                             : const Icon(Icons.add,
-  //                                                 color: Colors.green),
-  //                                       ));
-  //                           },
-  //                         ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  //     },
-  //   );
-  // }
+  void _editTiming(AppState state) async {
+    final TimingModel? res = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return TimingForm(
+            state: state,
+            timingInfo: timing,
+          );
+        });
+    if (res == null) return;
+    bool fetchUnavUsers = res.date!.compareTo(data.timingInfo.date!) != 0;
+    data.timingInfo = res;
+    logger(res);
+    setState(() {
+      if (fetchUnavUsers) {
+        unavailableUsers.isLoaded = false;
+      }
+    });
+    if (fetchUnavUsers) {
+      final unavUsrs =
+          await appStore.dispatch(GetUnavailableUsersAction(res.date!));
+      if (mounted) {
+        unavailableUsers.users = unavUsrs;
+        for (int i = 0; i < unavailableUsers.users.length; i++) {
+          if (addedChildren.isEmpty) break;
+          try {
+            final user = addedChildren.entries.toList()[i].key;
+            if (unavailableUsers.users
+                .any((element) => element.userId == user.id)) {
+              addedChildren.remove(user);
+            }
+          } catch (e) {
+            logger("Error in removing unavailable users. $e");
+          }
+        }
+        unavailableUsers.isLoaded = true;
+      }
+    }
+
+    setState(() {});
+  }
+
+  void onEditTeamMember(List<UserRes> users) {
+    //Show a dialog which will allow the user to select team members from users list.
+    // The content must contain a search box and a list of users.
+    showDialog(
+      context: context,
+      builder: (context) {
+        final filteredUsers = [...users];
+        final addedUsers = <UserRes>[...addedChildren.keys.toList()];
+        return StatefulBuilder(builder: (context, ss) {
+          return AlertDialog(
+            contentPadding: const EdgeInsets.all(0),
+            title: const Text("Select team members"),
+            content: SizedBox(
+              height: 400,
+              width: 400,
+              child: Column(
+                children: [
+                  TextField(
+                    decoration: const InputDecoration(
+                      hintText: "Search",
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (val) {
+                      //Filter the users list based on the search term.
+                      if (val.isEmpty) {
+                        ss(() {
+                          filteredUsers.clear();
+                          filteredUsers.addAll(users);
+                        });
+                        return;
+                      }
+                      ss(() {
+                        filteredUsers.retainWhere((element) => element.fullname
+                            .toLowerCase()
+                            .contains(val.toLowerCase()));
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: filteredUsers.isEmpty
+                        ? const Center(child: Text("Not found"))
+                        : ListView.builder(
+                            padding: const EdgeInsets.only(top: 8),
+                            itemCount: filteredUsers.length,
+                            itemBuilder: (context, index) {
+                              final user = filteredUsers[index];
+                              final bool isAdded = addedUsers
+                                  .any((element) => element.id == user.id);
+                              final UnavailableUserMd? unavUser =
+                                  unavailableUsers.users.firstWhereOrNull(
+                                      (element) => element.userId == user.id);
+                              final bool isUnavailable = unavUser != null &&
+                                  unavUser.userId == user.id;
+                              return ListTile(
+                                  onTap: null,
+                                  leading: CircleAvatar(
+                                    backgroundColor: user.userRandomBgColor,
+                                    child: Text(user.first2LettersOfName,
+                                        style: TextStyle(
+                                            color: user.foregroundColor)),
+                                  ),
+                                  title: Text(user.fullname,
+                                      style: TextStyle(
+                                          color: isUnavailable
+                                              ? Colors.grey
+                                              : Colors.black)),
+                                  subtitle: isUnavailable
+                                      ? Text(
+                                          unavUser.unavailable
+                                              .map((e) => e.reason)
+                                              .join(", "),
+                                          style: const TextStyle(
+                                              color: Colors.red))
+                                      : null,
+                                  trailing: isUnavailable
+                                      ? const Chip(
+                                          label: Text("Unavailable"),
+                                          labelStyle:
+                                              TextStyle(color: Colors.grey))
+                                      : IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if (isAdded) {
+                                                addedChildren.removeWhere(
+                                                    (user, rate) =>
+                                                        user.id == user.id);
+                                                addedUsers.removeWhere(
+                                                    (element) =>
+                                                        element.id == user.id);
+                                              } else {
+                                                addedChildren.addAll({user: 0});
+                                                addedUsers.add(user);
+                                              }
+                                              ss(() {});
+                                            });
+                                          },
+                                          icon: isAdded
+                                              ? const Icon(Icons.remove,
+                                                  color: Colors.red)
+                                              : const Icon(Icons.add,
+                                                  color: Colors.green),
+                                        ));
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
 
 //Widget
   Widget _Form(AppState state) {
@@ -445,28 +455,23 @@ class _JobEditFormState extends State<JobEditForm>
     String week1 = "* Week 1\n";
     String week2 = "* Week 2\n";
     String week = "";
-
-    // for (var day in timing.repeatDays) {
-    //   if (timing.repeatTypeIndex == 2) {
-    //     //Week
-    //     week1 += "${Constants.daysOfTheWeek[day]}\n";
-    //     week2 = "";
-    //   }
-    //   if (timing.repeatTypeIndex == 3) {
-    //     //Fortnightly
-    //     if (day > 7) {
-    //       week2 += "${Constants.daysOfTheWeek[day]}\n";
-    //     } else {
-    //       week1 += "${Constants.daysOfTheWeek[day]}\n";
-    //     }
-    //   }
-    // }
-
-    // final w1l = week1.split(" ");
-    // final w2l = week2.split(" ");
-    // week1 = w1l.sorted((a, b) => a.compareTo(b)).join("");
-    // week2 = w2l.sorted((a, b) => a.compareTo(b)).join("");
-
+    if (timing.repeat != null) {
+      for (var day in timing.days.entries) {
+        //Weekly
+        if (timing.repeat!.isWeekly) {
+          week1 += "${Constants.daysOfTheWeek[day.key]}\n";
+          week2 = "";
+        }
+        //Fortnightly
+        if (timing.repeat!.isFortnightly) {
+          if (day.key > 7) {
+            week2 += "${Constants.daysOfTheWeek[day.key]}\n";
+          } else {
+            week1 += "${Constants.daysOfTheWeek[day.key]}\n";
+          }
+        }
+      }
+    }
     if (week1 == "* Week 1\n" && week2 == "* Week 2\n") {
       week = "";
     } else {
@@ -474,7 +479,7 @@ class _JobEditFormState extends State<JobEditForm>
     }
 
     List<LocationAddress> locations = [
-      ...state.generalState.clientBasedLocations(data.client?.id),
+      ...state.generalState.clientBasedLocations(data.client.id),
     ];
     //find and add the location which is equal to tempAllowedLocationId
     // locations.addAll(state.generalState.locations
@@ -513,7 +518,9 @@ class _JobEditFormState extends State<JobEditForm>
                           TitleContainer(
                             titleOverride: "Create New Client",
                             titleIcon: HeroIcons.add,
-                            // onEdit: isUpdate ? null : _onCreateNewClient,
+                            onEdit: isUpdate
+                                ? null
+                                : () => _onCreateNewClient(state),
                             title: "Personal Information",
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -601,10 +608,11 @@ class _JobEditFormState extends State<JobEditForm>
                                       "Currency:",
                                       null,
                                       customLabel: _textField(currencies
-                                          .firstWhereOrNull((element) =>
-                                              data.client.currencyId ==
-                                              element.code)
-                                          ?.title),
+                                          .firstWhere((element) =>
+                                              int.parse(
+                                                  data.client.currencyId) ==
+                                              element.id)
+                                          .title),
                                     ),
                                     const Divider(),
                                     labelWithField(
@@ -688,9 +696,14 @@ class _JobEditFormState extends State<JobEditForm>
                                       height: 50,
                                       hintText: "Select Location",
                                       listItemWidget: (p0) => Text(p0.name),
+                                      onCleared: () {
+                                        setState(() {
+                                          data.setAddress(null);
+                                        });
+                                      },
                                       onSelected: (p0) {
                                         setState(() {
-                                          data.setAddress(p0);
+                                          data.setAddress(p0.address);
                                         });
                                       },
                                       displayStringForOption: (option) {
@@ -707,32 +720,28 @@ class _JobEditFormState extends State<JobEditForm>
                               labelWidth: 160,
                               "Address Line 1:",
                               null,
-                              customLabel:
-                                  _textField(data.address.address.line1),
+                              customLabel: _textField(data.address.line1),
                             ),
                             const Divider(),
                             labelWithField(
                               labelWidth: 160,
                               "Address Line 2:",
                               null,
-                              customLabel:
-                                  _textField(data.address.address.line2),
+                              customLabel: _textField(data.address.line2),
                             ),
                             const Divider(),
                             labelWithField(
                               labelWidth: 160,
                               "City:",
                               null,
-                              customLabel:
-                                  _textField(data.address.address.city),
+                              customLabel: _textField(data.address.city),
                             ),
                             const Divider(),
                             labelWithField(
                               labelWidth: 160,
                               "County:",
                               null,
-                              customLabel:
-                                  _textField(data.address.address.county),
+                              customLabel: _textField(data.address.county),
                             ),
                             const Divider(),
                             labelWithField(
@@ -741,8 +750,7 @@ class _JobEditFormState extends State<JobEditForm>
                               null,
                               customLabel: _textField(countries
                                   .firstWhereOrNull((element) =>
-                                      element.code ==
-                                      data.address.address.country)
+                                      element.code == data.address.country)
                                   ?.name),
                             ),
                             const Divider(),
@@ -750,8 +758,7 @@ class _JobEditFormState extends State<JobEditForm>
                               labelWidth: 160,
                               "Postcode:",
                               null,
-                              customLabel:
-                                  _textField(data.address.address.postcode),
+                              customLabel: _textField(data.address.postcode),
                             ),
                           ],
                         ),
@@ -783,9 +790,14 @@ class _JobEditFormState extends State<JobEditForm>
                                     height: 50,
                                     hintText: "Select Location",
                                     listItemWidget: (p0) => Text(p0.name),
+                                    onCleared: () {
+                                      setState(() {
+                                        data.setWorkAddress(null);
+                                      });
+                                    },
                                     onSelected: (p0) {
                                       setState(() {
-                                        data.setWorkAddress(p0);
+                                        data.setWorkAddress(p0.address);
                                       });
                                     },
                                     displayStringForOption: (option) {
@@ -800,32 +812,28 @@ class _JobEditFormState extends State<JobEditForm>
                                 labelWidth: 160,
                                 "Address Line 1:",
                                 null,
-                                customLabel:
-                                    _textField(workAddress.address.line1),
+                                customLabel: _textField(workAddress.line1),
                               ),
                               const Divider(),
                               labelWithField(
                                 labelWidth: 160,
                                 "Address Line 2:",
                                 null,
-                                customLabel:
-                                    _textField(workAddress.address.line2),
+                                customLabel: _textField(workAddress.line2),
                               ),
                               const Divider(),
                               labelWithField(
                                 labelWidth: 160,
                                 "City:",
                                 null,
-                                customLabel:
-                                    _textField(workAddress.address.city),
+                                customLabel: _textField(workAddress.city),
                               ),
                               const Divider(),
                               labelWithField(
                                 labelWidth: 160,
                                 "County:",
                                 null,
-                                customLabel:
-                                    _textField(workAddress.address.county),
+                                customLabel: _textField(workAddress.county),
                               ),
                               const Divider(),
                               labelWithField(
@@ -834,8 +842,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 null,
                                 customLabel: _textField(countries
                                     .firstWhereOrNull((element) =>
-                                        element.code ==
-                                        workAddress.address.country)
+                                        element.code == workAddress.country)
                                     ?.name),
                               ),
                               const Divider(),
@@ -843,8 +850,7 @@ class _JobEditFormState extends State<JobEditForm>
                                 labelWidth: 160,
                                 "Postcode:",
                                 null,
-                                customLabel:
-                                    _textField(workAddress.address.postcode),
+                                customLabel: _textField(workAddress.postcode),
                               ),
                             ],
                           ),
@@ -852,7 +858,7 @@ class _JobEditFormState extends State<JobEditForm>
                     ],
                   ),
                   TitleContainer(
-                    // onEdit: _editTiming,
+                    onEdit: () => _editTiming(state),
                     title: "Timing",
                     child: SpacedColumn(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -879,27 +885,25 @@ class _JobEditFormState extends State<JobEditForm>
                           customLabel:
                               _textField(timing.endTime?.format(context)),
                         ),
-                        // const Divider(),
-                        // labelWithField(
-                        //   labelWidth: 160,
-                        //   "Repeat:",
-                        //   null,
-                        //   customLabel: _textField(timing.repeatTypeIndex != null
-                        //       ? workRepeats[timing.repeatTypeIndex!].name
-                        //       : null),
-                        // ),
-                        // if (timing.repeatTypeIndex != null &&
-                        //     (timing.repeatTypeIndex != 0 ||
-                        //         timing.repeatTypeIndex != 1))
-                        //   const Divider(),
-                        // if (timing.repeatTypeIndex != null &&
-                        //     (timing.repeatTypeIndex != 0 ||
-                        //         timing.repeatTypeIndex != 1))
-                        //   labelWithField(
-                        //       labelWidth: 160,
-                        //       "Days:",
-                        //       null,
-                        //       customLabel: _textField(week)),
+                        const Divider(),
+                        labelWithField(
+                          labelWidth: 160,
+                          "Repeat:",
+                          null,
+                          customLabel: _textField(timing.repeat?.name),
+                        ),
+                        if (timing.repeat != null &&
+                            (timing.repeat!.isWeekly ||
+                                timing.repeat!.isFortnightly))
+                          const Divider(),
+                        if (timing.repeat != null &&
+                            (timing.repeat!.isWeekly ||
+                                timing.repeat!.isFortnightly))
+                          labelWithField(
+                              labelWidth: 160,
+                              "Days:",
+                              null,
+                              customLabel: _textField(week)),
                         const Divider(),
                         labelWithField(
                           labelWidth: 160,
@@ -916,12 +920,11 @@ class _JobEditFormState extends State<JobEditForm>
                   ),
                   TitleContainer(
                     titleIcon: HeroIcons.add,
-                    // onEdit:
-                    // unavUsers.isLoaded
-                    //     ? () {
-                    //         onEditTeamMember(users);
-                    //       }
-                    //     : null,
+                    onEdit: unavailableUsers.isLoaded
+                        ? () {
+                            onEditTeamMember(users);
+                          }
+                        : null,
                     title: "Team",
                     child: _team(users),
                   ),
@@ -947,14 +950,14 @@ class _JobEditFormState extends State<JobEditForm>
         else if (addedChildren.isEmpty)
           TextButton(
             onPressed: () {
-              // onEditTeamMember(users);
+              onEditTeamMember(users);
             },
             child: const Text("Add team member"),
           ),
         ...addedChildren.entries.map((e) {
           final user = e.key;
           final rate = e.value;
-          bool isAdded = rate != -1;
+          bool isRateAdded = rate > 0;
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
@@ -968,19 +971,19 @@ class _JobEditFormState extends State<JobEditForm>
               mainAxisSize: MainAxisSize.min,
               children: [
                 addIcon(
-                  tooltip: "${!isAdded ? "Add" : "Remove"} Special Rate",
+                  tooltip: "${!isRateAdded ? "Add" : "Remove"} Special Rate",
                   onPressed: () {
                     setState(() {
-                      if (isAdded) {
+                      if (isRateAdded) {
                         addedChildren[user] = -1;
                       } else {
-                        addedChildren[user] = 0;
+                        addedChildren[user] = 1;
                       }
                     });
                   },
-                  icon: !isAdded ? HeroIcons.dollar : HeroIcons.bin,
+                  icon: !isRateAdded ? HeroIcons.dollar : HeroIcons.bin,
                 ),
-                if (isAdded)
+                if (isRateAdded)
                   TextField(
                     decoration: const InputDecoration(
                       isDense: true,

@@ -52,7 +52,6 @@ class CustomAutocompleteTextField<T extends Object> extends StatelessWidget {
                               title:
                                   listItemWidget?.call(e) ?? Text(e.toString()),
                               onTap: () {
-                                logger((e as dynamic).toJson());
                                 onSelected(e);
                               },
                             );

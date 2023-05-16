@@ -306,38 +306,38 @@ class _JobEditFormState extends State<JobEditForm>
   }
 
   void _editTiming() async {
-    timing.hasAltTime = false;
-    final CreatedTimingReturnValue? res = await appStore.dispatch(
-      OnCreateNewClientTap(context,
-          type: ClientFormType.timing, timingInfo: timing),
-    );
-    if (res == null) return;
-    data.timingInfo = res;
-    if (hasUnavUsers) {
-      setState(() {
-        data.unavailableUsers.isLoaded = false;
-      });
-      final unavUsrs =
-          await appStore.dispatch(GetUnavailableUsersAction(res.startDate!));
-      if (mounted) {
-        data.unavailableUsers.users = unavUsrs;
-        for (int i = 0; i < data.unavailableUsers.users.length; i++) {
-          if (addedChildren.isEmpty) break;
-          try {
-            final user = addedChildren[i];
-            if (data.unavailableUsers.users
-                .any((element) => element.userId == user.id)) {
-              addedChildren.remove(user);
-              addedChildrenRates.remove(user.id);
-            }
-          } catch (e) {
-            logger(e);
-          }
-        }
-        data.unavailableUsers.isLoaded = true;
-      }
-    }
-    setState(() {});
+    // timing.hasAltTime = false;
+    // final CreatedTimingReturnValue? res = await appStore.dispatch(
+    //   OnCreateNewClientTap(context,
+    //       type: ClientFormType.timing, timingInfo: timing),
+    // );
+    // if (res == null) return;
+    // data.timingInfo = res;
+    // if (hasUnavUsers) {
+    //   setState(() {
+    //     data.unavailableUsers.isLoaded = false;
+    //   });
+    //   final unavUsrs =
+    //       await appStore.dispatch(GetUnavailableUsersAction(res.startDate!));
+    //   if (mounted) {
+    //     data.unavailableUsers.users = unavUsrs;
+    //     for (int i = 0; i < data.unavailableUsers.users.length; i++) {
+    //       if (addedChildren.isEmpty) break;
+    //       try {
+    //         final user = addedChildren[i];
+    //         if (data.unavailableUsers.users
+    //             .any((element) => element.userId == user.id)) {
+    //           addedChildren.remove(user);
+    //           addedChildrenRates.remove(user.id);
+    //         }
+    //       } catch (e) {
+    //         logger(e);
+    //       }
+    //     }
+    //     data.unavailableUsers.isLoaded = true;
+    //   }
+    // }
+    // setState(() {});
   }
 
   void onEditTeamMember(List<UserRes> users) {

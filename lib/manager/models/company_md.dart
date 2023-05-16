@@ -192,6 +192,7 @@ class Currency {
   final String sign;
   final bool signFront;
   final int digits;
+  int id = 0;
 
   Currency({
     required this.code,

@@ -212,35 +212,36 @@ class Constants {
 
   static TimeOfDay isoTimeOfDay(String time) {
     try {
-      return TimeOfDay.fromDateTime(DateFormat("HH:mm").parse(time));
+      return TimeOfDay.fromDateTime(DateTime.parse("2022-05-12 $time"));
     } on Exception catch (e) {
       logger(e, hint: "isoTimeOfDay");
       rethrow;
     }
   }
 
+  static const Map<int, String> daysMap = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+  };
+
   static Map<int, String> parseDays(days) {
     final bool isList = days is List;
     //if list [1,1,1,1,1,1,1]
     //if Map {"0":1, "1":1, "2":1, "3":1, "4":1, "5":1, "6":1}
 
-    const Map<int, String> _days = {
-      0: "Sunday",
-      1: "Monday",
-      2: "Tuesday",
-      3: "Wednesday",
-      4: "Thursday",
-      5: "Friday",
-      6: "Saturday",
-    };
     try {
       if (isList) {
-        return {for (int i = 0; i < days.length; i++) i: _days[i]!};
+        return {for (int i = 0; i < days.length; i++) i: daysMap[i]!};
       }
       return {
         for (int i = 0; i < days.length; i++)
           int.parse(days.keys.toList()[i]):
-              _days[(int.parse(days.keys.toList()[i]))]!
+              daysMap[(int.parse(days.keys.toList()[i]))]!
       };
     } on Exception catch (e) {
       logger(e, hint: "parseDays");

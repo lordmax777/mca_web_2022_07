@@ -169,7 +169,7 @@ class ClientInfoMd {
     return ClientInfoMd(
       id: id ?? -10,
       name: name ?? '',
-      currencyId: companyInfo.currency.code,
+      currencyId: companyInfo.currency.id.toString(),
       payingDays: companyInfo.paying_days,
       active: active ?? false,
       notes: notes ?? '',

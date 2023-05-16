@@ -19,6 +19,7 @@ import '../../../theme/theme.dart';
 import '../../../utils/global_functions.dart';
 import '../../properties/new_prop_tabs/shift_details_tab.dart';
 import '../create_shift_popup.dart';
+import '../models/timing_model.dart';
 
 class CreatedTimingReturnValue {
   DateTime? startDate;
@@ -43,12 +44,10 @@ class CreatedTimingReturnValue {
 
 class TimingForm extends StatefulWidget {
   final AppState state;
-  final QuoteInfoMd? quoteInfo;
-  final CreatedTimingReturnValue? timingInfo;
+  final TimingModel? timingInfo;
   const TimingForm({
     Key? key,
     required this.state,
-    this.quoteInfo,
     this.timingInfo,
   }) : super(key: key);
 
@@ -59,8 +58,7 @@ class TimingForm extends StatefulWidget {
 class _TimingFormState extends State<TimingForm> {
   final ScrollController scrollController = ScrollController();
 
-  QuoteInfoMd? get quote => widget.quoteInfo;
-  get timingInfo => widget.timingInfo;
+  TimingModel? get timingInfo => widget.timingInfo;
 
   AppState get state => widget.state;
 
@@ -68,7 +66,7 @@ class _TimingFormState extends State<TimingForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final returnVal = CreatedTimingReturnValue();
+  TimingModel returnVal = TimingModel();
 
   @override
   void dispose() {
@@ -80,39 +78,10 @@ class _TimingFormState extends State<TimingForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (quote != null) {
-        logger(quote);
-        returnVal.startDate = quote!.workStartDate?.toDate();
-        returnVal.altStartDate = quote!.altWorkStartDate?.toDate();
-        returnVal.startTime = quote!.workStartTime?.formattedTime;
-        returnVal.endTime = quote!.workFinishTime?.formattedTime;
-        if (quote!.workStartTime == null && quote!.workFinishTime == null) {
-          logger(quote!.workStartTime?.formattedTime);
-          if (quote!.workStartTime?.formattedTime ==
-                  const TimeOfDay(hour: 0, minute: 0) &&
-              quote!.workFinishTime?.formattedTime ==
-                  const TimeOfDay(hour: 23, minute: 59)) {
-            returnVal.isAllDay = true;
-          }
-        }
-        final workIndex = state.generalState.workRepeats
-            .indexWhere((element) => element.days == quote!.workRepeat);
-        if (workIndex != -1) {
-          returnVal.repeatTypeIndex = workIndex;
-        }
-        returnVal.repeatDays = quote!.workDays;
-        setState(() {});
-      }
       if (timingInfo != null) {
-        returnVal.startDate = timingInfo!.startDate;
-        returnVal.altStartDate = timingInfo!.altStartDate;
-        returnVal.startTime = timingInfo!.startTime;
-        returnVal.endTime = timingInfo!.endTime;
-        returnVal.isAllDay = timingInfo!.isAllDay;
-        returnVal.repeatTypeIndex = timingInfo!.repeatTypeIndex;
-        returnVal.repeatDays = timingInfo!.repeatDays;
-        returnVal.hasAltTime = timingInfo!.hasAltTime;
-        setState(() {});
+        setState(() {
+          returnVal = timingInfo!.copy();
+        });
       }
     });
   }
@@ -171,56 +140,47 @@ class _TimingFormState extends State<TimingForm> {
                         isReadOnly: true,
                         hintText: "Start date",
                         controller: TextEditingController(
-                          text: returnVal.startDate?.formattedDate ?? "",
+                          text: returnVal.date?.formattedDate ?? "",
                         ),
                         onTap: () async {
                           final date = await showCustomDatePicker(context,
-                              initialTime: returnVal.startDate);
+                              initialTime: returnVal.date);
                           if (date == null) return;
 
                           setState(() {
-                            returnVal.startDate = date;
+                            returnVal.date = date;
                           });
                         },
                       ),
                     ),
-                    if (returnVal.hasAltTime)
-                      labelWithField(
-                        "Alternative Start Date",
-                        TextInputWidget(
-                          width: 300,
-                          rightIcon: HeroIcons.calendar,
-                          isReadOnly: true,
-                          hintText: "Start date",
-                          controller: TextEditingController(
-                            text: returnVal.altStartDate?.formattedDate ?? "",
-                          ),
-                          onTap: () async {
-                            final date = await showCustomDatePicker(context,
-                                initialTime: returnVal.altStartDate);
-
-                            if (date == null) return;
-
-                            setState(() {
-                              returnVal.altStartDate = date;
-                            });
-                          },
-                        ),
-                      ),
+                    // if (returnVal.hasAltTime)
+                    //   labelWithField(
+                    //     "Alternative Start Date",
+                    //     TextInputWidget(
+                    //       width: 300,
+                    //       rightIcon: HeroIcons.calendar,
+                    //       isReadOnly: true,
+                    //       hintText: "Start date",
+                    //       controller: TextEditingController(
+                    //         text: returnVal.altStartDate?.formattedDate ?? "",
+                    //       ),
+                    //       onTap: () async {
+                    //         final date = await showCustomDatePicker(context,
+                    //             initialTime: returnVal.altStartDate);
+                    //
+                    //         if (date == null) return;
+                    //
+                    //         setState(() {
+                    //           returnVal.altStartDate = date;
+                    //         });
+                    //       },
+                    //     ),
+                    //   ),
                     labelWithField(
                       "All day",
                       toggle(returnVal.isAllDay, (val) {
                         setState(() {
                           returnVal.isAllDay = val;
-                          if (returnVal.isAllDay) {
-                            returnVal.startTime =
-                                const TimeOfDay(hour: 0, minute: 0);
-                            returnVal.endTime =
-                                const TimeOfDay(hour: 23, minute: 59);
-                          } else {
-                            returnVal.startTime = null;
-                            returnVal.endTime = null;
-                          }
                         });
                       }),
                     ),
@@ -240,14 +200,6 @@ class _TimingFormState extends State<TimingForm> {
                           if (res == null) return;
                           setState(() {
                             returnVal.startTime = res;
-                            if (returnVal.endTime ==
-                                    const TimeOfDay(hour: 23, minute: 59) &&
-                                returnVal.startTime ==
-                                    const TimeOfDay(hour: 0, minute: 0)) {
-                              returnVal.isAllDay = true;
-                            } else {
-                              returnVal.isAllDay = false;
-                            }
                           });
                         },
                       ),
@@ -268,14 +220,6 @@ class _TimingFormState extends State<TimingForm> {
                           if (res == null) return;
                           setState(() {
                             returnVal.endTime = res;
-                            if (returnVal.endTime ==
-                                    const TimeOfDay(hour: 23, minute: 59) &&
-                                returnVal.startTime ==
-                                    const TimeOfDay(hour: 0, minute: 0)) {
-                              returnVal.isAllDay = true;
-                            } else {
-                              returnVal.isAllDay = false;
-                            }
                           });
                         },
                       ),
@@ -293,23 +237,21 @@ class _TimingFormState extends State<TimingForm> {
                             items: workRepeats
                                 .map((e) => CustomDropdownValue(name: e.name))
                                 .toList(),
-                            value: returnVal.repeatTypeIndex != null
+                            value: returnVal.repeat != null
                                 ? CustomDropdownValue(
-                                    name:
-                                        workRepeats[returnVal.repeatTypeIndex!]
-                                            .name)
+                                    name: returnVal.repeat!.name)
                                 : null,
                             onChanged: (index) {
                               setState(() {
-                                returnVal.repeatDays.clear();
-                                returnVal.repeatTypeIndex = index;
+                                returnVal.days.clear();
+                                returnVal.repeat = workRepeats[index];
                               });
                             },
                           ),
                         ),
-                        if (returnVal.repeatTypeIndex != null)
-                          if (workRepeats[returnVal.repeatTypeIndex!].id == 3 ||
-                              workRepeats[returnVal.repeatTypeIndex!].id == 4)
+                        if (returnVal.repeat != null)
+                          if (returnVal.repeat!.id == 3 ||
+                              returnVal.repeat!.id == 4)
                             SpacedColumn(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -330,109 +272,51 @@ class _TimingFormState extends State<TimingForm> {
                                 const SizedBox(height: 16),
                                 for (var item in Constants.daysOfTheWeek.keys
                                     .where((value) => value < 8))
-                                  chbx(returnVal.repeatDays.contains(item),
+                                  chbx(returnVal.days.containsKey(item),
                                       (value) {
                                     setState(() {
                                       if (value) {
-                                        returnVal.repeatDays.add(item);
+                                        returnVal.days[item] =
+                                            Constants.daysOfTheWeek[item]!;
                                       } else {
-                                        returnVal.repeatDays.remove(item);
+                                        returnVal.days.remove(item);
                                       }
                                     });
                                   }, Constants.daysOfTheWeek[item] ?? ""),
-                                if (workRepeats[returnVal.repeatTypeIndex!]
-                                        .id ==
-                                    4)
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                const SizedBox(height: 16),
+                                if (returnVal.repeat!.id == 4)
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          const SizedBox(height: 64),
-                                          KText(
-                                              text: 'Week 2',
-                                              textColor: ThemeColors.gray2,
-                                              fontSize: 14,
-                                              fontWeight: FWeight.bold),
-                                          KText(
-                                              text: '*',
-                                              textColor: ThemeColors.red3,
-                                              fontSize: 14,
-                                              fontWeight: FWeight.bold),
-                                        ],
-                                      ),
-                                      for (var item in Constants
-                                          .daysOfTheWeek.keys
-                                          .where((value) => value > 7))
-                                        chbx(
-                                            returnVal.repeatDays.contains(item),
-                                            (value) {
-                                          setState(() {
-                                            if (value) {
-                                              returnVal.repeatDays.add(item);
-                                            } else {
-                                              returnVal.repeatDays.remove(item);
-                                            }
-                                          });
-                                        }, Constants.daysOfTheWeek[item] ?? ""),
+                                      KText(
+                                          text: 'Week 2',
+                                          textColor: ThemeColors.gray2,
+                                          fontSize: 14,
+                                          fontWeight: FWeight.bold),
+                                      KText(
+                                          text: '*',
+                                          textColor: ThemeColors.red3,
+                                          fontSize: 14,
+                                          fontWeight: FWeight.bold),
                                     ],
                                   ),
+                                if (returnVal.repeat!.id == 4)
+                                  const SizedBox(height: 16),
+                                if (returnVal.repeat!.id == 4)
+                                  for (var item in Constants.daysOfTheWeek.keys
+                                      .where((value) => value > 7))
+                                    chbx(returnVal.days.containsKey(item),
+                                        (value) {
+                                      setState(() {
+                                        if (value) {
+                                          returnVal.days[item] =
+                                              Constants.daysOfTheWeek[item]!;
+                                        } else {
+                                          returnVal.days.remove(item);
+                                        }
+                                      });
+                                    }, Constants.daysOfTheWeek[item] ?? ""),
                               ],
                             ),
-                        // if (returnVal.repeatTypeIndex != null)
-                        //   if (workRepeats[returnVal.repeatTypeIndex!].id == 3 ||
-                        //       workRepeats[returnVal.repeatTypeIndex!].id == 4)
-                        //     for (int i = 0;
-                        //         i <
-                        //             workRepeats[returnVal.repeatTypeIndex!]
-                        //                     .days /
-                        //                 7;
-                        //         i++)
-                        //       SpacedColumn(
-                        //         crossAxisAlignment: CrossAxisAlignment.start,
-                        //         children: [
-                        //           Row(
-                        //             children: [
-                        //               KText(
-                        //                   text: 'Week ${i + 1}',
-                        //                   textColor: ThemeColors.gray2,
-                        //                   fontSize: 14,
-                        //                   fontWeight: FWeight.bold),
-                        //               KText(
-                        //                   text: '*',
-                        //                   textColor: ThemeColors.red3,
-                        //                   fontSize: 14,
-                        //                   fontWeight: FWeight.bold),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(height: 16),
-                        //           for (int j = 0;
-                        //               j <
-                        //                   workRepeats[returnVal
-                        //                               .repeatTypeIndex!]
-                        //                           .days /
-                        //                       (workRepeats[returnVal
-                        //                                   .repeatTypeIndex!]
-                        //                               .days /
-                        //                           7);
-                        //               j++)
-                        //             chbx(
-                        //                 returnVal.repeatDays
-                        //                     .contains(j + (i * 7) + 1),
-                        //                 (value) {
-                        //               setState(() {
-                        //                 if (value) {
-                        //                   returnVal.repeatDays
-                        //                       .add(j + (i * 7) + 1);
-                        //                 } else {
-                        //                   returnVal.repeatDays
-                        //                       .remove(j + (i * 7) + 1);
-                        //                 }
-                        //               });
-                        //             }, Constants.daysOfTheWeek[j + 1] ?? ""),
-                        //         ],
-                        //       ),
                       ],
                     ),
                   ],
@@ -456,12 +340,12 @@ class _TimingFormState extends State<TimingForm> {
             text: "Save",
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                if (returnVal.repeatTypeIndex == null) {
+                if (returnVal.repeat == null) {
                   showError("Please select a repeat type");
                   return;
                 }
-                if (returnVal.repeatTypeIndex == 2) {
-                  if (returnVal.repeatDays.isEmpty) {
+                if (returnVal.repeat!.id == 3 || returnVal.repeat!.id == 4) {
+                  if (returnVal.days.isEmpty) {
                     showError("Please select at least one day");
                     return;
                   }

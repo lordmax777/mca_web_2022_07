@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:mca_web_2022_07/manager/hive.dart';
+import 'package:mca_web_2022_07/manager/models/auth.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 import '../redux/sets/app_state.dart';
 import '../redux/states/auth_state.dart';
@@ -20,10 +22,15 @@ class AuthGuard extends AutoRedirectGuard {
     if (isLoggedIn) {
       // Do login again using refresh token
       if (!isLoaded) {
-        await appStore.dispatch(GetRefreshTokenAction());
+        final StateValue<AuthRes> res =
+            await appStore.dispatch(GetRefreshTokenAction());
+        if (!res.error.isError) {
+          isLoaded = true;
+          resolver.next();
+        } else {
+          router.replaceAll([const LoginRoute()]);
+        }
       }
-      isLoaded = true;
-      resolver.next();
     } else {
       router.replaceAll([const LoginRoute()]);
     }

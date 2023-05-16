@@ -35,7 +35,7 @@ class LoginController extends GetxController {
         appRouter.popAndPushAll([appInitRoute]);
       } else {
         await closeLoading();
-        showError("Login Failed: ${res.rawError!.data['error_description']}");
+        showError("Login Failed: ${res.rawError?.data['error_description']}");
       }
     }
   }

@@ -1,7 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
+import 'package:mca_web_2022_07/utils/constants.dart';
 
+import '../../theme/theme.dart';
 import '../redux/sets/app_state.dart';
+import 'location_item_md.dart';
 
 class QuoteInfoMd {
   // {
@@ -98,6 +103,8 @@ class QuoteInfoMd {
   //         "users": <UserInfo>[],
   //     },
 
+  CompanyMd get companyInfo => GeneralController.to.companyInfo;
+
   int id;
   String customerId;
   String name;
@@ -106,9 +113,18 @@ class QuoteInfoMd {
   String? phone;
   String? email;
   String? workStartDate;
+  DateTime? get workStartDateAsDateTime =>
+      workStartDate == null ? null : Constants.isoDateTime(workStartDate!);
   String? altWorkStartDate;
+  DateTime? get altWorkStartDateAsDateTime => altWorkStartDate == null
+      ? null
+      : Constants.isoDateTime(altWorkStartDate!);
   String? workStartTime;
+  TimeOfDay? get workStartTimeAsTimeOfDay =>
+      workStartTime == null ? null : Constants.isoTimeOfDay(workStartTime!);
   String? workFinishTime;
+  TimeOfDay? get workFinishTimeAsTimeOfDay =>
+      workFinishTime == null ? null : Constants.isoTimeOfDay(workFinishTime!);
 
   //number of days
   int workRepeat;
@@ -133,12 +149,25 @@ class QuoteInfoMd {
   String? vatNumber;
   String? vatCalc;
   String? fax;
+
   String? addressLine1;
   String? addressLine2;
   String? addressCity;
   String? addressCounty;
   String? addressCountry;
   String? addressPostcode;
+  Address get addressModel => Address(
+        line1: addressLine1 ?? '',
+        line2: addressLine2 ?? '',
+        city: addressCity ?? '',
+        county: addressCounty ?? '',
+        country: addressCountry ?? companyInfo.country,
+        postcode: addressPostcode ?? '',
+        radius: 0,
+        latitude: 0,
+        longitude: 0,
+      );
+
   String? notes;
   String? workAddressLine1;
   String? workAddressLine2;
@@ -146,14 +175,31 @@ class QuoteInfoMd {
   String? workAddressCounty;
   String? workAddressCountry;
   String? workAddressPostcode;
+  Address get workAddressModel => Address(
+        line1: workAddressLine1 ?? '',
+        line2: workAddressLine2 ?? '',
+        city: workAddressCity ?? '',
+        county: workAddressCounty ?? '',
+        country: workAddressCountry ?? companyInfo.country,
+        postcode: workAddressPostcode ?? '',
+        radius: 0,
+        latitude: 0,
+        longitude: 0,
+      );
+
   String? acceptedOn;
   bool? quoteStatus;
   String? quoteComments;
   String? lastSent;
 
   int? clientId;
+  ClientInfoMd? get clientInfo => appStore.state.generalState.clientInfos
+      .firstWhereOrNull((element) => element.id == clientId);
   int? clientContractId;
   int? locationId;
+  LocationAddress? get locationAddress => appStore.state.generalState
+      .clientBasedLocations(clientId)
+      .firstWhereOrNull((element) => element.id == clientId);
   int? shiftId;
   String? userIds;
   List<int> get getUserIds =>
