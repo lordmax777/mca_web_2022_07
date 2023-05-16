@@ -190,6 +190,14 @@ class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    TimesheetSummaryRoute.name: (routeData) {
+      final args = routeData.argsAs<TimesheetSummaryRouteArgs>(
+          orElse: () => const TimesheetSummaryRouteArgs());
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: TimesheetSummaryPage(key: args.key),
+      );
+    },
   };
 
   @override
@@ -311,6 +319,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               TimesheetUserShiftDetailsRoute.name,
               path: 'timesheet-shift-details',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              TimesheetSummaryRoute.name,
+              path: 'timesheet-summary',
               parent: HomeRoute.name,
             ),
           ],
@@ -717,5 +730,29 @@ class TimesheetUserShiftDetailsRouteArgs {
   @override
   String toString() {
     return 'TimesheetUserShiftDetailsRouteArgs{key: $key, timesheetDep: $timesheetDep}';
+  }
+}
+
+/// generated route for
+/// [TimesheetSummaryPage]
+class TimesheetSummaryRoute extends PageRouteInfo<TimesheetSummaryRouteArgs> {
+  TimesheetSummaryRoute({Key? key})
+      : super(
+          TimesheetSummaryRoute.name,
+          path: 'timesheet-summary',
+          args: TimesheetSummaryRouteArgs(key: key),
+        );
+
+  static const String name = 'TimesheetSummaryRoute';
+}
+
+class TimesheetSummaryRouteArgs {
+  const TimesheetSummaryRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'TimesheetSummaryRouteArgs{key: $key}';
   }
 }
