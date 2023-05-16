@@ -828,50 +828,50 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
     );
 
     //2. Change Quote Status to accepted
-    // if (createdQuote != null && createdQuote.success) {
-    //   final quoteId = createdQuote.data as int;
-    //   final ApiResponse? changedQuoteStatus = await appStore.dispatch(
-    //       ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
-    //   if (changedQuoteStatus?.success == true) {
-    //     await appStore.dispatch(SCFetchShiftsAction(date: timing.startDate!));
-    //     await appStore.dispatch(SCFetchShiftsWeekAction(
-    //       startDate: timing.startDate!.subtract(const Duration(days: 7)),
-    //       endDate: timing.startDate!,
-    //     ));
-    //     await appStore
-    //         .dispatch(SCFetchShiftsMonthAction(startDate: timing.startDate!));
-    //
-    //     return changedQuoteStatus;
-    //   } else {
-    //     showError(changedQuoteStatus?.data ?? "Error");
-    //   }
-    //   //DEPRECATED
-    //   // //3. (Optional) Assign users to the allocation
-    //   // if (changedQuoteStatus != null && changedQuoteStatus.success) {
-    //   //   //TODO: Assign users to the allocation
-    //   //   // final allocationId = changedQuoteStatus.data as int;
-    //   //   // //Get all allocations and find the shift id using allocation id and date
-    //   //   // final ApiResponse res = await restClient()
-    //   //   //     .getShifts(
-    //   //   //       location?.id ?? 0,
-    //   //   //       0,
-    //   //   //       0,
-    //   //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
-    //   //   //     )
-    //   //   //     .nocodeErrorHandler();
-    //   //   // //Use shift id
-    //   //   // // final ApiResponse res = await restClient()
-    //   //   // //     .postShifts(
-    //   //   // //       location?.id ?? 0,
-    //   //   // //       805, //TODO: User
-    //   //   // //       106,
-    //   //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
-    //   //   // //       AllocationActions.add.name,
-    //   //   // //     )
-    //   //   // //     .nocodeErrorHandler();
-    //   //   // return res;
-    //   // }
-    // }
+    if (createdQuote != null && createdQuote.success) {
+      final quoteId = createdQuote.data as int;
+      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+          ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
+      if (changedQuoteStatus?.success == true) {
+        // await appStore.dispatch(SCFetchShiftsAction(date: timing.date!));
+        // await appStore.dispatch(SCFetchShiftsWeekAction(
+        //   startDate: timing.date!.subtract(const Duration(days: 7)),
+        //   endDate: timing.date!,
+        // ));
+        // await appStore
+        //     .dispatch(SCFetchShiftsMonthAction(startDate: timing.date!));
+
+        return changedQuoteStatus;
+      } else {
+        showError(changedQuoteStatus?.data ?? "Error");
+      }
+      //DEPRECATED
+      // //3. (Optional) Assign users to the allocation
+      // if (changedQuoteStatus != null && changedQuoteStatus.success) {
+      //   //TODO: Assign users to the allocation
+      //   // final allocationId = changedQuoteStatus.data as int;
+      //   // //Get all allocations and find the shift id using allocation id and date
+      //   // final ApiResponse res = await restClient()
+      //   //     .getShifts(
+      //   //       location?.id ?? 0,
+      //   //       0,
+      //   //       0,
+      //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+      //   //     )
+      //   //     .nocodeErrorHandler();
+      //   // //Use shift id
+      //   // // final ApiResponse res = await restClient()
+      //   // //     .postShifts(
+      //   // //       location?.id ?? 0,
+      //   // //       805, //TODO: User
+      //   // //       106,
+      //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
+      //   // //       AllocationActions.add.name,
+      //   // //     )
+      //   // //     .nocodeErrorHandler();
+      //   // return res;
+      // }
+    }
   } on Exception catch (e) {
     Logger.e(e.toString(), tag: "CreateJobAction");
     showError("Something went wrong");

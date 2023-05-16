@@ -72,27 +72,28 @@ class _JobEditFormState extends State<JobEditForm>
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Get.showOverlay(
-      //   asyncFunction: () async {
-      _getUnavUsers(date ?? DateTime.now());
-      if (isUpdate) {
-        final res = await restClient()
-            .getQuoteBy(
-              0,
-              date: data.dateAsString!,
-              location_id: data.allocation!.location.id,
-              shift_id: data.allocation!.shift.id,
-            )
-            .nocodeErrorHandler();
-        if (res.success) {
-          final q = res.data['quotes'][0];
-          data.quote = QuoteInfoMd.fromJson(q);
-          setState(() {});
-        }
-      }
-      // },
-      // loadingWidget: const CustomLoadingWidget(),
-      // );
+      Get.showOverlay(
+        asyncFunction: () async {
+          _getUnavUsers(date ?? DateTime.now());
+          if (isUpdate) {
+            final res = await restClient()
+                .getQuoteBy(
+                  0,
+                  date: data.dateAsString!,
+                  location_id: data.allocation!.location.id,
+                  shift_id: data.allocation!.shift.id,
+                )
+                .nocodeErrorHandler();
+            if (res.success) {
+              final q = res.data['quotes'][0];
+              data.quote = QuoteInfoMd.fromJson(q);
+
+              setState(() {});
+            }
+          }
+        },
+        loadingWidget: const CustomLoadingWidget(),
+      );
     });
   }
 
@@ -1100,7 +1101,9 @@ class _JobEditFormState extends State<JobEditForm>
               gridBorderColor: Colors.grey[300]!,
               noRowsText: "No product or service added yet",
               onSmReady: (e) {
+                if (data.isGridInitialized) return;
                 data.gridStateManager = e;
+                data.isGridInitialized = true;
               },
               cols: data.cols(state)),
         ),

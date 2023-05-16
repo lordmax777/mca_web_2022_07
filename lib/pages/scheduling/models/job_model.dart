@@ -102,6 +102,26 @@ class JobModel {
         }
       }
     }
+    if (isGridInitialized) {
+      if (q.items.isNotEmpty) {
+        for (int i = 0; i < q.items.length; i++) {
+          final item = q.items[i];
+          gridStateManager.insertRows(i, [
+            buildStorageRowRow(
+                StorageItemMd(
+                  id: item.itemId,
+                  active: true,
+                  name: item.itemName,
+                  service: false,
+                  outgoingPrice: item.price,
+                  incomingPrice: 0,
+                  taxId: 1,
+                ),
+                checked: true)
+          ]);
+        }
+      }
+    }
   }
 
   String? quoteComment;
