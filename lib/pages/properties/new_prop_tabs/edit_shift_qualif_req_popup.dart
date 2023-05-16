@@ -102,6 +102,11 @@ class _EditShiftQualifReqPopupState extends State<EditShiftQualifReqPopup> {
               hintText: "Qualification",
               initialValue: TextEditingValue(text: department.name ?? ""),
               listItemWidget: (p0) => Text(p0.title),
+              onCleared: () {
+                department.name = null;
+                department.code = null;
+                setState(() {});
+              },
               onSelected: (p0) {
                 department.name = p0.title;
                 department.code = p0.id;
@@ -121,6 +126,11 @@ class _EditShiftQualifReqPopupState extends State<EditShiftQualifReqPopup> {
               hintText: "Min Level",
               initialValue: TextEditingValue(text: minLevel.name ?? ""),
               listItemWidget: (p0) => Text(p0.level),
+              onCleared: () {
+                minLevel.name = null;
+                minLevel.code = null;
+                setState(() {});
+              },
               onSelected: (p0) {
                 minLevel.name = p0.level;
                 minLevel.code = p0.id;
@@ -187,8 +197,8 @@ class _EditShiftQualifReqPopupState extends State<EditShiftQualifReqPopup> {
               context.popRoute(ShiftQualifReqMd(
                 qualificationId: department.code!,
                 numberOfStaff: int.parse(numberOfStaff.text),
-                levelId: minLevel.code!,
-                levelName: minLevel.name!,
+                levelId: minLevel.code,
+                levelName: minLevel.name,
                 qualificationName: department.name!,
                 alternative: alternate,
               ));

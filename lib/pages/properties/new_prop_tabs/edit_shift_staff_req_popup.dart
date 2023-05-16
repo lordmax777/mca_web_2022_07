@@ -93,6 +93,11 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
               height: 50,
               hintText: "Department",
               listItemWidget: (p0) => Text(p0.name),
+              onCleared: () {
+                department.name = null;
+                department.code = null;
+                setState(() {});
+              },
               onSelected: (p0) {
                 department.name = p0.name;
                 department.code = p0.id;
@@ -106,25 +111,6 @@ class _EditShiftStaffReqPopupState extends State<EditShiftStaffReqPopup> {
                   .where((element) => element.name
                       .toLowerCase()
                       .contains(p0.text.toLowerCase()))),
-          // DropdownWidget1(
-          //   hintText: "Department",
-          //   value: department.name,
-          //   dropdownBtnWidth: dpWidth / 5,
-          //   isRequired: true,
-          //   dropdownOptionsWidth: dpWidth / 5,
-          //   hasSearchBox: true,
-          //   dropdownMaxHeight: 300.0,
-          //   items: (appStore.state.generalState.paramList.data?.groups
-          //           .map((e) => e.name)
-          //           .toList()) ??
-          //       [],
-          //   onChangedWithObj: (p0) {
-          //     department.name = p0.name;
-          //     department.code = (p0.item as ListGroup).id;
-          //     setState(() {});
-          //   },
-          //   objItems: appStore.state.generalState.paramList.data?.groups ?? [],
-          // ),
           TextInputWidget(
             isRequired: true,
             width: dpWidth / 5,

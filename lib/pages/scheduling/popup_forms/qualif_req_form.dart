@@ -13,18 +13,19 @@ import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../properties/new_prop_tabs/edit_shift_staff_req_popup.dart';
 import '../models/create_shift_type.dart';
+import '../scheduling_page.dart';
 
 class QualificationReqForm extends StatefulWidget {
-  final CreateShiftData data;
-  const QualificationReqForm({Key? key, required this.data}) : super(key: key);
+  final int shiftId;
+  const QualificationReqForm({Key? key, required this.shiftId})
+      : super(key: key);
 
   @override
   State<QualificationReqForm> createState() => _QualificationReqFormState();
 }
 
 class _QualificationReqFormState extends State<QualificationReqForm> {
-  CreateShiftData get data => widget.data;
-  PlutoGridStateManager get gridStateManager => data.qualifReqGridManager;
+  late final PlutoGridStateManager gridStateManager;
   List<PlutoRow> get checkedRows => gridStateManager.checkedRows;
 
   List<PlutoColumn> cols(AppState state) {
@@ -76,7 +77,7 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
           (row.cells['depModel']!.value as ShiftQualifReqMd).qualificationId;
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
-          .deletePropertiesQualif(data.shiftId!, groupId)
+          .deletePropertiesQualif(widget.shiftId!, groupId)
           .nocodeErrorHandler();
       gridStateManager.setShowLoading(false);
       if (res.success) {
@@ -92,10 +93,11 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
     }
   }
 
-  void _onCreate() async {
+  void _onCreate([ShiftQualifReqMd? staff]) async {
     try {
       final ShiftQualifReqMd? item = await showOverlayPopup(
           body: EditShiftQualifReqPopup(
+            staff: staff,
             exceptedIds: [
               ...(gridStateManager.rows
                   .map((e) => (e.cells['depModel']!.value as ShiftQualifReqMd)
@@ -108,7 +110,7 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
           .postPropertiesQualif(
-            id: data.shiftId!,
+            id: widget.shiftId,
             levelId: item.levelId,
             numberOfStaff: item.numberOfStaff,
             qualificationId: item.qualificationId,
@@ -117,6 +119,7 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
       if (res.success) {
         gridStateManager.appendRows([_buildRow(item)]);
       } else {
+        _onCreate(item);
         showError(res.data != null
             ? ApiHelpers.getRawDataErrorMessages(res)
             : "Error creating qualification requirement");
@@ -142,6 +145,11 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
               child: PagesTitleWidget(
                 title: 'Qualification Requirements',
                 btnText: "Add",
+                titleButton: addIcon(
+                  tooltip: "Refresh Table",
+                  icon: HeroIcons.refresh,
+                  onPressed: _onLoad,
+                ),
                 buttons: [
                   ButtonMedium(
                       bgColor: ThemeColors.red3,
@@ -171,7 +179,7 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
       cells: {
         "depModel": PlutoCell(value: group),
         "department": PlutoCell(value: group.qualificationName),
-        "min_level": PlutoCell(value: group.levelName),
+        "min_level": PlutoCell(value: group.levelName ?? "-"),
         "min": PlutoCell(value: group.numberOfStaff),
         "delete_btn": PlutoCell(value: ""),
       },
@@ -185,18 +193,23 @@ class _QualificationReqFormState extends State<QualificationReqForm> {
         gridBorderColor: Colors.grey[300]!,
         noRowsText: "No qualification requirements",
         onSmReady: (e) async {
-          data.qualifReqGridManager = e;
-
-          gridStateManager.setShowLoading(true);
-          List<ShiftQualifReqMd> res =
-              await GetPropertiesAction.fetchShiftQualif(data.shiftId ?? -1);
-          if (res.isNotEmpty) {
-            for (var item in res) {
-              e.appendRows([_buildRow(item)]);
-            }
-          }
-          gridStateManager.setShowLoading(false);
+          gridStateManager = e;
+          _onLoad();
         },
         cols: cols(state));
+  }
+
+  void _onLoad() async {
+    if (gridStateManager.showLoading) return;
+    gridStateManager.setShowLoading(true);
+    List<ShiftQualifReqMd> res =
+        await GetPropertiesAction.fetchShiftQualif(widget.shiftId ?? -1);
+    if (res.isNotEmpty) {
+      gridStateManager.removeAllRows();
+      for (var item in res) {
+        gridStateManager.appendRows([_buildRow(item)]);
+      }
+    }
+    gridStateManager.setShowLoading(false);
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
@@ -198,8 +199,10 @@ class _JobEditFormState extends State<JobEditForm>
                   const SizedBox()
                 else
                   StaffRequirementForm(shiftId: data.shiftId!),
-                const SizedBox(),
-                // QualificationReqForm(data: data),
+                if (data.shiftId == null)
+                  const SizedBox()
+                else
+                  QualificationReqForm(shiftId: data.shiftId!),
               ],
             ),
           ),

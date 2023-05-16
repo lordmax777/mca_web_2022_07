@@ -97,10 +97,11 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
     }
   }
 
-  void _onCreate() async {
+  void _onCreate([ShiftStaffReqMd? staff]) async {
     try {
       final ShiftStaffReqMd? item = await showOverlayPopup(
           body: EditShiftStaffReqPopup(
+            staff: staff,
             exceptedIds: [
               ...(gridStateManager.rows
                   .map((e) =>
@@ -113,7 +114,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
           .postPropertiesStaff(
-            id: widget.shiftId!,
+            id: widget.shiftId,
             maxOfStaff: item.max,
             groupId: item.groupId,
             numberOfStaff: item.min,
@@ -122,6 +123,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
       if (res.success) {
         gridStateManager.appendRows([_buildRow(item)]);
       } else {
+        _onCreate(item);
         showError(res.resMessage ?? "Error creating staff requirement");
       }
       gridStateManager.setShowLoading(false);
@@ -194,16 +196,18 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
         noRowsText: "No staff requirements",
         onSmReady: (e) async {
           gridStateManager = e;
-          await _onLoad();
+          _onLoad();
         },
         cols: cols(state));
   }
 
-  Future<void> _onLoad() async {
+  void _onLoad() async {
+    if (gridStateManager.showLoading) return;
     gridStateManager.setShowLoading(true);
     List<ShiftStaffReqMd> res =
         await GetPropertiesAction.fetchShiftStaff(widget.shiftId ?? -1);
     if (res.isNotEmpty) {
+      gridStateManager.removeAllRows();
       for (var item in res) {
         gridStateManager.appendRows([_buildRow(item)]);
       }
