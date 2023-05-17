@@ -152,6 +152,9 @@ class Address {
   num longitude;
   num radius;
 
+  String tempEmail = "";
+  String tempPhone = "";
+
   Address(
       {required this.line1,
       required this.line2,

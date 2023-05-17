@@ -37,6 +37,10 @@ class JobModel {
       setAddress(null);
       setWorkAddress(null);
     }
+    _address.tempEmail = client.email ?? "";
+    _address.tempPhone = client.phone ?? "";
+    _workAddress.tempEmail = client.email ?? "";
+    _workAddress.tempPhone = client.phone ?? "";
   }
 
   bool get isClientSelected => client.isClientTrue;
@@ -53,6 +57,8 @@ class JobModel {
     }
     _address = loc;
     addressId = locationId;
+    _address.tempEmail = client.email ?? "";
+    _address.tempPhone = client.phone ?? "";
   }
 
   Address _workAddress = Address.init();
@@ -63,6 +69,8 @@ class JobModel {
       return;
     }
     _workAddress = loc;
+    _workAddress.tempEmail = client.email ?? "";
+    _workAddress.tempPhone = client.phone ?? "";
   }
 
   bool get hasWorkAddress => type == ScheduleCreatePopupMenus.quote;

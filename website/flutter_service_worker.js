@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "1646e5638338406fa73527f44cc28f68",
+  "assets/AssetManifest.json": "db26fe7f9e11f695eb15e1762aeccb5e",
 "assets/assets/fonts/NunitoSans-Bold.ttf": "ac72fe0f27dd514aa3215e8424842062",
 "assets/assets/fonts/NunitoSans-Light.ttf": "3b696c5e8c55321863bfbf03ef0c0ff3",
 "assets/assets/fonts/NunitoSans-Regular.ttf": "4dac705158fb1ca226d583b3829f82a0",
@@ -11,6 +11,7 @@ const RESOURCES = {
 "assets/assets/images/illustration-1.png": "5ad69c7624875b76c84eebb06806ff46",
 "assets/assets/images/illustration-2.png": "9f8a806312ecfe03313dabe5cf70a63f",
 "assets/assets/images/mca-logo.png": "15bd29ed2c77624a7827e415ca7baaf8",
+"assets/assets/images/robot.svg": "2bd40d4488358c90eecc2baccc1e2a03",
 "assets/assets/images/widget_temp_mca.jpg": "ee2bd344257350c21f9d9c4fac2c37a5",
 "assets/FontManifest.json": "e76b3893245a91cd148e7093dd0282f0",
 "assets/fonts/MaterialIcons-Regular.otf": "95db9098c58fd6db106f1116bae85a0b",
@@ -524,9 +525,9 @@ const RESOURCES = {
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "56e78c367518a37262010dd4d091cefc",
-"/": "56e78c367518a37262010dd4d091cefc",
-"main.dart.js": "d8cb68c59273478bbfae071a61eb7ed8",
+"index.html": "12f52ebab27ac05ec7665ad654af777b",
+"/": "12f52ebab27ac05ec7665ad654af777b",
+"main.dart.js": "5488d2ec57032966cb35847e9a6bd50b",
 "manifest.json": "ae6b44f605b9c04a6e90180a8ad956b0",
 "styles.css": "37387c589b05828439fb1417dc7a02bb",
 "version.json": "7fab6da096fd3c24cb62b70511fa7519"

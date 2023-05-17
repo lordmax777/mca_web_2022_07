@@ -81,11 +81,13 @@ class ClientForm extends StatefulWidget {
   final ClientFormType type;
   final ClientInfoMd? selectedClient;
   final Address? selectedAddress;
+  final bool isQuote;
   const ClientForm({
     Key? key,
     required this.state,
     this.type = ClientFormType.client,
     this.selectedClient,
+    this.isQuote = false,
     this.selectedAddress,
   }) : super(key: key);
 
@@ -110,6 +112,7 @@ class _ClientFormState extends State<ClientForm> {
   Address? get selectedAddress => widget.selectedAddress;
   String? get clientEmail => selectedClient?.email;
   String? get clientPhone => selectedClient?.phone;
+  bool get isQuote => widget.isQuote;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -153,26 +156,26 @@ class _ClientFormState extends State<ClientForm> {
               .firstWhereOrNull((element) => element.code == company.country)
               ?.code ??
           company.country;
-      if (kDebugMode) {
-        contactName.text = "Client";
-        companyName.text = "Company";
-        phoneNumber.text = "1234567890";
-        email.text = "kom@gmail.com";
-        payingDays = 20;
-        paymentMethodId = paymentMethods.first.id;
-        currencyId = currencies[2].id;
-        notes.text = "Client Notes";
-        address.line1 = "Address Line 1";
-        address.line2 = "Address Line 2";
-        address.city = "City";
-        address.county = "County";
-        address.postcode = "NW1 8PR";
-        address.country = "GB";
-        address.latitude = 51.5333;
-        address.longitude = -0.1333;
-        address.radius = 10;
-      }
-      if (selectedClient != null) {
+      // if (kDebugMode) {
+      //   contactName.text = "Client";
+      //   companyName.text = "Company";
+      //   phoneNumber.text = "1234567890";
+      //   email.text = "kom@gmail.com";
+      //   payingDays = 20;
+      //   paymentMethodId = paymentMethods.first.id;
+      //   currencyId = currencies[2].id;
+      //   notes.text = "Client Notes";
+      //   address.line1 = "Address Line 1";
+      //   address.line2 = "Address Line 2";
+      //   address.city = "City";
+      //   address.county = "County";
+      //   address.postcode = "NW1 8PR";
+      //   address.country = "GB";
+      //   address.latitude = 51.5333;
+      //   address.longitude = -0.1333;
+      //   address.radius = 10;
+      // }
+      if (selectedClient != null && isQuote) {
         currencyId = int.parse(selectedClient!.currencyId);
         contactName.text = selectedClient!.name;
         companyName.text = selectedClient!.company ?? "";
@@ -184,7 +187,7 @@ class _ClientFormState extends State<ClientForm> {
         notes.text = selectedClient!.notes ?? "";
         address = selectedClient!.address;
       }
-      if (selectedAddress != null) {
+      if (selectedAddress != null && isQuote) {
         address = selectedAddress!;
       }
     });
@@ -446,7 +449,7 @@ class _ClientFormState extends State<ClientForm> {
                     ),
                 ],
               ),
-              if (selectedClient == null)
+              if (!isQuote || isLocation)
                 SpacedColumn(
                   verticalSpace: 16,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,7 +530,7 @@ class _ClientFormState extends State<ClientForm> {
                   ],
                 ),
               if (!isDeliverAtDifferentLocation)
-                if (selectedClient == null)
+                if (!isQuote || isLocation)
                   ButtonSmall(
                     text: "Lookup Address",
                     onPressed: () {
@@ -549,7 +552,7 @@ class _ClientFormState extends State<ClientForm> {
                     },
                   ),
               if (isClient && isClient || !isLocation)
-                if (selectedClient == null)
+                if (!isQuote || isLocation)
                   labelWithField(
                       "Service Delivered at a different address",
                       toggle(isDeliverAtDifferentLocation, (value) {
@@ -558,7 +561,7 @@ class _ClientFormState extends State<ClientForm> {
                         });
                       })),
               if (!isDeliverAtDifferentLocation && isClient || isLocation)
-                if (selectedClient == null)
+                if (!isQuote || isLocation)
                   labelWithField(
                       "Fixed IP Address",
                       toggle(isFixedIpAddress, (value) {
@@ -567,7 +570,7 @@ class _ClientFormState extends State<ClientForm> {
                         });
                       })),
               if (!isDeliverAtDifferentLocation && isClient || isLocation)
-                if (selectedClient == null)
+                if (!isQuote || isLocation)
                   Column(
                     children: [
                       labelWithField(
@@ -583,7 +586,7 @@ class _ClientFormState extends State<ClientForm> {
                     ],
                   ),
               if (!isDeliverAtDifferentLocation && isClient || isLocation)
-                if (selectedClient == null)
+                if (!isQuote || isLocation)
                   labelWithField(
                     "IP Addresses",
                     SpacedColumn(
@@ -665,11 +668,11 @@ class _ClientFormState extends State<ClientForm> {
                   switch (type) {
                     case ClientFormType.client:
                     case ClientFormType.location:
-                      if (selectedClient != null) {
+                      if (selectedClient != null && isQuote) {
                         _handleUpdateClient();
                         return;
                       }
-                      if (selectedAddress != null) {
+                      if (selectedAddress != null && isQuote) {
                         _handleUpdateLocation();
                         return;
                       }
@@ -774,12 +777,12 @@ class _ClientFormState extends State<ClientForm> {
           sendChecklist: email.text.isNotEmpty,
           anywhere: false,
           radius: 100.toString(),
-          phoneMobile: phoneNumber.text.isEmpty && selectedClient != null
-              ? clientPhone
+          phoneMobile: phoneNumber.text.isEmpty
+              ? (selectedAddress != null ? selectedAddress!.tempPhone : "")
               : phoneNumber.text,
-          email: phoneNumber.text.isEmpty && selectedClient != null
-              ? clientEmail
-              : phoneNumber.text,
+          email: email.text.isEmpty
+              ? (selectedAddress != null ? selectedAddress!.tempEmail : "")
+              : email.text,
           phoneLandline: "",
           phoneFax: "",
           name: "${address.line1} ${address.postcode}",
