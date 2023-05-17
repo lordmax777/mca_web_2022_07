@@ -529,7 +529,7 @@ enum ScheduleCreatePopupMenus {
     switch (this) {
       case ScheduleCreatePopupMenus.jobNew:
       case ScheduleCreatePopupMenus.jobUpdate:
-        return "Job";
+        return Constants.propertyName;
       case ScheduleCreatePopupMenus.quote:
         return "Quote";
       default:

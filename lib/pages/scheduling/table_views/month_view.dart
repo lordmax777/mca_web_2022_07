@@ -155,7 +155,6 @@ class _MonthlyViewCalendarState extends State<MonthlyViewCalendar> {
   Widget _appWidget(Appointment appointment, BuildContext context) {
     final ap = appointment.id as AllocationModel;
     final location = ap.property;
-    final resource = appointment.resourceIds?.first;
     final title = "${location.title ?? "-"} - ${location.locationName}";
     final start = ap.dateAsDateTime;
     return Tooltip(
