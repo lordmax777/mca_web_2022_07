@@ -15,11 +15,13 @@ class KText extends StatelessWidget {
   final bool rowCenter;
   final MainAxisSize mainAxisSize;
   final int? maxLines;
+  final bool isIconRight;
   KText(
       {Key? key,
       required this.text,
       this.maxLines,
       this.style,
+      this.isIconRight = true,
       this.rowCenter = false,
       this.onTap,
       this.textAlign,
@@ -72,9 +74,12 @@ class KText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 4.0,
         children: [
+          if (icon != null)
+            if (!isIconRight) icon!,
           SelectableText(text.toString(),
               maxLines: maxLines, style: style, textAlign: textAlign),
-          if (icon != null) icon!,
+          if (icon != null)
+            if (isIconRight) icon!,
         ],
       );
     }
@@ -97,13 +102,14 @@ class KText extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   horizontalSpace: 4.0,
                   children: [
+                    if (!isIconRight) icon!,
                     Text(text.toString(),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         style: style,
                         textAlign: textAlign),
-                    icon!,
+                    if (isIconRight) icon!,
                   ],
                 ),
         ),
@@ -117,13 +123,14 @@ class KText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 4.0,
         children: [
+          if (!isIconRight) icon!,
           Text(text.toString(),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: style,
               softWrap: true,
               textAlign: textAlign),
-          if (icon != null) icon!,
+          if (isIconRight) icon!,
         ],
       );
     }

@@ -11,37 +11,31 @@ class DashboardPage extends StatelessWidget {
     return GetBuilder<GeneralController>(
       id: "dashboardPage",
       filter: (value) => value.initializedAll,
-      // didChangeDependencies: (state) {
-      //   print("DIDCHANGEDEPENDENCIES");
-      //   logger(state.mounted, hint: "DASHBOARD PAGE DIDCHANGEDEP");
-      //   logger(state.controller, hint: "DASHBOARD PAGE DIDCHANGEDEP");
-      //   // if (state.mounted) {
-      //   //   if (state.controller != null) {
-      //   //     if (!state.controller!.initializedAll) {
-      //   //       showDialog(
-      //   //           context: Get.context!,
-      //   //           builder: (context) {
-      //   //             return const CustomLoadingWidget();
-      //   //           });
-      //   //     }
-      //   //   }
-      //   // }
-      // },
-      // didUpdateWidget: (oldWidget, state) {
-      //   print("DIDUPDATEWIDGET");
-      // },
-      // dispose: (state) {
-      //   print("DISPOSE");
-      // },
-      // initState: (state) {},
-      builder: (controller) => Center(
-        child: KText(
-          text: "Dashboard (Soon!)",
-          fontSize: 32,
-          fontWeight: FWeight.medium,
-          textColor: Colors.black,
-          mainAxisSize: MainAxisSize.min,
-        ),
+      builder: (controller) => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (!controller.initializedAll)
+            const Center(child: CircularProgressIndicator()),
+          if (!controller.initializedAll)
+            KText(
+              text:
+                  "Please do not move to other pages until the app is fully initialized.",
+              fontSize: 32,
+              fontWeight: FWeight.medium,
+              textColor: Colors.black,
+              mainAxisSize: MainAxisSize.min,
+            )
+          else
+            KText(
+              text:
+                  "Welcome ${controller.loggedInUserValue.firstName} ${controller.loggedInUserValue.lastName} !",
+              fontSize: 32,
+              fontWeight: FWeight.medium,
+              textColor: Colors.black,
+              mainAxisSize: MainAxisSize.min,
+            )
+        ],
       ),
     );
   }

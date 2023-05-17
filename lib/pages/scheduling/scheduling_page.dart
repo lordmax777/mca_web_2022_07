@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
+import 'package:mca_web_2022_07/utils/global_functions.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/autocomplete_input_field.dart';
 import '../../comps/modals/custom_date_picker.dart';
@@ -157,23 +158,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
           );
         },
       ),
-      // DropdownWidget1(
-      //     hasSearchBox: true,
-      //     dropdownOptionsWidth: 300,
-      //     dropdownBtnWidth: 300,
-      //     hintText: "Location",
-      //     items: locs.map((e) => "${e.title}").toList(),
-      //     objItems: locs,
-      //     customItemIcons: {
-      //       for (var i = 0; i < scheduleState.filteredLocations.length; i++)
-      //         locs.indexOf(scheduleState.filteredLocations[i]): HeroIcons.check
-      //     },
-      //     value: scheduleState.filteredLocations.isEmpty
-      //         ? "All"
-      //         : scheduleState.filteredLocations.first.title,
-      //     onChangedWithObj: (p0) {
-      //       appStore.dispatch(SCAddFilter(location: p0.item));
-      //     }),
     );
   }
 
@@ -186,21 +170,15 @@ class _SchedulingPageState extends State<SchedulingPage> {
         items: [
           CalendarView.day.name,
           CalendarView.week.name,
-          // CalendarView.timelineWeek.name,
           CalendarView.month.name,
         ],
         objItems: const [
           CalendarView.day,
           CalendarView.week,
-          // CalendarView.timelineWeek,
           CalendarView.month,
         ],
         value: scheduleState.calendarView.name,
         onChangedWithObj: (p0) async {
-          // if (p0.item == CalendarView.timelineWeek) {
-          //   //Subtract 2 weeks from firstDayOfWeek
-          //   firstDayOfWeek = firstDayOfWeek.subtract(const Duration(days: 14));
-          // }
           appStore.dispatch(SCChangeCalendarView(p0.item));
         });
   }
@@ -365,7 +343,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
           ),
           KText(
             onTap: () async {
-              final date = await showCustomMonthPicker(context);
+              final date = await showCustomMonthPicker(context,
+                  initialTime: firstDayOfMonth);
               if (date != null) {
                 firstDayOfMonth = date;
                 await appStore.dispatch(
@@ -479,10 +458,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
         return DailyViewCalendar(day: day);
       case CalendarView.week:
       case CalendarView.timelineWeek:
-      // return WeeklyViewCalendar(
-      //     lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
-      // case CalendarView.month:
-      //   return MonthlyViewCalendar(month: firstDayOfMonth);
+        return WeeklyViewCalendar(
+            lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
+      case CalendarView.month:
+        return MonthlyViewCalendar(month: firstDayOfMonth);
       default:
         return const Center(
           child: Text("Cannot find calendar view"),
@@ -492,37 +471,52 @@ class _SchedulingPageState extends State<SchedulingPage> {
   }
 }
 
-List<SimplePopupMenu> getPopupAppointmentMenus(
-    {VoidCallback? onCopy,
-    VoidCallback? onCopyAll,
-    VoidCallback? onRemove,
-    VoidCallback? onEdit}) {
+List<SimplePopupMenu> getPopupAppointmentMenus({
+  VoidCallback? onCopy,
+  VoidCallback? onCopyAll,
+  VoidCallback? onRemove,
+  VoidCallback? onEdit,
+  VoidCallback? onCreate,
+  String? text,
+}) {
   final menus = <SimplePopupMenu>[];
-
-  if (onCopy != null) {
+  if (onCreate != null) {
     menus.add(SimplePopupMenu(
-      label: "Copy",
-      onTap: onCopy,
-    ));
-  }
-  if (onCopyAll != null) {
-    menus.add(SimplePopupMenu(
-      label: "Copy All",
-      onTap: onCopyAll,
-    ));
-  }
-  if (onRemove != null) {
-    menus.add(SimplePopupMenu(
-      label: "Remove",
-      onTap: onRemove,
+      label: "Create${text == null ? "" : " $text"}",
+      onTap: onCreate,
+      icon: HeroIcons.add,
     ));
   }
   if (onEdit != null) {
     menus.add(SimplePopupMenu(
-      label: "Edit",
+      label: "Edit${text == null ? "" : " $text"}",
       onTap: onEdit,
+      icon: HeroIcons.edit,
     ));
   }
+
+  if (onCopy != null) {
+    menus.add(SimplePopupMenu(
+      label: "Copy${text == null ? "" : " $text"}",
+      onTap: onCopy,
+      icon: HeroIcons.clipboard,
+    ));
+  }
+  if (onCopyAll != null) {
+    menus.add(SimplePopupMenu(
+      label: "Copy All${text == null ? "" : " ${text.toPlural}"}",
+      onTap: onCopyAll,
+      icon: HeroIcons.clipboardTick,
+    ));
+  }
+  if (onRemove != null) {
+    menus.add(SimplePopupMenu(
+      label: "Remove${text == null ? "" : " $text"}",
+      onTap: onRemove,
+      icon: HeroIcons.bin,
+    ));
+  }
+
   return menus;
 }
 
@@ -535,7 +529,7 @@ enum ScheduleCreatePopupMenus {
     switch (this) {
       case ScheduleCreatePopupMenus.jobNew:
       case ScheduleCreatePopupMenus.jobUpdate:
-        return "Job";
+        return Constants.propertyName;
       case ScheduleCreatePopupMenus.quote:
         return "Quote";
       default:
@@ -553,13 +547,13 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
         child: SpacedRow(
           crossAxisAlignment: CrossAxisAlignment.center,
           horizontalSpace: 8,
-          children: const [
-            HeroIcon(
+          children: [
+            const HeroIcon(
               HeroIcons.edit,
               color: ThemeColors.gray2,
               size: 18,
             ),
-            Text("Edit Job"),
+            Text("Edit ${Constants.propertyName}"),
           ],
         ),
       ),
@@ -568,13 +562,13 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 8,
-        children: const [
-          HeroIcon(
+        children: [
+          const HeroIcon(
             HeroIcons.briefcase,
             color: ThemeColors.gray2,
             size: 18,
           ),
-          Text("New Job"),
+          Text("New ${Constants.propertyName}"),
         ],
       ),
     ),
