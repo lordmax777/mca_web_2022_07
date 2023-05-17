@@ -133,7 +133,7 @@ class DailyViewCalendar extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyText1!.copyWith(
                   color: resource.isOpenShiftResource
                       ? Colors.black
-                      : Colors.white,
+                      : resource.foregroundColor,
                   fontFamily: ThemeText.fontFamilyM,
                 ),
           ),
