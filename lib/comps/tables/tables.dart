@@ -36,14 +36,13 @@ class UsersListTable extends StatelessWidget {
       required this.cols})
       : super(key: key);
 
-  static Widget defaultTextWidget(dynamic text,
-      {TextAlign textAlign = TextAlign.start}) {
+  static Widget defaultTextWidget(dynamic text, {TextAlign? textAlign}) {
     return KText(
       text: text.toString().contains("null") ? "-" : text.toString(),
       textColor: ThemeColors.gray2,
       fontWeight: FWeight.regular,
       fontSize: 14,
-      textAlign: textAlign,
+      textAlign: textAlign ?? TextAlign.start,
       isSelectable: false,
     );
   }

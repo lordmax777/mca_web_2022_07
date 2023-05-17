@@ -103,9 +103,20 @@ class GridTableHelpers {
         textAlign: TextAlign.right);
   }
 
-  static Widget getStatusRenderer(PlutoColumnRendererContext ctx) {
-    final Color color =
-        ctx.cell.value == "active" ? ThemeColors.green2 : ThemeColors.gray8;
+  static Widget getStatusRenderer(PlutoColumnRendererContext ctx,
+      {String? successKey, String? failKey}) {
+    final value = ctx.cell.value;
+    Color color = value == "active" ? ThemeColors.green2 : ThemeColors.gray5;
+    String text = value
+        .toString()
+        .replaceFirst(value.toString()[0], value.toString()[0].toUpperCase());
+    if (successKey != null && value == successKey) {
+      color = ThemeColors.green2;
+    }
+    if (failKey != null && value == failKey) {
+      color = ThemeColors.red3;
+    }
+
     return SpacedRow(
         horizontalSpace: 8,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,10 +126,7 @@ class GridTableHelpers {
             height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          UsersListTable.defaultTextWidget(ctx.cell.value
-              .toString()
-              .replaceFirst(ctx.cell.value.toString()[0],
-                  ctx.cell.value.toString()[0].toUpperCase()))
+          UsersListTable.defaultTextWidget(text),
         ]);
   }
 

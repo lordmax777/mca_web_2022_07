@@ -68,6 +68,11 @@ class _QuotesListPageState extends State<QuotesListPage>
           title: "Status",
           field: "status",
           type: PlutoColumnType.text(),
+          textAlign: PlutoColumnTextAlign.center,
+          renderer: (rendererContext) {
+            return GridTableHelpers.getStatusRenderer(rendererContext,
+                successKey: "accepted", failKey: "rejected");
+          },
         ),
         PlutoColumn(
           title: "Quote Value (${company.currency.sign})",
@@ -99,7 +104,7 @@ class _QuotesListPageState extends State<QuotesListPage>
         PlutoColumn(
           title: "Valid Until",
           field: "valid_until",
-          type: PlutoColumnType.date(),
+          type: PlutoColumnType.date(format: "dd/MM/yyyy"),
         ),
         PlutoColumn(
           title: "Action",
@@ -286,7 +291,7 @@ class _QuotesListPageState extends State<QuotesListPage>
   PlutoRow _buildRow(QuoteInfoMd quote, {bool checked = false}) {
     String name = quote.name;
     String contact = "-";
-    String status = "Pending";
+    String status = "pending";
     double value = quote.quoteValue.toDouble();
     String lastSent = "";
     String createdOn = quote.createdOn;
@@ -304,7 +309,7 @@ class _QuotesListPageState extends State<QuotesListPage>
     }
 
     if (quote.quoteStatus != null) {
-      status = quote.quoteStatus! ? "Accepted" : "Pending";
+      status = quote.quoteStatus! ? "accepted" : "pending";
     }
 
     if (quote.lastSent != null) {

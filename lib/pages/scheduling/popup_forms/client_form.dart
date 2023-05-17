@@ -446,105 +446,108 @@ class _ClientFormState extends State<ClientForm> {
                     ),
                 ],
               ),
-              SpacedColumn(
-                verticalSpace: 16,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  labelWithField(
-                    "Address Line 1",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller: TextEditingController(text: address.line1),
-                      hintText: "Enter address line 1",
-                      isRequired: true,
-                      onChanged: (value) => address.line1 = value,
-                    ),
-                  ),
-                  labelWithField(
-                    "Address Line 2",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller: TextEditingController(text: address.line2),
-                      hintText: "Enter address line 2",
-                      onChanged: (value) => address.line2 = value,
-                    ),
-                  ),
-                  labelWithField(
-                    "City",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller: TextEditingController(text: address.city),
-                      hintText: "Enter city",
-                      isRequired: true,
-                      onChanged: (value) => address.city = value,
-                    ),
-                  ),
-                  labelWithField(
-                    "County",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller: TextEditingController(text: address.county),
-                      hintText: "Enter county",
-                      onChanged: (value) => address.county = value,
-                    ),
-                  ),
-                  labelWithField(
-                    "Postcode",
-                    TextInputWidget(
-                      width: fieldWidth,
-                      controller: TextEditingController(text: address.postcode),
-                      hintText: "Enter postcode",
-                      isRequired: true,
-                      onChanged: (value) => address.postcode = value,
-                    ),
-                  ),
-                  labelWithField(
-                    "Country",
-                    DropdownWidgetV2(
-                      hasSearchBox: true,
-                      hintText: "Select country",
-                      dropdownBtnWidth: fieldWidth,
-                      dropdownOptionsWidth: fieldWidth,
-                      isRequired: true,
-                      items: countries
-                          .map((e) => CustomDropdownValue(name: e.name))
-                          .toList(),
-                      value: CustomDropdownValue(
-                          name: countries
-                                  .firstWhereOrNull((element) =>
-                                      element.code == address.country)
-                                  ?.name ??
-                              ""),
-                      onChanged: (index) {
-                        setState(() {
-                          address.country = countries[index].code;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              if (!isDeliverAtDifferentLocation)
-                ButtonSmall(
-                  text: "Lookup Address",
-                  onPressed: () {
-                    Get.showOverlay(
-                      asyncFunction: () async {
-                        try {
-                          await lookupAddress();
-                        } catch (e) {
-                          if (address.postcode == null ||
-                              address.postcode!.isEmpty) {
-                            showError("Postcode is required");
-                          }
-                        }
-                      },
-                      loadingWidget: const Center(
-                        child: CircularProgressIndicator(),
+              if (selectedClient == null)
+                SpacedColumn(
+                  verticalSpace: 16,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    labelWithField(
+                      "Address Line 1",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller: TextEditingController(text: address.line1),
+                        hintText: "Enter address line 1",
+                        isRequired: true,
+                        onChanged: (value) => address.line1 = value,
                       ),
-                    );
-                  },
+                    ),
+                    labelWithField(
+                      "Address Line 2",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller: TextEditingController(text: address.line2),
+                        hintText: "Enter address line 2",
+                        onChanged: (value) => address.line2 = value,
+                      ),
+                    ),
+                    labelWithField(
+                      "City",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller: TextEditingController(text: address.city),
+                        hintText: "Enter city",
+                        isRequired: true,
+                        onChanged: (value) => address.city = value,
+                      ),
+                    ),
+                    labelWithField(
+                      "County",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller: TextEditingController(text: address.county),
+                        hintText: "Enter county",
+                        onChanged: (value) => address.county = value,
+                      ),
+                    ),
+                    labelWithField(
+                      "Postcode",
+                      TextInputWidget(
+                        width: fieldWidth,
+                        controller:
+                            TextEditingController(text: address.postcode),
+                        hintText: "Enter postcode",
+                        isRequired: true,
+                        onChanged: (value) => address.postcode = value,
+                      ),
+                    ),
+                    labelWithField(
+                      "Country",
+                      DropdownWidgetV2(
+                        hasSearchBox: true,
+                        hintText: "Select country",
+                        dropdownBtnWidth: fieldWidth,
+                        dropdownOptionsWidth: fieldWidth,
+                        isRequired: true,
+                        items: countries
+                            .map((e) => CustomDropdownValue(name: e.name))
+                            .toList(),
+                        value: CustomDropdownValue(
+                            name: countries
+                                    .firstWhereOrNull((element) =>
+                                        element.code == address.country)
+                                    ?.name ??
+                                ""),
+                        onChanged: (index) {
+                          setState(() {
+                            address.country = countries[index].code;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
+              if (!isDeliverAtDifferentLocation)
+                if (selectedClient == null)
+                  ButtonSmall(
+                    text: "Lookup Address",
+                    onPressed: () {
+                      Get.showOverlay(
+                        asyncFunction: () async {
+                          try {
+                            await lookupAddress();
+                          } catch (e) {
+                            if (address.postcode == null ||
+                                address.postcode!.isEmpty) {
+                              showError("Postcode is required");
+                            }
+                          }
+                        },
+                        loadingWidget: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                  ),
               if (isClient && isClient || !isLocation)
                 if (selectedClient == null)
                   labelWithField(
@@ -555,50 +558,54 @@ class _ClientFormState extends State<ClientForm> {
                         });
                       })),
               if (!isDeliverAtDifferentLocation && isClient || isLocation)
-                labelWithField(
-                    "Fixed IP Address",
-                    toggle(isFixedIpAddress, (value) {
-                      setState(() {
-                        isFixedIpAddress = value;
-                      });
-                    })),
+                if (selectedClient == null)
+                  labelWithField(
+                      "Fixed IP Address",
+                      toggle(isFixedIpAddress, (value) {
+                        setState(() {
+                          isFixedIpAddress = value;
+                        });
+                      })),
               if (!isDeliverAtDifferentLocation && isClient || isLocation)
-                Column(
-                  children: [
-                    labelWithField(
-                        "Current IP Address: ${currentIpAddress ?? ""}", null),
-                    if (currentIpAddress != null)
-                      ButtonSmall(
-                        text: "Use Current IP Address",
-                        onPressed: () {
-                          ipAddress.text = currentIpAddress!;
-                        },
-                      ),
-                  ],
-                ),
-              if (!isDeliverAtDifferentLocation && isClient || isLocation)
-                labelWithField(
-                  "IP Addresses",
-                  SpacedColumn(
-                    verticalSpace: 8,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                if (selectedClient == null)
+                  Column(
                     children: [
-                      TextInputWidget(
-                        width: fieldWidth,
-                        maxLines: 3,
-                        isRequired: isFixedIpAddress,
-                        controller: ipAddress,
-                      ),
-                      KText(
-                          fontWeight: FWeight.medium,
-                          fontSize: 12.0,
-                          textColor: ThemeColors.gray8,
-                          isSelectable: false,
-                          text:
-                              'Multiple IP addresses can be separated by a comma(,)'),
+                      labelWithField(
+                          "Current IP Address: ${currentIpAddress ?? ""}",
+                          null),
+                      if (currentIpAddress != null)
+                        ButtonSmall(
+                          text: "Use Current IP Address",
+                          onPressed: () {
+                            ipAddress.text = currentIpAddress!;
+                          },
+                        ),
                     ],
                   ),
-                ),
+              if (!isDeliverAtDifferentLocation && isClient || isLocation)
+                if (selectedClient == null)
+                  labelWithField(
+                    "IP Addresses",
+                    SpacedColumn(
+                      verticalSpace: 8,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextInputWidget(
+                          width: fieldWidth,
+                          maxLines: 3,
+                          isRequired: isFixedIpAddress,
+                          controller: ipAddress,
+                        ),
+                        KText(
+                            fontWeight: FWeight.medium,
+                            fontSize: 12.0,
+                            textColor: ThemeColors.gray8,
+                            isSelectable: false,
+                            text:
+                                'Multiple IP addresses can be separated by a comma(,)'),
+                      ],
+                    ),
+                  ),
             ]),
           ),
         ),

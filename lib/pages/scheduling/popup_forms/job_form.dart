@@ -80,7 +80,7 @@ class _JobEditFormState extends State<JobEditForm>
           if (!data.isQuote) {
             _getUnavUsers(date ?? DateTime.now());
           }
-          if (data.allocation != null) {
+          if (data.allocation != null || data.quote?.id != null) {
             final res = await restClient()
                 .getQuoteBy(
                   data.quote?.id ?? 0,
@@ -715,9 +715,9 @@ class _JobEditFormState extends State<JobEditForm>
                                 maxLines: 4,
                                 hintText: "Add quote comments",
                                 controller: TextEditingController(
-                                    text: data.quote?.quoteComments ?? ""),
+                                    text: data.quoteComment ?? ""),
                                 onChanged: (value) {
-                                  data.quote?.quoteComments = value;
+                                  data.quoteComment = value;
                                 },
                               ),
                             ),

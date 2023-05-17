@@ -84,7 +84,7 @@ class JobModel {
     client.payingDays = q.payingDays;
     client.currencyId = q.currencyId.toString();
     client.paymentMethodId = q.paymentMethodId.toString();
-    client.notes = q.clientInfo?.notes;
+    client.notes = q.notes;
     if (q.clientId != null) {
       client.id = q.clientId!;
     }
@@ -113,16 +113,18 @@ class JobModel {
           final item = q.items[i];
           gridStateManager.insertRows(i, [
             buildStorageRowRow(
-                StorageItemMd(
-                  id: item.itemId,
-                  active: true,
-                  name: item.itemName,
-                  service: false,
-                  outgoingPrice: item.price,
-                  incomingPrice: 0,
-                  taxId: 1,
-                ),
-                checked: true)
+              StorageItemMd(
+                id: item.itemId,
+                active: true,
+                name: item.itemName,
+                service: false,
+                outgoingPrice: item.price,
+                incomingPrice: 0,
+                taxId: 1,
+              ),
+              qty: item.quantity,
+              checked: item.auto,
+            )
           ]);
         }
       }
@@ -238,7 +240,6 @@ class JobModel {
           checkReadOnly: (row, cell) {
             final item = (row.cells['item'])?.value as StorageItemMd?;
             if (item == null) return true;
-            logger(item.toJson());
             return item.service;
           },
           type: PlutoColumnType.number(),
