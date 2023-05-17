@@ -158,23 +158,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
           );
         },
       ),
-      // DropdownWidget1(
-      //     hasSearchBox: true,
-      //     dropdownOptionsWidth: 300,
-      //     dropdownBtnWidth: 300,
-      //     hintText: "Location",
-      //     items: locs.map((e) => "${e.title}").toList(),
-      //     objItems: locs,
-      //     customItemIcons: {
-      //       for (var i = 0; i < scheduleState.filteredLocations.length; i++)
-      //         locs.indexOf(scheduleState.filteredLocations[i]): HeroIcons.check
-      //     },
-      //     value: scheduleState.filteredLocations.isEmpty
-      //         ? "All"
-      //         : scheduleState.filteredLocations.first.title,
-      //     onChangedWithObj: (p0) {
-      //       appStore.dispatch(SCAddFilter(location: p0.item));
-      //     }),
     );
   }
 
@@ -196,10 +179,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
         ],
         value: scheduleState.calendarView.name,
         onChangedWithObj: (p0) async {
-          // if (p0.item == CalendarView.timelineWeek) {
-          //   //Subtract 2 weeks from firstDayOfWeek
-          //   firstDayOfWeek = firstDayOfWeek.subtract(const Duration(days: 14));
-          // }
           appStore.dispatch(SCChangeCalendarView(p0.item));
         });
   }
@@ -364,7 +343,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
           ),
           KText(
             onTap: () async {
-              final date = await showCustomMonthPicker(context);
+              final date = await showCustomMonthPicker(context,
+                  initialTime: firstDayOfMonth);
               if (date != null) {
                 firstDayOfMonth = date;
                 await appStore.dispatch(
@@ -480,8 +460,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
       case CalendarView.timelineWeek:
         return WeeklyViewCalendar(
             lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
-      // case CalendarView.month:
-      //   return MonthlyViewCalendar(month: firstDayOfMonth);
+      case CalendarView.month:
+        return MonthlyViewCalendar(month: firstDayOfMonth);
       default:
         return const Center(
           child: Text("Cannot find calendar view"),

@@ -1,31 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import '../../../comps/simple_popup_menu.dart';
 import '../../../manager/models/property_md.dart';
 import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
-import '../../../manager/redux/states/general_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 import '../models/data_source.dart';
 import '../models/job_model.dart';
-import '../schdule_appointment_drawer.dart';
 import '../scheduling_page.dart';
 
 class WeeklyViewCalendar extends StatefulWidget {
@@ -161,31 +149,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
                 },
               ),
               if (isCopyMode)
-                Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: IconButton(
-                      padding: const EdgeInsets.all(16),
-                      icon: const DecoratedBox(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black45,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2)),
-                              ],
-                              color: Colors.white),
-                          child: Icon(Icons.close)),
-                      color: ThemeColors.red3,
-                      tooltip: "Cancel copy",
-                      iconSize: 48,
-                      onPressed: () {
-                        setState(() {
-                          selectedAppointment.clear();
-                        });
-                      },
-                    )),
+                cancelCopyWidget(() {
+                  setState(() {
+                    selectedAppointment.clear();
+                  });
+                }),
             ],
           );
         });
@@ -196,11 +164,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     final ap = appointment.id as AllocationModel;
     final location = ap.property;
     final resource = appointment.resourceIds?.first;
-    String title = "${location.title ?? "-"} - ${location.locationName}";
+    String title = "${location.title} - ${location.locationName}";
     if (!isUserView) {
-      title = ap.user?.fullname ?? "-";
+      title = ap.property.title;
     }
-    if (resource is UserRes) {
+    if (resource is UserRes && isUserView) {
       if (resource.isOpenShiftResource) {
         title = "(Open Shift) $title";
       }
@@ -271,11 +239,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
 
   void _onRemove(AllocationModel ap) {
     appStore.dispatch(
-      SCRemoveAllocationAction(
-        fetchAction: fetcher,
-        allocation: ap,
-      ),
-    );
+        SCRemoveAllocationAction(fetchAction: fetcher, allocation: ap));
   }
 
   void _onEditJob(Appointment ap) async {
@@ -287,9 +251,7 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
           allocation: ap.id as AllocationModel,
           customStartDate: ap.startTime,
           customEndDate: ap.endTime,
-          customResource: ap.resourceIds != null
-              ? CalendarResource(id: ap.resourceIds!.first)
-              : null,
+          customResource: CalendarResource(id: ap.resourceIds!.first),
         ),
       ),
     );
@@ -304,7 +266,9 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
           customStartDate: ap?.startTime,
           customEndDate: ap?.endTime,
           customResource: ap?.resourceIds != null
-              ? CalendarResource(id: ap!.resourceIds!.first)
+              ? ap!.resourceIds!.first is UserRes
+                  ? CalendarResource(id: ap.resourceIds!.first)
+                  : null
               : null,
         ),
       ),
@@ -320,7 +284,11 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
         onCopyAll:
             ap == null ? null : () => _onCopyAll(ap.id as AllocationModel),
         onRemove: ap == null ? null : () => _onRemove(ap.id as AllocationModel),
-        onEdit: ap == null ? null : () => _onEditJob(ap),
+        onEdit: ap == null
+            ? null
+            : (ap.resourceIds!.first as UserRes).isOpenShiftResource
+                ? null
+                : () => _onEditJob(ap),
         onCreate: () => _onCreateJob(ap),
       ),
     );
@@ -437,11 +405,35 @@ class _WeeklyViewCalendarState extends State<WeeklyViewCalendar> {
     final isUserView = state.sidebarType == SidebarType.user;
     dynamic users = state.userResources;
     if (!isUserView) {
-      users = state.locationResources;
+      users = [...state.locationResources];
     } else {
       users = [UserRes.openShiftResource(), ...users];
     }
     return ShiftDataSource(state.getWeekShifts,
         users.map<CalendarResource>((e) => CalendarResource(id: e)).toList());
   }
+}
+
+Widget cancelCopyWidget(VoidCallback onTap) {
+  return Positioned(
+      right: 0,
+      bottom: 0,
+      child: IconButton(
+        padding: const EdgeInsets.all(16),
+        icon: const DecoratedBox(
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black45,
+                      blurRadius: 4,
+                      offset: Offset(0, 2)),
+                ],
+                color: Colors.white),
+            child: Icon(Icons.close)),
+        color: ThemeColors.red3,
+        tooltip: "Cancel copy",
+        iconSize: 48,
+        onPressed: onTap,
+      ));
 }
