@@ -215,7 +215,6 @@ class _QuotesListPageState extends State<QuotesListPage>
       data.quote = appStore.state.generalState.quotes
               .firstWhereOrNull((element) => element.id == quoteId) ??
           QuoteInfoMd.init();
-      logger(data.quote?.toJson());
     }
     final quoteCreated = await showDialog<ApiResponse?>(
       context: context,

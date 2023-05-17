@@ -67,4 +67,4 @@ class AppRouter extends _$AppRouter {
   AppRouter({required AuthGuard authGuard}) : super(authGuard: authGuard);
 }
 
-const appInitRoute = HomeRoute(children: [UsersListRoute()]);
+const appInitRoute = HomeRoute(children: [DashboardRoute()]);

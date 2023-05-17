@@ -262,6 +262,7 @@ class _JobEditFormState extends State<JobEditForm>
         builder: (context) {
           return ClientForm(
             state: state,
+            isQuote: data.isQuote,
             selectedClient: tempClient ?? data.client,
           );
         });
@@ -308,6 +309,7 @@ class _JobEditFormState extends State<JobEditForm>
             state: state,
             type: ClientFormType.location,
             selectedAddress: tempAddress?.address ?? data.address,
+            isQuote: data.isQuote,
           );
         });
     if (res == null) return;
@@ -342,6 +344,7 @@ class _JobEditFormState extends State<JobEditForm>
             state: state,
             type: ClientFormType.location,
             selectedAddress: data.workAddress,
+            isQuote: data.isQuote,
           );
         });
     if (res == null) return;
@@ -519,9 +522,6 @@ class _JobEditFormState extends State<JobEditForm>
   Widget _Form(AppState state) {
     List<UserRes> users = [...(state.usersState.usersList.data ?? [])];
 
-    final List<ListWorkRepeats> workRepeats = [
-      ...state.generalState.workRepeats
-    ];
     List<ListCurrency> currencies = [...state.generalState.currencies];
     List<ListCountry> countries = [...state.generalState.countries];
     List<ListPaymentMethods> paymentMethods = [
