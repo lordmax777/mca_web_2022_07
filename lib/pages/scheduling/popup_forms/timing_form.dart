@@ -45,10 +45,12 @@ class CreatedTimingReturnValue {
 class TimingForm extends StatefulWidget {
   final AppState state;
   final TimingModel? timingInfo;
+  final bool hasAltStartDate;
   const TimingForm({
     Key? key,
     required this.state,
     this.timingInfo,
+    this.hasAltStartDate = false,
   }) : super(key: key);
 
   @override
@@ -59,8 +61,8 @@ class _TimingFormState extends State<TimingForm> {
   final ScrollController scrollController = ScrollController();
 
   TimingModel? get timingInfo => widget.timingInfo;
-
   AppState get state => widget.state;
+  bool get hasAltStartDate => widget.hasAltStartDate;
 
   CompanyMd get company => GeneralController.to.companyInfo;
 
@@ -153,29 +155,29 @@ class _TimingFormState extends State<TimingForm> {
                         },
                       ),
                     ),
-                    // if (returnVal.hasAltTime)
-                    //   labelWithField(
-                    //     "Alternative Start Date",
-                    //     TextInputWidget(
-                    //       width: 300,
-                    //       rightIcon: HeroIcons.calendar,
-                    //       isReadOnly: true,
-                    //       hintText: "Start date",
-                    //       controller: TextEditingController(
-                    //         text: returnVal.altStartDate?.formattedDate ?? "",
-                    //       ),
-                    //       onTap: () async {
-                    //         final date = await showCustomDatePicker(context,
-                    //             initialTime: returnVal.altStartDate);
-                    //
-                    //         if (date == null) return;
-                    //
-                    //         setState(() {
-                    //           returnVal.altStartDate = date;
-                    //         });
-                    //       },
-                    //     ),
-                    //   ),
+                    if (hasAltStartDate)
+                      labelWithField(
+                        "Alternative Start Date",
+                        TextInputWidget(
+                          width: 300,
+                          rightIcon: HeroIcons.calendar,
+                          isReadOnly: true,
+                          hintText: "Start date",
+                          controller: TextEditingController(
+                            text: returnVal.altStartDate?.formattedDate ?? "",
+                          ),
+                          onTap: () async {
+                            final date = await showCustomDatePicker(context,
+                                initialTime: returnVal.altStartDate);
+
+                            if (date == null) return;
+
+                            setState(() {
+                              returnVal.altStartDate = date;
+                            });
+                          },
+                        ),
+                      ),
                     labelWithField(
                       "All day",
                       toggle(returnVal.isAllDay, (val) {

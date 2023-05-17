@@ -46,6 +46,11 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
       widget.data.gridStateManager = value;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,

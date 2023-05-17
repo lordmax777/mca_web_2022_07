@@ -24,6 +24,7 @@ import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../../../utils/global_functions.dart';
 import '../../scheduling/create_shift_popup.dart';
+import '../models/allocation_model.dart';
 import '../models/job_model.dart';
 import 'client_form.dart';
 
@@ -43,7 +44,7 @@ class _JobEditFormState extends State<JobEditForm>
 
   //Data values
   bool get isCreate => data.isCreate;
-  bool get isUpdate => !isCreate;
+  bool get isUpdate => data.isUpdate;
   ScheduleCreatePopupMenus get type => data.type;
 
   late final JobModel data = widget.data;
@@ -53,7 +54,7 @@ class _JobEditFormState extends State<JobEditForm>
   Address get address => data.address;
   Address get workAddress => data.workAddress;
   DateTime? get date => data.date;
-  // AllocationModel? get allocation => data.allocation;
+  AllocationModel? get allocation => data.allocation;
 
   //Temp vars
   bool resetLocation = true;
@@ -76,14 +77,16 @@ class _JobEditFormState extends State<JobEditForm>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Get.showOverlay(
         asyncFunction: () async {
-          _getUnavUsers(date ?? DateTime.now());
+          if (!data.isQuote) {
+            _getUnavUsers(date ?? DateTime.now());
+          }
           if (isUpdate) {
             final res = await restClient()
                 .getQuoteBy(
-                  0,
-                  date: data.dateAsString!,
-                  location_id: data.allocation!.location.id,
-                  shift_id: data.allocation!.shift.id,
+                  data.quote?.id ?? 0,
+                  date: data.dateAsString,
+                  location_id: allocation?.location.id,
+                  shift_id: allocation?.shift.id,
                 )
                 .nocodeErrorHandler();
             if (res.success) {
@@ -337,12 +340,17 @@ class _JobEditFormState extends State<JobEditForm>
           return TimingForm(
             state: state,
             timingInfo: timing,
+            hasAltStartDate: data.isQuote,
           );
         });
     if (res == null) return;
-    bool fetchUnavUsers = res.date!.compareTo(data.timingInfo.date!) != 0;
     data.timingInfo = res;
-    logger(res);
+    if (data.isQuote) {
+      setState(() {});
+      return;
+    }
+
+    bool fetchUnavUsers = res.date!.compareTo(data.timingInfo.date!) != 0;
     setState(() {
       if (fetchUnavUsers) {
         unavailableUsers.isLoaded = false;
@@ -910,6 +918,15 @@ class _JobEditFormState extends State<JobEditForm>
                           customLabel: _textField(timing.date?.formattedDate),
                         ),
                         const Divider(),
+                        if (data.isQuote)
+                          labelWithField(
+                            labelWidth: 160,
+                            "Alt Start Date:",
+                            null,
+                            customLabel:
+                                _textField(timing.altStartDate?.formattedDate),
+                          ),
+                        if (data.isQuote) const Divider(),
                         labelWithField(
                           labelWidth: 160,
                           "Start Time:",
@@ -958,16 +975,17 @@ class _JobEditFormState extends State<JobEditForm>
                       ],
                     ),
                   ),
-                  TitleContainer(
-                    titleIcon: HeroIcons.add,
-                    onEdit: unavailableUsers.isLoaded
-                        ? () {
-                            onEditTeamMember(users);
-                          }
-                        : null,
-                    title: "Team",
-                    child: _team(users),
-                  ),
+                  if (!data.isQuote)
+                    TitleContainer(
+                      titleIcon: HeroIcons.add,
+                      onEdit: unavailableUsers.isLoaded
+                          ? () {
+                              onEditTeamMember(users);
+                            }
+                          : null,
+                      title: "Team",
+                      child: _team(users),
+                    ),
                 ],
               ),
               _products(state),

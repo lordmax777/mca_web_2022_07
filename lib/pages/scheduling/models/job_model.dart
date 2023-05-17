@@ -9,7 +9,6 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../manager/general_controller.dart';
 import '../../../manager/models/location_item_md.dart';
 import '../../../manager/redux/sets/app_state.dart';
-import '../../../manager/rest/rest_client.dart';
 import '../scheduling_page.dart';
 
 class JobModel {
@@ -133,8 +132,10 @@ class JobModel {
   String? quoteComment;
 
   //Getters
-  bool get isCreate => allocation == null && quote == null;
-  bool get isUpdate => allocation != null && quote != null;
+  bool get isCreate => allocation == null || quote == null;
+  bool get isUpdate => allocation != null || quote != null;
+  bool get isQuote => type == ScheduleCreatePopupMenus.quote;
+
   bool isGridInitialized = false;
 
   late PlutoGridStateManager gridStateManager;

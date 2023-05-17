@@ -1,18 +1,9 @@
 @echo off
-rem
-rem Usage:
-rem   release.bat <config>
-rem   release.bat
-rem
-
 :build
 
-call flutter clean
-rem When flutter sdk directory is changed, pubspec.lock should be deleted.
+call fvm flutter clean
 del pubspec.lock
-call flutter pub get
-@REM call flutter run
+call fvm flutter pub get
 
 goto end
-
 :end

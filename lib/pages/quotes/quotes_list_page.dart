@@ -1,9 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/models/job_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
@@ -202,14 +204,17 @@ class _QuotesListPageState extends State<QuotesListPage>
     String? successMessage,
     int? quoteId,
   }) async {
+    final JobModel data = JobModel(type: ScheduleCreatePopupMenus.quote);
+    if (quoteId != null) {
+      data.quote = appStore.state.generalState.quotes
+              .firstWhereOrNull((element) => element.id == quoteId) ??
+          QuoteInfoMd.init();
+      logger(data.quote?.toJson());
+    }
     final quoteCreated = await showDialog<ApiResponse?>(
       context: context,
       barrierDismissible: kDebugMode,
-      builder: (context) => QuoteEditForm(
-        data: CreateShiftDataQuote(
-          quoteId: quoteId,
-        ),
-      ),
+      builder: (context) => JobEditForm(data: data),
     );
     if (quoteCreated != null) {
       showError(successMessage ?? "Quote Created Successfully");

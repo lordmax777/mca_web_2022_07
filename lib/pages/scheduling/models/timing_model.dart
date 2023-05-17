@@ -47,6 +47,7 @@ class TimingModel {
     copy.endTime = endTime;
     copy.repeat = repeat;
     copy.days = days;
+    copy.altStartDate = altStartDate;
     return copy;
   }
 

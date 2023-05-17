@@ -2506,9 +2506,9 @@ class _RestClient implements RestClient {
   @override
   Future<HttpResponse<dynamic>> getQuoteBy(
     id, {
-    required date,
-    required location_id,
-    required shift_id,
+    date,
+    location_id,
+    shift_id,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -2516,6 +2516,7 @@ class _RestClient implements RestClient {
       r'location_id': location_id,
       r'shift_id': shift_id,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =
