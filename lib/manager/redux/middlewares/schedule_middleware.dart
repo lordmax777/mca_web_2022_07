@@ -183,7 +183,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
       next(UpdateScheduleState(
         shifts: stateVal,
-        backupShifts: appointments,
+        backupShiftsWeek: appointments,
       ));
     } else {
       stateVal.error.isLoading = false;
@@ -262,7 +262,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
 
       next(UpdateScheduleState(
         shifts: stateVal,
-        backupShifts: appointments,
+        backupShiftsMonth: appointments,
       ));
     } else {
       stateVal.error.isLoading = false;
