@@ -783,15 +783,19 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
       return;
     }
     if (data.addressId == null) {
-      showError("Please add address");
-      return;
+      if (!action.isQuote) {
+        showError("Please add address");
+        return;
+      }
     }
 
     //1. Create Quote
     ApiResponse? createdQuote;
     if (isUpdate) {
-      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
-          ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
+      if (!data.isQuote) {
+        await appStore.dispatch(
+            ChangeQuoteStatusAction(status: "pending", quoteId: quote!.id));
+      }
     }
     createdQuote = await appStore.dispatch(
       CreateQuoteAction(
@@ -821,52 +825,38 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
         locationId: data.addressId,
         company: client.company,
         userIds: data.addedChildren,
+        workAddressPostcode: data.workAddress.postcode,
+        workAddressLine1: data.workAddress.line1,
+        workAddressLine2: data.workAddress.line2,
+        workAddressCity: data.workAddress.city,
+        workAddressCounty: data.workAddress.county,
+        workAddressCountry: data.workAddress.country,
+        altWorkStartDate: timing.altStartDate?.formatDateForApi,
+        quoteComments: data.quoteComment,
       ),
     );
 
     //2. Change Quote Status to accepted
     if (createdQuote != null && createdQuote.success) {
-      final quoteId = createdQuote.data as int;
-      final ApiResponse? changedQuoteStatus = await appStore.dispatch(
-          ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
-      if (changedQuoteStatus?.success == true) {
-        appStore.dispatch(SCFetchShiftsAction(date: timing.date!));
-        appStore.dispatch(SCFetchShiftsWeekAction(
-          startDate: timing.date!.subtract(const Duration(days: 7)),
-          endDate: timing.date!,
-        ));
-        appStore.dispatch(SCFetchShiftsMonthAction(startDate: timing.date!));
+      if (!data.isQuote) {
+        final quoteId = createdQuote.data as int;
+        final ApiResponse? changedQuoteStatus = await appStore.dispatch(
+            ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
+        if (changedQuoteStatus?.success == true) {
+          appStore.dispatch(SCFetchShiftsAction(date: timing.date!));
+          appStore.dispatch(SCFetchShiftsWeekAction(
+            startDate: timing.date!.subtract(const Duration(days: 7)),
+            endDate: timing.date!,
+          ));
+          appStore.dispatch(SCFetchShiftsMonthAction(startDate: timing.date!));
 
-        return changedQuoteStatus;
+          return changedQuoteStatus;
+        } else {
+          showError(changedQuoteStatus?.data ?? "Error");
+        }
       } else {
-        showError(changedQuoteStatus?.data ?? "Error");
+        return createdQuote;
       }
-      //DEPRECATED
-      // //3. (Optional) Assign users to the allocation
-      // if (changedQuoteStatus != null && changedQuoteStatus.success) {
-      //   //TODO: Assign users to the allocation
-      //   // final allocationId = changedQuoteStatus.data as int;
-      //   // //Get all allocations and find the shift id using allocation id and date
-      //   // final ApiResponse res = await restClient()
-      //   //     .getShifts(
-      //   //       location?.id ?? 0,
-      //   //       0,
-      //   //       0,
-      //   //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
-      //   //     )
-      //   //     .nocodeErrorHandler();
-      //   // //Use shift id
-      //   // // final ApiResponse res = await restClient()
-      //   // //     .postShifts(
-      //   // //       location?.id ?? 0,
-      //   // //       805, //TODO: User
-      //   // //       106,
-      //   // //       DateFormat("yyyy-MM-dd").format(timing.startDate!),
-      //   // //       AllocationActions.add.name,
-      //   // //     )
-      //   // //     .nocodeErrorHandler();
-      //   // return res;
-      // }
     }
   } on Exception catch (e) {
     Logger.e(e.toString(), tag: "CreateJobAction");

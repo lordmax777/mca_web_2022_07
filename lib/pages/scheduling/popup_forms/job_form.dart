@@ -80,7 +80,7 @@ class _JobEditFormState extends State<JobEditForm>
           if (!data.isQuote) {
             _getUnavUsers(date ?? DateTime.now());
           }
-          if (isUpdate) {
+          if (data.allocation != null) {
             final res = await restClient()
                 .getQuoteBy(
                   data.quote?.id ?? 0,
@@ -152,20 +152,21 @@ class _JobEditFormState extends State<JobEditForm>
               ],
             ),
             if (isUpdate)
-              TabBar(
-                controller: _tabController,
-                tabs: _tabs,
-                labelColor: ThemeColors.MAIN_COLOR,
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: ThemeColors.MAIN_COLOR.withOpacity(0.1),
+              if (!data.isQuote)
+                TabBar(
+                  controller: _tabController,
+                  tabs: _tabs,
+                  labelColor: ThemeColors.MAIN_COLOR,
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: ThemeColors.MAIN_COLOR.withOpacity(0.1),
+                  ),
+                  splashBorderRadius: BorderRadius.circular(30),
+                  unselectedLabelColor: ThemeColors.gray7,
+                  indicatorColor: ThemeColors.MAIN_COLOR,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
-                splashBorderRadius: BorderRadius.circular(30),
-                unselectedLabelColor: ThemeColors.gray7,
-                indicatorColor: ThemeColors.MAIN_COLOR,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: Theme.of(context).textTheme.headlineSmall,
-              ),
           ],
         ),
         actions: [
@@ -231,6 +232,7 @@ class _JobEditFormState extends State<JobEditForm>
     switch (type) {
       case ScheduleCreatePopupMenus.jobNew:
       case ScheduleCreatePopupMenus.jobUpdate:
+      case ScheduleCreatePopupMenus.quote:
         _saveJob(state);
         break;
       default:
@@ -240,12 +242,12 @@ class _JobEditFormState extends State<JobEditForm>
   void _saveJob(AppState state) {
     Get.showOverlay(
         asyncFunction: () async {
-          final ApiResponse? newJob =
-              await appStore.dispatch(CreateJobAction(data));
+          final ApiResponse? newJob = await appStore
+              .dispatch(CreateJobAction(data, isQuote: data.isQuote));
           if (newJob?.success == true) {
             exit(context).then((value) {
               showError(
-                  "Job ${data.isCreate ? "created" : "updated"} successfully",
+                  "${data.type.label} ${data.isCreate ? "created" : "updated"} successfully",
                   titleMsg: "Success");
             });
           }
@@ -263,6 +265,7 @@ class _JobEditFormState extends State<JobEditForm>
             selectedClient: tempClient ?? data.client,
           );
         });
+    if (res == null) return;
     if (res is ClientInfoMd) {
       setState(() {
         data.setClient(res);
@@ -271,7 +274,6 @@ class _JobEditFormState extends State<JobEditForm>
       return;
     }
     if (res is CreatedClientReturnValue) {
-      if (res == null) return;
       resetLocationDp(() {
         if (res.clientId != null) {
           final foundClient = appStore.state.generalState.clientInfos
@@ -298,53 +300,57 @@ class _JobEditFormState extends State<JobEditForm>
   }
 
   void _editInvoiceAddress(AppState state) async {
-    final CreatedClientReturnValue? res = await showDialog(
+    var res = await showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return ClientForm(
             state: state,
             type: ClientFormType.location,
+            selectedAddress: tempAddress?.address ?? data.address,
           );
         });
     if (res == null) return;
-    resetLocationDp(() {
-      if (res.locationId != null) {
-        final foundAddress = appStore.state.generalState.locations
-            .firstWhereOrNull((element) => element.id == res.locationId);
-        if (foundAddress != null) {
-          setState(() {
-            tempAddress = foundAddress;
-            data.setAddress(foundAddress.address, foundAddress.id);
-          });
+    if (res is Address) {
+      setState(() {
+        data.setAddress(res);
+      });
+      return;
+    }
+    if (res is CreatedClientReturnValue) {
+      resetLocationDp(() {
+        if (res.locationId != null) {
+          final foundAddress = appStore.state.generalState.locations
+              .firstWhereOrNull((element) => element.id == res.locationId);
+          if (foundAddress != null) {
+            setState(() {
+              tempAddress = foundAddress;
+              data.setAddress(foundAddress.address, foundAddress.id);
+            });
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   void _editWorkAddress(AppState state) async {
-    final CreatedClientReturnValue? res = await showDialog(
+    var res = await showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return ClientForm(
             state: state,
             type: ClientFormType.location,
+            selectedAddress: data.workAddress,
           );
         });
     if (res == null) return;
-    resetLocationDp(() {
-      if (res.locationId != null) {
-        final foundAddress = appStore.state.generalState.locations
-            .firstWhereOrNull((element) => element.id == res.locationId);
-        if (foundAddress != null) {
-          setState(() {
-            tempAddress = foundAddress;
-            data.setWorkAddress(foundAddress.address);
-          });
-        }
-      }
-    });
+    if (res is Address) {
+      setState(() {
+        data.setWorkAddress(res);
+      });
+      return;
+    }
   }
 
   void _editTiming(AppState state) async {
@@ -726,10 +732,13 @@ class _JobEditFormState extends State<JobEditForm>
                         onEdit: !isClientSelected
                             ? null
                             : isUpdate
-                                ? null
+                                ? data.isQuote
+                                    ? () => _editInvoiceAddress(state)
+                                    : null
                                 : () => _editInvoiceAddress(state),
-                        titleOverride: "Create New Location",
-                        titleIcon: HeroIcons.add,
+                        titleOverride: "${data.actionTypeStr} Location",
+                        titleIcon:
+                            data.isQuote ? HeroIcons.edit : HeroIcons.add,
                         title: "Address",
                         child: SpacedColumn(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -825,9 +834,16 @@ class _JobEditFormState extends State<JobEditForm>
                       ),
                       if (data.hasWorkAddress)
                         TitleContainer(
-                          // onEdit: !isClientSelected ? null : _editWorkAddress,
-                          titleOverride: "Create New Location",
-                          titleIcon: HeroIcons.add,
+                          onEdit: !isClientSelected
+                              ? null
+                              : isUpdate
+                                  ? data.isQuote
+                                      ? () => _editWorkAddress(state)
+                                      : null
+                                  : () => _editWorkAddress(state),
+                          titleOverride: "${data.actionTypeStr} Work Location",
+                          titleIcon:
+                              data.isQuote ? HeroIcons.edit : HeroIcons.add,
                           title: "Work Address",
                           child: SpacedColumn(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -850,11 +866,6 @@ class _JobEditFormState extends State<JobEditForm>
                                     height: 50,
                                     hintText: "Select Location",
                                     listItemWidget: (p0) => Text(p0.name),
-                                    onCleared: () {
-                                      setState(() {
-                                        data.setWorkAddress(null);
-                                      });
-                                    },
                                     onSelected: (p0) {
                                       setState(() {
                                         data.setWorkAddress(p0.address);
@@ -1174,11 +1185,20 @@ class _JobEditFormState extends State<JobEditForm>
               child: CustomAutocompleteTextField<StorageItemMd>(
                   listItemWidget: (p0) => Text(p0.name),
                   onSelected: (p0) {
+                    final StorageItemMd? item = data.gridStateManager.rows
+                        .firstWhereOrNull((element) =>
+                            (element.cells['item']?.value as StorageItemMd)
+                                .id ==
+                            p0.id)
+                        ?.cells['item']
+                        ?.value;
                     final includedItemIdx = data.gridStateManager.rows
-                        .indexWhere(
-                            (element) => element.cells['id']?.value == p0.id);
-                    if (includedItemIdx >= 0) {
-                      if (!p0.service) {
+                        .indexWhere((element) =>
+                            (element.cells['item']?.value as StorageItemMd)
+                                .id ==
+                            p0.id);
+                    if (includedItemIdx >= 0 && item != null) {
+                      if (!item.service) {
                         data.gridStateManager.rows[includedItemIdx]
                             .cells['quantity']?.value = data
                                 .gridStateManager

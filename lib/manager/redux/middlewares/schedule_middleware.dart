@@ -164,7 +164,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final shiftId = action.shiftId ?? 0;
     final date = action.date;
     final stateVal = state.scheduleState.shifts;
-    int largestAppointmentCountDay = 0;
 
     stateVal.error.isLoading = true;
     next(UpdateScheduleState(shifts: stateVal));
@@ -175,19 +174,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         .nocodeErrorHandler();
 
     if (res.success) {
-      StateValue<ListAllMd> allList =
-          await appStore.dispatch(GetAllParamListAction());
       StateValue<List<PropertiesMd>> newProperties =
           await appStore.dispatch(GetPropertiesAction());
+      StateValue<ListAllMd> allList =
+          await appStore.dispatch(GetAllParamListAction());
       final list = <AllocationModel>[];
       final appointments = <Appointment>[];
-      final properties = <PropertiesMd>[
-        ...(state.generalState.properties.data ?? <PropertiesMd>[])
-      ];
-      final users = <UserRes>[...(state.usersState.usersList.data ?? [])];
-      final locs = <PropertiesMd>[
-        ...(state.generalState.properties.data ?? [])
-      ];
       for (var item in res.data['allocations']) {
         final AllocationModel shift = AllocationModel.fromJson(item,
             shifts: allList.data!.shifts, users: state.usersState.users);

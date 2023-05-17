@@ -33,8 +33,10 @@ class JobModel {
     } else {
       client = clientInfoMd;
     }
-    setAddress(null);
-    setWorkAddress(null);
+    if (!isQuote) {
+      setAddress(null);
+      setWorkAddress(null);
+    }
   }
 
   bool get isClientSelected => client.isClientTrue;
@@ -101,7 +103,6 @@ class JobModel {
         final foundUser =
             allUsers.firstWhereOrNull((element) => element.id == user.userId);
         if (foundUser != null) {
-          logger(user.toJson());
           addedChildren[foundUser] = user.specialRate?.toDouble() ?? 0;
         }
       }
@@ -132,8 +133,8 @@ class JobModel {
   String? quoteComment;
 
   //Getters
-  bool get isCreate => allocation == null || quote == null;
-  bool get isUpdate => allocation != null || quote != null;
+  bool get isCreate => quote == null;
+  bool get isUpdate => quote != null;
   bool get isQuote => type == ScheduleCreatePopupMenus.quote;
   String get actionTypeStr => isCreate ? "Create" : "Update";
 
@@ -162,6 +163,7 @@ class JobModel {
     return PlutoRow(
       checked: checked,
       cells: {
+        "item": PlutoCell(value: contractShiftItem),
         "id": PlutoCell(value: contractShiftItem.id),
         "title": PlutoCell(
             value: "${contractShiftItem.name} - ${contractShiftItem.service}"),
@@ -175,6 +177,12 @@ class JobModel {
 
   CompanyMd get company => GeneralController.to.companyInfo;
   List<PlutoColumn> cols(AppState state) => [
+        PlutoColumn(
+          title: "",
+          field: "item",
+          type: PlutoColumnType.text(),
+          hide: true,
+        ),
         PlutoColumn(
           title: "",
           field: "id",
@@ -228,10 +236,9 @@ class JobModel {
           field: "quantity",
           enableAutoEditing: true,
           checkReadOnly: (row, cell) {
-            final id = (row.cells['id'])?.value;
-            final item = state.generalState.storage_items
-                .firstWhereOrNull((element) => element.id == id);
+            final item = (row.cells['item'])?.value as StorageItemMd?;
             if (item == null) return true;
+            logger(item.toJson());
             return item.service;
           },
           type: PlutoColumnType.number(),

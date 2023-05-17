@@ -212,6 +212,20 @@ class Address {
         radius: 0);
   }
 
+  Address copy() {
+    return Address(
+      line1: line1,
+      line2: line2,
+      city: city,
+      county: county,
+      country: country,
+      postcode: postcode,
+      latitude: latitude,
+      longitude: longitude,
+      radius: radius,
+    );
+  }
+
   // from ClientAddressForm
   // factory Address.fromClientAddressForm(ClientAddressForm clientAddressForm) {
   //   return Address(

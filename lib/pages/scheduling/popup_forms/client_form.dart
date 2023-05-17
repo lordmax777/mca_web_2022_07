@@ -80,11 +80,13 @@ class ClientForm extends StatefulWidget {
   final AppState state;
   final ClientFormType type;
   final ClientInfoMd? selectedClient;
+  final Address? selectedAddress;
   const ClientForm({
     Key? key,
     required this.state,
     this.type = ClientFormType.client,
     this.selectedClient,
+    this.selectedAddress,
   }) : super(key: key);
 
   @override
@@ -105,6 +107,7 @@ class _ClientFormState extends State<ClientForm> {
   bool get isLocation => type == ClientFormType.location;
   CompanyMd get company => GeneralController.to.companyInfo;
   ClientInfoMd? get selectedClient => widget.selectedClient;
+  Address? get selectedAddress => widget.selectedAddress;
   String? get clientEmail => selectedClient?.email;
   String? get clientPhone => selectedClient?.phone;
 
@@ -180,6 +183,9 @@ class _ClientFormState extends State<ClientForm> {
             paymentMethods.first.id;
         notes.text = selectedClient!.notes ?? "";
         address = selectedClient!.address;
+      }
+      if (selectedAddress != null) {
+        address = selectedAddress!;
       }
     });
   }
@@ -656,6 +662,10 @@ class _ClientFormState extends State<ClientForm> {
                         _handleUpdateClient();
                         return;
                       }
+                      if (selectedAddress != null) {
+                        _handleUpdateLocation();
+                        return;
+                      }
                       _handleCreateClient();
                       break;
                     // case ClientFormType.quoteClient:
@@ -731,7 +741,7 @@ class _ClientFormState extends State<ClientForm> {
     context.popRoute(client);
   }
 
-  void _handleCreatequoteLocation() async {
+  void _handleUpdateLocation() async {
     context.popRoute(address);
   }
 

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
@@ -334,18 +335,17 @@ class _QuotesListPageState extends State<QuotesListPage>
           gridBorderColor: Colors.grey[300]!,
           rows: [],
           noRowsText: 'No quotes found',
-          onSmReady: (p0) {
+          onSmReady: (p0) async {
             if (!isStateManagerInitialized) {
               stateManager = p0;
               stateManager!.addListener(() {
                 setState(() {});
               });
-              final allQuotes = state.generalState.allSortedQuotes;
+              //appStore.dispatch(GetQuotesAction());
+              final allQuotes = await fetchQuotes();
               stateManager!.removeAllRows();
               stateManager!
                   .appendRows(allQuotes.map((e) => _buildRow(e)).toList());
-
-              _setFilter();
             }
             stateManager!.setPage(1);
             stateManager!.setPageSize(10);
@@ -356,8 +356,8 @@ class _QuotesListPageState extends State<QuotesListPage>
 
   Widget _footer(AppState state) {
     return Padding(
-      padding:
-          const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
+      padding: const EdgeInsets.only(
+          left: 16.0, right: 32.0, top: 16.0, bottom: 16.0),
       child: SpacedRow(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -370,17 +370,33 @@ class _QuotesListPageState extends State<QuotesListPage>
                       textColor: ThemeColors.black,
                       fontSize: 14.0,
                       isSelectable: false),
-                  DropdownWidgetV2(
-                    hintText: "Entries",
-                    items: Constants.tablePageSizes
-                        .map((e) => CustomDropdownValue(name: e.toString()))
-                        .toList(),
-                    dropdownBtnWidth: 120,
-                    onChanged: (index) => _onPageSizeChange(
-                        Constants.tablePageSizes[index].toString()),
-                    value: CustomDropdownValue(
-                        name: stateManager!.pageSize.toString()),
-                  ),
+                  // CustomAutocompleteTextField<int>(
+                  //   options: (p0) => Constants.tablePageSizes
+                  //       // .where((element) => p0.text != ""
+                  //       //     ? element == int.tryParse(p0.text)
+                  //       //     : true)
+                  //       .toList(),
+                  //   onSelected: (p0) {
+                  //     _onPageSizeChange(p0.toString());
+                  //   },
+                  //   width: 200,
+                  //   hintText: "Page Size",
+                  //   initialValue: TextEditingValue(
+                  //       text: stateManager!.pageSize.toString()),
+                  //   onCleared: () {
+                  //     _onPageSizeChange("10");
+                  //   },
+                  // ),
+                  // DropdownWidgetV2(
+                  //   items: Constants.tablePageSizes
+                  //       .map((e) => CustomDropdownValue(name: e.toString()))
+                  //       .toList(),
+                  //   dropdownBtnWidth: 120,
+                  //   onChanged: (index) => _onPageSizeChange(
+                  //       Constants.tablePageSizes[index].toString()),
+                  //   value: CustomDropdownValue(
+                  //       name: stateManager!.pageSize.toString()),
+                  // ),
                   KText(
                       text: "of ${stateManager!.rows.length} entries",
                       textColor: ThemeColors.black,
@@ -394,5 +410,16 @@ class _QuotesListPageState extends State<QuotesListPage>
                 onPageChanged: (int i) => _onPageChange(i)),
           ]),
     );
+  }
+
+  Future<List<QuoteInfoMd>> fetchQuotes() async {
+    if (isStateManagerInitialized) {
+      stateManager!.setShowLoading(true);
+    }
+    final quotes = await appStore.dispatch(GetQuotesAction());
+    if (isStateManagerInitialized) {
+      stateManager!.setShowLoading(false);
+    }
+    return quotes;
   }
 }

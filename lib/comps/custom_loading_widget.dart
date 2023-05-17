@@ -5,14 +5,8 @@ class CustomLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CircularProgressIndicator(
-        strokeWidth: 8,
-        backgroundColor: Colors.white,
-        valueColor: AlwaysStoppedAnimation<Color>(
-            ThemeColors.MAIN_COLOR.withOpacity(0.8)),
-        color: ThemeColors.MAIN_COLOR,
-      ),
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 }

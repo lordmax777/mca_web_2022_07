@@ -662,8 +662,8 @@ class OnCreateNewClientTap<T> {
 
 class CreateJobAction {
   final JobModel data;
-
-  CreateJobAction(this.data);
+  final bool isQuote;
+  CreateJobAction(this.data, {this.isQuote = false});
 }
 
 // class CreateJobAction {
