@@ -121,7 +121,7 @@ class _ClientFormState extends State<ClientForm> {
   final TextEditingController phoneNumber = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController notes = TextEditingController();
-  Address address = Address.init(postcode: 'NW1 8PR');
+  Address address = Address.init(postcode: kDebugMode ? 'NW1 8PR' : "");
   final TextEditingController ipAddress = TextEditingController();
   String? currentIpAddress;
 
@@ -148,7 +148,6 @@ class _ClientFormState extends State<ClientForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      onIpLookup();
       currencyId = currencies
           .firstWhereOrNull((element) => element.code == company.currency.code)
           ?.id;
@@ -190,6 +189,7 @@ class _ClientFormState extends State<ClientForm> {
       if (selectedAddress != null && isQuote) {
         address = selectedAddress!;
       }
+      onIpLookup();
     });
   }
 

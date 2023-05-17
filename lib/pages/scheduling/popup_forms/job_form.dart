@@ -596,7 +596,7 @@ class _JobEditFormState extends State<JobEditForm>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (isCreate)
+                                if (isCreate || data.isQuote)
                                   Visibility(
                                     visible: resetLocation,
                                     child: CustomAutocompleteTextField<
@@ -757,7 +757,7 @@ class _JobEditFormState extends State<JobEditForm>
                                   ),
                                 ),
                             if (isClientSelected)
-                              if (isCreate)
+                              if (isCreate || data.isQuote)
                                 Visibility(
                                   visible: resetLocation,
                                   child: CustomAutocompleteTextField<
