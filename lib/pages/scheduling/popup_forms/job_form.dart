@@ -254,37 +254,47 @@ class _JobEditFormState extends State<JobEditForm>
   }
 
   void _onCreateNewClient(AppState state) async {
-    final CreatedClientReturnValue? res = await showDialog(
+    var res = await showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return ClientForm(
             state: state,
+            selectedClient: tempClient ?? data.client,
           );
         });
-    if (res == null) return;
-    resetLocationDp(() {
-      if (res.clientId != null) {
-        final foundClient = appStore.state.generalState.clientInfos
-            .firstWhereOrNull((element) => element.id == res.clientId);
-        if (foundClient != null) {
-          setState(() {
-            tempClient = foundClient;
-            data.setClient(foundClient);
-          });
+    if (res is ClientInfoMd) {
+      setState(() {
+        data.setClient(res);
+        tempClient = res;
+      });
+      return;
+    }
+    if (res is CreatedClientReturnValue) {
+      if (res == null) return;
+      resetLocationDp(() {
+        if (res.clientId != null) {
+          final foundClient = appStore.state.generalState.clientInfos
+              .firstWhereOrNull((element) => element.id == res.clientId);
+          if (foundClient != null) {
+            setState(() {
+              tempClient = foundClient;
+              data.setClient(foundClient);
+            });
+          }
         }
-      }
-      if (res.locationId != null) {
-        final foundAddress = appStore.state.generalState.locations
-            .firstWhereOrNull((element) => element.id == res.locationId);
-        if (foundAddress != null) {
-          setState(() {
-            tempAddress = foundAddress;
-            data.setAddress(foundAddress.address, foundAddress.id);
-          });
+        if (res.locationId != null) {
+          final foundAddress = appStore.state.generalState.locations
+              .firstWhereOrNull((element) => element.id == res.locationId);
+          if (foundAddress != null) {
+            setState(() {
+              tempAddress = foundAddress;
+              data.setAddress(foundAddress.address, foundAddress.id);
+            });
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   void _editInvoiceAddress(AppState state) async {
@@ -312,25 +322,30 @@ class _JobEditFormState extends State<JobEditForm>
     });
   }
 
-  // void _editWorkAddress() async {
-  //   final CreatedClientReturnValue? res = await appStore.dispatch(
-  //       OnCreateNewClientTap(context,
-  //           type: ClientFormType.location, clientInfo: data.client));
-  //   if (res == null) return;
-  //   setState(() {
-  //     if (res.locationId != null) {
-  //       data.tempAllowedLocIdWorkAddress = res.locationId;
-  //       final loc = appStore.state.generalState.locations
-  //           .firstWhereOrNull((element) => element.id == res.locationId);
-  //       if (loc != null) {
-  //         data.workAddress = Address.fromLocationAddress(appStore
-  //             .state.generalState.locations
-  //             .firstWhereOrNull((element) => element.id == res.locationId)!);
-  //       }
-  //     }
-  //   });
-  // }
-  //
+  void _editWorkAddress(AppState state) async {
+    final CreatedClientReturnValue? res = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return ClientForm(
+            state: state,
+            type: ClientFormType.location,
+          );
+        });
+    if (res == null) return;
+    resetLocationDp(() {
+      if (res.locationId != null) {
+        final foundAddress = appStore.state.generalState.locations
+            .firstWhereOrNull((element) => element.id == res.locationId);
+        if (foundAddress != null) {
+          setState(() {
+            tempAddress = foundAddress;
+            data.setWorkAddress(foundAddress.address);
+          });
+        }
+      }
+    });
+  }
 
   void _editTiming(AppState state) async {
     final TimingModel? res = await showDialog(
@@ -540,13 +555,7 @@ class _JobEditFormState extends State<JobEditForm>
     if (tempAddress != null) {
       locations.add(tempAddress!);
     }
-    // locations.addAll(
-    //   state.generalState.locations
-    //       .where((element) =>
-    //           element.id == data.tempAllowedLocIdWorkAddress &&
-    //           !locations.contains(element))
-    //       .toList(),
-    // );
+
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: CustomScrollbar(
@@ -569,10 +578,13 @@ class _JobEditFormState extends State<JobEditForm>
                         verticalSpace: 16,
                         children: [
                           TitleContainer(
-                            titleOverride: "Create New Client",
-                            titleIcon: HeroIcons.add,
+                            titleOverride: "${data.actionTypeStr} Client",
+                            titleIcon:
+                                data.isQuote ? HeroIcons.edit : HeroIcons.add,
                             onEdit: isUpdate
-                                ? null
+                                ? data.isQuote
+                                    ? () => _onCreateNewClient(state)
+                                    : null
                                 : () => _onCreateNewClient(state),
                             title: "Personal Information",
                             child: Column(

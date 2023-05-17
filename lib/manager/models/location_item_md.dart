@@ -197,7 +197,7 @@ class Address {
   }
 
   // init
-  factory Address.init() {
+  factory Address.init({String? postcode}) {
     CompanyMd companyInfo = GeneralController.to.companyInfo;
 
     return Address(
@@ -206,26 +206,26 @@ class Address {
         city: "",
         county: "",
         country: companyInfo.country,
-        postcode: "",
+        postcode: postcode ?? "",
         latitude: 0,
         longitude: 0,
         radius: 0);
   }
 
   // from ClientAddressForm
-  factory Address.fromClientAddressForm(ClientAddressForm clientAddressForm) {
-    return Address(
-      line1: clientAddressForm.addressLine1 ?? "",
-      line2: clientAddressForm.addressLine2 ?? "",
-      city: clientAddressForm.addressCity ?? "",
-      county: clientAddressForm.addressCounty ?? "",
-      country: clientAddressForm.addressCountryId ?? "",
-      postcode: clientAddressForm.addressPostcode ?? "",
-      latitude: clientAddressForm.latitude ?? 0,
-      longitude: clientAddressForm.longitude ?? 0,
-      radius: clientAddressForm.radius ?? 0,
-    );
-  }
+  // factory Address.fromClientAddressForm(ClientAddressForm clientAddressForm) {
+  //   return Address(
+  //     line1: clientAddressForm.addressLine1 ?? "",
+  //     line2: clientAddressForm.addressLine2 ?? "",
+  //     city: clientAddressForm.addressCity ?? "",
+  //     county: clientAddressForm.addressCounty ?? "",
+  //     country: clientAddressForm.addressCountryId ?? "",
+  //     postcode: clientAddressForm.addressPostcode ?? "",
+  //     latitude: clientAddressForm.latitude ?? 0,
+  //     longitude: clientAddressForm.longitude ?? 0,
+  //     radius: clientAddressForm.radius ?? 0,
+  //   );
+  // }
 
   // from LocationAddress
   factory Address.fromLocationAddress(LocationAddress locationAddress) {

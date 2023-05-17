@@ -328,7 +328,7 @@ class _QuotesListPageState extends State<QuotesListPage>
 
   Widget _body(AppState state) {
     if (reload) {
-      return const Center(child: CircularProgressIndicator());
+      return const CustomLoadingWidget();
     } else {
       return UsersListTable(
           gridBorderColor: Colors.grey[300]!,

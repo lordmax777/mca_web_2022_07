@@ -135,6 +135,7 @@ class JobModel {
   bool get isCreate => allocation == null || quote == null;
   bool get isUpdate => allocation != null || quote != null;
   bool get isQuote => type == ScheduleCreatePopupMenus.quote;
+  String get actionTypeStr => isCreate ? "Create" : "Update";
 
   bool isGridInitialized = false;
 

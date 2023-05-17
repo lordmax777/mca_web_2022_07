@@ -29,43 +29,42 @@ class CreatedClientReturnValue {
   }
 }
 
-class ClientAddressForm {
-  String? addressLine1;
-  String? addressLine2;
-  String? addressCity;
-  String? addressCounty;
-  String? addressPostcode;
-  String? addressCountryId;
-  double? latitude;
-  double? longitude;
-  int? radius;
-
-  ClientAddressForm({
-    this.addressLine1,
-    this.addressLine2,
-    this.addressCity,
-    this.addressPostcode = kDebugMode ? "NW1 8PR" : null,
-    this.addressCountryId,
-  });
-
-  // from Address
-  ClientAddressForm.fromAddress(Address address) {
-    addressLine1 = address.line1;
-    addressLine2 = address.line2;
-    addressCity = address.city;
-    addressCounty = address.county;
-    addressPostcode = address.postcode;
-    addressCountryId = address.country;
-    latitude = address.latitude.toDouble();
-    longitude = address.longitude.toDouble();
-    radius = address.radius.toInt();
-  }
-}
+// class ClientAddressForm {
+//   String? line1;
+//   String? line2;
+//   String? city;
+//   String? addressCounty;
+//   String? postcode;
+//   String? country;
+//   double? latitude;
+//   double? longitude;
+//   int? radius;
+//
+//   ClientAddressForm({
+//     this.line1,
+//     this.line2,
+//     this.city,
+//     this.postcode = kDebugMode ? "NW1 8PR" : null,
+//     this.country,
+//   });
+//
+//   // from Address
+//   ClientAddressForm.fromAddress(Address address) {
+//     line1 = address.line1;
+//     line2 = address.line2;
+//     city = address.city;
+//     addressCounty = address.county;
+//     postcode = address.postcode;
+//     country = address.country;
+//     latitude = address.latitude.toDouble();
+//     longitude = address.longitude.toDouble();
+//     radius = address.radius.toInt();
+//   }
+// }
 
 enum ClientFormType {
   client,
-  location,
-  ;
+  location;
 
   String get label {
     switch (this) {
@@ -104,7 +103,6 @@ class _ClientFormState extends State<ClientForm> {
 
   bool get isClient => type == ClientFormType.client;
   bool get isLocation => type == ClientFormType.location;
-
   CompanyMd get company => GeneralController.to.companyInfo;
   ClientInfoMd? get selectedClient => widget.selectedClient;
   String? get clientEmail => selectedClient?.email;
@@ -117,7 +115,7 @@ class _ClientFormState extends State<ClientForm> {
   final TextEditingController phoneNumber = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController notes = TextEditingController();
-  final ClientAddressForm address = ClientAddressForm();
+  Address address = Address.init(postcode: 'NW1 8PR');
   final TextEditingController ipAddress = TextEditingController();
   String? currentIpAddress;
 
@@ -148,9 +146,10 @@ class _ClientFormState extends State<ClientForm> {
       currencyId = currencies
           .firstWhereOrNull((element) => element.code == company.currency.code)
           ?.id;
-      address.addressCountryId = countries
-          .firstWhereOrNull((element) => element.code == company.country)
-          ?.code;
+      address.country = countries
+              .firstWhereOrNull((element) => element.code == company.country)
+              ?.code ??
+          company.country;
       if (kDebugMode) {
         contactName.text = "Client";
         companyName.text = "Company";
@@ -160,15 +159,27 @@ class _ClientFormState extends State<ClientForm> {
         paymentMethodId = paymentMethods.first.id;
         currencyId = currencies[2].id;
         notes.text = "Client Notes";
-        address.addressLine1 = "Address Line 1";
-        address.addressLine2 = "Address Line 2";
-        address.addressCity = "City";
-        address.addressCounty = "County";
-        address.addressPostcode = "NW1 8PR";
-        address.addressCountryId = "GB";
+        address.line1 = "Address Line 1";
+        address.line2 = "Address Line 2";
+        address.city = "City";
+        address.county = "County";
+        address.postcode = "NW1 8PR";
+        address.country = "GB";
         address.latitude = 51.5333;
         address.longitude = -0.1333;
         address.radius = 10;
+      }
+      if (selectedClient != null) {
+        currencyId = int.parse(selectedClient!.currencyId);
+        contactName.text = selectedClient!.name;
+        companyName.text = selectedClient!.company ?? "";
+        phoneNumber.text = selectedClient!.phone ?? "";
+        email.text = selectedClient!.email ?? "";
+        payingDays = selectedClient!.payingDays;
+        paymentMethodId = int.tryParse(selectedClient!.paymentMethodId ?? "") ??
+            paymentMethods.first.id;
+        notes.text = selectedClient!.notes ?? "";
+        address = selectedClient!.address;
       }
     });
   }
@@ -185,19 +196,19 @@ class _ClientFormState extends State<ClientForm> {
   }
 
   Future<void> lookupAddress() async {
-    final res = await getAddressFromPostCode(address.addressPostcode!,
-        countryCode: address.addressCountryId);
+    final res = await getAddressFromPostCode(address.postcode,
+        countryCode: address.country);
     if (res != null) {
       String long = res.geometry.location.lng.toString();
       String lat = res.geometry.location.lat.toString();
-      String? countryCode;
+      String? country;
       String? countryName;
       String? city;
       String? addrs;
 
       for (var element in res.addressComponents) {
         if (element.types.contains(Component.country)) {
-          countryCode = element.shortName;
+          country = element.shortName;
           countryName = element.longName;
         }
         if (element.types.contains("postal_town")) {
@@ -209,11 +220,11 @@ class _ClientFormState extends State<ClientForm> {
       }
       if (mounted) {
         setState(() {
-          address.addressCountryId = countryCode;
-          address.addressCity = city;
-          address.latitude = double.tryParse(lat);
-          address.longitude = double.tryParse(long);
-          address.addressLine1 = addrs;
+          address.country = country ?? address.country;
+          address.city = city ?? address.city;
+          address.latitude = double.tryParse(lat) ?? address.latitude;
+          address.longitude = double.tryParse(long) ?? address.longitude;
+          address.line1 = addrs ?? address.line1;
         });
       }
       showError(
@@ -437,53 +448,48 @@ class _ClientFormState extends State<ClientForm> {
                     "Address Line 1",
                     TextInputWidget(
                       width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressLine1),
+                      controller: TextEditingController(text: address.line1),
                       hintText: "Enter address line 1",
                       isRequired: true,
-                      onChanged: (value) => address.addressLine1 = value,
+                      onChanged: (value) => address.line1 = value,
                     ),
                   ),
                   labelWithField(
                     "Address Line 2",
                     TextInputWidget(
                       width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressLine2),
+                      controller: TextEditingController(text: address.line2),
                       hintText: "Enter address line 2",
-                      onChanged: (value) => address.addressLine2 = value,
+                      onChanged: (value) => address.line2 = value,
                     ),
                   ),
                   labelWithField(
                     "City",
                     TextInputWidget(
                       width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressCity),
+                      controller: TextEditingController(text: address.city),
                       hintText: "Enter city",
                       isRequired: true,
-                      onChanged: (value) => address.addressCity = value,
+                      onChanged: (value) => address.city = value,
                     ),
                   ),
                   labelWithField(
                     "County",
                     TextInputWidget(
                       width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressCounty),
+                      controller: TextEditingController(text: address.county),
                       hintText: "Enter county",
-                      onChanged: (value) => address.addressCounty = value,
+                      onChanged: (value) => address.county = value,
                     ),
                   ),
                   labelWithField(
                     "Postcode",
                     TextInputWidget(
                       width: fieldWidth,
-                      controller:
-                          TextEditingController(text: address.addressPostcode),
+                      controller: TextEditingController(text: address.postcode),
                       hintText: "Enter postcode",
                       isRequired: true,
-                      onChanged: (value) => address.addressPostcode = value,
+                      onChanged: (value) => address.postcode = value,
                     ),
                   ),
                   labelWithField(
@@ -500,12 +506,12 @@ class _ClientFormState extends State<ClientForm> {
                       value: CustomDropdownValue(
                           name: countries
                                   .firstWhereOrNull((element) =>
-                                      element.code == address.addressCountryId)
+                                      element.code == address.country)
                                   ?.name ??
                               ""),
                       onChanged: (index) {
                         setState(() {
-                          address.addressCountryId = countries[index].code;
+                          address.country = countries[index].code;
                         });
                       },
                     ),
@@ -521,8 +527,8 @@ class _ClientFormState extends State<ClientForm> {
                         try {
                           await lookupAddress();
                         } catch (e) {
-                          if (address.addressPostcode == null ||
-                              address.addressPostcode!.isEmpty) {
+                          if (address.postcode == null ||
+                              address.postcode!.isEmpty) {
                             showError("Postcode is required");
                           }
                         }
@@ -534,13 +540,14 @@ class _ClientFormState extends State<ClientForm> {
                   },
                 ),
               if (isClient && isClient || !isLocation)
-                labelWithField(
-                    "Service Delivered at a different address",
-                    toggle(isDeliverAtDifferentLocation, (value) {
-                      setState(() {
-                        isDeliverAtDifferentLocation = value;
-                      });
-                    })),
+                if (selectedClient == null)
+                  labelWithField(
+                      "Service Delivered at a different address",
+                      toggle(isDeliverAtDifferentLocation, (value) {
+                        setState(() {
+                          isDeliverAtDifferentLocation = value;
+                        });
+                      })),
               if (!isDeliverAtDifferentLocation && isClient || isLocation)
                 labelWithField(
                     "Fixed IP Address",
@@ -645,6 +652,10 @@ class _ClientFormState extends State<ClientForm> {
                   switch (type) {
                     case ClientFormType.client:
                     case ClientFormType.location:
+                      if (selectedClient != null) {
+                        _handleUpdateClient();
+                        return;
+                      }
                       _handleCreateClient();
                       break;
                     // case ClientFormType.quoteClient:
@@ -702,16 +713,21 @@ class _ClientFormState extends State<ClientForm> {
     );
   }
 
-  void _handleCreatequoteClient() async {
-    final client = ClientInfoMd.init();
-    client.name = contactName.text;
-    client.email = email.text;
-    client.phone = phoneNumber.text;
-    client.payingDays = payingDays!;
-    client.paymentMethodId = paymentMethodId!.toString();
-    client.currencyId = currencyId!.toString();
-    client.notes = notes.text;
-    client.company = companyName.text;
+  void _handleUpdateClient() async {
+    final client = ClientInfoMd(
+      creditLimit: 0,
+      id: selectedClient!.id,
+      name: contactName.text,
+      active: selectedClient?.active ?? true,
+      address: address,
+      payingDays: payingDays ?? 1,
+      currencyId: (currencyId ?? 1).toString(),
+      notes: notes.text,
+      phone: phoneNumber.text,
+      company: companyName.text,
+      email: email.text,
+      paymentMethodId: (paymentMethodId ?? 1).toString(),
+    );
     context.popRoute(client);
   }
 
@@ -749,17 +765,17 @@ class _ClientFormState extends State<ClientForm> {
               : phoneNumber.text,
           phoneLandline: "",
           phoneFax: "",
-          name: "${address.addressLine1} ${address.addressPostcode}",
-          addressLine2: address.addressLine2,
-          addressCounty: address.addressCounty,
+          name: "${address.line1} ${address.postcode}",
+          addressCounty: address.county,
           active: true,
-          latitude: (address.latitude)?.toString() ?? "",
-          longitude: address.longitude?.toString() ?? "",
+          latitude: (address.latitude).toString(),
+          longitude: address.longitude.toString(),
           fixedipaddress: isFixedIpAddress,
-          addressCity: address.addressCity!,
-          addressCountry: address.addressCountryId!,
-          addressLine1: address.addressLine1!,
-          addressPostcode: address.addressPostcode!,
+          addressCity: address.city,
+          addressCountry: address.country,
+          addressLine1: address.line1,
+          addressLine2: address.line2,
+          addressPostcode: address.postcode,
           ipaddress: ipAddress.text,
         )
         .nocodeErrorHandler();
@@ -780,10 +796,10 @@ class _ClientFormState extends State<ClientForm> {
           company: companyName.text,
           phone: phoneNumber.text,
           email: email.text,
-          addressLine1: address.addressLine1!,
-          addressCity: address.addressCity!,
-          addressPostcode: address.addressPostcode!,
-          addressCountry: address.addressCountryId!,
+          addressLine1: address.line1,
+          addressCity: address.city,
+          addressPostcode: address.postcode,
+          addressCountry: address.country,
           currencyId: currencyId!,
           paymentMethodId: paymentMethodId ?? 1,
           payingDays: payingDays!,

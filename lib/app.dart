@@ -58,6 +58,14 @@ class _McaWebAppState extends State<McaWebApp> {
           MonthYearPickerLocalizations.delegate,
         ],
         locale: const Locale('en'),
+        theme: ThemeData(
+            progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: ThemeColors.MAIN_COLOR,
+          circularTrackColor: Colors.white,
+          linearMinHeight: 8,
+          linearTrackColor: Colors.white,
+          refreshBackgroundColor: Colors.white,
+        )),
         builder: (context, child) => ResponsiveWrapper.builder(child,
             defaultScale: true,
             breakpoints: const [
