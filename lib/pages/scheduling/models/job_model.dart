@@ -292,6 +292,8 @@ class JobModel {
       timingInfo.date = customStartDate!;
       timingInfo.startTime = TimeOfDay(
           hour: customStartDate!.hour, minute: customStartDate!.minute);
+    }
+    if (customEndDate != null) {
       timingInfo.endTime =
           TimeOfDay(hour: customEndDate!.hour, minute: customEndDate!.minute);
     }
