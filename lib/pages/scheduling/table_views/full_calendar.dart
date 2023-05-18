@@ -15,6 +15,7 @@ import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
+import '../menus.dart';
 import '../models/data_source.dart';
 import '../models/job_model.dart';
 import '../scheduling_page.dart';
@@ -178,6 +179,37 @@ class _FullCalendarState extends State<FullCalendar> {
       viewNavigationMode: ViewNavigationMode.none,
       timeSlotViewSettings: _getTimeSlotSettings,
       viewHeaderHeight: 0,
+      onTap: (calendarTapDetails, position) async {
+        final ScheduleMenus menus = ScheduleMenus(context, position);
+        switch (calendarTapDetails.targetElement) {
+          case CalendarElement.header:
+            // TODO: Handle this case.
+            break;
+          case CalendarElement.viewHeader:
+            // TODO: Handle this case.
+            break;
+          case CalendarElement.calendarCell:
+            // TODO: Handle this case.
+            break;
+          case CalendarElement.appointment:
+            // TODO: Handle this case.
+            menus.showMoreAppointmentsPopup(calendarTapDetails);
+            break;
+          case CalendarElement.agenda:
+            // TODO: Handle this case.
+            break;
+          case CalendarElement.allDayPanel:
+            // TODO: Handle this case.
+            break;
+          case CalendarElement.moreAppointmentRegion:
+            // TODO: Handle this case.
+            menus.showMoreAppointmentsPopup(calendarTapDetails);
+            break;
+          case CalendarElement.resourceHeader:
+            // TODO: Handle this case.
+            break;
+        }
+      },
       loadMoreWidgetBuilder:
           (BuildContext context, LoadMoreCallback loadMoreAppointments) {
         return FutureBuilder<void>(
@@ -193,11 +225,11 @@ class _FullCalendarState extends State<FullCalendar> {
           },
         );
       },
-      // monthViewSettings: const MonthViewSettings(
-      //     appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-      selectionDecoration: BoxDecoration(
-          //TODO:
-          ),
+      monthViewSettings: const MonthViewSettings(
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+      // selectionDecoration: BoxDecoration(
+      //     //TODO:
+      //     ),
     );
   }
 
@@ -287,9 +319,6 @@ class AppointmentDataSource extends CalendarDataSource {
           appointment.startTime = stDate;
           appointment.endTime = etDate;
         }
-        logger(appointment.startTime);
-        logger(appointment.endTime);
-        logger(appointment.isAllDay);
         if (!appointments.any((element) => element.id == appointment.id)) {
           _meetings.add(appointment);
         }

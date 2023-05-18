@@ -8831,6 +8831,7 @@ class _CalendarViewState extends State<_CalendarView>
 
       AppointmentView? appointmentView;
       bool isMoreTapped = false;
+
       if (!widget.isMobilePlatform &&
           widget.calendar.monthViewSettings.appointmentDisplayMode ==
               MonthAppointmentDisplayMode.appointment) {

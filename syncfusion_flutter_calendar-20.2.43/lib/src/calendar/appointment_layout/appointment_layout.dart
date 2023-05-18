@@ -1478,7 +1478,6 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
             MonthAppointmentDisplayMode.appointment) {
       return semanticsBuilder;
     }
-
     final List<int> keys = monthAppointmentCountViews.keys.toList();
     for (int i = 0; i < keys.length; i++) {
       final RRect moreRegionRect = monthAppointmentCountViews[keys[i]]!;
@@ -1755,7 +1754,6 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
         TextSpan span = TextSpan(text: appointment.subject, style: style);
         _textPainter =
             _updateTextPainter(span, _textPainter, isRTL, _textScaleFactor);
-
         if (textSize == -1) {
           //// left and right side padding value 2 subtracted in appointment width
           double maxTextWidth = appointmentRect.width - 2;
