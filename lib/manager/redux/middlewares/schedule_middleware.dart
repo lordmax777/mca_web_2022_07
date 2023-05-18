@@ -175,7 +175,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
-          // isAllDay only when timelineDay
+          // isAllDay only when not timelineDay
           isAllDay:
               state.scheduleState.calendarView != CalendarView.timelineDay,
           color: us?.userRandomBgColor ?? Colors.lime[300]!,

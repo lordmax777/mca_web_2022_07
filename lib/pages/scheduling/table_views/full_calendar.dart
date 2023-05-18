@@ -73,11 +73,11 @@ class _FullCalendarState extends State<FullCalendar> {
     _events = AppointmentDataSource(<Appointment>[]);
 
     _events.resources = _usresources;
-    _calendarController.addPropertyChangedListener((p0) {
-      //p0 = selectedDate
-      //p0 = calendarView
-      //p0 = displayDate
-    });
+    // _calendarController.addPropertyChangedListener((p0) {
+    //p0 = selectedDate
+    //p0 = calendarView
+    //p0 = displayDate
+    // });
     super.initState();
   }
 
@@ -125,16 +125,13 @@ class _FullCalendarState extends State<FullCalendar> {
       return;
     }
 
-    if ((_calendarController.view == CalendarView.month ||
-        _view == CalendarView.month)) {
-      _view = _calendarController.view!;
-      SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-        setState(() {
-          /// Update the web UI when the calendar view changed from month view
-          /// or to month view.
-        });
+    _view = _calendarController.view!;
+    SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
+      setState(() {
+        /// Update the web UI when the calendar view changed from month view
+        /// or to month view.
       });
-    }
+    });
 
     _view = _calendarController.view!;
     appStore.dispatch(SCChangeCalendarView(_view));
@@ -210,11 +207,11 @@ class _FullCalendarState extends State<FullCalendar> {
         timeIntervalWidth: MediaQuery.of(context).size.width * .0363,
         timelineAppointmentHeight: CalendarConstants.shiftHeight,
         timeInterval: const Duration(minutes: 60),
-        timeFormat: "h:mm a",
+        timeFormat: "HH:mm",
         timeTextStyle: const TextStyle(
           color: Colors.black,
-          fontSize: 14,
-          fontFamily: ThemeText.fontFamilyR,
+          fontSize: 16,
+          fontFamily: ThemeText.fontFamilyM,
         ),
       );
     }
@@ -269,9 +266,6 @@ String _getMonthDate(int month) {
   }
 }
 
-Map<DateTime, List<Appointment>> _dataCollection =
-    <DateTime, List<Appointment>>{};
-
 /// An object to set the appointment collection data source to collection, which
 /// used to map the custom appointment data to the calendar appointment, and
 /// allows to add, remove or reset the appointment collection.
@@ -293,13 +287,14 @@ class AppointmentDataSource extends CalendarDataSource {
           appointment.startTime = stDate;
           appointment.endTime = etDate;
         }
+        logger(appointment.startTime);
+        logger(appointment.endTime);
+        logger(appointment.isAllDay);
         if (!appointments.any((element) => element.id == appointment.id)) {
           _meetings.add(appointment);
         }
-        print(appointment.id.runtimeType);
       }
-      appointments.addAll(_meetings);
-      notifyListeners(CalendarDataSourceAction.add, _meetings);
+      _addNewAppointments(_meetings);
     } on ShiftFetchException catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
 
@@ -316,6 +311,11 @@ class AppointmentDataSource extends CalendarDataSource {
       Logger.e("Something went wrong while fetching shifts",
           tag: 'ShiftsCalendar');
     }
+  }
+
+  void _addNewAppointments(List<Appointment> _appointments) {
+    appointments.addAll(_appointments);
+    notifyListeners(CalendarDataSourceAction.add, _appointments);
   }
 
   AppointmentDataSource(this.source);
