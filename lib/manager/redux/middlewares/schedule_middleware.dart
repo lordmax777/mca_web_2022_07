@@ -8,12 +8,14 @@ import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../pages/scheduling/models/allocation_model.dart';
+import '../../../pages/scheduling/table_views/full_calendar.dart';
 import '../../../theme/theme.dart';
 import '../../models/list_all_md.dart';
 import '../../models/property_md.dart';
 import '../../models/users_list.dart';
 import '../../rest/rest_client.dart';
 import '../states/general_state.dart';
+import 'dart:math';
 
 class ScheduleMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -163,19 +165,28 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         final us = shift.user;
         final DateTime date = DateTime.parse(shift.date);
 
-        final stDate = DateTime(date.year, date.month, date.day, 00, 00);
-        DateTime et = DateTime(date.year, date.month, date.day, 01, 00);
+        // final stDate = DateTime(date.year, date.month, date.day, 00, 00);
+        // DateTime et = DateTime(date.year, date.month, date.day, 01, 00);
+        final stDate = DateTime(date.year, date.month, date.day,
+            pr.startTimeAsTimeOfDay.hour, pr.startTimeAsTimeOfDay.minute);
+        DateTime et = DateTime(date.year, date.month, date.day,
+            pr.finishTimeAsTimeOfDay.hour, pr.finishTimeAsTimeOfDay.minute);
 
+        final Random r = Random();
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
-          isAllDay: false,
+          // isAllDay only when timelineDay
+          isAllDay:
+              state.scheduleState.calendarView != CalendarView.timelineDay,
           color: us?.userRandomBgColor ?? Colors.lime[300]!,
           subject: pr.title,
           id: shift,
           resourceIds: [
-            us ?? UserRes.openShiftResource(),
-            pr,
+            us == null ? "US_open" : "US_${us.id}",
+            "PR_${pr.id}",
+            // us ?? UserRes.openShiftResource(),
+            // pr,
           ],
         ));
       }
@@ -190,6 +201,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         backupShiftsWeek: appointments,
       ));
     } else {
+      throw ShiftFetchException(apiResponse: res);
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.week] = [];
       stateVal.error.action = action;

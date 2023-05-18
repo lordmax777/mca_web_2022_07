@@ -419,23 +419,23 @@ class _SchedulingPageState extends State<SchedulingPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         horizontalSpace: 16.0,
                         children: [
-                          _usersListDropdown(state),
-                          _locsListDropdown(state),
-                          if (u.isNotEmpty) _calendarViewsDropdown(state),
-                          if (scheduleState.calendarView == CalendarView.day)
-                            _dayDateChanger(state),
-                          if (scheduleState.calendarView == CalendarView.week ||
-                              scheduleState.calendarView ==
-                                  CalendarView.timelineWeek)
-                            _weekDateChanger(state),
-                          if (scheduleState.calendarView == CalendarView.month)
-                            _monthDateChanger(state),
+                          // _usersListDropdown(state),
+                          // _locsListDropdown(state),
+                          // if (u.isNotEmpty) _calendarViewsDropdown(state),
+                          // if (scheduleState.calendarView == CalendarView.day)
+                          //   _dayDateChanger(state),
+                          // if (scheduleState.calendarView == CalendarView.week ||
+                          //     scheduleState.calendarView ==
+                          //         CalendarView.timelineWeek)
+                          //   _weekDateChanger(state),
+                          // if (scheduleState.calendarView == CalendarView.month)
+                          //   _monthDateChanger(state),
                         ],
                       ),
-                      if (scheduleState.calendarView == CalendarView.week ||
-                          scheduleState.calendarView ==
-                              CalendarView.timelineWeek)
-                        _resourceChanger(state),
+                      // if (scheduleState.calendarView == CalendarView.week ||
+                      //     scheduleState.calendarView ==
+                      //         CalendarView.timelineWeek)
+                      //   _resourceChanger(state),
                     ],
                   ),
                 ),

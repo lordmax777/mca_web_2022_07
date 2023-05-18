@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -29,7 +31,7 @@ class _FullCalendarState extends State<FullCalendar> {
   final List<CalendarView> _allowedViews = [
     CalendarView.timelineDay,
     CalendarView.timelineWeek,
-    CalendarView.timelineMonth,
+    CalendarView.month,
   ];
 
   final GlobalKey _globalKey = GlobalKey();
@@ -37,76 +39,48 @@ class _FullCalendarState extends State<FullCalendar> {
   final CalendarController _calendarController = CalendarController();
   CalendarView _view = CalendarView.timelineDay;
 
+  bool get isDay => _calendarController.view == _allowedViews[0];
+  bool get isWeek => _calendarController.view == _allowedViews[1];
+  bool get isMonth => _calendarController.view == _allowedViews[2];
+
   final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     _calendarController.view = _view;
-    _addAppointmentDetails();
+    final List<CalendarResource> _usresources = <CalendarResource>[
+      CalendarResource(
+        id: "US_open",
+        displayName: "Open Shift",
+        color: Colors.lime[500]!,
+      )
+    ];
+    final List<CalendarResource> _resources = <CalendarResource>[];
+    final users = appStore.state.usersState.users;
+    final properties = appStore.state.generalState.allSortedProperties;
+
+    for (var us in users) {
+      _usresources.add(CalendarResource(
+          id: "US_${us.id}",
+          displayName: us.fullname,
+          color: us.userRandomBgColor));
+    }
+    for (var pr in properties) {
+      // _prresources
+      //     .add(CalendarResource(id: "PR_${pr.id}", displayName: pr.title));
+    }
+    _events = AppointmentDataSource(<Appointment>[]);
+
+    _events.resources = _usresources;
+    _calendarController.addPropertyChangedListener((p0) {
+      //p0 = selectedDate
+      //p0 = calendarView
+      //p0 = displayDate
+    });
     super.initState();
   }
 
-  final AppointmentDataSource _events = AppointmentDataSource(<Appointment>[]);
-
-  /// Creates the required appointment details as a list.
-  void _addAppointmentDetails() {
-    final List<String> subjectCollection = <String>[];
-    subjectCollection.add('General Meeting');
-    subjectCollection.add('Plan Execution');
-    subjectCollection.add('Project Plan');
-    subjectCollection.add('Consulting');
-    subjectCollection.add('Support');
-    subjectCollection.add('Development Meeting');
-    subjectCollection.add('Scrum');
-    subjectCollection.add('Project Completion');
-    subjectCollection.add('Release updates');
-    subjectCollection.add('Performance Check');
-
-    final List<Color> colorCollection = <Color>[];
-    colorCollection.add(const Color(0xFF0F8644));
-    colorCollection.add(const Color(0xFF8B1FA9));
-    colorCollection.add(const Color(0xFFD20100));
-    colorCollection.add(const Color(0xFFFC571D));
-    colorCollection.add(const Color(0xFF36B37B));
-    colorCollection.add(const Color(0xFF01A1EF));
-    colorCollection.add(const Color(0xFF3D4FB5));
-    colorCollection.add(const Color(0xFFE47C73));
-    colorCollection.add(const Color(0xFF636363));
-    colorCollection.add(const Color(0xFF0A8043));
-
-    final Random random = Random();
-    _dataCollection = <DateTime, List<Appointment>>{};
-    final DateTime today = DateTime.now();
-    final DateTime rangeStartDate = DateTime(today.year, today.month, today.day)
-        .add(const Duration(days: -1000));
-    final DateTime rangeEndDate = DateTime(today.year, today.month, today.day)
-        .add(const Duration(days: 1000));
-    for (DateTime i = rangeStartDate;
-        i.isBefore(rangeEndDate);
-        i = i.add(Duration(days: 1 + random.nextInt(2)))) {
-      final DateTime date = i;
-      final int count = 1 + random.nextInt(3);
-      for (int j = 0; j < count; j++) {
-        final DateTime startDate =
-            DateTime(date.year, date.month, date.day, 8 + random.nextInt(8));
-        final int duration = random.nextInt(3);
-        final Appointment meeting = Appointment(
-          subject: subjectCollection[random.nextInt(7)],
-          startTime: startDate,
-          endTime: startDate.add(Duration(hours: duration == 0 ? 1 : duration)),
-          color: colorCollection[random.nextInt(9)],
-        );
-
-        if (_dataCollection.containsKey(date)) {
-          final List<Appointment> meetings = _dataCollection[date]!;
-          meetings.add(meeting);
-          _dataCollection[date] = meetings;
-        } else {
-          _dataCollection[date] = <Appointment>[meeting];
-        }
-      }
-    }
-  }
+  late final AppointmentDataSource _events;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +136,7 @@ class _FullCalendarState extends State<FullCalendar> {
     }
 
     _view = _calendarController.view!;
+    appStore.dispatch(SCChangeCalendarView(_view));
   }
 
   /// Returns the builder for schedule view.
@@ -196,32 +171,71 @@ class _FullCalendarState extends State<FullCalendar> {
       CalendarDataSource? calendarDataSource,
       dynamic scheduleViewBuilder]) {
     return SfCalendar(
-        controller: calendarController,
-        dataSource: calendarDataSource,
-        allowedViews: _allowedViews,
-        onViewChanged: viewChangedCallback,
-        scheduleViewMonthHeaderBuilder: scheduleViewBuilder,
-        showNavigationArrow: true,
-        blackoutDatesTextStyle: const TextStyle(color: Colors.red),
-        loadMoreWidgetBuilder:
-            (BuildContext context, LoadMoreCallback loadMoreAppointments) {
-          return FutureBuilder<void>(
-            future: loadMoreAppointments(),
-            builder: (BuildContext context, AsyncSnapshot<void> snapShot) {
-              return Container(
-                  height: _calendarController.view == CalendarView.schedule
-                      ? 50
-                      : double.infinity,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  child: const CustomLoadingWidget());
-            },
-          );
-        },
-        monthViewSettings: const MonthViewSettings(
-            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-        timeSlotViewSettings: const TimeSlotViewSettings(
-            minimumAppointmentDuration: Duration(minutes: 60)));
+      showDatePickerButton: true,
+      showNavigationArrow: true,
+      controller: calendarController,
+      dataSource: calendarDataSource,
+      allowedViews: _allowedViews,
+      onViewChanged: viewChangedCallback,
+      viewNavigationMode: ViewNavigationMode.none,
+      timeSlotViewSettings: _getTimeSlotSettings,
+      viewHeaderHeight: 0,
+      loadMoreWidgetBuilder:
+          (BuildContext context, LoadMoreCallback loadMoreAppointments) {
+        return FutureBuilder<void>(
+          future: loadMoreAppointments(),
+          builder: (BuildContext context, AsyncSnapshot<void> snapShot) {
+            return Container(
+                height: _calendarController.view == CalendarView.schedule
+                    ? 50
+                    : double.infinity,
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: const CustomLoadingWidget());
+          },
+        );
+      },
+      // monthViewSettings: const MonthViewSettings(
+      //     appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+      selectionDecoration: BoxDecoration(
+          //TODO:
+          ),
+    );
+  }
+
+  TimeSlotViewSettings get _getTimeSlotSettings {
+    if (isDay) {
+      return TimeSlotViewSettings(
+        timeIntervalWidth: MediaQuery.of(context).size.width * .0363,
+        timelineAppointmentHeight: CalendarConstants.shiftHeight,
+        timeInterval: const Duration(minutes: 60),
+        timeFormat: "h:mm a",
+        timeTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontFamily: ThemeText.fontFamilyR,
+        ),
+      );
+    }
+    if (isWeek) {
+      return TimeSlotViewSettings(
+        timeIntervalWidth: MediaQuery.of(context).size.width * .124,
+        timelineAppointmentHeight: CalendarConstants.shiftHeight,
+        timeFormat: "EEE d MMM",
+        timeTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontFamily: ThemeText.fontFamilyR,
+        ),
+        startHour: 0,
+        endHour: 1,
+      );
+    }
+
+    return const TimeSlotViewSettings(
+      startHour: 0,
+      endHour: 1,
+    );
   }
 }
 
@@ -253,9 +267,6 @@ String _getMonthDate(int month) {
     return 'December';
   }
 }
-
-Map<DateTime, List<Appointment>> _dataCollection =
-    <DateTime, List<Appointment>>{};
 
 /// An object to set the appointment collection data source to collection, which
 /// used to map the custom appointment data to the calendar appointment, and
@@ -294,45 +305,57 @@ class AppointmentDataSource extends CalendarDataSource {
   }
 
   @override
-  Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
-    notifyListeners(CalendarDataSourceAction.reset, []);
-    List<Appointment> fetchedAppointments = await appStore.dispatch(
-        SCFetchShiftsWeekAction(startDate: startDate, endDate: endDate));
-    _dataCollection = <DateTime, List<Appointment>>{};
-    logger('handleLoadMore ${fetchedAppointments.length}');
-
-    for (final Appointment appointment in fetchedAppointments) {
-      final DateTime date = appointment.startTime;
-      final List<Appointment>? meetings = _dataCollection[date];
-      if (meetings == null) {
-        _dataCollection[date] = <Appointment>[appointment];
-      } else {
-        meetings.add(appointment);
-      }
-    }
-    final List<Appointment> meetings = <Appointment>[];
-    DateTime date = DateTime(startDate.year, startDate.month, startDate.day);
-    final DateTime appEndDate =
-        DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
-    while (date.isBefore(appEndDate)) {
-      final List<Appointment>? data = _dataCollection[date];
-      if (data == null) {
-        date = date.add(const Duration(days: 1));
-        continue;
-      }
-
-      for (final Appointment meeting in data) {
-        if (appointments.contains(meeting)) {
-          continue;
-        }
-
-        meetings.add(meeting);
-      }
-      date = date.add(const Duration(days: 1));
-    }
-
-    appointments.clear();
-    appointments.addAll(meetings);
-    notifyListeners(CalendarDataSourceAction.add, meetings);
+  set resources(List<CalendarResource>? _resources) {
+    super.resources = _resources;
   }
+
+  @override
+  Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
+    try {
+      // notifyListeners(CalendarDataSourceAction.reset, []);
+
+      final List<Appointment> _meetings = <Appointment>[];
+
+      List<Appointment> fetchedAppointments = await appStore.dispatch(
+          SCFetchShiftsWeekAction(startDate: startDate, endDate: endDate));
+
+      for (final Appointment appointment in fetchedAppointments) {
+        final DateTime date = appointment.startTime;
+        if (appointment.isAllDay) {
+          final stDate = DateTime(date.year, date.month, date.day, 00, 00);
+          final DateTime etDate =
+              DateTime(date.year, date.month, date.day, 01, 00);
+          appointment.startTime = stDate;
+          appointment.endTime = etDate;
+        }
+        _meetings.add(appointment);
+      }
+      logger(_meetings.length,
+          hint: 'Shifts fetched length is : ${_meetings.length}');
+
+      // notifyListeners(CalendarDataSourceAction.remove, []);
+      // appointments.clear();
+
+      // notifyListeners(CalendarDataSourceAction.remove, _meetings);
+      appointments.addAll(_meetings);
+      notifyListeners(CalendarDataSourceAction.reset, []);
+    } on ShiftFetchException catch (e) {
+      notifyListeners(CalendarDataSourceAction.reset, []);
+      appointments.clear();
+      if (e.apiResponse.resCode != 404) {
+        showError(ApiHelpers.getRawDataErrorMessages(e.apiResponse));
+      }
+
+      Logger.e(e, tag: 'ShiftsCalendar');
+    }
+  }
+}
+
+class ShiftFetchException implements Exception {
+  ShiftFetchException({required this.apiResponse});
+
+  final ApiResponse apiResponse;
+
+  @override
+  String toString() => apiResponse.toString();
 }
