@@ -112,8 +112,8 @@ class _GeneralInfoWidget extends StatelessWidget {
                       fontWeight: FWeight.bold,
                       fontSize: 14.0,
                       textColor: ThemeColors.gray2,
-                      text:
-                          'Current IP Address: ${controller.ipAddress}'), //TODO: NEED TO FIND THE CURRENT IP ADDRESS
+                      text: 'Current IP Address: ${controller.ipAddress}'),
+                  //TODO: NEED TO FIND THE CURRENT IP ADDRESS
                   SpacedColumn(
                     verticalSpace: 8,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,6 +165,7 @@ class _GeneralInfoWidget extends StatelessWidget {
 
 class _ContactWidget extends StatelessWidget {
   static const String title = "Contact Details";
+
   const _ContactWidget({Key? key}) : super(key: key);
 
   @override
@@ -294,6 +295,7 @@ class _ContactWidget extends StatelessWidget {
 
 class _AddressWidget extends StatelessWidget {
   static const String title = "Address Details";
+
   const _AddressWidget({Key? key}) : super(key: key);
 
   @override

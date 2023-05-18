@@ -6,6 +6,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final TalkerController talker = TalkerController.to;

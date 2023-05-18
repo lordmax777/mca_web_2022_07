@@ -15,6 +15,7 @@ import '../../../theme/theme.dart';
 
 class UserDetailsPayrollTabNewContractPage extends StatefulWidget {
   final ContractMd? contract;
+
   const UserDetailsPayrollTabNewContractPage({Key? key, this.contract})
       : super(key: key);
 

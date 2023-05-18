@@ -42,6 +42,7 @@ class UsersListPage extends StatelessWidget {
 
 class _Body extends StatefulWidget {
   AppState state;
+
   _Body({Key? key, required this.state}) : super(key: key);
 
   @override
