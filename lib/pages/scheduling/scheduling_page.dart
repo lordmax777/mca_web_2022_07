@@ -8,6 +8,7 @@ import 'package:mca_web_2022_07/manager/models/property_md.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
+import 'package:mca_web_2022_07/pages/scheduling/table_views/full_calendar.dart';
 import 'package:mca_web_2022_07/utils/global_functions.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/autocomplete_input_field.dart';
@@ -67,6 +68,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   @override
   void initState() {
     super.initState();
+    return;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await appStore.dispatch(SCFetchShiftsAction(date: day));
       await appStore.dispatch(SCFetchShiftsWeekAction(
@@ -128,8 +130,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
       child: CustomAutocompleteTextField<PropertiesMd>(
         height: 50,
         options: (p0) => locs.where((element) {
-          final title = element.title?.toLowerCase() ?? "";
-          final locationName = element.locationName?.toLowerCase() ?? "";
+          final title = element.title.toLowerCase() ?? "";
+          final locationName = element.locationName.toLowerCase() ?? "";
           return title.contains(p0.text.toLowerCase()) ||
               locationName.contains(p0.text.toLowerCase());
         }).toList(),
@@ -392,7 +394,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
-        onInit: (store) async {},
         builder: (_, state) {
           final scheduleState = state.scheduleState;
 
@@ -441,7 +442,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 ErrorWrapper(
                     height: CalendarConstants.tableHeight(context),
                     errors: [
-                      scheduleState.shifts.error,
+                      // scheduleState.shifts.error,
                     ],
                     child: SizedBox(
                         height: CalendarConstants.tableHeight(context),
@@ -453,6 +454,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   }
 
   Widget _getCalendar(CalendarView view) {
+    return FullCalendar(day: day);
     switch (view) {
       case CalendarView.day:
         return DailyViewCalendar(day: day);

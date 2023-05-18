@@ -48,7 +48,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  void _onFetchShifts(
+  Future<List<Appointment>> _onFetchShifts(
       AppState state, SCFetchShiftsAction action, NextDispatcher next) async {
     final locId = action.locationId ?? 0;
     final userId = action.userId ?? 0;
@@ -64,13 +64,13 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(date))
         .nocodeErrorHandler();
 
+    final appointments = <Appointment>[];
     if (res.success) {
       StateValue<List<PropertiesMd>> newProperties =
           await appStore.dispatch(GetPropertiesAction());
       StateValue<ListAllMd> allList =
           await appStore.dispatch(GetAllParamListAction());
       final list = <AllocationModel>[];
-      final appointments = <Appointment>[];
       for (var item in res.data['allocations']) {
         final AllocationModel shift = AllocationModel.fromJson(item,
             shifts: allList.data!.shifts, users: state.usersState.users);
@@ -120,10 +120,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       }
       next(UpdateScheduleState(shifts: stateVal, backupShifts: []));
     }
+
+    return appointments;
   }
 
-  void _onFetchShiftsWeek(AppState state, SCFetchShiftsWeekAction action,
-      NextDispatcher next) async {
+  Future<List<Appointment>> _onFetchShiftsWeek(AppState state,
+      SCFetchShiftsWeekAction action, NextDispatcher next) async {
     final locId = action.locationId ?? 0;
     final userId = action.userId ?? 0;
     final shiftId = action.shiftId ?? 0;
@@ -144,13 +146,15 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         )
         .nocodeErrorHandler();
 
+    final appointments = <Appointment>[];
+
     if (res.success) {
       StateValue<List<PropertiesMd>> newProperties =
-          await appStore.dispatch(GetPropertiesAction());
-      StateValue<ListAllMd> allList =
-          await appStore.dispatch(GetAllParamListAction());
+          state.generalState.properties;
+      // await appStore.dispatch(GetPropertiesAction());
+      StateValue<ListAllMd> allList = state.generalState.paramList;
+      // await appStore.dispatch(GetAllParamListAction());
       final list = <AllocationModel>[];
-      final appointments = <Appointment>[];
       for (var item in res.data['allocations']) {
         final AllocationModel shift = AllocationModel.fromJson(item,
             shifts: allList.data!.shifts, users: state.usersState.users);
@@ -199,6 +203,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       }
       next(UpdateScheduleState(shifts: stateVal, backupShiftsWeek: []));
     }
+
+    return appointments;
   }
 
   void _onFetchShiftsMonth(AppState state, SCFetchShiftsMonthAction action,
