@@ -8,6 +8,7 @@ import '../../theme/theme.dart';
 
 class UserDetailsPage extends StatelessWidget {
   final int? tabIndex;
+
   const UserDetailsPage({Key? key, this.tabIndex}) : super(key: key);
 
   @override
@@ -154,6 +155,7 @@ class _UserDetailsQuickViewWidget extends StatelessWidget {
 
 class _Body extends StatefulWidget {
   final int? tabIndex;
+
   _Body({Key? key, this.tabIndex}) : super(key: key) {
     tabIndex ?? 0;
   }

@@ -10,6 +10,7 @@ import 'controllers/new_prop_controller.dart';
 
 class NewPropertyPage extends StatelessWidget {
   final PropertiesMd? property;
+
   const NewPropertyPage({Key? key, this.property}) : super(key: key);
 
   @override
@@ -39,6 +40,7 @@ class NewPropertyPage extends StatelessWidget {
 
 class _Body extends StatefulWidget {
   final PropertiesMd? property;
+
   const _Body({Key? key, this.property}) : super(key: key);
 
   @override
