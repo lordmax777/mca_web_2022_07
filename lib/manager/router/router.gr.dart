@@ -197,11 +197,14 @@ class _$AppRouter extends RootStackRouter {
       );
     },
     TimesheetSummaryRoute.name: (routeData) {
-      final args = routeData.argsAs<TimesheetSummaryRouteArgs>(
-          orElse: () => const TimesheetSummaryRouteArgs());
+      final args = routeData.argsAs<TimesheetSummaryRouteArgs>();
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: TimesheetSummaryPage(key: args.key),
+        child: TimesheetSummaryPage(
+          key: args.key,
+          startDate: args.startDate,
+          endDate: args.endDate,
+        ),
       );
     },
   };
@@ -759,23 +762,38 @@ class TimesheetUserShiftDetailsRouteArgs {
 /// generated route for
 /// [TimesheetSummaryPage]
 class TimesheetSummaryRoute extends PageRouteInfo<TimesheetSummaryRouteArgs> {
-  TimesheetSummaryRoute({Key? key})
-      : super(
+  TimesheetSummaryRoute({
+    Key? key,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) : super(
           TimesheetSummaryRoute.name,
           path: 'timesheet-summary',
-          args: TimesheetSummaryRouteArgs(key: key),
+          args: TimesheetSummaryRouteArgs(
+            key: key,
+            startDate: startDate,
+            endDate: endDate,
+          ),
         );
 
   static const String name = 'TimesheetSummaryRoute';
 }
 
 class TimesheetSummaryRouteArgs {
-  const TimesheetSummaryRouteArgs({this.key});
+  const TimesheetSummaryRouteArgs({
+    this.key,
+    required this.startDate,
+    required this.endDate,
+  });
 
   final Key? key;
 
+  final DateTime startDate;
+
+  final DateTime endDate;
+
   @override
   String toString() {
-    return 'TimesheetSummaryRouteArgs{key: $key}';
+    return 'TimesheetSummaryRouteArgs{key: $key, startDate: $startDate, endDate: $endDate}';
   }
 }
