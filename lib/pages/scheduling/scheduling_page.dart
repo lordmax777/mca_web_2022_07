@@ -393,6 +393,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
+        rebuildOnChange: false,
         converter: (store) => store.state,
         builder: (_, state) {
           final scheduleState = state.scheduleState;

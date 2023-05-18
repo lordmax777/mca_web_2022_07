@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -268,10 +269,55 @@ String _getMonthDate(int month) {
   }
 }
 
+Map<DateTime, List<Appointment>> _dataCollection =
+    <DateTime, List<Appointment>>{};
+
 /// An object to set the appointment collection data source to collection, which
 /// used to map the custom appointment data to the calendar appointment, and
 /// allows to add, remove or reset the appointment collection.
 class AppointmentDataSource extends CalendarDataSource {
+  @override
+  Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
+    try {
+      final List<Appointment> _meetings = <Appointment>[];
+
+      List<Appointment> fetchedAppointments = await appStore.dispatch(
+          SCFetchShiftsWeekAction(startDate: startDate, endDate: endDate));
+
+      for (final Appointment appointment in fetchedAppointments) {
+        final DateTime date = appointment.startTime;
+        if (appointment.isAllDay) {
+          final stDate = DateTime(date.year, date.month, date.day, 00, 00);
+          final DateTime etDate =
+              DateTime(date.year, date.month, date.day, 01, 00);
+          appointment.startTime = stDate;
+          appointment.endTime = etDate;
+        }
+        if (!appointments.any((element) => element.id == appointment.id)) {
+          _meetings.add(appointment);
+        }
+        print(appointment.id.runtimeType);
+      }
+      appointments.addAll(_meetings);
+      notifyListeners(CalendarDataSourceAction.add, _meetings);
+    } on ShiftFetchException catch (e) {
+      notifyListeners(CalendarDataSourceAction.add, []);
+
+      if (e.apiResponse.resCode != 404) {
+        showError(ApiHelpers.getRawDataErrorMessages(e.apiResponse));
+      }
+
+      Logger.e("Error while fetching shifts", tag: 'ShiftsCalendar');
+    } catch (e) {
+      notifyListeners(CalendarDataSourceAction.add, []);
+
+      showError("Something went wrong");
+
+      Logger.e("Something went wrong while fetching shifts",
+          tag: 'ShiftsCalendar');
+    }
+  }
+
   AppointmentDataSource(this.source);
 
   List<Appointment> source;
@@ -307,47 +353,6 @@ class AppointmentDataSource extends CalendarDataSource {
   @override
   set resources(List<CalendarResource>? _resources) {
     super.resources = _resources;
-  }
-
-  @override
-  Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
-    try {
-      // notifyListeners(CalendarDataSourceAction.reset, []);
-
-      final List<Appointment> _meetings = <Appointment>[];
-
-      List<Appointment> fetchedAppointments = await appStore.dispatch(
-          SCFetchShiftsWeekAction(startDate: startDate, endDate: endDate));
-
-      for (final Appointment appointment in fetchedAppointments) {
-        final DateTime date = appointment.startTime;
-        if (appointment.isAllDay) {
-          final stDate = DateTime(date.year, date.month, date.day, 00, 00);
-          final DateTime etDate =
-              DateTime(date.year, date.month, date.day, 01, 00);
-          appointment.startTime = stDate;
-          appointment.endTime = etDate;
-        }
-        _meetings.add(appointment);
-      }
-      logger(_meetings.length,
-          hint: 'Shifts fetched length is : ${_meetings.length}');
-
-      // notifyListeners(CalendarDataSourceAction.remove, []);
-      // appointments.clear();
-
-      // notifyListeners(CalendarDataSourceAction.remove, _meetings);
-      appointments.addAll(_meetings);
-      notifyListeners(CalendarDataSourceAction.reset, []);
-    } on ShiftFetchException catch (e) {
-      notifyListeners(CalendarDataSourceAction.reset, []);
-      appointments.clear();
-      if (e.apiResponse.resCode != 404) {
-        showError(ApiHelpers.getRawDataErrorMessages(e.apiResponse));
-      }
-
-      Logger.e(e, tag: 'ShiftsCalendar');
-    }
   }
 }
 

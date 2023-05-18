@@ -172,7 +172,6 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         DateTime et = DateTime(date.year, date.month, date.day,
             pr.finishTimeAsTimeOfDay.hour, pr.finishTimeAsTimeOfDay.minute);
 
-        final Random r = Random();
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
