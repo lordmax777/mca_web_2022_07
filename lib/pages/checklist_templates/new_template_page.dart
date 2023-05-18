@@ -31,6 +31,7 @@ class RoomWidget extends StatefulWidget {
 class RoomWidgetState extends State<RoomWidget> {
   final List<TextEditingController> controllers = [];
   bool acceptDamagedItems = false;
+
   @override
   void dispose() {
     for (var element in controllers) {
@@ -146,6 +147,7 @@ class RoomWidgetState extends State<RoomWidget> {
 
 class NewChecklistTemplatePage extends StatelessWidget {
   final ChecklistTemplateMd? checklist;
+
   const NewChecklistTemplatePage({super.key, this.checklist});
 
   @override

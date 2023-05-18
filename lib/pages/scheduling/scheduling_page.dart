@@ -27,10 +27,15 @@ import 'table_views/week_view.dart';
 
 extension TimeExtenstion on DateTime {
   DateTime get startOfDay => DateTime(year, month, day);
+
   DateTime get endOfDay => DateTime(year, month, day, 23, 59, 59);
+
   DateTime get startOfWeek => subtract(Duration(days: weekday - 1));
+
   DateTime get endOfWeek => add(Duration(days: 7 - weekday));
+
   DateTime get startOfMonth => DateTime(year, month);
+
   DateTime get endOfMonth =>
       DateTime(year, month + 1).subtract(const Duration(days: 1));
 
