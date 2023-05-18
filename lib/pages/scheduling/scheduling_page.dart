@@ -35,7 +35,7 @@ extension TimeExtenstion on DateTime {
 
   DateTime get endOfWeek => add(Duration(days: 7 - weekday));
 
-  DateTime get startOfMonth => DateTime(year, month);
+  DateTime get startOfMonth => DateTime(year, month, 1);
 
   DateTime get endOfMonth =>
       DateTime(year, month + 1).subtract(const Duration(days: 1));

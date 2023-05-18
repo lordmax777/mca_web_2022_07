@@ -34,7 +34,7 @@ class _FullCalendarState extends State<FullCalendar> {
     CalendarView.timelineDay,
     CalendarView.timelineWeek,
     CalendarView.month,
-    CalendarView.week,
+    CalendarView.timelineMonth,
   ];
 
   final GlobalKey _globalKey = GlobalKey();
@@ -45,7 +45,7 @@ class _FullCalendarState extends State<FullCalendar> {
   bool get isDay => _calendarController.view == _allowedViews[0];
   bool get isWeek => _calendarController.view == _allowedViews[1];
   bool get isMonth => _calendarController.view == _allowedViews[2];
-  bool get isWeek1 => _calendarController.view == _allowedViews[3];
+  bool get isMonth2 => _calendarController.view == _allowedViews[3];
 
   final ScrollController _controller = ScrollController();
 
@@ -130,9 +130,10 @@ class _FullCalendarState extends State<FullCalendar> {
 
     _view = _calendarController.view!;
     SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-      _events.appointments.clear();
-      _events.notifyListeners(
-          CalendarDataSourceAction.reset, _events.appointments);
+      //TODO:
+      // _events.appointments.clear();
+      // _events.notifyListeners(
+      //     CalendarDataSourceAction.reset, _events.appointments);
       setState(() {
         /// Update the web UI when the calendar view changed from month view
         /// or to month view.
@@ -185,10 +186,9 @@ class _FullCalendarState extends State<FullCalendar> {
       timeSlotViewSettings: _getTimeSlotSettings,
       todayHighlightColor: ThemeColors.MAIN_COLOR,
       viewHeaderHeight: _getViewHeaderHeight,
-      // resourceViewSettings: ResourceViewSettings(
-      //   size: 100,
-      //   visibleResourceCount: 4,
-      // ),
+      resourceViewSettings: ResourceViewSettings(
+        visibleResourceCount: 4,
+      ),
       onTap: (calendarTapDetails, position) async {
         final ScheduleMenus menus = ScheduleMenus(context, position);
         switch (calendarTapDetails.targetElement) {
@@ -250,6 +250,9 @@ class _FullCalendarState extends State<FullCalendar> {
     if (isWeek) {
       return 0;
     }
+    if (isMonth2) {
+      return 30;
+    }
 
     return 0;
   }
@@ -278,17 +281,7 @@ class _FullCalendarState extends State<FullCalendar> {
         timeTextStyle: textStyle,
       );
     }
-    if (isWeek1) {
-      return TimeSlotViewSettings(
-        timeTextStyle: textStyle,
-        allDayPanelColor: Colors.lime[300],
-      );
-    }
-
-    return const TimeSlotViewSettings(
-      startHour: 0,
-      endHour: 1,
-    );
+    return const TimeSlotViewSettings();
   }
 }
 
@@ -328,10 +321,17 @@ class AppointmentDataSource extends CalendarDataSource {
   @override
   Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
     try {
+      final view = appStore.state.scheduleState.calendarView;
+      final bool isMonth = view == CalendarView.month;
       final List<Appointment> _meetings = <Appointment>[];
-
-      List<Appointment> fetchedAppointments = await appStore.dispatch(
-          SCFetchShiftsWeekAction(startDate: startDate, endDate: endDate));
+      DateTime st = startDate;
+      DateTime et = endDate;
+      if (isMonth) {
+        st = startDate.startOfMonth;
+        et = startDate.endOfMonth;
+      }
+      List<Appointment> fetchedAppointments = await appStore
+          .dispatch(SCFetchShiftsWeekAction(startDate: st, endDate: et));
 
       for (final Appointment appointment in fetchedAppointments) {
         final DateTime date = appointment.startTime;
@@ -358,9 +358,9 @@ class AppointmentDataSource extends CalendarDataSource {
     } catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
 
-      showError("Something went wrong");
+      showError("Something went wrong ${e}");
 
-      Logger.e("Something went wrong while fetching shifts",
+      Logger.e("Something went wrong while fetching shifts $e",
           tag: 'ShiftsCalendar');
     }
   }

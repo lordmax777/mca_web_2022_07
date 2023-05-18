@@ -11,6 +11,7 @@ import '../common/calendar_view_helper.dart';
 import '../common/date_time_engine.dart';
 import '../common/event_args.dart';
 import '../resource_view/calendar_resource.dart';
+import '../resource_view/resource_view.dart';
 import '../settings/time_slot_view_settings.dart';
 import '../settings/view_header_style.dart';
 
@@ -389,26 +390,27 @@ class _TimelineRenderWidget extends MultiChildRenderObjectWidget {
   @override
   _TimelineRenderObject createRenderObject(BuildContext context) {
     return _TimelineRenderObject(
-        horizontalLinesCountPerView,
-        visibleDates,
-        timeSlotViewSettings,
-        timeIntervalWidth,
-        cellBorderColor,
-        isRTL,
-        calendarTheme,
-        calendarCellNotifier,
-        scrollController,
-        specialRegion,
-        resourceItemHeight,
-        resourceCollection,
-        textScaleFactor,
-        isMobilePlatform,
-        width,
-        height,
-        specialRegionBounds,
-        minDate,
-        maxDate,
-        blackoutDates);
+      horizontalLinesCountPerView,
+      visibleDates,
+      timeSlotViewSettings,
+      timeIntervalWidth,
+      cellBorderColor,
+      isRTL,
+      calendarTheme,
+      calendarCellNotifier,
+      scrollController,
+      specialRegion,
+      resourceItemHeight,
+      resourceCollection,
+      textScaleFactor,
+      isMobilePlatform,
+      width,
+      height,
+      specialRegionBounds,
+      minDate,
+      maxDate,
+      blackoutDates,
+    );
   }
 
   @override
@@ -862,15 +864,14 @@ class _TimelineRenderObject extends CustomCalendarRenderObject {
     _linePainter.strokeWidth = 0.5;
     _linePainter.strokeCap = StrokeCap.round;
     _linePainter.color = cellBorderColor ?? calendarTheme.cellBorderColor!;
+
     double startXPosition = 0;
     double endXPosition = size.width;
     double startYPosition = 0.5;
     double endYPosition = 0.5;
-
     final Offset start = Offset(startXPosition, startYPosition);
     final Offset end = Offset(endXPosition, endYPosition);
     canvas.drawLine(start, end, _linePainter);
-
     startXPosition = 0;
     endXPosition = 0;
     startYPosition = 0;
