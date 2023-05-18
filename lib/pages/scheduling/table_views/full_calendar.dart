@@ -34,6 +34,7 @@ class _FullCalendarState extends State<FullCalendar> {
     CalendarView.timelineDay,
     CalendarView.timelineWeek,
     CalendarView.month,
+    CalendarView.week,
   ];
 
   final GlobalKey _globalKey = GlobalKey();
@@ -44,6 +45,7 @@ class _FullCalendarState extends State<FullCalendar> {
   bool get isDay => _calendarController.view == _allowedViews[0];
   bool get isWeek => _calendarController.view == _allowedViews[1];
   bool get isMonth => _calendarController.view == _allowedViews[2];
+  bool get isWeek1 => _calendarController.view == _allowedViews[3];
 
   final ScrollController _controller = ScrollController();
 
@@ -128,6 +130,9 @@ class _FullCalendarState extends State<FullCalendar> {
 
     _view = _calendarController.view!;
     SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
+      _events.appointments.clear();
+      _events.notifyListeners(
+          CalendarDataSourceAction.reset, _events.appointments);
       setState(() {
         /// Update the web UI when the calendar view changed from month view
         /// or to month view.
@@ -178,7 +183,12 @@ class _FullCalendarState extends State<FullCalendar> {
       onViewChanged: viewChangedCallback,
       viewNavigationMode: ViewNavigationMode.none,
       timeSlotViewSettings: _getTimeSlotSettings,
-      viewHeaderHeight: 0,
+      todayHighlightColor: ThemeColors.MAIN_COLOR,
+      viewHeaderHeight: _getViewHeaderHeight,
+      // resourceViewSettings: ResourceViewSettings(
+      //   size: 100,
+      //   visibleResourceCount: 4,
+      // ),
       onTap: (calendarTapDetails, position) async {
         final ScheduleMenus menus = ScheduleMenus(context, position);
         switch (calendarTapDetails.targetElement) {
@@ -233,32 +243,45 @@ class _FullCalendarState extends State<FullCalendar> {
     );
   }
 
+  double get _getViewHeaderHeight {
+    if (isDay) {
+      return 30;
+    }
+    if (isWeek) {
+      return 0;
+    }
+
+    return 0;
+  }
+
   TimeSlotViewSettings get _getTimeSlotSettings {
+    const textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 16,
+      fontFamily: ThemeText.fontFamilyM,
+    );
     if (isDay) {
       return TimeSlotViewSettings(
         timeIntervalWidth: MediaQuery.of(context).size.width * .0363,
         timelineAppointmentHeight: CalendarConstants.shiftHeight,
         timeInterval: const Duration(minutes: 60),
         timeFormat: "HH:mm",
-        timeTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-          fontFamily: ThemeText.fontFamilyM,
-        ),
+        timeTextStyle: textStyle,
       );
     }
     if (isWeek) {
       return TimeSlotViewSettings(
         timeIntervalWidth: MediaQuery.of(context).size.width * .124,
         timelineAppointmentHeight: CalendarConstants.shiftHeight,
+        timeInterval: const Duration(days: 1),
         timeFormat: "EEE d MMM",
-        timeTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 14,
-          fontFamily: ThemeText.fontFamilyR,
-        ),
-        startHour: 0,
-        endHour: 1,
+        timeTextStyle: textStyle,
+      );
+    }
+    if (isWeek1) {
+      return TimeSlotViewSettings(
+        timeTextStyle: textStyle,
+        allDayPanelColor: Colors.lime[300],
       );
     }
 

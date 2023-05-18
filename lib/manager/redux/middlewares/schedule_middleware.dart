@@ -177,6 +177,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           endTime: et,
           // isAllDay only when not timelineDay
           isAllDay:
+              // false,
               state.scheduleState.calendarView != CalendarView.timelineDay,
           color: us?.userRandomBgColor ?? Colors.lime[300]!,
           subject: pr.title,

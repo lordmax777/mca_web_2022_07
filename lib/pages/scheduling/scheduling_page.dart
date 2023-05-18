@@ -466,6 +466,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
         return DailyViewCalendar(day: day);
       case CalendarView.week:
       case CalendarView.timelineWeek:
+      case CalendarView.week:
         return WeeklyViewCalendar(
             lastDayOfWeek: lastDayOfWeek, firstDayOfWeek: firstDayOfWeek);
       case CalendarView.month:
