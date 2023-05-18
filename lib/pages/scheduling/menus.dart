@@ -41,7 +41,7 @@ class ScheduleMenus {
     logger(appointments.length);
     final RelativeRect pos = _getPosition()!;
     final List<PopupMenuItem<Appointment>> items = [];
-    for (int i = moreAppointmentCount - 1; i < appointments.length; i++) {
+    for (int i = 0; i < appointments.length; i++) {
       //Get all the hidden appointments
       final Appointment app = appointments[i];
       items.add(PopupMenuItem(
@@ -50,17 +50,27 @@ class ScheduleMenus {
         textStyle: const TextStyle(color: Colors.black),
         key: ValueKey(app),
         height: 30,
-        padding: const EdgeInsets.all(0),
+        padding: const EdgeInsets.symmetric(vertical: 1),
         child: InkWell(
           onTap: () {
             Navigator.of(_context).pop(app);
           },
           child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              color: app.color,
               width: double.infinity,
-              height: 30,
               alignment: Alignment.centerLeft,
+              height: 30,
+              decoration: BoxDecoration(
+                color: app.color,
+                // border: Border(
+                //   bottom: BorderSide(
+                //     color: i == appointments.length - 1
+                //         ? Colors.transparent
+                //         : ThemeColors.MAIN_COLOR,
+                //     width: 1,
+                //   ),
+                // ),
+              ),
               child: Text(app.subject,
                   style: const TextStyle(color: Colors.white, fontSize: 16))),
         ),

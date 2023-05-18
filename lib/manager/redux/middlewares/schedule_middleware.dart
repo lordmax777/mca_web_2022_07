@@ -176,14 +176,13 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           startTime: stDate,
           endTime: et,
           // isAllDay only when not timelineDay
-          isAllDay:
-              // false,
-              state.scheduleState.calendarView != CalendarView.timelineDay,
+          isAllDay: false,
+          // state.scheduleState.calendarView != CalendarView.timelineDay,
           color: us?.userRandomBgColor ?? Colors.lime[300]!,
           subject: pr.title,
           id: shift,
           resourceIds: [
-            us == null ? "US_open" : "US_${us.id}",
+            us == null ? "OPEN" : "US_${us.id}",
             "PR_${pr.id}",
             // us ?? UserRes.openShiftResource(),
             // pr,

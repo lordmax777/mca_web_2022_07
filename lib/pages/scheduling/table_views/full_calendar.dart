@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -32,9 +33,10 @@ class FullCalendar extends StatefulWidget {
 class _FullCalendarState extends State<FullCalendar> {
   final List<CalendarView> _allowedViews = [
     CalendarView.timelineDay,
-    CalendarView.timelineWeek,
+    CalendarView.week,
     CalendarView.month,
-    CalendarView.timelineMonth,
+    // CalendarView.timelineMonth,
+    CalendarView.schedule,
   ];
 
   final GlobalKey _globalKey = GlobalKey();
@@ -45,38 +47,38 @@ class _FullCalendarState extends State<FullCalendar> {
   bool get isDay => _calendarController.view == _allowedViews[0];
   bool get isWeek => _calendarController.view == _allowedViews[1];
   bool get isMonth => _calendarController.view == _allowedViews[2];
-  bool get isMonth2 => _calendarController.view == _allowedViews[3];
+  bool get isSchedule => _calendarController.view == _allowedViews[3];
 
   final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     _calendarController.view = _view;
-    final List<CalendarResource> _usresources = <CalendarResource>[
+
+    final List<CalendarResource> _resources = <CalendarResource>[
       CalendarResource(
-        id: "US_open",
+        id: "OPEN",
         displayName: "Open Shift",
         color: Colors.lime[500]!,
       )
     ];
-    final List<CalendarResource> _resources = <CalendarResource>[];
     final users = appStore.state.usersState.users;
     final properties = appStore.state.generalState.allSortedProperties;
 
     for (var us in users) {
-      _usresources.add(CalendarResource(
+      _resources.add(CalendarResource(
           customResourceHeight: users.indexOf(us) == 0 ? 200 : null,
           id: "US_${us.id}",
           displayName: us.fullname,
           color: us.userRandomBgColor));
     }
     for (var pr in properties) {
-      // _prresources
+      // _resources
       //     .add(CalendarResource(id: "PR_${pr.id}", displayName: pr.title));
     }
     _events = AppointmentDataSource(<Appointment>[]);
 
-    _events.resources = _usresources;
+    _events.resources = _resources;
     // _calendarController.addPropertyChangedListener((p0) {
     //p0 = selectedDate
     //p0 = calendarView
@@ -201,7 +203,6 @@ class _FullCalendarState extends State<FullCalendar> {
             break;
           case CalendarElement.appointment:
             // TODO: Handle this case.
-            menus.showMoreAppointmentsPopup(calendarTapDetails);
             break;
           case CalendarElement.agenda:
             // TODO: Handle this case.
@@ -255,19 +256,15 @@ class _FullCalendarState extends State<FullCalendar> {
         ),
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
       ),
-      resourceViewSettings: ResourceViewSettings(
-        // visibleResourceCount: 8,
-        // showAvatar: false,
+      allowDragAndDrop: kDebugMode,
+      resourceViewSettings: const ResourceViewSettings(
         size: 100,
-        displayNameTextStyle: const TextStyle(
+        displayNameTextStyle: TextStyle(
           color: Colors.black,
           fontSize: 16,
           fontFamily: ThemeText.fontFamilyM,
         ),
       ),
-      // selectionDecoration: BoxDecoration(
-      //     //TODO:
-      //     ),
     );
   }
 
@@ -276,10 +273,7 @@ class _FullCalendarState extends State<FullCalendar> {
       return 30;
     }
     if (isWeek) {
-      return 0;
-    }
-    if (isMonth2) {
-      return 30;
+      return 50;
     }
 
     return 0;
@@ -355,9 +349,16 @@ class AppointmentDataSource extends CalendarDataSource {
       DateTime st = startDate;
       DateTime et = endDate;
       if (isMonth) {
-        st = startDate.startOfMonth;
-        et = startDate.endOfMonth;
+        if (st.day != 1) {
+          // st must be next month of startDate
+          st = DateTime(st.year, st.month + 1, 1, 00, 00);
+        }
+        // st must be equal to start of month
+        // et must be equal to end of month
+        st = st.startOfMonth;
+        et = st.endOfMonth;
       }
+      print('handleLoadMore: $st - $et');
       List<Appointment> fetchedAppointments = await appStore
           .dispatch(SCFetchShiftsWeekAction(startDate: st, endDate: et));
 
