@@ -4,6 +4,8 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../theme/theme.dart';
 
 class ScheduleMenus {
+  static const int moreAppointmentCount = 4;
+
   ScheduleMenus(this._context, this._position);
 
   final BuildContext _context;
@@ -39,12 +41,29 @@ class ScheduleMenus {
     logger(appointments.length);
     final RelativeRect pos = _getPosition()!;
     final List<PopupMenuItem<Appointment>> items = [];
-    for (int i = 2; i < appointments.length; i++) {
+    for (int i = moreAppointmentCount - 1; i < appointments.length; i++) {
       //Get all the hidden appointments
       final Appointment app = appointments[i];
       items.add(PopupMenuItem(
         value: app,
-        child: Text(app.subject),
+        enabled: false,
+        textStyle: const TextStyle(color: Colors.black),
+        key: ValueKey(app),
+        height: 30,
+        padding: const EdgeInsets.all(0),
+        child: InkWell(
+          onTap: () {
+            Navigator.of(_context).pop(app);
+          },
+          child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              color: app.color,
+              width: double.infinity,
+              height: 30,
+              alignment: Alignment.centerLeft,
+              child: Text(app.subject,
+                  style: const TextStyle(color: Colors.white, fontSize: 16))),
+        ),
       ));
     }
     final resultFromAppointmentTap = await showMenu<Appointment>(

@@ -65,6 +65,7 @@ class _FullCalendarState extends State<FullCalendar> {
 
     for (var us in users) {
       _usresources.add(CalendarResource(
+          customResourceHeight: users.indexOf(us) == 0 ? 200 : null,
           id: "US_${us.id}",
           displayName: us.fullname,
           color: us.userRandomBgColor));
@@ -186,9 +187,6 @@ class _FullCalendarState extends State<FullCalendar> {
       timeSlotViewSettings: _getTimeSlotSettings,
       todayHighlightColor: ThemeColors.MAIN_COLOR,
       viewHeaderHeight: _getViewHeaderHeight,
-      resourceViewSettings: ResourceViewSettings(
-        visibleResourceCount: 4,
-      ),
       onTap: (calendarTapDetails, position) async {
         final ScheduleMenus menus = ScheduleMenus(context, position);
         switch (calendarTapDetails.targetElement) {
@@ -220,6 +218,7 @@ class _FullCalendarState extends State<FullCalendar> {
             break;
         }
       },
+      showCurrentTimeIndicator: false,
       loadMoreWidgetBuilder:
           (BuildContext context, LoadMoreCallback loadMoreAppointments) {
         return FutureBuilder<void>(
@@ -236,7 +235,36 @@ class _FullCalendarState extends State<FullCalendar> {
         );
       },
       monthViewSettings: const MonthViewSettings(
-          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+        appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
+        monthCellStyle: MonthCellStyle(
+          textStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontFamily: ThemeText.fontFamilyM,
+          ),
+          leadingDatesTextStyle: TextStyle(
+            color: Colors.black26,
+            fontSize: 14,
+            fontFamily: ThemeText.fontFamilyM,
+          ),
+          trailingDatesTextStyle: TextStyle(
+            color: Colors.black26,
+            fontSize: 14,
+            fontFamily: ThemeText.fontFamilyM,
+          ),
+        ),
+        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+      ),
+      resourceViewSettings: ResourceViewSettings(
+        // visibleResourceCount: 8,
+        // showAvatar: false,
+        size: 100,
+        displayNameTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+          fontFamily: ThemeText.fontFamilyM,
+        ),
+      ),
       // selectionDecoration: BoxDecoration(
       //     //TODO:
       //     ),
