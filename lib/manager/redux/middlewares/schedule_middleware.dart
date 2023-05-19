@@ -152,12 +152,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     final appointments = <Appointment>[];
 
     if (res.success) {
-      StateValue<List<PropertiesMd>> newProperties =
-          // state.generalState.properties;
-          await appStore.dispatch(GetPropertiesAction());
-      StateValue<ListAllMd> allList =
-          // state.generalState.paramList;
-          await appStore.dispatch(GetAllParamListAction());
+      StateValue<List<PropertiesMd>> newProperties = action.fetchAdditionalData
+          ? await appStore.dispatch(GetPropertiesAction())
+          : state.generalState.properties;
+      StateValue<ListAllMd> allList = action.fetchAdditionalData
+          ? await appStore.dispatch(GetAllParamListAction())
+          : state.generalState.paramList;
       final list = <AllocationModel>[];
       for (var item in res.data['allocations']) {
         final AllocationModel shift = AllocationModel.fromJson(item,

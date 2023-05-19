@@ -169,10 +169,13 @@ class SCFetchShiftsWeekAction {
   final DateTime startDate;
   final DateTime endDate;
 
+  final bool fetchAdditionalData;
+
   SCFetchShiftsWeekAction({
     this.locationId,
     this.userId,
     this.shiftId,
+    this.fetchAdditionalData = false,
     required this.startDate,
     required this.endDate,
   });

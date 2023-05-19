@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
@@ -83,7 +84,6 @@ class _FullCalendarState extends State<FullCalendar> {
     _events.resources = _resources;
 
     _calendarController.addPropertyChangedListener((e) {
-      logger("calendarView changed: $e");
       if (e == 'calendarView') {
         _events.clearAppointments();
       }
@@ -233,9 +233,6 @@ class _FullCalendarState extends State<FullCalendar> {
 
   void _getOnTap(
       CalendarTapDetails calendarTapDetails, Offset? position) async {
-    // logger(_startDate);
-    // logger(_endDate);
-    // return;
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.calendarCell:
@@ -244,9 +241,8 @@ class _FullCalendarState extends State<FullCalendar> {
         if (res == null) return;
         if (_startDate != null && _endDate != null) {
           _events.clearAppointments();
-          _events.handleLoadMore(_startDate!, _endDate!);
+          _events.handleLoadMore(_startDate!, _endDate!, true);
         }
-        logger("res: $res", hint: "calendarTapDetails");
         break;
       case CalendarElement.header:
         // TODO: Handle this case.
@@ -336,7 +332,8 @@ class _FullCalendarState extends State<FullCalendar> {
 /// allows to add, remove or reset the appointment collection.
 class AppointmentDataSource extends CalendarDataSource {
   @override
-  Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
+  Future<void> handleLoadMore(DateTime startDate, DateTime endDate,
+      [bool? fetchAdditionalData]) async {
     try {
       onRangeChanged?.call(startDate, endDate);
       final view = appStore.state.scheduleState.calendarView;
@@ -356,8 +353,11 @@ class AppointmentDataSource extends CalendarDataSource {
         et = st.endOfMonth;
       }
 
-      List<Appointment> fetchedAppointments = await appStore
-          .dispatch(SCFetchShiftsWeekAction(startDate: st, endDate: et));
+      List<Appointment> fetchedAppointments = await appStore.dispatch(
+          SCFetchShiftsWeekAction(
+              startDate: st,
+              endDate: et,
+              fetchAdditionalData: fetchAdditionalData ?? false));
 
       for (final Appointment appointment in fetchedAppointments) {
         final DateTime date = appointment.startTime;
@@ -390,15 +390,16 @@ class AppointmentDataSource extends CalendarDataSource {
       Logger.e("Error while fetching shifts", tag: 'ShiftsCalendar');
     } on StateError catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
-      logger(e.stackTrace);
-      Logger.e("TETSTTSTSTST", tag: 'ShiftsCalendar');
+      showError("Something went wrong $e");
+      Logger.e("Something went wrong while fetching shifts ${e.stackTrace}",
+          tag: 'ShiftsCalendar - StateError');
     } catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
 
       showError("Something went wrong $e");
 
       Logger.e("Something went wrong while fetching shifts $e",
-          tag: 'ShiftsCalendar');
+          tag: 'ShiftsCalendar - catch');
     }
   }
 
