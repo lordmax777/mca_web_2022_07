@@ -68,7 +68,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.day,
+      calendarView: CalendarView.timelineWeek,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
       backupShifts: [],
@@ -169,10 +169,13 @@ class SCFetchShiftsWeekAction {
   final DateTime startDate;
   final DateTime endDate;
 
+  final bool fetchAdditionalData;
+
   SCFetchShiftsWeekAction({
     this.locationId,
     this.userId,
     this.shiftId,
+    this.fetchAdditionalData = false,
     required this.startDate,
     required this.endDate,
   });

@@ -338,13 +338,17 @@ enum AllocationActions {
 
 abstract class HtmlHelper {
   static String replaceBr(String html) {
-    if (html.contains("<br>")) {
-      return html.replaceAll("<br>", "\n");
-    } else if (html.contains("<br/>")) {
-      return html.replaceAll("<br/>", "\n");
-    } else if (html.contains("<br />")) {
-      return html.replaceAll("<br />", "\n");
-    } else {
+    try {
+      if (html.contains("<br>")) {
+        return html.replaceAll("<br>", "\n");
+      } else if (html.contains("<br/>")) {
+        return html.replaceAll("<br/>", "\n");
+      } else if (html.contains("<br />")) {
+        return html.replaceAll("<br />", "\n");
+      } else {
+        return html;
+      }
+    } catch (e) {
       return html;
     }
   }

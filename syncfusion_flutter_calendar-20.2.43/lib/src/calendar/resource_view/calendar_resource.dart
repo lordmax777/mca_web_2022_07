@@ -86,7 +86,10 @@ class CalendarResource with Diagnosticable {
       {this.displayName = '',
       required this.id,
       this.image,
+      this.customResourceHeight,
       this.color = Colors.lightBlue});
+
+  final double? customResourceHeight;
 
   /// The name which displayed on the [CalendarResource] view of [SfCalendar].
   ///

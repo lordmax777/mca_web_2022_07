@@ -843,13 +843,6 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
         final ApiResponse? changedQuoteStatus = await appStore.dispatch(
             ChangeQuoteStatusAction(status: "accept", quoteId: quoteId));
         if (changedQuoteStatus?.success == true) {
-          appStore.dispatch(SCFetchShiftsAction(date: timing.date!));
-          appStore.dispatch(SCFetchShiftsWeekAction(
-            startDate: timing.date!.subtract(const Duration(days: 7)),
-            endDate: timing.date!,
-          ));
-          appStore.dispatch(SCFetchShiftsMonthAction(startDate: timing.date!));
-
           return changedQuoteStatus;
         } else {
           showError(changedQuoteStatus?.data ?? "Error");

@@ -4,16 +4,19 @@ import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../pages/scheduling/models/allocation_model.dart';
+import '../../../pages/scheduling/table_views/full_calendar.dart';
 import '../../../theme/theme.dart';
 import '../../models/list_all_md.dart';
 import '../../models/property_md.dart';
 import '../../models/users_list.dart';
 import '../../rest/rest_client.dart';
 import '../states/general_state.dart';
+import 'dart:math';
 
 class ScheduleMiddleware extends MiddlewareClass<AppState> {
   @override
@@ -48,7 +51,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  void _onFetchShifts(
+  Future<List<Appointment>> _onFetchShifts(
       AppState state, SCFetchShiftsAction action, NextDispatcher next) async {
     final locId = action.locationId ?? 0;
     final userId = action.userId ?? 0;
@@ -64,13 +67,13 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
             locId, userId, shiftId, DateFormat('yyyy-MM-dd').format(date))
         .nocodeErrorHandler();
 
+    final appointments = <Appointment>[];
     if (res.success) {
       StateValue<List<PropertiesMd>> newProperties =
           await appStore.dispatch(GetPropertiesAction());
       StateValue<ListAllMd> allList =
           await appStore.dispatch(GetAllParamListAction());
       final list = <AllocationModel>[];
-      final appointments = <Appointment>[];
       for (var item in res.data['allocations']) {
         final AllocationModel shift = AllocationModel.fromJson(item,
             shifts: allList.data!.shifts, users: state.usersState.users);
@@ -120,10 +123,12 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       }
       next(UpdateScheduleState(shifts: stateVal, backupShifts: []));
     }
+
+    return appointments;
   }
 
-  void _onFetchShiftsWeek(AppState state, SCFetchShiftsWeekAction action,
-      NextDispatcher next) async {
+  Future<List<Appointment>> _onFetchShiftsWeek(AppState state,
+      SCFetchShiftsWeekAction action, NextDispatcher next) async {
     final locId = action.locationId ?? 0;
     final userId = action.userId ?? 0;
     final shiftId = action.shiftId ?? 0;
@@ -144,13 +149,16 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         )
         .nocodeErrorHandler();
 
+    final appointments = <Appointment>[];
+
     if (res.success) {
-      StateValue<List<PropertiesMd>> newProperties =
-          await appStore.dispatch(GetPropertiesAction());
-      StateValue<ListAllMd> allList =
-          await appStore.dispatch(GetAllParamListAction());
+      StateValue<List<PropertiesMd>> newProperties = action.fetchAdditionalData
+          ? await appStore.dispatch(GetPropertiesAction())
+          : state.generalState.properties;
+      StateValue<ListAllMd> allList = action.fetchAdditionalData
+          ? await appStore.dispatch(GetAllParamListAction())
+          : state.generalState.paramList;
       final list = <AllocationModel>[];
-      final appointments = <Appointment>[];
       for (var item in res.data['allocations']) {
         final AllocationModel shift = AllocationModel.fromJson(item,
             shifts: allList.data!.shifts, users: state.usersState.users);
@@ -158,20 +166,55 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         final pr = shift.shift.propertyFromNewState(newProperties.data!);
         final us = shift.user;
         final DateTime date = DateTime.parse(shift.date);
+        final formatter = DateFormat('HH:mm');
 
-        final stDate = DateTime(date.year, date.month, date.day, 00, 00);
-        DateTime et = DateTime(date.year, date.month, date.day, 01, 00);
+        // final stDate = DateTime(date.year, date.month, date.day, 00, 00);
+        // DateTime et = DateTime(date.year, date.month, date.day, 01, 00);
+        final stDate = DateTime(date.year, date.month, date.day,
+            pr.startTimeAsTimeOfDay.hour, pr.startTimeAsTimeOfDay.minute);
+        DateTime et = DateTime(date.year, date.month, date.day,
+            pr.finishTimeAsTimeOfDay.hour, pr.finishTimeAsTimeOfDay.minute);
 
+        bool isAllDay = false;
+        if (pr.startTimeAsTimeOfDay.hour == 0 &&
+            pr.startTimeAsTimeOfDay.minute == 0 &&
+            pr.finishTimeAsTimeOfDay.hour == 23 &&
+            pr.finishTimeAsTimeOfDay.minute == 59) {
+          isAllDay = true;
+        }
+
+        bool isOpenShift = false;
+        if (us == null) {
+          isOpenShift = true;
+        }
+        StringBuffer subject = StringBuffer();
+
+        if (isOpenShift) {
+          subject.write('(Open Shift) ');
+        }
+        if (isAllDay) {
+          subject.write("All Day / ");
+        } else {
+          subject.write("${formatter.format(stDate)} - ");
+          subject.write("${formatter.format(et)} / ");
+        }
+        subject.write(pr.title);
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
-          isAllDay: false,
-          color: us?.userRandomBgColor ?? Colors.lime[300]!,
-          subject: pr.title,
+          isAllDay: isAllDay,
+          color:
+              // us == null
+              //     ? CalendarConstants.openShiftAppointmentColor
+              //     :
+              shift.shift.randomBgColor,
+          subject: subject.toString(),
           id: shift,
           resourceIds: [
-            us ?? UserRes.openShiftResource(),
-            pr,
+            isOpenShift ? "OPEN" : "",
+            if (us != null) "US_${us.id}",
+            "PR_${pr.id}",
+            // pr,
           ],
         ));
       }
@@ -186,6 +229,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         backupShiftsWeek: appointments,
       ));
     } else {
+      throw ShiftFetchException(apiResponse: res);
       stateVal.error.isLoading = false;
       stateVal.data?[CalendarView.week] = [];
       stateVal.error.action = action;
@@ -199,6 +243,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
       }
       next(UpdateScheduleState(shifts: stateVal, backupShiftsWeek: []));
     }
+
+    return appointments;
   }
 
   void _onFetchShiftsMonth(AppState state, SCFetchShiftsMonthAction action,
