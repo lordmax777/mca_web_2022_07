@@ -665,9 +665,11 @@ class _ResourceViewRenderObject extends CustomCalendarRenderObject {
     canvas.drawCircle(
         Offset(startXPosition, startYPosition), innerRadius, _circlePainter);
     final List<String> splitName = resource.displayName.split(' ');
-    final String shortName = splitName.length > 1
-        ? splitName[0].substring(0, 1) + splitName[1].substring(0, 1)
-        : splitName[0].substring(0, 1);
+    final String shortName =
+        // splitName.length > 1
+        //     ? splitName[0].substring(0, 1) + splitName[1].substring(0, 1)
+        //     :
+        splitName[0].substring(0, 1);
     final TextSpan span = TextSpan(
         text: shortName,
         style: const TextStyle(

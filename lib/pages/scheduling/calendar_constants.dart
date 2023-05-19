@@ -1,4 +1,5 @@
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 abstract class CalendarConstants {
   static double fullHeight(BuildContext context) =>
@@ -18,4 +19,10 @@ abstract class CalendarConstants {
       (tableHeight(context) / (shiftHeight * 3)).ceil();
 
   static Color openShiftAppointmentColor = Colors.blueGrey;
+
+  static CalendarResource openCalendarResource = CalendarResource(
+    id: "OPEN",
+    displayName: "Open Shift",
+    color: CalendarConstants.openShiftAppointmentColor,
+  );
 }

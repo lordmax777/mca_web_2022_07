@@ -126,7 +126,8 @@ final loggerInterceptor =
       if (data.length > 300) {
         data = data.substring(0, 300);
       }
-      Logger.i("| [API_Response] [code ${response.statusCode}]: $data"); //:
+      Logger.i(
+          "| [API_Response_${response.requestOptions.path}] [code ${response.statusCode}]: $data"); //:
     }
     handler.next(response);
   } catch (e) {
@@ -135,7 +136,8 @@ final loggerInterceptor =
     if (response.requestOptions.path == "/fe/lists") skip = true;
 
     if (!skip) {
-      Logger.i("| [API_Response] [code ${response.statusCode}]: $data"); //:
+      Logger.i(
+          "| [API_Response_${response.requestOptions.path}] [code ${response.statusCode}]: $data"); //:
     }
     handler.next(response);
   }

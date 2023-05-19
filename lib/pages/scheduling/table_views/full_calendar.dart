@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -62,11 +63,7 @@ class _FullCalendarState extends State<FullCalendar> {
     _calendarController.view = _view;
 
     final List<CalendarResource> _resources = <CalendarResource>[
-      CalendarResource(
-        id: "OPEN",
-        displayName: "Open Shift",
-        color: CalendarConstants.openShiftAppointmentColor,
-      )
+      CalendarConstants.openCalendarResource,
     ];
     final users = appStore.state.usersState.users;
     final properties = appStore.state.generalState.allSortedProperties;
@@ -151,6 +148,8 @@ class _FullCalendarState extends State<FullCalendar> {
       viewHeaderHeight: _getViewHeaderHeight,
       onTap: _getOnTap,
       showCurrentTimeIndicator: false,
+      firstDayOfWeek: 1,
+
       // onDragStart: (appointmentDragStartDetails) {
       //   final app = appointmentDragStartDetails.appointment as Appointment?;
       //   if (app == null) return;
@@ -231,8 +230,41 @@ class _FullCalendarState extends State<FullCalendar> {
     );
   }
 
+  void _changeResources(bool user) {
+    final List<CalendarResource> _resources = <CalendarResource>[
+      CalendarConstants.openCalendarResource,
+    ];
+    final users = appStore.state.usersState.users;
+    final properties = appStore.state.generalState.allSortedProperties;
+    if (user) {
+      isUserResource = true;
+
+      for (var us in users) {
+        _resources.add(CalendarResource(
+            id: "US_${us.id}",
+            displayName: "${us.fullname} (${us.id})",
+            color: us.userRandomBgColor));
+      }
+      _events.resources = _resources;
+      setState(() {});
+      return;
+    }
+    for (var pr in properties) {
+      _resources.add(CalendarResource(
+          id: "PR_${pr.id}",
+          displayName: "${pr.title} (${pr.id})",
+          color: Colors.blue));
+    }
+    _events.resources = _resources;
+    isUserResource = false;
+    setState(() {});
+  }
+
+  bool isUserResource = true;
   void _getOnTap(
       CalendarTapDetails calendarTapDetails, Offset? position) async {
+    // _changeResources(!isUserResource);
+    // return;
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.calendarCell:
