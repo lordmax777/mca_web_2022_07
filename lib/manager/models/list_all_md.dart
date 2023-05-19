@@ -1,8 +1,12 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:get/get.dart';
 import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 
+import '../../theme/theme.dart';
 import '../redux/sets/app_state.dart';
 import '../redux/states/general_state.dart';
 import 'location_item_md.dart';
@@ -383,6 +387,12 @@ class ListShift {
     return newProperties.firstWhere((element) => element.id == id);
   }
 
+  @JsonKey(ignore: true)
+  late Color randomBgColor;
+
+  @JsonKey(ignore: true)
+  late Color randomFgColor;
+
   @override
   ListShift({
     required this.id,
@@ -392,6 +402,10 @@ class ListShift {
     this.client_id,
     this.warehouse_id,
   }) {
+    randomBgColor = Color.fromRGBO(Random().nextInt(255), Random().nextInt(255),
+        Random().nextInt(255), 1.0);
+    randomFgColor =
+        randomBgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
     property =
         state.allSortedProperties.firstWhere((element) => element.id == id);
     warehouse = state.storages
