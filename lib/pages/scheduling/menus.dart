@@ -1,7 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mca_web_2022_07/comps/simple_popup_menu.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
+import 'package:mca_web_2022_07/pages/scheduling/models/job_model.dart';
+import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../theme/theme.dart';
+import 'models/allocation_model.dart';
 
 class ScheduleMenus {
   static const int moreAppointmentCount = 4;
@@ -29,7 +34,7 @@ class ScheduleMenus {
     return RelativeRect.fromLTRB(left, top, right, bottom);
   }
 
-  Future<T?> showMoreAppointmentsPopup<T>(
+  Future<Future<ApiResponse?>?> showMoreAppointmentsPopup<T>(
     CalendarTapDetails calendarTapDetails,
   ) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
@@ -76,14 +81,22 @@ class ScheduleMenus {
       position: pos,
       items: items,
     );
-    logger(resultFromAppointmentTap);
     if (resultFromAppointmentTap == null) return null;
-    return null;
-    return showMenu(context: _context, position: pos, items: [
-      // PopupMenuItem(
-      //   value: ,
-      //   child: Text(res.subject + "1"),
-      // ),
-    ]);
+    return showFormActionsPopup(resultFromAppointmentTap);
+  }
+
+  Future<Future<ApiResponse?>?> showFormActionsPopup(
+      [Appointment? _app]) async {
+    return showFormsMenus(
+      _context,
+      globalPosition: _position!,
+      data: JobModel(
+        customStartDate: _app?.startTime,
+        customEndDate: _app?.endTime,
+        customResource:
+            _app == null ? null : CalendarResource(id: _app.resourceIds!.first),
+        allocation: _app?.id as AllocationModel?,
+      ),
+    );
   }
 }

@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
+import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../menus.dart';
+import '../models/allocation_model.dart';
 import '../scheduling_page.dart';
 
 class FullCalendar extends StatefulWidget {
@@ -62,7 +65,7 @@ class _FullCalendarState extends State<FullCalendar> {
     for (var us in users) {
       _resources.add(CalendarResource(
           id: "US_${us.id}",
-          displayName: us.fullname,
+          displayName: "${us.fullname} (${us.id})",
           color: us.userRandomBgColor));
     }
 
@@ -120,6 +123,8 @@ class _FullCalendarState extends State<FullCalendar> {
     appStore.dispatch(SCChangeCalendarView(_view));
   }
 
+  Appointment? prevApp;
+
   /// Returns the calendar widget based on the properties passed.
   SfCalendar _getLoadMoreCalendar(
       [CalendarController? calendarController,
@@ -138,6 +143,65 @@ class _FullCalendarState extends State<FullCalendar> {
       viewHeaderHeight: _getViewHeaderHeight,
       onTap: _getOnTap,
       showCurrentTimeIndicator: false,
+      onDragStart: (appointmentDragStartDetails) {
+        final app = appointmentDragStartDetails.appointment as Appointment?;
+        if (app == null) return;
+        prevApp = app;
+      },
+      onDragEnd: (appointmentDragUpdateDetails) async {
+        final app = appointmentDragUpdateDetails.appointment as Appointment?;
+        final alloc = app?.id as AllocationModel?;
+        if (alloc == null) return;
+        final resource =
+            appointmentDragUpdateDetails.sourceResource?.id as String?;
+        final targetResource =
+            appointmentDragUpdateDetails.targetResource?.id as String?;
+        final userId = alloc.user?.id ?? 0;
+        final shiftId = alloc.shift.id;
+        final date = alloc.date;
+        final mode = AllocationActions.copy.name;
+        int? targetShiftId;
+        int? targetUserId;
+        final targetDate = DateFormat('yyyy-MM-dd')
+            .format(appointmentDragUpdateDetails.droppingTime!);
+        if (targetResource?.startsWith("US_") ?? false) {
+          targetUserId = int.tryParse(targetResource!.substring(3));
+        } else if (targetResource?.startsWith("PR_") ?? false) {
+          targetShiftId = int.tryParse(targetResource!.substring(3));
+        }
+
+        print("targetUserId: $targetUserId");
+        print("targetShiftId: $targetShiftId");
+        print("targetDate: $targetDate");
+        print("userId: $userId");
+        print("shiftId: $shiftId");
+        print("date: $date");
+        print("mode: $mode");
+        showLoading();
+        final ApiResponse res = await restClient()
+            .postShifts(0, userId, shiftId, date, mode,
+                date_until: date,
+                target_shift: targetShiftId,
+                target_user: targetUserId,
+                target_date: targetDate)
+            .nocodeErrorHandler();
+        await closeLoading();
+        if (res.success) {
+          prevApp?.resourceIds = [resource!];
+          _events.appointments.add(prevApp);
+          _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
+        } else {
+          //TODO: show error
+          showError(
+              HtmlHelper.replaceBr(ApiHelpers.getRawDataErrorMessages(res)));
+          //copy back to original position
+          prevApp?.resourceIds = [resource!];
+          _events.appointments.add(prevApp);
+          _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
+          _events.appointments.remove(app);
+          _events.notifyListeners(CalendarDataSourceAction.remove, [app]);
+        }
+      },
       loadMoreWidgetBuilder:
           (BuildContext context, LoadMoreCallback loadMoreAppointments) {
         return FutureBuilder<void>(
@@ -161,7 +225,8 @@ class _FullCalendarState extends State<FullCalendar> {
     );
   }
 
-  void _getOnTap(calendarTapDetails, position) async {
+  void _getOnTap(
+      CalendarTapDetails calendarTapDetails, Offset? position) async {
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.header:
@@ -172,9 +237,10 @@ class _FullCalendarState extends State<FullCalendar> {
         break;
       case CalendarElement.calendarCell:
         // TODO: Handle this case.
+        menus.showFormActionsPopup();
         break;
       case CalendarElement.appointment:
-        // TODO: Handle this case.
+        menus.showFormActionsPopup(calendarTapDetails.appointments!.first);
         break;
       case CalendarElement.agenda:
         // TODO: Handle this case.
@@ -195,7 +261,7 @@ class _FullCalendarState extends State<FullCalendar> {
     return ResourceViewSettings(
       size: CalendarConstants.resourceWidth,
       visibleResourceCount: CalendarConstants.resourceCount(context),
-      displayNameTextStyle: _textStyle,
+      displayNameTextStyle: _textStyle.copyWith(fontSize: 12),
     );
   }
 
