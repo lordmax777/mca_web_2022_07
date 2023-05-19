@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:mca_web_2022_07/manager/redux/states/schedule_state.dart';
+import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -172,19 +173,23 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         DateTime et = DateTime(date.year, date.month, date.day,
             pr.finishTimeAsTimeOfDay.hour, pr.finishTimeAsTimeOfDay.minute);
 
+        bool isOpenShift = false;
+        if (us == null) {
+          isOpenShift = true;
+        }
+
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
-          // isAllDay only when not timelineDay
           isAllDay: false,
-          // state.scheduleState.calendarView != CalendarView.timelineDay,
-          color: us?.userRandomBgColor ?? Colors.lime[300]!,
-          subject: pr.title,
+          color: us?.userRandomBgColor ??
+              CalendarConstants.openShiftAppointmentColor,
+          subject: "${isOpenShift ? '(Open Shift) ' : ''}${pr.title}",
           id: shift,
           resourceIds: [
-            us == null ? "OPEN" : "US_${us.id}",
+            isOpenShift ? "OPEN" : "",
+            if (us != null) "US_${us.id}",
             "PR_${pr.id}",
-            // us ?? UserRes.openShiftResource(),
             // pr,
           ],
         ));

@@ -1,30 +1,18 @@
-import 'dart:math';
-
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
-import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
-import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../menus.dart';
-import '../models/data_source.dart';
-import '../models/job_model.dart';
 import '../scheduling_page.dart';
 
 class FullCalendar extends StatefulWidget {
-  final DateTime day;
-
-  const FullCalendar({Key? key, required this.day}) : super(key: key);
+  const FullCalendar({Key? key}) : super(key: key);
 
   @override
   State<FullCalendar> createState() => _FullCalendarState();
@@ -33,9 +21,8 @@ class FullCalendar extends StatefulWidget {
 class _FullCalendarState extends State<FullCalendar> {
   final List<CalendarView> _allowedViews = [
     CalendarView.timelineDay,
-    CalendarView.week,
+    CalendarView.timelineWeek,
     CalendarView.month,
-    // CalendarView.timelineMonth,
     CalendarView.schedule,
   ];
 
@@ -49,17 +36,24 @@ class _FullCalendarState extends State<FullCalendar> {
   bool get isMonth => _calendarController.view == _allowedViews[2];
   bool get isSchedule => _calendarController.view == _allowedViews[3];
 
-  final ScrollController _controller = ScrollController();
+  late final AppointmentDataSource _events;
+
+  final TextStyle _textStyle = const TextStyle(
+    color: Colors.black,
+    fontSize: 16,
+    fontFamily: ThemeText.fontFamilyM,
+  );
 
   @override
   void initState() {
+    _view = appStore.state.scheduleState.calendarView;
     _calendarController.view = _view;
 
     final List<CalendarResource> _resources = <CalendarResource>[
       CalendarResource(
         id: "OPEN",
         displayName: "Open Shift",
-        color: Colors.lime[500]!,
+        color: CalendarConstants.openShiftPanelColor,
       )
     ];
     final users = appStore.state.usersState.users;
@@ -67,60 +61,35 @@ class _FullCalendarState extends State<FullCalendar> {
 
     for (var us in users) {
       _resources.add(CalendarResource(
-          customResourceHeight: users.indexOf(us) == 0 ? 200 : null,
           id: "US_${us.id}",
           displayName: us.fullname,
           color: us.userRandomBgColor));
     }
-    for (var pr in properties) {
-      // _resources
-      //     .add(CalendarResource(id: "PR_${pr.id}", displayName: pr.title));
-    }
+
     _events = AppointmentDataSource(<Appointment>[]);
 
     _events.resources = _resources;
-    // _calendarController.addPropertyChangedListener((p0) {
-    //p0 = selectedDate
-    //p0 = calendarView
-    //p0 = displayDate
-    // });
+
     super.initState();
   }
-
-  late final AppointmentDataSource _events;
 
   @override
   Widget build(BuildContext context) {
     final Widget calendar = Theme(
-        data: ThemeData.light(),
+      data: ThemeData.light(),
 
-        /// The key set here to maintain the state,
-        ///  when we change the parent of the widget
-        key: _globalKey,
-        child: _getLoadMoreCalendar(_calendarController, _onViewChanged,
-            _events, _scheduleViewBuilder));
+      /// The key set here to maintain the state,
+      ///  when we change the parent of the widget
+      key: _globalKey,
+      child: _getLoadMoreCalendar(
+        _calendarController,
+        _onViewChanged,
+        _events,
+      ),
+    );
 
-    final double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Row(children: <Widget>[
-        Expanded(
-          child: _calendarController.view == CalendarView.month &&
-                  screenHeight < 800
-              ? Scrollbar(
-                  thumbVisibility: true,
-                  controller: _controller,
-                  child: ListView(
-                    controller: _controller,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 600,
-                        child: calendar,
-                      )
-                    ],
-                  ))
-              : Container(child: calendar),
-        )
-      ]),
+      body: Container(child: calendar),
     );
   }
 
@@ -133,10 +102,9 @@ class _FullCalendarState extends State<FullCalendar> {
 
     _view = _calendarController.view!;
     SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-      //TODO:
-      // _events.appointments.clear();
-      // _events.notifyListeners(
-      //     CalendarDataSourceAction.reset, _events.appointments);
+      _events.appointments.clear();
+      _events.notifyListeners(
+          CalendarDataSourceAction.reset, _events.appointments);
       setState(() {
         /// Update the web UI when the calendar view changed from month view
         /// or to month view.
@@ -147,37 +115,11 @@ class _FullCalendarState extends State<FullCalendar> {
     appStore.dispatch(SCChangeCalendarView(_view));
   }
 
-  /// Returns the builder for schedule view.
-  Widget _scheduleViewBuilder(
-      BuildContext buildContext, ScheduleViewMonthHeaderDetails details) {
-    final String monthName = _getMonthDate(details.date.month);
-    return Stack(
-      children: <Widget>[
-        Image(
-            image: ExactAssetImage('images/' + monthName + '.png'),
-            fit: BoxFit.cover,
-            width: details.bounds.width,
-            height: details.bounds.height),
-        Positioned(
-          left: 55,
-          right: 0,
-          top: 20,
-          bottom: 0,
-          child: Text(
-            monthName + ' ' + details.date.year.toString(),
-            style: const TextStyle(fontSize: 18),
-          ),
-        )
-      ],
-    );
-  }
-
   /// Returns the calendar widget based on the properties passed.
   SfCalendar _getLoadMoreCalendar(
       [CalendarController? calendarController,
       ViewChangedCallback? viewChangedCallback,
-      CalendarDataSource? calendarDataSource,
-      dynamic scheduleViewBuilder]) {
+      CalendarDataSource? calendarDataSource]) {
     return SfCalendar(
       showDatePickerButton: true,
       showNavigationArrow: true,
@@ -189,36 +131,7 @@ class _FullCalendarState extends State<FullCalendar> {
       timeSlotViewSettings: _getTimeSlotSettings,
       todayHighlightColor: ThemeColors.MAIN_COLOR,
       viewHeaderHeight: _getViewHeaderHeight,
-      onTap: (calendarTapDetails, position) async {
-        final ScheduleMenus menus = ScheduleMenus(context, position);
-        switch (calendarTapDetails.targetElement) {
-          case CalendarElement.header:
-            // TODO: Handle this case.
-            break;
-          case CalendarElement.viewHeader:
-            // TODO: Handle this case.
-            break;
-          case CalendarElement.calendarCell:
-            // TODO: Handle this case.
-            break;
-          case CalendarElement.appointment:
-            // TODO: Handle this case.
-            break;
-          case CalendarElement.agenda:
-            // TODO: Handle this case.
-            break;
-          case CalendarElement.allDayPanel:
-            // TODO: Handle this case.
-            break;
-          case CalendarElement.moreAppointmentRegion:
-            // TODO: Handle this case.
-            menus.showMoreAppointmentsPopup(calendarTapDetails);
-            break;
-          case CalendarElement.resourceHeader:
-            // TODO: Handle this case.
-            break;
-        }
-      },
+      onTap: _getOnTap,
       showCurrentTimeIndicator: false,
       loadMoreWidgetBuilder:
           (BuildContext context, LoadMoreCallback loadMoreAppointments) {
@@ -235,104 +148,107 @@ class _FullCalendarState extends State<FullCalendar> {
           },
         );
       },
-      monthViewSettings: const MonthViewSettings(
-        appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
-        monthCellStyle: MonthCellStyle(
-          textStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontFamily: ThemeText.fontFamilyM,
-          ),
-          leadingDatesTextStyle: TextStyle(
-            color: Colors.black26,
-            fontSize: 14,
-            fontFamily: ThemeText.fontFamilyM,
-          ),
-          trailingDatesTextStyle: TextStyle(
-            color: Colors.black26,
-            fontSize: 14,
-            fontFamily: ThemeText.fontFamilyM,
-          ),
-        ),
-        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-      ),
+      initialDisplayDate: DateTime(2023, 05, 04),
+      initialSelectedDate: DateTime(2023, 05, 04),
+      monthViewSettings: _getMonthViewSettings,
       allowDragAndDrop: kDebugMode,
-      resourceViewSettings: const ResourceViewSettings(
-        size: 100,
-        displayNameTextStyle: TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-          fontFamily: ThemeText.fontFamilyM,
+      resourceViewSettings: _getResourceViewSettings,
+    );
+  }
+
+  void _getOnTap(calendarTapDetails, position) async {
+    final ScheduleMenus menus = ScheduleMenus(context, position);
+    switch (calendarTapDetails.targetElement) {
+      case CalendarElement.header:
+        // TODO: Handle this case.
+        break;
+      case CalendarElement.viewHeader:
+        // TODO: Handle this case.
+        break;
+      case CalendarElement.calendarCell:
+        // TODO: Handle this case.
+        break;
+      case CalendarElement.appointment:
+        // TODO: Handle this case.
+        break;
+      case CalendarElement.agenda:
+        // TODO: Handle this case.
+        break;
+      case CalendarElement.allDayPanel:
+        // TODO: Handle this case.
+        break;
+      case CalendarElement.moreAppointmentRegion:
+        // TODO: Handle this case.
+        menus.showMoreAppointmentsPopup(calendarTapDetails);
+        break;
+      case CalendarElement.resourceHeader:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
+  ResourceViewSettings get _getResourceViewSettings {
+    return ResourceViewSettings(
+      size: CalendarConstants.resourceWidth,
+      visibleResourceCount: CalendarConstants.resourceCount(context),
+      displayNameTextStyle: _textStyle,
+    );
+  }
+
+  MonthViewSettings get _getMonthViewSettings {
+    return MonthViewSettings(
+      // showAgenda: true,
+      // agendaViewHeight: 200,
+      appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
+      monthCellStyle: MonthCellStyle(
+        textStyle: _textStyle,
+        leadingDatesTextStyle: _textStyle.copyWith(
+          color: Colors.black26,
+          fontSize: 14,
+        ),
+        trailingDatesTextStyle: _textStyle.copyWith(
+          color: Colors.black26,
+          fontSize: 14,
         ),
       ),
+      appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
     );
   }
 
   double get _getViewHeaderHeight {
-    if (isDay) {
+    if (isMonth) {
       return 30;
     }
     if (isWeek) {
-      return 50;
+      return 0;
     }
 
-    return 0;
+    return 30;
   }
 
   TimeSlotViewSettings get _getTimeSlotSettings {
-    const textStyle = TextStyle(
-      color: Colors.black,
-      fontSize: 16,
-      fontFamily: ThemeText.fontFamilyM,
-    );
     if (isDay) {
       return TimeSlotViewSettings(
-        timeIntervalWidth: MediaQuery.of(context).size.width * .0363,
+        timeIntervalWidth: CalendarConstants.shiftWidth(context),
         timelineAppointmentHeight: CalendarConstants.shiftHeight,
         timeInterval: const Duration(minutes: 60),
         timeFormat: "HH:mm",
-        timeTextStyle: textStyle,
+        timeTextStyle: _textStyle,
       );
     }
     if (isWeek) {
       return TimeSlotViewSettings(
-        timeIntervalWidth: MediaQuery.of(context).size.width * .124,
-        timelineAppointmentHeight: CalendarConstants.shiftHeight,
-        timeInterval: const Duration(days: 1),
-        timeFormat: "EEE d MMM",
-        timeTextStyle: textStyle,
+        timeIntervalWidth: (MediaQuery.of(context).size.width -
+                CalendarConstants.resourceWidth) *
+            .14,
+        timeTextStyle: _textStyle,
+        timeFormat: "MMM d, EEEE",
+        startHour: 0,
+        endHour: 1,
+        allDayPanelColor: CalendarConstants.openShiftPanelColor,
       );
     }
     return const TimeSlotViewSettings();
-  }
-}
-
-/// Returns the month name based on the month value passed from date.
-String _getMonthDate(int month) {
-  if (month == 01) {
-    return 'January';
-  } else if (month == 02) {
-    return 'February';
-  } else if (month == 03) {
-    return 'March';
-  } else if (month == 04) {
-    return 'April';
-  } else if (month == 05) {
-    return 'May';
-  } else if (month == 06) {
-    return 'June';
-  } else if (month == 07) {
-    return 'July';
-  } else if (month == 08) {
-    return 'August';
-  } else if (month == 09) {
-    return 'September';
-  } else if (month == 10) {
-    return 'October';
-  } else if (month == 11) {
-    return 'November';
-  } else {
-    return 'December';
   }
 }
 
@@ -345,6 +261,7 @@ class AppointmentDataSource extends CalendarDataSource {
     try {
       final view = appStore.state.scheduleState.calendarView;
       final bool isMonth = view == CalendarView.month;
+      final bool isWeek = view == CalendarView.timelineWeek;
       final List<Appointment> _meetings = <Appointment>[];
       DateTime st = startDate;
       DateTime et = endDate;
@@ -358,12 +275,16 @@ class AppointmentDataSource extends CalendarDataSource {
         st = st.startOfMonth;
         et = st.endOfMonth;
       }
-      print('handleLoadMore: $st - $et');
+
       List<Appointment> fetchedAppointments = await appStore
           .dispatch(SCFetchShiftsWeekAction(startDate: st, endDate: et));
 
       for (final Appointment appointment in fetchedAppointments) {
         final DateTime date = appointment.startTime;
+
+        if (isWeek) {
+          appointment.isAllDay = true;
+        }
         if (appointment.isAllDay) {
           final stDate = DateTime(date.year, date.month, date.day, 00, 00);
           final DateTime etDate =
@@ -372,6 +293,9 @@ class AppointmentDataSource extends CalendarDataSource {
           appointment.endTime = etDate;
         }
         if (!appointments.any((element) => element.id == appointment.id)) {
+          if (appointments.indexOf(appointment) == 0) {
+            appointment.isAllDay = true;
+          }
           _meetings.add(appointment);
         }
       }

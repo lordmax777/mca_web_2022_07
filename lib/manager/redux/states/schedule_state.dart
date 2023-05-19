@@ -68,7 +68,7 @@ class ScheduleState {
 
   factory ScheduleState.initial() {
     return ScheduleState(
-      calendarView: CalendarView.timelineDay,
+      calendarView: CalendarView.timelineWeek,
       shifts: StateValue<Map<CalendarView, List<Appointment>>>(
           data: {}, error: ErrorModel()),
       backupShifts: [],
