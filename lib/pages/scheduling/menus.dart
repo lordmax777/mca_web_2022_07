@@ -50,7 +50,7 @@ class ScheduleMenus {
         textStyle: const TextStyle(color: Colors.black),
         key: ValueKey(app),
         height: 30,
-        padding: const EdgeInsets.symmetric(vertical: 1),
+        padding: const EdgeInsets.symmetric(vertical: .5),
         child: InkWell(
           onTap: () {
             Navigator.of(_context).pop(app);
@@ -59,20 +59,15 @@ class ScheduleMenus {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               width: double.infinity,
               alignment: Alignment.centerLeft,
-              height: 30,
-              decoration: BoxDecoration(
-                color: app.color,
-                // border: Border(
-                //   bottom: BorderSide(
-                //     color: i == appointments.length - 1
-                //         ? Colors.transparent
-                //         : ThemeColors.MAIN_COLOR,
-                //     width: 1,
-                //   ),
-                // ),
-              ),
+              height: 40,
+              color: app.color,
               child: Text(app.subject,
-                  style: const TextStyle(color: Colors.white, fontSize: 16))),
+                  style: TextStyle(
+                      color: app.color.computeLuminance() > 0.5
+                          ? Colors.black
+                          : Colors.white,
+                      fontFamily: ThemeText.fontFamilyM,
+                      fontSize: 14))),
         ),
       ));
     }
@@ -81,7 +76,9 @@ class ScheduleMenus {
       position: pos,
       items: items,
     );
+    logger(resultFromAppointmentTap);
     if (resultFromAppointmentTap == null) return null;
+    return null;
     return showMenu(context: _context, position: pos, items: [
       // PopupMenuItem(
       //   value: ,

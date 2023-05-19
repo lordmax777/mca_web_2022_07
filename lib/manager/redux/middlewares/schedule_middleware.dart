@@ -165,6 +165,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         final pr = shift.shift.propertyFromNewState(newProperties.data!);
         final us = shift.user;
         final DateTime date = DateTime.parse(shift.date);
+        final formatter = DateFormat('HH:mm');
 
         // final stDate = DateTime(date.year, date.month, date.day, 00, 00);
         // DateTime et = DateTime(date.year, date.month, date.day, 01, 00);
@@ -173,18 +174,37 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         DateTime et = DateTime(date.year, date.month, date.day,
             pr.finishTimeAsTimeOfDay.hour, pr.finishTimeAsTimeOfDay.minute);
 
+        bool isAllDay = false;
+        if (pr.startTimeAsTimeOfDay.hour == 0 &&
+            pr.startTimeAsTimeOfDay.minute == 0 &&
+            pr.finishTimeAsTimeOfDay.hour == 23 &&
+            pr.finishTimeAsTimeOfDay.minute == 59) {
+          isAllDay = true;
+        }
+
         bool isOpenShift = false;
         if (us == null) {
           isOpenShift = true;
         }
+        StringBuffer subject = StringBuffer();
 
+        if (isOpenShift) {
+          subject.write('(Open Shift) ');
+        }
+        if (isAllDay) {
+          subject.write("All Day / ");
+        } else {
+          subject.write("${formatter.format(stDate)} - ");
+          subject.write("${formatter.format(et)} / ");
+        }
+        subject.write(pr.title);
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
-          isAllDay: false,
+          isAllDay: isAllDay,
           color: us?.userRandomBgColor ??
               CalendarConstants.openShiftAppointmentColor,
-          subject: "${isOpenShift ? '(Open Shift) ' : ''}${pr.title}",
+          subject: subject.toString(),
           id: shift,
           resourceIds: [
             isOpenShift ? "OPEN" : "",

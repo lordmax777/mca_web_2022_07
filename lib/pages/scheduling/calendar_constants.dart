@@ -17,6 +17,5 @@ abstract class CalendarConstants {
   static int resourceCount(BuildContext context) =>
       (tableHeight(context) / (shiftHeight * 3)).ceil();
 
-  static Color openShiftPanelColor = const Color(0xFFE8E8E8);
   static Color openShiftAppointmentColor = Colors.blueGrey;
 }

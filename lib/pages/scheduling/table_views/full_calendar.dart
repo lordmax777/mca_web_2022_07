@@ -53,7 +53,7 @@ class _FullCalendarState extends State<FullCalendar> {
       CalendarResource(
         id: "OPEN",
         displayName: "Open Shift",
-        color: CalendarConstants.openShiftPanelColor,
+        color: CalendarConstants.openShiftAppointmentColor,
       )
     ];
     final users = appStore.state.usersState.users;
@@ -69,6 +69,14 @@ class _FullCalendarState extends State<FullCalendar> {
     _events = AppointmentDataSource(<Appointment>[]);
 
     _events.resources = _resources;
+
+    _calendarController.addPropertyChangedListener((e) {
+      if (e == 'calendarView') {
+        _events.appointments.clear();
+        _events.notifyListeners(
+            CalendarDataSourceAction.reset, _events.appointments);
+      }
+    });
 
     super.initState();
   }
@@ -102,9 +110,6 @@ class _FullCalendarState extends State<FullCalendar> {
 
     _view = _calendarController.view!;
     SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-      _events.appointments.clear();
-      _events.notifyListeners(
-          CalendarDataSourceAction.reset, _events.appointments);
       setState(() {
         /// Update the web UI when the calendar view changed from month view
         /// or to month view.
@@ -178,7 +183,6 @@ class _FullCalendarState extends State<FullCalendar> {
         // TODO: Handle this case.
         break;
       case CalendarElement.moreAppointmentRegion:
-        // TODO: Handle this case.
         menus.showMoreAppointmentsPopup(calendarTapDetails);
         break;
       case CalendarElement.resourceHeader:
@@ -197,8 +201,6 @@ class _FullCalendarState extends State<FullCalendar> {
 
   MonthViewSettings get _getMonthViewSettings {
     return MonthViewSettings(
-      // showAgenda: true,
-      // agendaViewHeight: 200,
       appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
       monthCellStyle: MonthCellStyle(
         textStyle: _textStyle,
@@ -245,7 +247,6 @@ class _FullCalendarState extends State<FullCalendar> {
         timeFormat: "MMM d, EEEE",
         startHour: 0,
         endHour: 1,
-        allDayPanelColor: CalendarConstants.openShiftPanelColor,
       );
     }
     return const TimeSlotViewSettings();
