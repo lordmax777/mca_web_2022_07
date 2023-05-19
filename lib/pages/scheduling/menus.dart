@@ -34,7 +34,7 @@ class ScheduleMenus {
     return RelativeRect.fromLTRB(left, top, right, bottom);
   }
 
-  Future<Future<ApiResponse?>?> showMoreAppointmentsPopup<T>(
+  Future<ApiResponse?> showMoreAppointmentsPopup<T>(
     CalendarTapDetails calendarTapDetails,
   ) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
@@ -82,20 +82,24 @@ class ScheduleMenus {
       items: items,
     );
     if (resultFromAppointmentTap == null) return null;
-    return showFormActionsPopup(resultFromAppointmentTap);
+    return await showFormActionsPopup(calendarTapDetails);
   }
 
-  Future<Future<ApiResponse?>?> showFormActionsPopup(
-      [Appointment? _app]) async {
-    return showFormsMenus(
+  Future<ApiResponse?> showFormActionsPopup(
+      CalendarTapDetails calendarTapDetails) async {
+    final Appointment? appointment =
+        calendarTapDetails.appointments?.first as Appointment?;
+    final DateTime? stDate = calendarTapDetails.date;
+    return await showFormsMenus(
       _context,
       globalPosition: _position!,
       data: JobModel(
-        customStartDate: _app?.startTime,
-        customEndDate: _app?.endTime,
-        customResource:
-            _app == null ? null : CalendarResource(id: _app.resourceIds!.first),
-        allocation: _app?.id as AllocationModel?,
+        customStartDate: stDate,
+        customEndDate: stDate?.add(const Duration(hours: 1)),
+        customResource: appointment == null
+            ? null
+            : CalendarResource(id: appointment.resourceIds!.first),
+        allocation: appointment?.id as AllocationModel?,
       ),
     );
   }

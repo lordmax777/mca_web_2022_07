@@ -1,9 +1,15 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../../manager/models/list_all_md.dart';
 
 class TimingModel {
+  TimingModel() {
+    repeat = appStore.state.generalState.workRepeats.firstOrNull;
+  }
+
   DateTime? date;
   DateTime? altStartDate;
   TimeOfDay? startTime;

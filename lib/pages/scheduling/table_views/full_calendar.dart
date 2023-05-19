@@ -29,6 +29,14 @@ class _FullCalendarState extends State<FullCalendar> {
     CalendarView.schedule,
   ];
 
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  void _setDateRange(DateTime startDate, DateTime endDate) {
+    _startDate = startDate;
+    _endDate = endDate;
+  }
+
   final GlobalKey _globalKey = GlobalKey();
 
   final CalendarController _calendarController = CalendarController();
@@ -69,15 +77,15 @@ class _FullCalendarState extends State<FullCalendar> {
           color: us.userRandomBgColor));
     }
 
-    _events = AppointmentDataSource(<Appointment>[]);
+    _events =
+        AppointmentDataSource(<Appointment>[], onRangeChanged: _setDateRange);
 
     _events.resources = _resources;
 
     _calendarController.addPropertyChangedListener((e) {
+      logger("calendarView changed: $e");
       if (e == 'calendarView') {
-        _events.appointments.clear();
-        _events.notifyListeners(
-            CalendarDataSourceAction.reset, _events.appointments);
+        _events.clearAppointments();
       }
     });
 
@@ -94,7 +102,7 @@ class _FullCalendarState extends State<FullCalendar> {
       key: _globalKey,
       child: _getLoadMoreCalendar(
         _calendarController,
-        _onViewChanged,
+        (viewChangedDetails) => _onViewChanged(),
         _events,
       ),
     );
@@ -106,10 +114,10 @@ class _FullCalendarState extends State<FullCalendar> {
 
   /// Handle the view changed and it used to update the UI on web platform
   /// whether the calendar view changed from month view or to month view.
-  void _onViewChanged(ViewChangedDetails visibleDatesChangedDetails) {
-    if (_view == _calendarController.view) {
-      return;
-    }
+  void _onViewChanged() {
+    // if (_view == _calendarController.view) {
+    //   return;
+    // }
 
     _view = _calendarController.view!;
     SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
@@ -143,65 +151,63 @@ class _FullCalendarState extends State<FullCalendar> {
       viewHeaderHeight: _getViewHeaderHeight,
       onTap: _getOnTap,
       showCurrentTimeIndicator: false,
-      onDragStart: (appointmentDragStartDetails) {
-        final app = appointmentDragStartDetails.appointment as Appointment?;
-        if (app == null) return;
-        prevApp = app;
-      },
-      onDragEnd: (appointmentDragUpdateDetails) async {
-        final app = appointmentDragUpdateDetails.appointment as Appointment?;
-        final alloc = app?.id as AllocationModel?;
-        if (alloc == null) return;
-        final resource =
-            appointmentDragUpdateDetails.sourceResource?.id as String?;
-        final targetResource =
-            appointmentDragUpdateDetails.targetResource?.id as String?;
-        final userId = alloc.user?.id ?? 0;
-        final shiftId = alloc.shift.id;
-        final date = alloc.date;
-        final mode = AllocationActions.copy.name;
-        int? targetShiftId;
-        int? targetUserId;
-        final targetDate = DateFormat('yyyy-MM-dd')
-            .format(appointmentDragUpdateDetails.droppingTime!);
-        if (targetResource?.startsWith("US_") ?? false) {
-          targetUserId = int.tryParse(targetResource!.substring(3));
-        } else if (targetResource?.startsWith("PR_") ?? false) {
-          targetShiftId = int.tryParse(targetResource!.substring(3));
-        }
-
-        print("targetUserId: $targetUserId");
-        print("targetShiftId: $targetShiftId");
-        print("targetDate: $targetDate");
-        print("userId: $userId");
-        print("shiftId: $shiftId");
-        print("date: $date");
-        print("mode: $mode");
-        showLoading();
-        final ApiResponse res = await restClient()
-            .postShifts(0, userId, shiftId, date, mode,
-                date_until: date,
-                target_shift: targetShiftId,
-                target_user: targetUserId,
-                target_date: targetDate)
-            .nocodeErrorHandler();
-        await closeLoading();
-        if (res.success) {
-          prevApp?.resourceIds = [resource!];
-          _events.appointments.add(prevApp);
-          _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
-        } else {
-          //TODO: show error
-          showError(
-              HtmlHelper.replaceBr(ApiHelpers.getRawDataErrorMessages(res)));
-          //copy back to original position
-          prevApp?.resourceIds = [resource!];
-          _events.appointments.add(prevApp);
-          _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
-          _events.appointments.remove(app);
-          _events.notifyListeners(CalendarDataSourceAction.remove, [app]);
-        }
-      },
+      // onDragStart: (appointmentDragStartDetails) {
+      //   final app = appointmentDragStartDetails.appointment as Appointment?;
+      //   if (app == null) return;
+      //   prevApp = app;
+      // },
+      // onDragEnd: (appointmentDragUpdateDetails) async {
+      //   final app = appointmentDragUpdateDetails.appointment as Appointment?;
+      //   final alloc = app?.id as AllocationModel?;
+      //   if (alloc == null) return;
+      //   final resource =
+      //       appointmentDragUpdateDetails.sourceResource?.id as String?;
+      //   final targetResource =
+      //       appointmentDragUpdateDetails.targetResource?.id as String?;
+      //   final userId = alloc.user?.id ?? 0;
+      //   final shiftId = alloc.shift.id;
+      //   final date = alloc.date;
+      //   final mode = AllocationActions.copy.name;
+      //   int? targetShiftId;
+      //   int? targetUserId;
+      //   final targetDate = DateFormat('yyyy-MM-dd')
+      //       .format(appointmentDragUpdateDetails.droppingTime!);
+      //   if (targetResource?.startsWith("US_") ?? false) {
+      //     targetUserId = int.tryParse(targetResource!.substring(3));
+      //   } else if (targetResource?.startsWith("PR_") ?? false) {
+      //     targetShiftId = int.tryParse(targetResource!.substring(3));
+      //   }
+      //
+      //   print("targetUserId: $targetUserId");
+      //   print("targetShiftId: $targetShiftId");
+      //   print("targetDate: $targetDate");
+      //   print("userId: $userId");
+      //   print("shiftId: $shiftId");
+      //   print("date: $date");
+      //   print("mode: $mode");
+      //   showLoading();
+      //   final ApiResponse res = await restClient()
+      //       .postShifts(0, userId, shiftId, date, mode,
+      //           date_until: date,
+      //           target_shift: targetShiftId,
+      //           target_user: targetUserId,
+      //           target_date: targetDate)
+      //       .nocodeErrorHandler();
+      //   await closeLoading();
+      //   if (res.success) {
+      //     _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
+      //   } else {
+      //     //TODO: show error
+      //     showError(
+      //         HtmlHelper.replaceBr(ApiHelpers.getRawDataErrorMessages(res)));
+      //     //copy back to original position
+      //     prevApp?.resourceIds = [resource!];
+      //     _events.appointments.add(prevApp);
+      //     _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
+      //     _events.appointments.remove(app);
+      //     _events.notifyListeners(CalendarDataSourceAction.remove, [app]);
+      //   }
+      // },
       loadMoreWidgetBuilder:
           (BuildContext context, LoadMoreCallback loadMoreAppointments) {
         return FutureBuilder<void>(
@@ -217,8 +223,8 @@ class _FullCalendarState extends State<FullCalendar> {
           },
         );
       },
-      initialDisplayDate: DateTime(2023, 05, 04),
-      initialSelectedDate: DateTime(2023, 05, 04),
+      // initialDisplayDate: DateTime(2023, 05, 04),
+      // initialSelectedDate: DateTime(2023, 05, 04),
       monthViewSettings: _getMonthViewSettings,
       allowDragAndDrop: kDebugMode,
       resourceViewSettings: _getResourceViewSettings,
@@ -227,20 +233,26 @@ class _FullCalendarState extends State<FullCalendar> {
 
   void _getOnTap(
       CalendarTapDetails calendarTapDetails, Offset? position) async {
+    // logger(_startDate);
+    // logger(_endDate);
+    // return;
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
+      case CalendarElement.calendarCell:
+      case CalendarElement.appointment:
+        final res = await menus.showFormActionsPopup(calendarTapDetails);
+        if (res == null) return;
+        if (_startDate != null && _endDate != null) {
+          _events.clearAppointments();
+          _events.handleLoadMore(_startDate!, _endDate!);
+        }
+        logger("res: $res", hint: "calendarTapDetails");
+        break;
       case CalendarElement.header:
         // TODO: Handle this case.
         break;
       case CalendarElement.viewHeader:
         // TODO: Handle this case.
-        break;
-      case CalendarElement.calendarCell:
-        // TODO: Handle this case.
-        menus.showFormActionsPopup();
-        break;
-      case CalendarElement.appointment:
-        menus.showFormActionsPopup(calendarTapDetails.appointments!.first);
         break;
       case CalendarElement.agenda:
         // TODO: Handle this case.
@@ -326,6 +338,7 @@ class AppointmentDataSource extends CalendarDataSource {
   @override
   Future<void> handleLoadMore(DateTime startDate, DateTime endDate) async {
     try {
+      onRangeChanged?.call(startDate, endDate);
       final view = appStore.state.scheduleState.calendarView;
       final bool isMonth = view == CalendarView.month;
       final bool isWeek = view == CalendarView.timelineWeek;
@@ -375,10 +388,14 @@ class AppointmentDataSource extends CalendarDataSource {
       }
 
       Logger.e("Error while fetching shifts", tag: 'ShiftsCalendar');
+    } on StateError catch (e) {
+      notifyListeners(CalendarDataSourceAction.add, []);
+      logger(e.stackTrace);
+      Logger.e("TETSTTSTSTST", tag: 'ShiftsCalendar');
     } catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
 
-      showError("Something went wrong ${e}");
+      showError("Something went wrong $e");
 
       Logger.e("Something went wrong while fetching shifts $e",
           tag: 'ShiftsCalendar');
@@ -390,9 +407,16 @@ class AppointmentDataSource extends CalendarDataSource {
     notifyListeners(CalendarDataSourceAction.add, _appointments);
   }
 
-  AppointmentDataSource(this.source);
+  void clearAppointments() {
+    appointments.clear();
+    notifyListeners(CalendarDataSourceAction.reset, appointments);
+  }
+
+  AppointmentDataSource(this.source, {this.onRangeChanged});
 
   List<Appointment> source;
+
+  void Function(DateTime, DateTime)? onRangeChanged;
 
   @override
   List<dynamic> get appointments => source;

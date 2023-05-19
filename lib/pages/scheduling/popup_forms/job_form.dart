@@ -94,6 +94,9 @@ class _JobEditFormState extends State<JobEditForm>
               data.quote = QuoteInfoMd.fromJson(q);
 
               setState(() {});
+            } else {
+              await Navigator.of(context).maybePop();
+              showError(ApiHelpers.getRawDataErrorMessages(res));
             }
           }
         },
@@ -239,13 +242,13 @@ class _JobEditFormState extends State<JobEditForm>
     }
   }
 
-  void _saveJob(AppState state) {
+  void _saveJob(AppState state) async {
     Get.showOverlay(
         asyncFunction: () async {
           final ApiResponse? newJob = await appStore
               .dispatch(CreateJobAction(data, isQuote: data.isQuote));
           if (newJob?.success == true) {
-            exit(context).then((value) {
+            exit(context, newJob).then((value) {
               showError(
                   "${data.type.label} ${data.isCreate ? "created" : "updated"} successfully",
                   titleMsg: "Success");

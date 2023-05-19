@@ -60,8 +60,8 @@ Future<String?> getBrowserId() async {
   return browserId;
 }
 
-Future<bool> exit(BuildContext context) {
-  return context.popRoute();
+Future<bool> exit<T>(BuildContext context, [T? result]) {
+  return context.popRoute(result);
 }
 
 Future<bool> onWillPop(BuildContext context) async {

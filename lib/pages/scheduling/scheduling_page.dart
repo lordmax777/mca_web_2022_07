@@ -209,8 +209,6 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
       position: RelativeRect.fromLTRB(left, top, right, bottom),
       items: getPopupCreateMenus(hasEditJob: hasEditJob));
 
-  logger(createTapResult, hint: "createTapResult");
-
   if (createTapResult == null) return null;
 
   //Shows the form based on the menu selected
