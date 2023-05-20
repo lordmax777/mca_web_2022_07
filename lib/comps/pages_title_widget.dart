@@ -6,10 +6,12 @@ class PagesTitleWidget extends StatelessWidget {
   final VoidCallback? onRightBtnClick;
   final List<Widget>? buttons;
   final Widget? titleButton;
+  final HeroIcons? btnIcon;
   const PagesTitleWidget(
       {Key? key,
       required this.title,
       this.btnText,
+      this.btnIcon,
       this.onRightBtnClick,
       this.titleButton,
       this.buttons})
@@ -36,8 +38,8 @@ class PagesTitleWidget extends StatelessWidget {
               if (buttons != null) ...buttons!,
               ButtonMedium(
                 text: btnText ?? "New User",
-                icon: const HeroIcon(
-                  HeroIcons.plusCircle,
+                icon: HeroIcon(
+                  btnIcon ?? HeroIcons.plusCircle,
                   size: 20,
                 ),
                 onPressed: onRightBtnClick,

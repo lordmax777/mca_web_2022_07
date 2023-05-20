@@ -13,23 +13,19 @@ import '../../../manager/redux/states/schedule_state.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 import '../menus.dart';
-import '../models/allocation_model.dart';
 import '../scheduling_page.dart';
 
 class FullCalendar extends StatefulWidget {
-  const FullCalendar({Key? key}) : super(key: key);
+  final bool isUserResource;
+  const FullCalendar({Key? key, required this.isUserResource})
+      : super(key: key);
 
   @override
   State<FullCalendar> createState() => _FullCalendarState();
 }
 
 class _FullCalendarState extends State<FullCalendar> {
-  final List<CalendarView> _allowedViews = [
-    CalendarView.timelineDay,
-    CalendarView.timelineWeek,
-    CalendarView.month,
-    CalendarView.schedule,
-  ];
+  final CalendarConf conf = CalendarConstants.conf;
 
   DateTime? _startDate;
   DateTime? _endDate;
@@ -39,46 +35,43 @@ class _FullCalendarState extends State<FullCalendar> {
     _endDate = endDate;
   }
 
+  bool get isUserResource => widget.isUserResource;
+
   final GlobalKey _globalKey = GlobalKey();
 
   final CalendarController _calendarController = CalendarController();
   CalendarView _view = CalendarView.timelineDay;
 
-  bool get isDay => _calendarController.view == _allowedViews[0];
-  bool get isWeek => _calendarController.view == _allowedViews[1];
-  bool get isMonth => _calendarController.view == _allowedViews[2];
-  bool get isSchedule => _calendarController.view == _allowedViews[3];
+  bool get isDay => conf.isDay(_calendarController.view!);
+  bool get isWeek => conf.isWeek(_calendarController.view!);
+  bool get isMonth => conf.isMonth(_calendarController.view!);
+  bool get isSchedule => conf.isSchedule(_calendarController.view!);
 
   late final AppointmentDataSource _events;
 
-  final TextStyle _textStyle = const TextStyle(
-    color: Colors.black,
-    fontSize: 16,
-    fontFamily: ThemeText.fontFamilyM,
-  );
+  @override
+  void dispose() {
+    _calendarController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant FullCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isUserResource != widget.isUserResource) {
+      _events.resources = conf.resources(widget.isUserResource);
+    }
+  }
 
   @override
   void initState() {
     _view = appStore.state.scheduleState.calendarView;
     _calendarController.view = _view;
 
-    final List<CalendarResource> _resources = <CalendarResource>[
-      CalendarConstants.openCalendarResource,
-    ];
-    final users = appStore.state.usersState.users;
-    final properties = appStore.state.generalState.allSortedProperties;
-
-    for (var us in users) {
-      _resources.add(CalendarResource(
-          id: "US_${us.id}",
-          displayName: "${us.fullname} (${us.id})",
-          color: us.userRandomBgColor));
-    }
-
     _events =
         AppointmentDataSource(<Appointment>[], onRangeChanged: _setDateRange);
 
-    _events.resources = _resources;
+    _events.resources = conf.resources(isUserResource);
 
     _calendarController.addPropertyChangedListener((e) {
       if (e == 'calendarView') {
@@ -140,16 +133,15 @@ class _FullCalendarState extends State<FullCalendar> {
       showNavigationArrow: true,
       controller: calendarController,
       dataSource: calendarDataSource,
-      allowedViews: _allowedViews,
+      allowedViews: conf.allowedViews,
       onViewChanged: viewChangedCallback,
       viewNavigationMode: ViewNavigationMode.none,
-      timeSlotViewSettings: _getTimeSlotSettings,
+      timeSlotViewSettings: conf.getTimeSlotSettings(_view, context),
       todayHighlightColor: ThemeColors.MAIN_COLOR,
-      viewHeaderHeight: _getViewHeaderHeight,
+      viewHeaderHeight: conf.getViewHeaderHeight(_view),
       onTap: _getOnTap,
       showCurrentTimeIndicator: false,
       firstDayOfWeek: 1,
-
       // onDragStart: (appointmentDragStartDetails) {
       //   final app = appointmentDragStartDetails.appointment as Appointment?;
       //   if (app == null) return;
@@ -224,43 +216,42 @@ class _FullCalendarState extends State<FullCalendar> {
       },
       // initialDisplayDate: DateTime(2023, 05, 04),
       // initialSelectedDate: DateTime(2023, 05, 04),
-      monthViewSettings: _getMonthViewSettings,
+      monthViewSettings: conf.getMonthViewSettings(),
       allowDragAndDrop: kDebugMode,
-      resourceViewSettings: _getResourceViewSettings,
+      resourceViewSettings: conf.getResourceViewSettings(context),
     );
   }
 
-  void _changeResources(bool user) {
-    final List<CalendarResource> _resources = <CalendarResource>[
-      CalendarConstants.openCalendarResource,
-    ];
-    final users = appStore.state.usersState.users;
-    final properties = appStore.state.generalState.allSortedProperties;
-    if (user) {
-      isUserResource = true;
+  // void _changeResources(bool user) {
+  //   final List<CalendarResource> _resources = <CalendarResource>[
+  //     CalendarConstants.openCalendarResource,
+  //   ];
+  //   final users = appStore.state.usersState.users;
+  //   final properties = appStore.state.generalState.allSortedProperties;
+  //   if (user) {
+  //     isUserResource = true;
+  //
+  //     for (var us in users) {
+  //       _resources.add(CalendarResource(
+  //           id: "US_${us.id}",
+  //           displayName: "${us.fullname} (${us.id})",
+  //           color: us.userRandomBgColor));
+  //     }
+  //     _events.resources = _resources;
+  //     setState(() {});
+  //     return;
+  //   }
+  //   for (var pr in properties) {
+  //     _resources.add(CalendarResource(
+  //         id: "PR_${pr.id}",
+  //         displayName: "${pr.title} (${pr.id})",
+  //         color: Colors.blue));
+  //   }
+  //   _events.resources = _resources;
+  //   isUserResource = false;
+  //   setState(() {});
+  // }
 
-      for (var us in users) {
-        _resources.add(CalendarResource(
-            id: "US_${us.id}",
-            displayName: "${us.fullname} (${us.id})",
-            color: us.userRandomBgColor));
-      }
-      _events.resources = _resources;
-      setState(() {});
-      return;
-    }
-    for (var pr in properties) {
-      _resources.add(CalendarResource(
-          id: "PR_${pr.id}",
-          displayName: "${pr.title} (${pr.id})",
-          color: Colors.blue));
-    }
-    _events.resources = _resources;
-    isUserResource = false;
-    setState(() {});
-  }
-
-  bool isUserResource = true;
   void _getOnTap(
       CalendarTapDetails calendarTapDetails, Offset? position) async {
     // _changeResources(!isUserResource);
@@ -295,67 +286,6 @@ class _FullCalendarState extends State<FullCalendar> {
         // TODO: Handle this case.
         break;
     }
-  }
-
-  ResourceViewSettings get _getResourceViewSettings {
-    return ResourceViewSettings(
-      size: CalendarConstants.resourceWidth,
-      visibleResourceCount: CalendarConstants.resourceCount(context),
-      displayNameTextStyle: _textStyle.copyWith(fontSize: 12),
-    );
-  }
-
-  MonthViewSettings get _getMonthViewSettings {
-    return MonthViewSettings(
-      appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
-      monthCellStyle: MonthCellStyle(
-        textStyle: _textStyle,
-        leadingDatesTextStyle: _textStyle.copyWith(
-          color: Colors.black26,
-          fontSize: 14,
-        ),
-        trailingDatesTextStyle: _textStyle.copyWith(
-          color: Colors.black26,
-          fontSize: 14,
-        ),
-      ),
-      appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-    );
-  }
-
-  double get _getViewHeaderHeight {
-    if (isMonth) {
-      return 30;
-    }
-    if (isWeek) {
-      return 0;
-    }
-
-    return 30;
-  }
-
-  TimeSlotViewSettings get _getTimeSlotSettings {
-    if (isDay) {
-      return TimeSlotViewSettings(
-        timeIntervalWidth: CalendarConstants.shiftWidth(context),
-        timelineAppointmentHeight: CalendarConstants.shiftHeight,
-        timeInterval: const Duration(minutes: 60),
-        timeFormat: "HH:mm",
-        timeTextStyle: _textStyle,
-      );
-    }
-    if (isWeek) {
-      return TimeSlotViewSettings(
-        timeIntervalWidth: (MediaQuery.of(context).size.width -
-                CalendarConstants.resourceWidth) *
-            .14,
-        timeTextStyle: _textStyle,
-        timeFormat: "MMM d, EEEE",
-        startHour: 0,
-        endHour: 1,
-      );
-    }
-    return const TimeSlotViewSettings();
   }
 }
 

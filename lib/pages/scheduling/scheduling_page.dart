@@ -33,8 +33,21 @@ extension TimeExtenstion on DateTime {
   }
 }
 
-class SchedulingPage extends StatelessWidget {
+class SchedulingPage extends StatefulWidget {
   const SchedulingPage({Key? key}) : super(key: key);
+
+  @override
+  State<SchedulingPage> createState() => _SchedulingPageState();
+}
+
+class _SchedulingPageState extends State<SchedulingPage> {
+  bool isUserResource = true;
+
+  void _changeResourceType() {
+    setState(() {
+      isUserResource = !isUserResource;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +59,19 @@ class SchedulingPage extends StatelessWidget {
           child: SpacedColumn(
             verticalSpace: 16.0,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 16, right: 16, left: 16),
-                child: PagesTitleWidget(title: "Scheduling"),
+              Padding(
+                padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
+                child: PagesTitleWidget(
+                  title: "Scheduling",
+                  onRightBtnClick: _changeResourceType,
+                  btnIcon: isUserResource ? HeroIcons.home : HeroIcons.user,
+                  btnText:
+                      "Change ${isUserResource ? "Properties" : "Users"} View",
+                ),
               ),
               SizedBox(
                   height: CalendarConstants.tableHeight(context),
-                  child: const FullCalendar()),
+                  child: FullCalendar(isUserResource: isUserResource)),
             ],
           ),
         ),
