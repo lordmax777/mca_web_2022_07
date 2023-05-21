@@ -397,7 +397,7 @@
 //                                   onTap: null,
 //                                   leading: CircleAvatar(
 //                                     backgroundColor: user.userRandomBgColor,
-//                                     child: Text(user.first2LettersOfName,
+//                                     child: Text(user.initials,
 //                                         style: TextStyle(
 //                                             color: user.foregroundColor)),
 //                                   ),

@@ -46,6 +46,14 @@ class PropertiesMd {
       days != null ? Constants.parseDays(days) : {};
   bool active;
 
+  String get initials {
+    try {
+      return title.substring(0, 2).toUpperCase();
+    } catch (e) {
+      return "??";
+    }
+  }
+
   PropertiesMd({
     required this.id,
     required this.title,

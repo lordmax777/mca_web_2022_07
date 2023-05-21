@@ -1,11 +1,15 @@
 export './models/create_shift_type.dart';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/table_views/full_calendar.dart';
 import 'package:mca_web_2022_07/utils/global_functions.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/simple_popup_menu.dart';
+import '../../manager/models/property_md.dart';
+import '../../manager/models/users_list.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
 import 'models/job_model.dart';
@@ -30,6 +34,24 @@ extension TimeExtenstion on DateTime {
 
   operator +(Duration other) {
     return add(other);
+  }
+}
+
+extension ResourceExt on CalendarResource {
+  bool get isUser => id.toString().startsWith("US");
+  bool get isPr => id.toString().startsWith("PR");
+  bool get isOpen => id.toString().contains("OPEN");
+
+  int? get findId => int.tryParse(id.toString().replaceRange(0, 3, ""));
+
+  Object? findType(List<UserRes> users, List<PropertiesMd> properties) {
+    if (isUser) {
+      return users.firstWhereOrNull((user) => user.id == findId);
+    }
+    if (isPr) {
+      return properties.firstWhereOrNull((pr) => pr.id == findId);
+    }
+    return null;
   }
 }
 

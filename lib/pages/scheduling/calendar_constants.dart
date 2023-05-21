@@ -1,3 +1,4 @@
+import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -12,7 +13,7 @@ abstract class CalendarConstants {
   static double tableHeight(BuildContext context) =>
       MediaQuery.of(context).size.height - 160;
 
-  static const double resourceWidth = 120;
+  static const double resourceWidth = 300;
 
   static const double shiftHeight = 50;
 
@@ -22,7 +23,7 @@ abstract class CalendarConstants {
   static int resourceCount(BuildContext context) =>
       (tableHeight(context) / (shiftHeight * 3)).ceil();
 
-  static Color openShiftAppointmentColor = Colors.blueGrey;
+  static Color openShiftAppointmentColor = Colors.green;
 
   static CalendarResource openCalendarResource = CalendarResource(
     id: "OPEN",
@@ -116,6 +117,113 @@ class CalendarConf {
     );
   }
 
+  Widget _getTypeWidget({
+    required String title,
+    required String initials,
+    String? subtitle,
+    required Color bgColor,
+  }) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: ThemeColors.gray11,
+            width: 1,
+          ),
+          right: BorderSide(
+            color: ThemeColors.gray11,
+            width: 1,
+          ),
+          bottom: BorderSide(
+            color: ThemeColors.gray11,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0),
+        child: SpacedRow(
+          horizontalSpace: 16,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              backgroundColor: bgColor,
+              maxRadius: 32.0,
+              child: KText(
+                fontSize: 18.0,
+                isSelectable: false,
+                fontWeight: FWeight.bold,
+                textColor: bgColor.computeLuminance() > 0.5
+                    ? Colors.black
+                    : Colors.white,
+                text: initials,
+              ),
+            ),
+            SpacedColumn(
+              mainAxisAlignment: MainAxisAlignment.center,
+              verticalSpace: 4.0,
+              children: [
+                SizedBox(
+                    width: 190,
+                    child: KText(
+                      isSelectable: false,
+                      maxLines: 2,
+                      text: title,
+                      fontSize: 18.0,
+                      textColor: ThemeColors.gray2,
+                      fontWeight: FWeight.bold,
+                    )),
+                if (subtitle != null)
+                  SizedBox(
+                      width: 190,
+                      child: KText(
+                        isSelectable: false,
+                        maxLines: 2,
+                        text: subtitle,
+                        fontSize: 18.0,
+                        textColor: ThemeColors.black,
+                        fontWeight: FWeight.regular,
+                      )),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget resourceViewHeaderBuilder(
+      BuildContext ctx, ResourceViewHeaderDetails details) {
+    final resource = details.resource;
+    final type = resource.findType(_users, _properties);
+    //handle open shift
+    if (type == null) {
+      return _getTypeWidget(
+        title: resource.displayName,
+        initials: "OS",
+        bgColor: CalendarConstants.openShiftAppointmentColor,
+      );
+    }
+    if (type is UserRes) {
+      final user = type;
+      return _getTypeWidget(
+          title: user.fullname,
+          initials: user.initials,
+          bgColor: user.userRandomBgColor,
+          subtitle: user.username);
+    }
+    if (type is PropertiesMd) {
+      final location = type;
+      return _getTypeWidget(
+        title: location.title,
+        initials: location.initials,
+        bgColor: Colors.blueAccent,
+        subtitle: location.locationName,
+      );
+    }
+    return const SizedBox();
+  }
+
   MonthViewSettings getMonthViewSettings() {
     return MonthViewSettings(
       appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
@@ -145,3 +253,62 @@ class CalendarConf {
     return 30;
   }
 }
+
+//TODO: ONDRAGE
+// onDragStart: (appointmentDragStartDetails) {
+//   final app = appointmentDragStartDetails.appointment as Appointment?;
+//   if (app == null) return;
+//   prevApp = app;
+// },
+// onDragEnd: (appointmentDragUpdateDetails) async {
+//   final app = appointmentDragUpdateDetails.appointment as Appointment?;
+//   final alloc = app?.id as AllocationModel?;
+//   if (alloc == null) return;
+//   final resource =
+//       appointmentDragUpdateDetails.sourceResource?.id as String?;
+//   final targetResource =
+//       appointmentDragUpdateDetails.targetResource?.id as String?;
+//   final userId = alloc.user?.id ?? 0;
+//   final shiftId = alloc.shift.id;
+//   final date = alloc.date;
+//   final mode = AllocationActions.copy.name;
+//   int? targetShiftId;
+//   int? targetUserId;
+//   final targetDate = DateFormat('yyyy-MM-dd')
+//       .format(appointmentDragUpdateDetails.droppingTime!);
+//   if (targetResource?.startsWith("US_") ?? false) {
+//     targetUserId = int.tryParse(targetResource!.substring(3));
+//   } else if (targetResource?.startsWith("PR_") ?? false) {
+//     targetShiftId = int.tryParse(targetResource!.substring(3));
+//   }
+//
+//   print("targetUserId: $targetUserId");
+//   print("targetShiftId: $targetShiftId");
+//   print("targetDate: $targetDate");
+//   print("userId: $userId");
+//   print("shiftId: $shiftId");
+//   print("date: $date");
+//   print("mode: $mode");
+//   showLoading();
+//   final ApiResponse res = await restClient()
+//       .postShifts(0, userId, shiftId, date, mode,
+//           date_until: date,
+//           target_shift: targetShiftId,
+//           target_user: targetUserId,
+//           target_date: targetDate)
+//       .nocodeErrorHandler();
+//   await closeLoading();
+//   if (res.success) {
+//     _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
+//   } else {
+//     //TODO: show error
+//     showError(
+//         HtmlHelper.replaceBr(ApiHelpers.getRawDataErrorMessages(res)));
+//     //copy back to original position
+//     prevApp?.resourceIds = [resource!];
+//     _events.appointments.add(prevApp);
+//     _events.notifyListeners(CalendarDataSourceAction.add, [prevApp]);
+//     _events.appointments.remove(app);
+//     _events.notifyListeners(CalendarDataSourceAction.remove, [app]);
+//   }
+// },
