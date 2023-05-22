@@ -11,7 +11,7 @@ abstract class CalendarConstants {
       MediaQuery.of(context).size.height - 80;
 
   static double tableHeight(BuildContext context) =>
-      MediaQuery.of(context).size.height - 160;
+      MediaQuery.of(context).size.height - 174;
 
   static const double resourceWidth = 300;
 
@@ -42,19 +42,24 @@ class CalendarConf {
   bool isWeek(CalendarView view) => view == allowedViews[1];
   bool isMonth(CalendarView view) => view == allowedViews[2];
   bool isSchedule(CalendarView view) => view == allowedViews[3];
-  List<CalendarResource> resources(bool isUserResource) {
+  List<CalendarResource> resources(
+      bool isUserResource, List<UserRes> users, List<PropertiesMd> properties) {
     return [
       CalendarConstants.openCalendarResource,
       if (isUserResource)
-        ..._users.map((us) => CalendarResource(
-            id: "US_${us.id}",
-            displayName: "${us.fullname} (${us.id})",
-            color: us.userRandomBgColor))
+        ...users
+            .map((us) => CalendarResource(
+                id: "US_${us.id}",
+                displayName: "${us.fullname} (${us.id})",
+                color: us.userRandomBgColor))
+            .toList()
       else
-        ..._properties.map((pr) => CalendarResource(
-            id: "PR_${pr.id}",
-            displayName: "${pr.title} (${pr.id})",
-            color: Colors.blueAccent))
+        ...properties
+            .map((pr) => CalendarResource(
+                id: "PR_${pr.id}",
+                displayName: "${pr.title} (${pr.id})",
+                color: Colors.blueAccent))
+            .toList()
     ];
   }
 
@@ -70,11 +75,6 @@ class CalendarConf {
     CalendarView.month,
     CalendarView.schedule,
   ];
-
-  //Getters
-  List<UserRes> get _users => appStore.state.usersState.users;
-  List<PropertiesMd> get _properties =>
-      appStore.state.generalState.allSortedProperties;
 
   List<CalendarResource> userResources = [
     CalendarConstants.openCalendarResource,
@@ -193,9 +193,12 @@ class CalendarConf {
   }
 
   Widget resourceViewHeaderBuilder(
-      BuildContext ctx, ResourceViewHeaderDetails details) {
+      BuildContext ctx,
+      ResourceViewHeaderDetails details,
+      List<UserRes> users,
+      List<PropertiesMd> properties) {
     final resource = details.resource;
-    final type = resource.findType(_users, _properties);
+    final type = resource.findType(users, properties);
     //handle open shift
     if (type == null) {
       return _getTypeWidget(

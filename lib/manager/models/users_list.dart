@@ -27,6 +27,7 @@ class UserRes {
   String fullname;
 
   bool get isOpenShiftResource => id == -10;
+  bool get isALl => id == -1;
 
   @JsonKey(ignore: true)
   late Color userRandomBgColor;

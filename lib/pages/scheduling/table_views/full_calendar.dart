@@ -1,7 +1,13 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
+import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
+import 'package:mix/mix.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../../manager/models/property_md.dart';
+import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
@@ -11,7 +17,17 @@ export 'data_source.dart';
 
 class FullCalendar extends StatefulWidget {
   final bool isUserResource;
-  const FullCalendar({Key? key, required this.isUserResource})
+  final ValueChanged<CalendarView> onShowResources;
+  final List<int> selectedResources;
+  final List<UserRes> users;
+  final List<PropertiesMd> properties;
+  const FullCalendar(
+      {Key? key,
+      required this.isUserResource,
+      required this.onShowResources,
+      required this.users,
+      required this.properties,
+      required this.selectedResources})
       : super(key: key);
 
   @override
@@ -30,6 +46,15 @@ class _FullCalendarState extends State<FullCalendar> {
   }
 
   bool get isUserResource => widget.isUserResource;
+  ValueChanged<CalendarView> get onShowResources => widget.onShowResources;
+  List<int> get selectedResources => widget.selectedResources;
+
+  List<UserRes> get users => widget.users;
+  List<PropertiesMd> get properties => widget.properties;
+  List<CalendarResource> get resources =>
+      conf.resources(isUserResource, users, properties);
+  List<CalendarResource> get resourcesWithoutAll =>
+      conf.resources(isUserResource, users, properties)..removeAt(1);
 
   final GlobalKey _globalKey = GlobalKey();
 
@@ -53,8 +78,34 @@ class _FullCalendarState extends State<FullCalendar> {
   void didUpdateWidget(covariant FullCalendar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.isUserResource != widget.isUserResource) {
-      _events.resources = conf.resources(widget.isUserResource);
+      _events.resources = resources;
     }
+    _handleResourceChange();
+  }
+
+  void _handleResourceChange() {
+    //Show all resources
+    if (selectedResources.isEmpty) {
+      //reset resource
+      _events.resources = resourcesWithoutAll;
+      return;
+    }
+    //Filter resources
+    final filteredUsers = <UserRes>[];
+    final filteredProperties = <PropertiesMd>[];
+    for (int i in selectedResources) {
+      if (isUserResource) {
+        final user = users[i];
+        filteredUsers.add(user);
+      } else {
+        final property = properties[i];
+        filteredProperties.add(property);
+      }
+    }
+    _events.resources = conf.resources(
+        isUserResource,
+        filteredUsers.isEmpty ? users : filteredUsers,
+        filteredProperties.isEmpty ? properties : filteredProperties);
   }
 
   @override
@@ -65,15 +116,19 @@ class _FullCalendarState extends State<FullCalendar> {
     _events =
         AppointmentDataSource(<Appointment>[], onRangeChanged: _setDateRange);
 
-    _events.resources = conf.resources(isUserResource);
+    _events.resources = resourcesWithoutAll;
 
     _calendarController.addPropertyChangedListener((e) {
       if (e == 'calendarView') {
         _events.clearAppointments();
+        onShowResources(_calendarController.view!);
       }
     });
 
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      onShowResources(_calendarController.view!);
+    });
   }
 
   @override
@@ -92,7 +147,7 @@ class _FullCalendarState extends State<FullCalendar> {
     );
 
     return Scaffold(
-      body: Container(child: calendar),
+      body: calendar,
     );
   }
 
@@ -132,7 +187,8 @@ class _FullCalendarState extends State<FullCalendar> {
       onTap: _getOnTap,
       showCurrentTimeIndicator: false,
       firstDayOfWeek: 1,
-      resourceViewHeaderBuilder: conf.resourceViewHeaderBuilder,
+      resourceViewHeaderBuilder: (ctx, details) =>
+          conf.resourceViewHeaderBuilder(ctx, details, users, properties),
       loadMoreWidgetBuilder:
           (BuildContext context, LoadMoreCallback loadMoreAppointments) {
         return FutureBuilder<void>(

@@ -14,7 +14,7 @@ class DropdownWidgetV2 extends StatefulWidget {
   ///Pass the first item of the items list. This param is deprecated
   final CustomDropdownValue? value;
   final List<CustomDropdownValue> items;
-  final HeroIcons? leftIcon;
+  final Widget? leftIcon;
   String? hintText;
   bool isValueNull = false;
   final double? dropdownBtnWidth;
@@ -223,8 +223,7 @@ class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
 
   List<Widget> _buildHint() {
     return [
-      if (widget.leftIcon != null)
-        HeroIcon(widget.leftIcon!, color: ThemeColors.gray10),
+      if (widget.leftIcon != null) widget.leftIcon!,
       if (widget.isValueNull)
         SizedBox(
           width: widget.leftIcon != null
@@ -264,8 +263,7 @@ class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
 
   List<Widget> _buildSelectedItem(BuildContext ctx) {
     return [
-      if (widget.leftIcon != null)
-        HeroIcon(widget.leftIcon!, color: ThemeColors.gray10),
+      if (widget.leftIcon != null) widget.leftIcon!,
       if (!widget.isValueNull)
         SizedBox(
             width: widget.leftIcon != null
@@ -330,41 +328,58 @@ class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
     for (int i = 0; i < len; i++) {
       menuItems.add(
         DropdownMenuItem<CustomDropdownValue>(
+          // enabled: false,
           onTap: () {
             searchController.clear();
           },
           value: listValues[i],
-          child: Container(
-            decoration: BoxDecoration(
-              // borderRadius: BorderRadius.circular(14),
-              color: widget.value == listValues[i]
-                  ? ThemeColors.MAIN_COLOR
-                  : ThemeColors.transparent,
-            ),
-            alignment: Alignment.centerLeft,
-            // margin: const EdgeInsets.symmetric(horizontal: 16.0),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            width: double.infinity,
-            height: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                KText(
-                  text: listValues[i].toString(),
-                  textColor: widget.value == listValues[i]
-                      ? ThemeColors.white
-                      : ThemeColors.black,
-                  isSelectable: false,
-                  fontSize: 16.0,
+          child: InkWell(
+            // onTap: widget.disableAll
+            //     ? null
+            //     : () {
+            //         widget.onChanged?.call(itemList.indexOf(listValues[i]));
+            //       },
+            child: Container(
+              decoration: BoxDecoration(
+                color: widget.value == listValues[i]
+                    ? ThemeColors.MAIN_COLOR
+                    : ThemeColors.transparent,
+                border: const Border(
+                  bottom: BorderSide(
+                    color: ThemeColors.gray10,
+                    width: 1.0,
+                  ),
                 ),
-                if (widget.customItemIcons?[i] != null)
-                  HeroIcon(
-                    widget.customItemIcons![i]!,
-                    color: widget.value == listValues[i]
-                        ? ThemeColors.white
-                        : ThemeColors.black,
-                  )
-              ],
+              ),
+              alignment: Alignment.centerLeft,
+              // margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              width: double.infinity,
+              height: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: widget.dropdownBtnWidth! - 60,
+                    child: KText(
+                      maxLines: 2,
+                      text: listValues[i].toString(),
+                      textColor: widget.value == listValues[i]
+                          ? ThemeColors.white
+                          : ThemeColors.black,
+                      isSelectable: false,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  if (widget.customItemIcons?[i] != null)
+                    HeroIcon(
+                      widget.customItemIcons![i]!,
+                      color: widget.value == listValues[i]
+                          ? ThemeColors.white
+                          : ThemeColors.black,
+                    )
+                ],
+              ),
             ),
           ),
         ),

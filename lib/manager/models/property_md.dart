@@ -54,6 +54,11 @@ class PropertiesMd {
     }
   }
 
+  bool get isAll => id == -1;
+
+  String get fulltitle =>
+      isAll ? "All" : "$title - $locationName - $clientName";
+
   PropertiesMd({
     required this.id,
     required this.title,
@@ -150,7 +155,7 @@ class PropertiesMd {
 
   factory PropertiesMd.all() {
     return PropertiesMd(
-      id: 0,
+      id: -1,
       title: 'All',
       locationId: 0,
       locationName: 'All',

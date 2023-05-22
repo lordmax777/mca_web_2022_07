@@ -6,6 +6,18 @@ class SimplePopupMenu {
   final HeroIcons? icon;
 
   SimplePopupMenu({required this.label, required this.onTap, this.icon});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SimplePopupMenu &&
+          runtimeType == other.runtimeType &&
+          label == other.label &&
+          onTap == other.onTap &&
+          icon == other.icon;
+
+  @override
+  int get hashCode => label.hashCode ^ onTap.hashCode ^ icon.hashCode;
 }
 
 class SimplePopupMenuWidget extends StatelessWidget {

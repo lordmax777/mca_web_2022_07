@@ -1,7 +1,9 @@
 export './models/create_shift_type.dart';
 
 import 'package:collection/collection.dart';
+import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/table_views/full_calendar.dart';
@@ -10,6 +12,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/simple_popup_menu.dart';
 import '../../manager/models/property_md.dart';
 import '../../manager/models/users_list.dart';
+import '../../manager/redux/sets/app_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
 import 'models/job_model.dart';
@@ -63,16 +66,41 @@ class SchedulingPage extends StatefulWidget {
 }
 
 class _SchedulingPageState extends State<SchedulingPage> {
+  //Variables
   bool isUserResource = true;
+  final List<int> selectedResources = [];
+  bool showResourceFilter = true;
 
+  //Functions
   void _changeResourceType() {
     setState(() {
-      isUserResource = !isUserResource;
+      showResourceFilter = false;
+    });
+    selectedResources.clear();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      setState(() {
+        isUserResource = !isUserResource;
+        showResourceFilter = true;
+      });
     });
   }
 
+  void showResources(CalendarView view) {
+    showResourceFilter = view == CalendarConstants.conf.allowedViews[0] ||
+        view == CalendarConstants.conf.allowedViews[1];
+    setState(() {});
+  }
+
+  //Getters
+  AppState get appState => StoreProvider.of<AppState>(context).state;
+  List<UserRes> get users => [UserRes.all(), ...appState.usersState.users];
+  List<PropertiesMd> get properties =>
+      [PropertiesMd.all(), ...appState.generalState.allSortedProperties];
+  bool get isAllSelected => selectedResources.isEmpty;
+
   @override
   Widget build(BuildContext context) {
+    logger(selectedResources);
     return PageWrapper(
       child: TableWrapperWidget(
         child: SizedBox(
@@ -85,15 +113,75 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
                 child: PagesTitleWidget(
                   title: "Scheduling",
-                  onRightBtnClick: _changeResourceType,
+                  titleButton: Padding(
+                    padding: const EdgeInsets.only(left: 12.0),
+                    child: Visibility(
+                      visible: showResourceFilter,
+                      child: DropdownWidgetV2(
+                        dropdownBtnWidth: 300,
+                        dropdownOptionsWidth: 300,
+                        hintText:
+                            "Filtered ${isUserResource ? "Users" : Constants.propertyName.capitalize.toPlural} ${!isAllSelected ? selectedResources.length : ""}",
+                        hasSearchBox: true,
+                        items: [
+                          if (isUserResource)
+                            for (var user in users)
+                              CustomDropdownValue(name: user.fullname)
+                          else
+                            for (var pr in properties)
+                              CustomDropdownValue(name: pr.fulltitle)
+                        ],
+                        customItemIcons: {
+                          for (var idx in selectedResources)
+                            idx: HeroIcons.check,
+                        },
+                        leftIcon: isAllSelected
+                            ? null
+                            : IconButton(
+                                tooltip: "Clear",
+                                onPressed: () {
+                                  setState(() {
+                                    selectedResources.clear();
+                                  });
+                                },
+                                icon: const HeroIcon(
+                                  HeroIcons.xCircle,
+                                ),
+                              ),
+                        onChanged: (index) {
+                          setState(() {
+                            if (selectedResources.contains(index)) {
+                              if (isAllSelected) return;
+                              selectedResources.remove(index);
+                              return;
+                            }
+                            if (index == 0) {
+                              selectedResources.clear();
+                              return;
+                            }
+                            selectedResources.add(index);
+                            selectedResources.sort();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  onRightBtnClick:
+                      showResourceFilter ? _changeResourceType : null,
                   btnIcon: isUserResource ? HeroIcons.home : HeroIcons.user,
                   btnText:
-                      "Change ${isUserResource ? "Properties" : "Users"} View",
+                      "Change to ${isUserResource ? Constants.propertyName.capitalize.toPlural : "Users"} View",
                 ),
               ),
               SizedBox(
                   height: CalendarConstants.tableHeight(context),
-                  child: FullCalendar(isUserResource: isUserResource)),
+                  child: FullCalendar(
+                    isUserResource: isUserResource,
+                    onShowResources: showResources,
+                    selectedResources: selectedResources,
+                    users: users,
+                    properties: properties,
+                  )),
             ],
           ),
         ),

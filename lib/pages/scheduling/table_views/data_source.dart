@@ -103,31 +103,6 @@ class AppointmentDataSource extends CalendarDataSource {
   List<dynamic> get appointments => source;
 
   @override
-  DateTime getStartTime(int index) {
-    return source[index].startTime;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return source[index].endTime;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return source[index].isAllDay;
-  }
-
-  @override
-  String getSubject(int index) {
-    return source[index].subject;
-  }
-
-  @override
-  Color getColor(int index) {
-    return source[index].color;
-  }
-
-  @override
   set resources(List<CalendarResource>? _resources) {
     super.resources = _resources;
   }
