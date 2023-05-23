@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../models/users_list.dart';
 import '../states/schedule_state.dart';
+import '../states/ui_state.dart';
 import '../states/users_state/saved_user_state.dart';
 import '../states/users_state/users_state.dart';
 
@@ -17,6 +18,7 @@ AppState appReducer(AppState state, dynamic action) {
     generalState: _generalReducer(state.generalState, action),
     savedUserState: _savedUserReducer(state.savedUserState, action),
     scheduleState: _scheduleReducer(state.scheduleState, action),
+    uiState: _uiReducer(state.uiState, action),
   );
 
   return newState;
@@ -104,8 +106,6 @@ GeneralState _updateGeneralStateAction(
     GeneralState state, UpdateGeneralStateAction action) {
   return state.copyWith(
     paramList: action.paramList ?? state.paramList,
-    drawerStates: action.drawerStates ?? state.drawerStates,
-    endDrawer: action.endDrawer,
     warehouses: action.warehouses ?? state.warehouses,
     storageItems: action.storageItems ?? state.storageItems,
     checklistTemplates: action.checklistTemplates ?? state.checklistTemplates,
@@ -173,5 +173,18 @@ SavedUserState _updateSavedUserStateAction(
         action.nationalInsuranceNo ?? state.nationalInsuranceNo,
     roleCode: action.roleCode ?? state.roleCode,
     county: action.county ?? state.county,
+  );
+}
+
+///
+/// UI Reducer
+///
+final _uiReducer = combineReducers<UIState>(
+    [TypedReducer<UIState, UpdateUIStateAction>(_updateUIStateAction)]);
+
+UIState _updateUIStateAction(UIState state, UpdateUIStateAction action) {
+  return state.copyWith(
+    drawerStates: action.drawerStates ?? state.drawerStates,
+    endDrawer: action.endDrawer,
   );
 }

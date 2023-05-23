@@ -104,7 +104,7 @@ class ChecklistController extends GetxController {
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
     final ChecklistTemplateMd group = ctx.row.cells['action']!.value;
     appStore.dispatch(
-        UpdateGeneralStateAction(endDrawer: ChecklistDrawer(checklist: group)));
+        UpdateUIStateAction(endDrawer: ChecklistDrawer(checklist: group)));
     await Future.delayed(const Duration(milliseconds: 100));
     if (Constants.scaffoldKey.currentState != null) {
       if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {

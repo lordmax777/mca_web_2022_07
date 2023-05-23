@@ -72,8 +72,6 @@ class GeneralState {
       <ListQualificationLevel>[])
     ..sort((a, b) => a.level.toLowerCase().compareTo(b.level.toLowerCase()));
 
-  final DrawerStates drawerStates;
-  final Widget? endDrawer;
   final StateValue<List<WarehouseMd>> warehouses;
   final StateValue<List<StorageItemMd>> storageItems;
   final StateValue<List<ChecklistTemplateMd>> checklistTemplates;
@@ -133,8 +131,6 @@ class GeneralState {
   GeneralState({
     required this.paramList,
     required this.warehouses,
-    required this.drawerStates,
-    required this.endDrawer,
     required this.storageItems,
     required this.checklistTemplates,
     required this.properties,
@@ -162,7 +158,6 @@ class GeneralState {
 
   factory GeneralState.initial() {
     return GeneralState(
-      endDrawer: null,
       storageItems: StateValue(
         error: ErrorModel(),
         data: [],
@@ -175,7 +170,6 @@ class GeneralState {
         error: ErrorModel(),
         data: [],
       ),
-      drawerStates: DrawerStates(initialIndex: 1, name: const UsersListRoute()),
       paramList: StateValue(
         error: ErrorModel(),
         data: ListAllMd.init(),
@@ -210,9 +204,7 @@ class GeneralState {
   }) {
     return GeneralState(
       paramList: paramList ?? this.paramList,
-      drawerStates: drawerStates ?? this.drawerStates,
       warehouses: warehouses ?? this.warehouses,
-      endDrawer: endDrawer,
       storageItems: storageItems ?? this.storageItems,
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
       properties: properties ?? this.properties,
@@ -228,8 +220,7 @@ class GeneralState {
 
 class UpdateGeneralStateAction {
   final StateValue<ListAllMd>? paramList;
-  final DrawerStates? drawerStates;
-  final Widget? endDrawer;
+
   final List<LocationsMd>? locationList;
   final StateValue<List<WarehouseMd>>? warehouses;
   final StateValue<List<StorageItemMd>>? storageItems;
@@ -244,8 +235,6 @@ class UpdateGeneralStateAction {
 
   UpdateGeneralStateAction({
     this.paramList,
-    this.drawerStates,
-    this.endDrawer,
     this.locationList,
     this.warehouses,
     this.storageItems,
@@ -258,22 +247,6 @@ class UpdateGeneralStateAction {
     this.inventoryList,
     this.timesheetDepList,
   });
-}
-
-class OpenDrawerAction {
-  OpenDrawerAction(this.widget);
-
-  final Widget widget;
-
-  void call(Store<AppState> store, dynamic action, NextDispatcher next) async {
-    store.dispatch(UpdateGeneralStateAction(endDrawer: widget));
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (Constants.scaffoldKey.currentState != null) {
-      if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {
-        Constants.scaffoldKey.currentState!.openEndDrawer();
-      }
-    }
-  }
 }
 
 ///Must always be called after all fetched list actions

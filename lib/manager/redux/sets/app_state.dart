@@ -9,7 +9,10 @@ import '../middlewares/general_middleware.dart';
 import '../middlewares/schedule_middleware.dart';
 import '../states/general_state.dart';
 import '../states/schedule_state.dart';
+import '../states/ui_state.dart';
 import '../states/users_state/saved_user_state.dart';
+
+export '../states/ui_state.dart';
 
 final appStore = Store<AppState>(
   appReducer,
@@ -29,6 +32,7 @@ class AppState {
   final SavedUserState savedUserState;
   final GeneralState generalState;
   final ScheduleState scheduleState;
+  final UIState uiState;
 
   const AppState({
     required this.authState,
@@ -36,6 +40,7 @@ class AppState {
     required this.savedUserState,
     required this.generalState,
     required this.scheduleState,
+    required this.uiState,
   });
 
   factory AppState.initial() {
@@ -45,6 +50,7 @@ class AppState {
       generalState: GeneralState.initial(),
       savedUserState: SavedUserState.initial(),
       scheduleState: ScheduleState.initial(),
+      uiState: UIState.initial(),
     );
   }
   AppState copyWith({
@@ -53,6 +59,7 @@ class AppState {
     SavedUserState? savedUserState,
     GeneralState? generalState,
     ScheduleState? scheduleState,
+    UIState? uiState,
   }) {
     return AppState(
       authState: authState ?? this.authState,
@@ -60,6 +67,7 @@ class AppState {
       savedUserState: savedUserState ?? this.savedUserState,
       generalState: generalState ?? this.generalState,
       scheduleState: scheduleState ?? this.scheduleState,
+      uiState: uiState ?? this.uiState,
     );
   }
 }

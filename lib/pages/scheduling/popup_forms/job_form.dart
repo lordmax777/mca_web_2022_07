@@ -81,22 +81,27 @@ class _JobEditFormState extends State<JobEditForm>
             _getUnavUsers(date ?? DateTime.now());
           }
           if (data.allocation != null || data.quote?.id != null) {
-            final res = await restClient()
-                .getQuoteBy(
-                  data.quote?.id ?? 0,
-                  date: data.dateAsString,
-                  location_id: allocation?.location.id,
-                  shift_id: allocation?.shift.id,
-                )
-                .nocodeErrorHandler();
-            if (res.success) {
-              final q = res.data['quotes'][0];
-              data.quote = QuoteInfoMd.fromJson(q);
-
-              setState(() {});
-            } else {
+            try {
+              final res = await restClient()
+                  .getQuoteBy(
+                    data.quote?.id ?? 0,
+                    date: data.dateAsString,
+                    location_id: allocation?.location.id,
+                    shift_id: allocation?.shift.id,
+                  )
+                  .nocodeErrorHandler();
+              if (res.success) {
+                final q = res.data['quotes'][0];
+                data.quote = QuoteInfoMd.fromJson(q);
+                logger("Quote: ${data.quote?.toJson()}");
+                setState(() {});
+              } else {
+                await Navigator.of(context).maybePop();
+                showError(ApiHelpers.getRawDataErrorMessages(res));
+              }
+            } catch (e) {
               await Navigator.of(context).maybePop();
-              showError(ApiHelpers.getRawDataErrorMessages(res));
+              showError("Error getting quote");
             }
           }
         },

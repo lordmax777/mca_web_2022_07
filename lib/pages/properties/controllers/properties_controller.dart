@@ -169,7 +169,7 @@ class PropertiesController extends GetxController {
   }
 
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
-    appStore.dispatch(UpdateGeneralStateAction(
+    appStore.dispatch(UpdateUIStateAction(
         endDrawer: PropertyDrawer(
       property: ctx.row.cells['action']?.value,
     )));

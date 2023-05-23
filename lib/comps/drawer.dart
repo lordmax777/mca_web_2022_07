@@ -12,14 +12,14 @@ class DefaultDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DrawerStates drawerState = state.generalState.drawerStates;
+    final DrawerStates drawerState = state.uiState.drawerStates;
     final String companyTitle = GeneralController.to.companyInfo.name;
 
     return YSSidebar(
       title: companyTitle,
       initialIndex: drawerState.initialIndex,
       onTabChange: (p0) async {
-        appStore.dispatch(UpdateGeneralStateAction(
+        appStore.dispatch(UpdateUIStateAction(
             drawerStates:
                 DrawerStates(initialIndex: p0['index'], name: p0['name'])));
         context.replaceRoute(p0['name']);
@@ -37,7 +37,7 @@ class DefaultDrawer extends StatelessWidget {
         onPressed: parentE['children'] != null
             ? null
             : () async {
-                appStore.dispatch(UpdateGeneralStateAction(
+                appStore.dispatch(UpdateUIStateAction(
                     drawerStates: DrawerStates(
                         initialIndex: Constants.drawerItems.indexOf(parentE),
                         name: parentE['name'])));

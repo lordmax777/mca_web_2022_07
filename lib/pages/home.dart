@@ -15,7 +15,7 @@ class Home extends StatelessWidget {
       builder: (_, state) => Scaffold(
         floatingActionButton: talker.fab(),
         drawer: DefaultDrawer(state: state),
-        endDrawer: state.generalState.endDrawer,
+        endDrawer: state.uiState.endDrawer,
         backgroundColor: ThemeColors.gray12,
         drawerEnableOpenDragGesture: false,
         key: Constants.scaffoldKey,

@@ -173,7 +173,7 @@ class WarehouseController extends GetxController {
   }
 
   Future<void> _onColumnItemNavigate(PlutoColumnRendererContext ctx) async {
-    appStore.dispatch(UpdateGeneralStateAction(
+    appStore.dispatch(UpdateUIStateAction(
         endDrawer: WarehouseDrawer(
       warehouse: ctx.row.cells['action']?.value,
     )));

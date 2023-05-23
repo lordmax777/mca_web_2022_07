@@ -350,7 +350,10 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   right = MediaQuery.of(context).size.width - left;
   bottom = MediaQuery.of(context).size.height - top;
 
-  final bool hasEditJob = data.allocation != null;
+  bool hasEditJob = false;
+  if (data.allocation != null) {
+    hasEditJob = true;
+  }
 
   //Shows the menu
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(

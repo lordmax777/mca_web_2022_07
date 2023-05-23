@@ -112,6 +112,7 @@ final loggerInterceptor =
     headers += "| $key: $value";
   });
   Logger.d("| [API_Request]: ${options.method} ${options.uri}");
+  Logger.d("| [API_Request_Query]: ${options.queryParameters}");
   Logger.d("| [API_Options]: ${options.data?.toString() ?? ''}");
   Logger.d("| [API_Headers]: $headers");
 

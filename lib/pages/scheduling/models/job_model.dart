@@ -288,20 +288,20 @@ class JobModel {
       this.customEndDate,
       this.customResource,
       this.type = ScheduleCreatePopupMenus.jobNew}) {
-    // if (customStartDate != null) {
-    //   timingInfo.date = customStartDate!;
-    //   timingInfo.startTime = TimeOfDay(
-    //       hour: customStartDate!.hour, minute: customStartDate!.minute);
-    // }
-    // if (customEndDate != null) {
-    //   timingInfo.endTime =
-    //       TimeOfDay(hour: customEndDate!.hour, minute: customEndDate!.minute);
-    // }
-    // if (customResource != null) {
-    //   if (customResource!.id is UserRes) {
-    //     addedChildren.addAll({customResource!.id as UserRes: 0});
-    //   }
-    // }
+    if (customStartDate != null) {
+      timingInfo.date = customStartDate!;
+      timingInfo.startTime = TimeOfDay(
+          hour: customStartDate!.hour, minute: customStartDate!.minute);
+    }
+    if (customEndDate != null) {
+      timingInfo.endTime =
+          TimeOfDay(hour: customEndDate!.hour, minute: customEndDate!.minute);
+    }
+    if (customResource != null) {
+      if (customResource!.id is UserRes) {
+        addedChildren.addAll({customResource!.id as UserRes: 0});
+      }
+    }
   }
 
   @override

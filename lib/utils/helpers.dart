@@ -283,7 +283,7 @@ extension NumHelpers on num {
 enum RowState { created, updated, idle, deleted }
 
 Future<void> openEndDrawer(Widget drawer) async {
-  appStore.dispatch(UpdateGeneralStateAction(endDrawer: drawer));
+  appStore.dispatch(UpdateUIStateAction(endDrawer: drawer));
   await Future.delayed(const Duration(milliseconds: 100));
   if (Constants.scaffoldKey.currentState != null) {
     if (!Constants.scaffoldKey.currentState!.isDrawerOpen) {

@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +8,7 @@ import 'package:mca_web_2022_07/manager/models/approval_md.dart';
 
 import 'package:mca_web_2022_07/manager/models/list_all_md.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/states/ui_state.dart';
 import 'package:mca_web_2022_07/manager/rest/dio_client_for_retrofit.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/groups_list_controller.dart';
@@ -24,7 +23,6 @@ import 'package:mix/mix.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:get/get.dart';
-import 'package:retrofit/retrofit.dart';
 import '../../../utils/global_functions.dart';
 import '../../general_controller.dart';
 import '../../models/inventory_md.dart';
@@ -35,8 +33,6 @@ import '../sets/state_value.dart';
 import '../states/general_state.dart';
 
 import 'package:dio/dio.dart' as dio;
-
-import '../states/schedule_state.dart';
 
 class GeneralMiddleware extends MiddlewareClass<AppState> {
   @override
