@@ -61,18 +61,22 @@ class ScheduleMenus {
             Navigator.of(_context).pop(app);
           },
           child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              width: double.infinity,
-              alignment: Alignment.centerLeft,
-              height: 40,
-              color: app.color,
-              child: Text(app.subject,
-                  style: TextStyle(
-                      color: app.color.computeLuminance() > 0.5
-                          ? Colors.black
-                          : Colors.white,
-                      fontFamily: ThemeText.fontFamilyM,
-                      fontSize: 14))),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            width: double.infinity,
+            alignment: Alignment.centerLeft,
+            height: 40,
+            color: app.color,
+            child: Text(
+              app.subject,
+              style: TextStyle(
+                color: app.color.computeLuminance() > 0.5
+                    ? Colors.black
+                    : Colors.white,
+                fontFamily: ThemeText.fontFamilyM,
+                fontSize: 14,
+              ),
+            ),
+          ),
         ),
       ));
     }

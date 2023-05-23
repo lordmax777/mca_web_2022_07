@@ -232,8 +232,8 @@ class _FullCalendarState extends State<FullCalendar> {
           },
         );
       },
-      // initialDisplayDate: DateTime(2023, 05, 04),
-      // initialSelectedDate: DateTime(2023, 05, 04),
+      initialDisplayDate: DateTime(2023, 05, 04),
+      initialSelectedDate: DateTime(2023, 05, 04),
       monthViewSettings: conf.getMonthViewSettings(),
       allowDragAndDrop: kDebugMode,
       resourceViewSettings: conf.getResourceViewSettings(context),

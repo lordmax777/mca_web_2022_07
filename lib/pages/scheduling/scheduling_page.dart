@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/table_views/full_calendar.dart';
@@ -16,6 +17,7 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
 import 'models/job_model.dart';
+import 'quick_schedule_drawer.dart';
 
 extension TimeExtenstion on DateTime {
   DateTime get startOfDay => DateTime(year, month, day);
@@ -241,6 +243,7 @@ List<SimplePopupMenu> getPopupAppointmentMenus({
 enum ScheduleCreatePopupMenus {
   jobNew,
   jobUpdate,
+  quickSchedule,
   quote;
 
   String get label {
@@ -250,6 +253,8 @@ enum ScheduleCreatePopupMenus {
         return Constants.propertyName;
       case ScheduleCreatePopupMenus.quote:
         return "Quote";
+      case ScheduleCreatePopupMenus.quickSchedule:
+        return "Quick Schedule";
       default:
         return "";
     }
@@ -259,6 +264,21 @@ enum ScheduleCreatePopupMenus {
 List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
     {bool hasEditJob = false}) {
   return [
+    PopupMenuItem(
+      value: ScheduleCreatePopupMenus.jobNew,
+      child: SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 8,
+        children: [
+          const HeroIcon(
+            HeroIcons.briefcase,
+            color: ThemeColors.gray2,
+            size: 18,
+          ),
+          Text("New ${Constants.propertyName.capitalize}"),
+        ],
+      ),
+    ),
     if (hasEditJob)
       PopupMenuItem(
         value: ScheduleCreatePopupMenus.jobUpdate,
@@ -271,22 +291,23 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
               color: ThemeColors.gray2,
               size: 18,
             ),
-            Text("Edit ${Constants.propertyName}"),
+            Text("Edit ${Constants.propertyName.capitalize}"),
           ],
         ),
       ),
+    // if (hasEditJob)
     PopupMenuItem(
-      value: ScheduleCreatePopupMenus.jobNew,
+      value: ScheduleCreatePopupMenus.quickSchedule,
       child: SpacedRow(
         crossAxisAlignment: CrossAxisAlignment.center,
         horizontalSpace: 8,
-        children: [
-          const HeroIcon(
-            HeroIcons.briefcase,
+        children: const [
+          HeroIcon(
+            HeroIcons.calendar,
             color: ThemeColors.gray2,
             size: 18,
           ),
-          Text("New ${Constants.propertyName}"),
+          Text("Quick Schedule"),
         ],
       ),
     ),
@@ -334,6 +355,9 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   //Shows the menu
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
       context: context,
+      elevation: 20,
+      semanticLabel: "Create Menu",
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       position: RelativeRect.fromLTRB(left, top, right, bottom),
       items: getPopupCreateMenus(hasEditJob: hasEditJob));
 
@@ -358,5 +382,11 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
       return jobCreated;
     case ScheduleCreatePopupMenus.quote:
       return null;
+    case ScheduleCreatePopupMenus.quickSchedule:
+      // TODO: Handle this case.
+      openEndDrawer(
+        QuickScheduleDrawer(data: data),
+      );
+      break;
   }
 }

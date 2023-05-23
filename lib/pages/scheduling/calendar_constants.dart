@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -30,6 +31,8 @@ abstract class CalendarConstants {
     displayName: "Open Shift",
     color: CalendarConstants.openShiftAppointmentColor,
   );
+
+  static const quickScheduleDrawerWidth = 600.0;
 
   static CalendarConf conf = CalendarConf();
 }
@@ -101,7 +104,7 @@ class CalendarConf {
                 CalendarConstants.resourceWidth) *
             .14,
         timeTextStyle: textStyle,
-        timeFormat: "MMM d, EEEE",
+        timeFormat: kDebugMode ? "MMM d" : "MMM d, EEEE",
         startHour: 0,
         endHour: 1,
       );
@@ -229,6 +232,7 @@ class CalendarConf {
 
   MonthViewSettings getMonthViewSettings() {
     return MonthViewSettings(
+      showTrailingAndLeadingDates: false,
       appointmentDisplayCount: ScheduleMenus.moreAppointmentCount,
       monthCellStyle: MonthCellStyle(
         textStyle: textStyle,

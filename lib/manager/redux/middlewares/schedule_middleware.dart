@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
@@ -198,7 +199,16 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           subject.write("${formatter.format(stDate)} - ");
           subject.write("${formatter.format(et)} / ");
         }
-        subject.write(pr.title);
+        subject.write("${pr.title} - ");
+        subject.write(pr.locationName);
+        if (kDebugMode) {
+          subject.write(" Shift - ");
+          subject.write(pr.id);
+          subject.write(" Location - ");
+          subject.write(pr.locationId);
+          subject.write(" User - ");
+          subject.write(us?.id);
+        }
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,

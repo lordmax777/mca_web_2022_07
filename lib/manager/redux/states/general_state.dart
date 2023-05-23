@@ -110,6 +110,8 @@ class GeneralState {
     ..sort((a, b) => DateTime.tryParse(b.createdOn)!
         .compareTo(DateTime.tryParse(a.createdOn)!));
 
+  // List<JobModel> get allJobs {}
+
   final ApprovalMd approvals;
 
   // List<ApprovalMd> get allSortedApprovalReq =>
