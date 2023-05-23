@@ -100,7 +100,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
   @override
   Widget build(BuildContext context) {
-    logger(selectedResources);
     return PageWrapper(
       child: TableWrapperWidget(
         child: SizedBox(

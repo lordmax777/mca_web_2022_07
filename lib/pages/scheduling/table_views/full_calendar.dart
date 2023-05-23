@@ -245,13 +245,21 @@ class _FullCalendarState extends State<FullCalendar> {
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.calendarCell:
-      case CalendarElement.appointment:
-        final res = await menus.showFormActionsPopup(calendarTapDetails);
+        final res =
+            await menus.showFormActionsPopup(null, calendarTapDetails.date);
         if (res == null) return;
-        if (_startDate != null && _endDate != null) {
-          _events.clearAppointments();
-          _events.handleLoadMore(_startDate!, _endDate!, true);
-        }
+        await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
+        break;
+      case CalendarElement.appointment:
+        final appointment = calendarTapDetails.appointments != null
+            ? (calendarTapDetails.appointments!.isNotEmpty
+                ? calendarTapDetails.appointments!.first as Appointment
+                : null)
+            : null;
+        final res = await menus.showFormActionsPopup(
+            appointment, calendarTapDetails.date);
+        if (res == null) return;
+        await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
         break;
       case CalendarElement.moreAppointmentRegion:
         menus.showMoreAppointmentsPopup(calendarTapDetails);

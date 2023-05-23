@@ -82,14 +82,13 @@ class ScheduleMenus {
       items: items,
     );
     if (resultFromAppointmentTap == null) return null;
-    return await showFormActionsPopup(calendarTapDetails);
+    return await showFormActionsPopup(
+        resultFromAppointmentTap, calendarTapDetails.date);
   }
 
   Future<ApiResponse?> showFormActionsPopup(
-      CalendarTapDetails calendarTapDetails) async {
-    final Appointment? appointment =
-        calendarTapDetails.appointments?.first as Appointment?;
-    final DateTime? stDate = calendarTapDetails.date;
+      Appointment? appointment, DateTime? date) async {
+    final DateTime? stDate = date;
     return await showFormsMenus(
       _context,
       globalPosition: _position!,
