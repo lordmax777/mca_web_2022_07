@@ -1,10 +1,10 @@
-import 'dart:convert';
+import 'dart:async';
+import 'dart:convert' show jsonDecode;
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/company_md.dart';
+import 'package:mca_web_2022_07/pages/scheduling/quick_schedule_drawer.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
-
 import '../manager/redux/sets/app_state.dart';
-import '../manager/redux/states/general_state.dart';
 import '../manager/rest/nocode_helpers.dart';
 import 'currency_format.dart';
 
@@ -81,9 +81,9 @@ extension TextEditingControllerExtensions on TextEditingController {
 class GridTableHelpers {
   static PlutoColumnType getCurrencyColumnType({bool allowNegative = true}) {
     Currency? currency = GeneralController.to.companyInfo.currency;
-    String? symbol = currency?.sign;
-    int decimalDigits = currency?.digits ?? 2;
-    bool isRightSymbol = currency?.signFront ?? false;
+    String? symbol = currency.sign;
+    int decimalDigits = currency.digits;
+    bool isRightSymbol = currency.signFront;
     String format = "\u00A4 #,###.##";
     if (!isRightSymbol) {
       format = "#,###.## \u00A4";
@@ -233,7 +233,6 @@ class ApiHelpers {
     String msg = "Error";
     if (res.rawError != null) {
       try {
-        final list = jsonDecode(res.rawError!.data)['errors'];
         ApiErrorResponseModel? error =
             ApiErrorResponseModel.fromJson(jsonDecode(res.rawError!.data));
         msg = error.getErrors();
@@ -282,7 +281,7 @@ extension NumHelpers on num {
 
 enum RowState { created, updated, idle, deleted }
 
-Future<void> openEndDrawer(Widget drawer) async {
+Future<T?> openEndDrawer<T>(Widget drawer) async {
   appStore.dispatch(UpdateUIStateAction(endDrawer: drawer));
   await Future.delayed(const Duration(milliseconds: 100));
   if (Constants.scaffoldKey.currentState != null) {
@@ -291,6 +290,7 @@ Future<void> openEndDrawer(Widget drawer) async {
     }
   }
 }
+
 
 String getDayOfMonthSuffix(int dayNum) {
   if (!(dayNum >= 1 && dayNum <= 31)) {

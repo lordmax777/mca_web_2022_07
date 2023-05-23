@@ -202,15 +202,18 @@ class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
                     ? ThemeColors.gray12
                     : (widget.dropdownBtnColor ?? ThemeColors.white)),
               ),
-              child: SpacedRow(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                horizontalSpace: 15,
-                children: [
-                  if (widget.isValueNull)
-                    ..._buildHint()
-                  else
-                    ..._buildSelectedItem(context)
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: SpacedRow(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (widget.isValueNull)
+                      ..._buildHint()
+                    else
+                      ..._buildSelectedItem(context)
+                  ],
+                ),
               ),
             ),
           ),
@@ -271,40 +274,12 @@ class _DropdownWidgetV2State extends State<DropdownWidgetV2> {
                 : widget.showDropdownIcon!
                     ? widget.dropdownBtnWidth! - 60
                     : widget.dropdownBtnWidth! - 30,
-            child: SpacedColumn(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // if (widget.hintText != null && widget.hintText!.isNotEmpty)
-                //   SpacedRow(
-                //     horizontalSpace: 4.0,
-                //     children: [
-                //       KText(
-                //         text: widget.hintText!,
-                //         isSelectable: false,
-                //         style: ThemeText.bold14,
-                //         fontSize: 14.0,
-                //         textColor: widget.disableAll
-                //             ? ThemeColors.gray8
-                //             : ThemeColors.gray2,
-                //       ),
-                //       if (widget.isRequired)
-                //         KText(
-                //           text: "*",
-                //           isSelectable: false,
-                //           fontSize: 16.0,
-                //           textColor: ThemeColors.red3,
-                //         ),
-                //     ],
-                //   ),
-                KText(
-                  text: widget.value.toString(),
-                  isSelectable: false,
-                  fontSize: 14.0,
-                  fontWeight: FWeight.bold,
-                  textColor: ThemeColors.gray2,
-                ),
-              ],
+            child: KText(
+              text: widget.value.toString(),
+              isSelectable: false,
+              fontSize: 14.0,
+              fontWeight: FWeight.bold,
+              textColor: ThemeColors.gray2,
             )),
       if (widget.showDropdownIcon!)
         AnimatedRotation(

@@ -34,16 +34,17 @@ class ScheduleMenus {
     return RelativeRect.fromLTRB(left, top, right, bottom);
   }
 
-  Future<ApiResponse?> showMoreAppointmentsPopup<T>(
+  Future<T?> showMoreAppointmentsPopup<T>(
     CalendarTapDetails calendarTapDetails,
   ) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
             ?.map((e) => e as Appointment)
             .toList()) ??
         <Appointment>[];
+
     if (_position == null) return null;
     if (appointments.isEmpty || appointments.length < 3) return null;
-    logger(appointments.length);
+
     final RelativeRect pos = _getPosition()!;
     final List<PopupMenuItem<Appointment>> items = [];
     for (int i = 0; i < appointments.length; i++) {
@@ -86,14 +87,14 @@ class ScheduleMenus {
       items: items,
     );
     if (resultFromAppointmentTap == null) return null;
-    return await showFormActionsPopup(
+    return await showFormActionsPopup<T>(
         resultFromAppointmentTap, calendarTapDetails.date);
   }
 
-  Future<ApiResponse?> showFormActionsPopup(
+  Future<T?> showFormActionsPopup<T>(
       Appointment? appointment, DateTime? date) async {
     final DateTime? stDate = date;
-    return await showFormsMenus(
+    return await showFormsMenus<T>(
       _context,
       globalPosition: _position!,
       data: JobModel(

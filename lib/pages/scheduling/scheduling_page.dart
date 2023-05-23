@@ -334,7 +334,7 @@ Widget addIcon(
           )));
 }
 
-Future<ApiResponse?> showFormsMenus(BuildContext context,
+Future<T?> showFormsMenus<T>(BuildContext context,
     {required Offset globalPosition, required JobModel data}) async {
   //Positions the menu
   final RenderBox overlay =
@@ -370,15 +370,15 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
   switch (createTapResult) {
     case ScheduleCreatePopupMenus.jobUpdate:
       //Shows the form
-      final jobCreated = await showDialog<ApiResponse?>(
+      final updatedJob = await showDialog<T>(
           context: context,
           barrierDismissible: false,
           builder: (context) => JobEditForm(data: data));
-      return jobCreated;
+      return updatedJob;
     case ScheduleCreatePopupMenus.jobNew:
       data.allocation = null;
       //Shows the form
-      final jobCreated = await showDialog<ApiResponse?>(
+      final jobCreated = await showDialog<T>(
           context: context,
           barrierDismissible: false,
           builder: (context) => JobEditForm(data: data));
@@ -386,10 +386,8 @@ Future<ApiResponse?> showFormsMenus(BuildContext context,
     case ScheduleCreatePopupMenus.quote:
       return null;
     case ScheduleCreatePopupMenus.quickSchedule:
-      // TODO: Handle this case.
-      openEndDrawer(
-        QuickScheduleDrawer(data: data),
-      );
+      openEndDrawer(QuickScheduleDrawer(data: data));
       break;
   }
+  return null;
 }

@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import 'package:mix/mix.dart';
@@ -245,8 +246,8 @@ class _FullCalendarState extends State<FullCalendar> {
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.calendarCell:
-        final res =
-            await menus.showFormActionsPopup(null, calendarTapDetails.date);
+        final res = await menus.showFormActionsPopup<ApiResponse?>(
+            null, calendarTapDetails.date);
         if (res == null) return;
         await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
         break;
@@ -256,7 +257,7 @@ class _FullCalendarState extends State<FullCalendar> {
                 ? calendarTapDetails.appointments!.first as Appointment
                 : null)
             : null;
-        final res = await menus.showFormActionsPopup(
+        final res = await menus.showFormActionsPopup<ApiResponse?>(
             appointment, calendarTapDetails.date);
         if (res == null) return;
         await _events.clearAppointmentAndReloadMore(_startDate, _endDate);

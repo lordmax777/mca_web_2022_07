@@ -77,6 +77,11 @@ class UnavailableUserLoad {
     _users = users;
     isLoaded = true;
   }
+
+  void dispose() {
+    isLoaded = false;
+    _users = [];
+  }
 }
 
 class CreateShiftData extends CreateShiftDataType {

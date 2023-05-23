@@ -108,7 +108,20 @@ class GeneralState {
     ..sort((a, b) => DateTime.tryParse(b.createdOn)!
         .compareTo(DateTime.tryParse(a.createdOn)!));
 
-  // List<JobModel> get allJobs {}
+  List<JobModel> get allJobs {
+    final quotes = [
+      ...(allSortedQuotes
+          .where((element) => element.quoteStatus == true)
+          .toList())
+    ];
+    final jobs = <JobModel>[];
+    for (var quote in quotes) {
+      final newJob = JobModel();
+      newJob.quote = quote;
+      jobs.add(newJob);
+    }
+    return jobs;
+  }
 
   final ApprovalMd approvals;
 

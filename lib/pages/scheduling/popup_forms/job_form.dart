@@ -9,6 +9,7 @@ import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/team.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/timing_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
 import '../../../comps/autocomplete_input_field.dart';
@@ -40,7 +41,6 @@ class JobEditForm extends StatefulWidget {
 class _JobEditFormState extends State<JobEditForm>
     with SingleTickerProviderStateMixin {
   CompanyMd get company => GeneralController.to.companyInfo;
-  UnavailableUserLoad unavailableUsers = UnavailableUserLoad();
 
   //Data values
   bool get isCreate => data.isCreate;
@@ -77,9 +77,6 @@ class _JobEditFormState extends State<JobEditForm>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Get.showOverlay(
         asyncFunction: () async {
-          if (!data.isQuote) {
-            _getUnavUsers(date ?? DateTime.now());
-          }
           if (data.allocation != null || data.quote?.id != null) {
             try {
               final res = await restClient()
@@ -108,18 +105,6 @@ class _JobEditFormState extends State<JobEditForm>
         loadingWidget: const CustomLoadingWidget(),
       );
     });
-  }
-
-  Future<void> _getUnavUsers(DateTime d) async {
-    final unavUsers = await appStore.dispatch(GetUnavailableUsersAction(d));
-    if (mounted) {
-      setState(() {
-        unavailableUsers.users = unavUsers;
-        for (var u in unavailableUsers.users) {
-          data.addedChildren.removeWhere((user, _) => user.id == u.userId);
-        }
-      });
-    }
   }
 
   @override
@@ -381,149 +366,18 @@ class _JobEditFormState extends State<JobEditForm>
       setState(() {});
       return;
     }
-
-    bool fetchUnavUsers = res.date!.compareTo(data.timingInfo.date!) != 0;
-    setState(() {
-      if (fetchUnavUsers) {
-        unavailableUsers.isLoaded = false;
-      }
-    });
-    if (fetchUnavUsers) {
-      final unavUsrs =
-          await appStore.dispatch(GetUnavailableUsersAction(res.date!));
-      if (mounted) {
-        unavailableUsers.users = unavUsrs;
-        for (int i = 0; i < unavailableUsers.users.length; i++) {
-          if (addedChildren.isEmpty) break;
-          try {
-            final user = addedChildren.entries.toList()[i].key;
-            if (unavailableUsers.users
-                .any((element) => element.userId == user.id)) {
-              addedChildren.remove(user);
-            }
-          } catch (e) {
-            logger("Error in removing unavailable users. $e");
-          }
-        }
-        unavailableUsers.isLoaded = true;
-      }
-    }
-
     setState(() {});
   }
 
-  void onEditTeamMember(List<UserRes> users) {
-    //Show a dialog which will allow the user to select team members from users list.
-    // The content must contain a search box and a list of users.
-    showDialog(
-      context: context,
-      builder: (context) {
-        final filteredUsers = [...users];
-        final addedUsers = <UserRes>[...addedChildren.keys.toList()];
-        return StatefulBuilder(builder: (context, ss) {
-          return AlertDialog(
-            contentPadding: const EdgeInsets.all(0),
-            title: const Text("Select team members"),
-            content: SizedBox(
-              height: 400,
-              width: 400,
-              child: Column(
-                children: [
-                  TextField(
-                    decoration: const InputDecoration(
-                      hintText: "Search",
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                    onChanged: (val) {
-                      //Filter the users list based on the search term.
-                      if (val.isEmpty) {
-                        ss(() {
-                          filteredUsers.clear();
-                          filteredUsers.addAll(users);
-                        });
-                        return;
-                      }
-                      ss(() {
-                        filteredUsers.retainWhere((element) => element.fullname
-                            .toLowerCase()
-                            .contains(val.toLowerCase()));
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: filteredUsers.isEmpty
-                        ? const Center(child: Text("Not found"))
-                        : ListView.builder(
-                            padding: const EdgeInsets.only(top: 8),
-                            itemCount: filteredUsers.length,
-                            itemBuilder: (context, index) {
-                              final user = filteredUsers[index];
-                              final bool isAdded = addedUsers
-                                  .any((element) => element.id == user.id);
-                              final UnavailableUserMd? unavUser =
-                                  unavailableUsers.users.firstWhereOrNull(
-                                      (element) => element.userId == user.id);
-                              final bool isUnavailable = unavUser != null &&
-                                  unavUser.userId == user.id;
-                              return ListTile(
-                                  onTap: null,
-                                  leading: CircleAvatar(
-                                    backgroundColor: user.userRandomBgColor,
-                                    child: Text(user.initials,
-                                        style: TextStyle(
-                                            color: user.foregroundColor)),
-                                  ),
-                                  title: Text(user.fullname,
-                                      style: TextStyle(
-                                          color: isUnavailable
-                                              ? Colors.grey
-                                              : Colors.black)),
-                                  subtitle: isUnavailable
-                                      ? Text(
-                                          unavUser.unavailable
-                                              .map((e) => e.reason)
-                                              .join(", "),
-                                          style: const TextStyle(
-                                              color: Colors.red))
-                                      : null,
-                                  trailing: isUnavailable
-                                      ? const Chip(
-                                          label: Text("Unavailable"),
-                                          labelStyle:
-                                              TextStyle(color: Colors.grey))
-                                      : IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (isAdded) {
-                                                addedChildren.removeWhere(
-                                                    (user, rate) =>
-                                                        user.id == user.id);
-                                                addedUsers.removeWhere(
-                                                    (element) =>
-                                                        element.id == user.id);
-                                              } else {
-                                                addedChildren.addAll({user: 0});
-                                                addedUsers.add(user);
-                                              }
-                                              ss(() {});
-                                            });
-                                          },
-                                          icon: isAdded
-                                              ? const Icon(Icons.remove,
-                                                  color: Colors.red)
-                                              : const Icon(Icons.add,
-                                                  color: Colors.green),
-                                        ));
-                            },
-                          ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-      },
-    );
+  void onTeamMemberAdded(List<UserRes> addedUsers) {
+    if (addedUsers.isEmpty) {
+      addedChildren.clear();
+      setState(() {});
+      return;
+    }
+    addedChildren.removeWhere((key, value) => !addedUsers.contains(key));
+    addedChildren.addEntries(addedUsers.map((e) => MapEntry(e, 0)));
+    setState(() {});
   }
 
 //Widget
@@ -1009,13 +863,17 @@ class _JobEditFormState extends State<JobEditForm>
                   if (!data.isQuote)
                     TitleContainer(
                       titleIcon: HeroIcons.add,
-                      onEdit: unavailableUsers.isLoaded
-                          ? () {
-                              onEditTeamMember(users);
-                            }
-                          : null,
                       title: "Team",
-                      child: _team(users),
+                      child: JobTeam(
+                        addedChildren: addedChildren,
+                        date: timing.date!,
+                        onTeamMemberAdded: onTeamMemberAdded,
+                        onUnavUserFetchComplete: (userId) {
+                          data.addedChildren
+                              .removeWhere((user, _) => user.id == userId);
+                        },
+                        users: users,
+                      ),
                     ),
                 ],
               ),
@@ -1024,114 +882,6 @@ class _JobEditFormState extends State<JobEditForm>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _team(List<UserRes> users) {
-    return Wrap(
-      alignment: WrapAlignment.start,
-      direction: Axis.vertical,
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        if (!unavailableUsers.isLoaded)
-          const Center(child: Text("Please wait loading..."))
-        else if (addedChildren.isEmpty)
-          TextButton(
-            onPressed: () {
-              onEditTeamMember(users);
-            },
-            child: const Text("Add team member"),
-          ),
-        ...addedChildren.entries.map((e) {
-          final user = e.key;
-          final rate = e.value;
-          bool isRateAdded = rate > 0;
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Colors.grey[300]!,
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            height: 50,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                addIcon(
-                  tooltip: "${!isRateAdded ? "Add" : "Remove"} Special Rate",
-                  onPressed: () {
-                    setState(() {
-                      if (isRateAdded) {
-                        addedChildren[user] = -1;
-                      } else {
-                        addedChildren[user] = 1;
-                      }
-                    });
-                  },
-                  icon: !isRateAdded ? HeroIcons.dollar : HeroIcons.bin,
-                ),
-                if (isRateAdded)
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                      labelText: "Rate",
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                      constraints: BoxConstraints(
-                        maxWidth: 120,
-                      ),
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    initialValue: rate.toStringAsFixed(0),
-                    onChanged: (value) {
-                      setState(() {
-                        final rate = double.tryParse(value);
-                        if (rate == null) return;
-                        addedChildren[user] = rate;
-                      });
-                    },
-                  ),
-                const SizedBox(width: 10),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: InputChip(
-                    label: Text(user.fullname),
-                    labelStyle: TextStyle(color: user.foregroundColor),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    deleteButtonTooltipMessage: "Remove",
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    deleteIcon: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: user.foregroundColor.withOpacity(.2),
-                        border: Border.all(
-                          color: user.foregroundColor.withOpacity(.2),
-                        ),
-                      ),
-                      child: const Icon(Icons.close),
-                    ),
-                    deleteIconColor: user.foregroundColor,
-                    onDeleted: () {
-                      setState(() {
-                        addedChildren.remove(user);
-                      });
-                    },
-                    backgroundColor: user.userRandomBgColor,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList()
-      ],
     );
   }
 
