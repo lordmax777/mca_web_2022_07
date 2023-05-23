@@ -12,6 +12,7 @@ import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../menus.dart';
+import '../models/allocation_model.dart';
 import 'data_source.dart';
 export 'data_source.dart';
 
@@ -187,6 +188,33 @@ class _FullCalendarState extends State<FullCalendar> {
       onTap: _getOnTap,
       showCurrentTimeIndicator: false,
       firstDayOfWeek: 1,
+      appointmentBuilder: isMonth || isSchedule
+          ? null
+          : (context, calendarAppointmentDetails) {
+              final appointment = calendarAppointmentDetails.appointments
+                  .toList()
+                  .first as Appointment?;
+              final ap = appointment?.id as AllocationModel?;
+              if (ap == null) {
+                return const SizedBox();
+              }
+              return Tooltip(
+                message: appointment?.subject,
+                child: Container(
+                  width: calendarAppointmentDetails.bounds.width,
+                  height: calendarAppointmentDetails.bounds.height,
+                  color: appointment?.color,
+                  child: Text(
+                    appointment?.subject ?? '',
+                    style: ThemeText.md.copyWith(
+                        color: appointment!.color.computeLuminance() > 0.5
+                            ? Colors.black
+                            : Colors.white,
+                        fontFamily: ThemeText.fontFamilyM),
+                  ),
+                ),
+              );
+            },
       resourceViewHeaderBuilder: (ctx, details) =>
           conf.resourceViewHeaderBuilder(ctx, details, users, properties),
       loadMoreWidgetBuilder:
@@ -225,6 +253,9 @@ class _FullCalendarState extends State<FullCalendar> {
           _events.handleLoadMore(_startDate!, _endDate!, true);
         }
         break;
+      case CalendarElement.moreAppointmentRegion:
+        menus.showMoreAppointmentsPopup(calendarTapDetails);
+        break;
       case CalendarElement.header:
         // TODO: Handle this case.
         break;
@@ -236,9 +267,6 @@ class _FullCalendarState extends State<FullCalendar> {
         break;
       case CalendarElement.allDayPanel:
         // TODO: Handle this case.
-        break;
-      case CalendarElement.moreAppointmentRegion:
-        menus.showMoreAppointmentsPopup(calendarTapDetails);
         break;
       case CalendarElement.resourceHeader:
         // TODO: Handle this case.

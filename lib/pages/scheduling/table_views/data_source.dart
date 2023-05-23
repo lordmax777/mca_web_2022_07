@@ -103,8 +103,8 @@ class AppointmentDataSource extends CalendarDataSource {
   List<dynamic> get appointments => source;
 
   @override
-  set resources(List<CalendarResource>? _resources) {
-    super.resources = _resources;
+  set resources(List<CalendarResource>? r) {
+    super.resources = r;
   }
 }
 

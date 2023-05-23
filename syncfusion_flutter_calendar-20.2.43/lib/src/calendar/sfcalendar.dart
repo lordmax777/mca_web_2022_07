@@ -9092,7 +9092,6 @@ class _SfCalendarState extends State<SfCalendar>
                   (appointmentHeight + topPadding))) +
           bottomPadding;
     }
-
     return Positioned(
         top: startPosition,
         right: 0,

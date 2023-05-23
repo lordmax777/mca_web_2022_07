@@ -126,7 +126,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                         items: [
                           if (isUserResource)
                             for (var user in users)
-                              CustomDropdownValue(name: user.fullname)
+                              CustomDropdownValue(name: user.fulltitle)
                           else
                             for (var pr in properties)
                               CustomDropdownValue(name: pr.fulltitle)
