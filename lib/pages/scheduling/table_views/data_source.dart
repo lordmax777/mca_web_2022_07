@@ -124,3 +124,10 @@ class ShiftFetchException implements Exception {
   @override
   String toString() => apiResponse.toString();
 }
+
+class ShiftUpdateException {
+  final ApiResponse? apiResponse;
+  final String message;
+
+  ShiftUpdateException({this.apiResponse, required this.message});
+}

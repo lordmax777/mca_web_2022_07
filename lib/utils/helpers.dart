@@ -317,6 +317,8 @@ enum AllocationActions {
   remove,
   publish,
   unpublish,
+  more,
+  less,
   copy;
 
   String get name {
@@ -331,6 +333,10 @@ enum AllocationActions {
         return "unpublish";
       case AllocationActions.copy:
         return "copy";
+      case AllocationActions.more:
+        return "more";
+      case AllocationActions.less:
+        return "less";
     }
   }
 }

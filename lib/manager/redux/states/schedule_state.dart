@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../pages/scheduling/models/allocation_model.dart';
+import '../../../utils/helpers.dart';
 import '../../model_exporter.dart';
 import '../../models/location_item_md.dart';
 
@@ -284,4 +285,21 @@ class SCOnCopyAllocationTap {
 
   SCOnCopyAllocationTap(this.calendarTapDetails, this.selectedAppointment,
       this.context, this.fetchShiftsWeekAction);
+}
+
+class SCShiftGuestAction {
+  final int locationId;
+  final int shiftId;
+  final DateTime date;
+  final AllocationActions action;
+
+  SCShiftGuestAction(
+      {required this.date,
+      required this.locationId,
+      required this.shiftId,
+      required this.action})
+      : assert(
+            action != AllocationActions.more ||
+                action != AllocationActions.less,
+            "Action must be more or less");
 }

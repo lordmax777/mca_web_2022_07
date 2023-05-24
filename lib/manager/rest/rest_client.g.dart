@@ -2561,6 +2561,46 @@ class _RestClient implements RestClient {
     return httpResponse;
   }
 
+  @override
+  Future<HttpResponse<dynamic>> updatePropertyDetails(
+    shiftId, {
+    required bedrooms,
+    required bathrooms,
+    required min_sleeps,
+    required max_sleeps,
+    notes,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'bedrooms': bedrooms,
+      'bathrooms': bathrooms,
+      'min_sleeps': min_sleeps,
+      'max_sleeps': max_sleeps,
+      'notes': notes,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: null,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/shifts/${shiftId}/propertydetails',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

@@ -598,6 +598,17 @@ abstract class RestClient {
 
   @GET("/api/fe/shifts/{shiftId}/propertydetails")
   Future<HttpResponse> getPropertyDetails(@Path() int shiftId);
+
+  @POST("/api/fe/shifts/{shiftId}/propertydetails")
+  @FormUrlEncoded()
+  Future<HttpResponse> updatePropertyDetails(
+    @Path() int shiftId, {
+    @Field() required int bedrooms,
+    @Field() required int bathrooms,
+    @Field() required int min_sleeps,
+    @Field() required int max_sleeps,
+    @Field() required String? notes,
+  });
 }
 
 RestClient restClient() => RestClient(

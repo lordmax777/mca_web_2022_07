@@ -43,8 +43,8 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         return _onRemoveAllocation(store.state, action, next);
       case SCCopyAllAllocationAction:
         return _onCopyAllAllocation(store.state, action, next);
-      case SCOnCreateNewTap:
-        return _onCreateNewTap(store.state, action, next);
+      case SCShiftGuestAction:
+        return _onGuestAction(store.state, action, next);
       case SCOnCopyAllocationTap:
         return _onCopyAllocationTap(store.state, action, next);
       default:
@@ -520,8 +520,35 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  void _onCreateNewTap(
-      AppState state, SCOnCreateNewTap action, NextDispatcher next) async {}
+  Future<Map<String, dynamic>> _onGuestAction(
+      AppState state, SCShiftGuestAction action, NextDispatcher next) async {
+    try {
+      final ApiResponse res = await restClient()
+          .postShifts(
+            action.locationId,
+            0,
+            action.shiftId,
+            action.date.formatDateForApi,
+            action.action.name,
+          )
+          .nocodeErrorHandler();
+      if (res.success) {
+        //return
+        // {
+        //     "minimum": 1,
+        //     "maximum": 1,
+        //     "current": {
+        //         "20230517": 0
+        //     }
+        // }
+        return res.data;
+      } else {
+        throw ShiftUpdateException(apiResponse: res, message: "");
+      }
+    } catch (e) {
+      throw ShiftUpdateException(message: "Something went wrong!");
+    }
+  }
 
   void _onCopyAllocationTap(
       AppState state, SCOnCopyAllocationTap action, NextDispatcher next) async {

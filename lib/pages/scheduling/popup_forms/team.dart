@@ -198,110 +198,112 @@ class _JobTeamState extends State<JobTeam> {
             children: [
               if (!unavailableUsers.isLoaded)
                 const Center(child: Text("Please wait loading...")),
-              ...addedChildren.entries.map((e) {
-                final user = e.key;
-                final rate = e.value;
-                bool isRateAdded = rate > 0;
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                    ),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  height: 50,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      addIcon(
-                        tooltip:
-                            "${!isRateAdded ? "Add" : "Remove"} Special Rate",
-                        onPressed: () {
-                          setState(() {
-                            if (isRateAdded) {
-                              addedChildren[user] = -1;
-                            } else {
-                              addedChildren[user] = 1;
-                            }
-                          });
-                        },
-                        icon: !isRateAdded ? HeroIcons.dollar : HeroIcons.bin,
+              if (unavailableUsers.isLoaded)
+                ...addedChildren.entries.map((e) {
+                  final user = e.key;
+                  final rate = e.value;
+                  bool isRateAdded = rate > 0;
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.grey[300]!,
                       ),
-                      if (isRateAdded)
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            border: OutlineInputBorder(),
-                            labelText: "Rate",
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 12),
-                            constraints: BoxConstraints(
-                              maxWidth: 120,
-                            ),
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          initialValue: rate.toStringAsFixed(0),
-                          onChanged: (value) {
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    height: 50,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        addIcon(
+                          tooltip:
+                              "${!isRateAdded ? "Add" : "Remove"} Special Rate",
+                          onPressed: () {
                             setState(() {
-                              final rate = double.tryParse(value);
-                              if (rate == null) return;
-                              addedChildren[user] = rate;
+                              if (isRateAdded) {
+                                addedChildren[user] = -1;
+                              } else {
+                                addedChildren[user] = 1;
+                              }
                             });
                           },
+                          icon: !isRateAdded ? HeroIcons.dollar : HeroIcons.bin,
                         ),
-                      const SizedBox(width: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: InputChip(
-                          label: Text(user.fullname),
-                          labelStyle: TextStyle(color: user.foregroundColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          deleteButtonTooltipMessage: "Remove",
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 0),
-                          deleteIcon: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: user.foregroundColor.withOpacity(.2),
-                              border: Border.all(
-                                color: user.foregroundColor.withOpacity(.2),
+                        if (isRateAdded)
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              border: OutlineInputBorder(),
+                              labelText: "Rate",
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 12),
+                              constraints: BoxConstraints(
+                                maxWidth: 120,
                               ),
                             ),
-                            child: const Icon(Icons.close),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            initialValue: rate.toStringAsFixed(0),
+                            onChanged: (value) {
+                              setState(() {
+                                final rate = double.tryParse(value);
+                                if (rate == null) return;
+                                addedChildren[user] = rate;
+                              });
+                            },
                           ),
-                          deleteIconColor: user.foregroundColor,
-                          onDeleted: () {
-                            setState(() {
-                              addedChildren.remove(user);
-                            });
-                          },
-                          backgroundColor: user.userRandomBgColor,
+                        const SizedBox(width: 10),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: InputChip(
+                            label: Text(user.fullname),
+                            labelStyle: TextStyle(color: user.foregroundColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            deleteButtonTooltipMessage: "Remove",
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 0),
+                            deleteIcon: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: user.foregroundColor.withOpacity(.2),
+                                border: Border.all(
+                                  color: user.foregroundColor.withOpacity(.2),
+                                ),
+                              ),
+                              child: const Icon(Icons.close),
+                            ),
+                            deleteIconColor: user.foregroundColor,
+                            onDeleted: () {
+                              setState(() {
+                                addedChildren.remove(user);
+                              });
+                            },
+                            backgroundColor: user.userRandomBgColor,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList()
+                      ],
+                    ),
+                  );
+                }).toList()
             ],
           ),
         ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: // else if (addedChildren.isEmpty)
-              TextButton(
-            onPressed: () async {
-              List<UserRes>? addedUsers = await onEditTeamMember();
-              if (addedUsers == null) return;
-              widget.onTeamMemberAdded(addedUsers);
-            },
-            child: const Text("Add team member"),
+        if (unavailableUsers.isLoaded)
+          Align(
+            alignment: Alignment.topCenter,
+            child: // else if (addedChildren.isEmpty)
+                TextButton(
+              onPressed: () async {
+                List<UserRes>? addedUsers = await onEditTeamMember();
+                if (addedUsers == null) return;
+                widget.onTeamMemberAdded(addedUsers);
+              },
+              child: const Text("Add team member"),
+            ),
           ),
-        ),
       ],
     );
   }

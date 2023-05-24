@@ -53,6 +53,27 @@ class AllocationModel {
     }
   }
 
+  //copyWith
+  AllocationModel copyWith({
+    int? id,
+    String? date,
+    ListShift? shift,
+    bool? published,
+    UserRes? user,
+    LocationAddress? location,
+    PropertiesMd? property,
+    int? guests,
+  }) {
+    return AllocationModel(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      shift: shift ?? this.shift,
+      published: published ?? this.published,
+      user: user ?? this.user,
+      guests: guests ?? this.guests,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

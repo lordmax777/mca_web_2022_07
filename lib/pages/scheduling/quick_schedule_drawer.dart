@@ -2,27 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart' as GET;
 import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
-import 'package:mca_web_2022_07/comps/button_widget.dart';
 import 'package:mca_web_2022_07/comps/title_container.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/job_model.dart';
-import 'package:mca_web_2022_07/theme/colors.dart';
-import '../../comps/custom_loading_widget.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/guests.dart';
+import 'package:mca_web_2022_07/pages/scheduling/table_views/data_source.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 import '../../comps/modals/custom_time_picker.dart';
-import '../../comps/spaced_column.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/schedule_state.dart';
 import '../../manager/rest/rest_client.dart';
-import '../../theme/text_style.dart';
-import '../../utils/constants.dart';
-import '../../utils/helpers.dart';
-import '../../utils/log_tester.dart';
+
 import 'create_shift_popup.dart';
 import 'models/allocation_model.dart';
 import 'models/timing_model.dart';
 import 'popup_forms/team.dart';
+import 'package:easy_loading_button/easy_loading_button.dart';
 
 enum QuickScheduleDrawerResponse {
   emptyQuote;
@@ -47,12 +45,13 @@ class QuickScheduleDrawer extends StatefulWidget {
 
 class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     with LoadingModel {
-  JobModel get data => widget.data!;
+  late final JobModel data;
   AllocationModel? get allocation => data.allocation;
   TimingModel get timing => data.timingInfo;
 
   @override
   void initState() {
+    data = widget.data!.copyWith();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       //Do after widget is built
@@ -146,8 +145,8 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               children: [
                 const SizedBox(height: 10),
                 Text(
-                  "Quick Schedule",
-                  // " ${data.allocation?.propertyDetails.toJson()}",
+                  "Quick Schedule"
+                  " ${data.allocation?.guests}",
                   style: Theme.of(context).textTheme.headline5,
                 ),
                 const Divider(height: 30, color: Colors.black54, thickness: 2),
@@ -182,13 +181,16 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                         title: "Timing",
                         child: _timing(),
                       ),
+                      // const Divider(height: 30),
                     ],
                   ),
                 ),
-                const Divider(height: 30, color: Colors.black54, thickness: 2),
+                const Divider(color: Colors.black54, thickness: 2),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Row(
+                  child: SpacedRow(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    horizontalSpace: 8,
                     children: [
                       Expanded(
                         child: ButtonLarge(
@@ -216,20 +218,18 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
   }
 
   Widget _textField(String? text, {VoidCallback? onTap}) {
-    return SizedBox(
-        width: 200,
-        child: Tooltip(
-          message: onTap == null ? "" : "Edit",
-          child: InkWell(
-            onTap: onTap,
-            child: Text(
-              text == null ? "-" : (text.isEmpty ? "-" : text),
-              style: ThemeText.tabTextStyle.copyWith(
-                  color: onTap != null ? Colors.blueAccent : null,
-                  decoration: onTap != null ? TextDecoration.underline : null),
-            ),
-          ),
-        ));
+    return Tooltip(
+      message: onTap == null ? "" : "Edit",
+      child: InkWell(
+        onTap: onTap,
+        child: Text(
+          text == null ? "-" : (text.isEmpty ? "-" : text),
+          style: ThemeText.tabTextStyle.copyWith(
+              color: onTap != null ? Colors.blueAccent : null,
+              decoration: onTap != null ? TextDecoration.underline : null),
+        ),
+      ),
+    );
   }
 
   Widget _jobField(List<QuoteInfoMd> quotes, List<ListCurrency> currencies,
@@ -349,7 +349,43 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
   }
 
   Widget _guests() {
-    return Container();
+    return JobGuests(
+      data: data,
+      onMinSleepRemoveSuccess: () {
+        setState(() {
+          data.allocation!.propertyDetails.minSleeps =
+              data.allocation!.propertyDetails.minSleeps - 1;
+        });
+      },
+      onMinSleepAddSuccess: () {
+        setState(() {
+          data.allocation!.propertyDetails.minSleeps =
+              data.allocation!.propertyDetails.minSleeps + 1;
+        });
+      },
+      onMaxSleepRemoveSuccess: () {
+        setState(() {
+          data.allocation!.propertyDetails.maxSleeps =
+              data.allocation!.propertyDetails.maxSleeps - 1;
+        });
+      },
+      onMaxSleepAddSuccess: () {
+        setState(() {
+          data.allocation!.propertyDetails.maxSleeps =
+              data.allocation!.propertyDetails.maxSleeps + 1;
+        });
+      },
+      onCurrentRemoveSuccess: (_) {
+        setState(() {
+          data.allocation!.guests -= 1;
+        });
+      },
+      onCurrentAddSuccess: (_) {
+        setState(() {
+          data.allocation!.guests += 1;
+        });
+      },
+    );
   }
 
   Widget _timing() {
@@ -397,31 +433,5 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
         // ),
       ],
     );
-  }
-}
-
-class CustomSliverPersistentHeaderDelegate
-    extends SliverPersistentHeaderDelegate {
-  final Widget child;
-  final double height;
-
-  CustomSliverPersistentHeaderDelegate(
-      {required this.child, required this.height});
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return SizedBox.expand(child: child);
-  }
-
-  @override
-  double get maxExtent => height;
-
-  @override
-  double get minExtent => height;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
   }
 }

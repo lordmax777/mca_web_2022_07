@@ -304,6 +304,17 @@ class JobModel {
     }
   }
 
+  //copyWith
+  JobModel copyWith() {
+    return JobModel(
+      allocation: allocation!.copyWith(),
+      customStartDate: customStartDate,
+      customEndDate: customEndDate,
+      customResource: customResource,
+      type: type,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
