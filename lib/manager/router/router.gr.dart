@@ -207,6 +207,12 @@ class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    ChecklistListRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const ChecklistListPage(),
+      );
+    },
   };
 
   @override
@@ -338,6 +344,11 @@ class _$AppRouter extends RootStackRouter {
             RouteConfig(
               TimesheetSummaryRoute.name,
               path: 'timesheet-summary',
+              parent: HomeRoute.name,
+            ),
+            RouteConfig(
+              ChecklistListRoute.name,
+              path: 'checklist-list',
               parent: HomeRoute.name,
             ),
           ],
@@ -796,4 +807,16 @@ class TimesheetSummaryRouteArgs {
   String toString() {
     return 'TimesheetSummaryRouteArgs{key: $key, startDate: $startDate, endDate: $endDate}';
   }
+}
+
+/// generated route for
+/// [ChecklistListPage]
+class ChecklistListRoute extends PageRouteInfo<void> {
+  const ChecklistListRoute()
+      : super(
+          ChecklistListRoute.name,
+          path: 'checklist-list',
+        );
+
+  static const String name = 'ChecklistListRoute';
 }

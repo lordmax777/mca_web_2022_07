@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/pages/checklist/checklist_list_page.dart';
 import 'package:mca_web_2022_07/pages/quotes/quotes_list_page.dart';
 import 'package:mca_web_2022_07/utils/global_functions.dart';
 
@@ -75,6 +76,10 @@ class Constants {
         {
           "title": "Approval",
           "name": const ApprovalTemplateRoute(),
+        },
+        {
+          "title": "Checklist",
+          "name": const ChecklistListRoute(),
         },
       ]
     },
