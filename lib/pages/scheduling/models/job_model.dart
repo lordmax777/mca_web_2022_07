@@ -341,4 +341,8 @@ class JobModel {
         customStartDate.hashCode ^
         customEndDate.hashCode;
   }
+
+  @override
+  toString() =>
+      "JobModel: $shiftId, $client, $address, $workAddress, $timingInfo, $addedChildren, $quote, $type, $active, $quoteComment, $customStartDate, $customEndDate";
 }

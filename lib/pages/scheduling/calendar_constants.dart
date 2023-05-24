@@ -32,7 +32,7 @@ abstract class CalendarConstants {
     color: CalendarConstants.openShiftAppointmentColor,
   );
 
-  static const quickScheduleDrawerWidth = 450.0;
+  static const quickScheduleDrawerWidth = 500.0;
 
   static CalendarConf conf = CalendarConf();
 }

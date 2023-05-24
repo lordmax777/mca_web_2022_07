@@ -122,7 +122,7 @@ class ButtonLarge extends StatelessWidget {
         if (states.contains(MaterialState.disabled)) {
           return bgColor!.withOpacity(0.6);
         } else if (states.contains(MaterialState.hovered)) {
-          return bgColor!.withOpacity(0.8);
+          return bgColor!.withOpacity(0.9);
         } else {
           return bgColor;
         }

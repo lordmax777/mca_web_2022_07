@@ -864,6 +864,7 @@ class _JobEditFormState extends State<JobEditForm>
                     TitleContainer(
                       titleIcon: HeroIcons.add,
                       title: "Team",
+                      padding: 0,
                       child: JobTeam(
                         addedChildren: addedChildren,
                         date: timing.date!,

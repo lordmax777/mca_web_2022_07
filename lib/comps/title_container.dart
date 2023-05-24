@@ -9,11 +9,15 @@ class TitleContainer extends StatelessWidget {
   final VoidCallback? onEdit;
   final String? titleOverride;
   final HeroIcons? titleIcon;
+  final double? width;
+  final double? padding;
   const TitleContainer(
       {Key? key,
       required this.title,
       required this.child,
       this.titleIcon,
+      this.padding,
+      this.width,
       this.onEdit,
       this.titleOverride})
       : super(key: key);
@@ -30,8 +34,8 @@ class TitleContainer extends StatelessWidget {
           : null,
       title,
       Container(
-          width: 410,
-          padding: const EdgeInsets.all(16),
+          width: width ?? 410,
+          padding: EdgeInsets.all(padding ?? 16),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: Colors.grey.withOpacity(.5)),

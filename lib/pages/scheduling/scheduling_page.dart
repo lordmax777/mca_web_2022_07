@@ -354,6 +354,12 @@ Future<T?> showFormsMenus<T>(BuildContext context,
   if (data.allocation != null) {
     hasEditJob = true;
   }
+  logger(data.customResource);
+  if (data.customResource != null) {
+    if (data.customResource!.isOpen) {
+      hasEditJob = false;
+    }
+  }
 
   //Shows the menu
   final createTapResult = await showMenu<ScheduleCreatePopupMenus>(
