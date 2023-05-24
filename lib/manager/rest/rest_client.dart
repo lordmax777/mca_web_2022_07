@@ -595,6 +595,9 @@ abstract class RestClient {
     @Query("location_id") int? location_id,
     @Query("shift_id") int? shift_id,
   });
+
+  @GET("/api/fe/shifts/{shiftId}/propertydetails")
+  Future<HttpResponse> getPropertyDetails(@Path() int shiftId);
 }
 
 RestClient restClient() => RestClient(

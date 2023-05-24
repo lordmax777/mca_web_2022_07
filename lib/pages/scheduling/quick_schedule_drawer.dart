@@ -45,7 +45,8 @@ class QuickScheduleDrawer extends StatefulWidget {
   State<QuickScheduleDrawer> createState() => _QuickScheduleDrawerState();
 }
 
-class _QuickScheduleDrawerState extends State<QuickScheduleDrawer> {
+class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
+    with LoadingModel {
   JobModel get data => widget.data!;
   AllocationModel? get allocation => data.allocation;
   TimingModel get timing => data.timingInfo;
@@ -78,12 +79,11 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      onInit: (store) async {
-        if (store.state.generalState.quotes.isEmpty) {
+      onInitialBuild: (state) async {
+        if (state.generalState.quotes.isEmpty) {
           final List<QuoteInfoMd> quotes =
-              await store.dispatch(GetQuotesAction());
+              await appStore.dispatch(GetQuotesAction());
           if (quotes.isEmpty) {
-            //TODO: Show error
             if (mounted) {
               await Navigator.maybePop(context);
             }
@@ -93,25 +93,39 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer> {
         }
         if (data.allocation != null || data.quote?.id != null) {
           try {
-            final res = await restClient()
+            setLoading(LoadingHelper.loading, 'Getting details!');
+            final quoteRes = await restClient()
                 .getQuoteBy(
                   data.quote?.id ?? 0,
                   date: data.dateAsString,
-                  location_id: allocation?.location.id,
-                  shift_id: allocation?.shift.id,
+                  location_id: allocation!.location.id,
+                  shift_id: allocation!.shift.id,
                 )
                 .nocodeErrorHandler();
-            if (res.success) {
-              if (res.data['quotes'].isNotEmpty) {
-                final q = res.data['quotes'][0];
+            final propertyDetailsRes = await restClient()
+                .getPropertyDetails(allocation!.shift.id)
+                .nocodeErrorHandler();
+            if (quoteRes.success) {
+              setLoading(LoadingHelper.idle);
+              if (quoteRes.data['quotes'].isNotEmpty) {
+                final q = quoteRes.data['quotes'][0];
                 data.quote = QuoteInfoMd.fromJson(q);
                 setState(() {});
+                if (propertyDetailsRes.success) {
+                  if (propertyDetailsRes.data['details']
+                      is Map<String, dynamic>) {
+                    data.allocation?.propertyDetails =
+                        PropertyDetailsMd.fromJson(
+                            propertyDetailsRes.data['details']);
+                  }
+                }
               }
             } else {
-              showError(ApiHelpers.getRawDataErrorMessages(res));
+              setLoading(LoadingHelper.error,
+                  ApiHelpers.getRawDataErrorMessages(quoteRes));
             }
           } catch (e) {
-            showError("Error getting quote");
+            setLoading(LoadingHelper.error, e.toString());
           }
         }
       },
@@ -127,68 +141,74 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer> {
 
         return Drawer(
           width: CalendarConstants.quickScheduleDrawerWidth,
-          child: Column(
-            children: [
-              Text(
-                "Quick Schedule",
-                style: Theme.of(context).textTheme.headline5,
-              ),
-              const Divider(height: 30, color: Colors.black54, thickness: 2),
-              Flexible(
-                child: ListView(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 32),
-                  children: [
-                    TitleContainer(
+          child: stack(
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Text(
+                  "Quick Schedule",
+                  // " ${data.allocation?.propertyDetails.toJson()}",
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+                const Divider(height: 30, color: Colors.black54, thickness: 2),
+                Flexible(
+                  child: ListView(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 32),
+                    children: [
+                      TitleContainer(
+                          width: width,
+                          title: "Select Job",
+                          child: _jobField(
+                              allJobs.map((e) => e.quote!).toList(),
+                              currencies,
+                              paymentMethods)),
+                      const Divider(height: 30),
+                      TitleContainer(
                         width: width,
-                        title: "Select Job",
-                        child: _jobField(allJobs.map((e) => e.quote!).toList(),
-                            currencies, paymentMethods)),
-                    const Divider(height: 30),
-                    TitleContainer(
-                      width: width,
-                      title: "Select Team",
-                      padding: 0,
-                      child: _team(users),
-                    ),
-                    const Divider(height: 30),
-                    TitleContainer(
-                      width: width,
-                      title: "Guests",
-                      child: _guests(),
-                    ),
-                    const Divider(height: 30),
-                    TitleContainer(
-                      width: width,
-                      title: "Timing",
-                      child: _timing(),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 30, color: Colors.black54, thickness: 2),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ButtonLarge(
-                        paddingWithoutIcon: true,
-                        text: "Publish ${Constants.propertyName.capitalize}",
-                        onPressed: _publish,
+                        title: "Select Team",
+                        padding: 0,
+                        child: _team(users),
                       ),
-                    ),
-                    Expanded(
-                      child: ButtonLargeSecondary(
-                        paddingWithoutIcon: true,
-                        text: "Additional Settings",
-                        onPressed: _additionalSettings,
+                      const Divider(height: 30),
+                      TitleContainer(
+                        width: width,
+                        title: "Guests",
+                        child: _guests(),
                       ),
-                    ),
-                  ],
+                      const Divider(height: 30),
+                      TitleContainer(
+                        width: width,
+                        title: "Timing",
+                        child: _timing(),
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            ],
+                const Divider(height: 30, color: Colors.black54, thickness: 2),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ButtonLarge(
+                          paddingWithoutIcon: true,
+                          text: "Publish ${Constants.propertyName.capitalize}",
+                          onPressed: _publish,
+                        ),
+                      ),
+                      Expanded(
+                        child: ButtonLargeSecondary(
+                          paddingWithoutIcon: true,
+                          text: "Additional Settings",
+                          onPressed: _additionalSettings,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },

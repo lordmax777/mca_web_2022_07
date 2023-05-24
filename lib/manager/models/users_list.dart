@@ -37,6 +37,7 @@ class UserRes {
   @JsonKey(ignore: true)
   late Color foregroundColor;
 
+  @JsonKey(ignore: true)
   String get initials {
     try {
       return firstName[0] + lastName[0];

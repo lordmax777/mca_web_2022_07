@@ -38,6 +38,8 @@ class _ShiftDetails extends StatelessWidget {
     return GetBuilder<NewPropController>(
       id: "shiftDetails",
       builder: (controller) {
+        logger(controller.property?.locationId);
+        logger(controller.property?.id);
         return Form(
           key: controller.shiftDetailsFormKey,
           child: SpacedRow(

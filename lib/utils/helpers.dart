@@ -291,7 +291,6 @@ Future<T?> openEndDrawer<T>(Widget drawer) async {
   }
 }
 
-
 String getDayOfMonthSuffix(int dayNum) {
   if (!(dayNum >= 1 && dayNum <= 31)) {
     throw Exception('Invalid day of month');
@@ -365,4 +364,74 @@ extension StringExt on String {
       throw Exception("Invalid date format");
     }
   }
+}
+
+mixin LoadingModel<T extends StatefulWidget> on State<T> {
+  LoadingHelper loadingHelper = LoadingHelper.idle;
+  String? message;
+
+  void setLoading(LoadingHelper loadingHelper, [String? message]) {
+    if (mounted) {
+      setState(() {
+        this.loadingHelper = loadingHelper;
+        this.message = message;
+      });
+    }
+  }
+
+  Widget getLoadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          loadingHelper == LoadingHelper.loading
+              ? const CircularProgressIndicator()
+              : loadingHelper == LoadingHelper.error
+                  ? const HeroIcon(
+                      HeroIcons.exclamationCircle,
+                      color: ThemeColors.red3,
+                      size: 40,
+                    )
+                  : const SizedBox(),
+          const SizedBox(height: 10),
+          Text(
+            message ?? "",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: ThemeColors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (loadingHelper == LoadingHelper.error)
+            ButtonSmall(
+                onPressed: () {
+                  Navigator.of(context).maybePop();
+                },
+                text: "Close")
+        ],
+      ),
+    );
+  }
+
+  Widget stack(Widget child) {
+    return Stack(
+      children: [
+        Opacity(
+            opacity: loadingHelper == LoadingHelper.idle ? 1 : 0.5,
+            child: child),
+        if (loadingHelper != LoadingHelper.idle)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: getLoadingWidget(),
+          ),
+      ],
+    );
+  }
+}
+
+enum LoadingHelper {
+  idle,
+  loading,
+  error;
 }
