@@ -10,6 +10,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../pages/approvals/approval_template_page.dart';
 import '../../pages/auth/login_page.dart';
+import '../../pages/checklist/checklist_list_page.dart';
 import '../../pages/inventory/inventory_list_page.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/tests/test_page.dart';
@@ -59,6 +60,7 @@ part 'router.gr.dart';
       AutoRoute(
           page: TimesheetUserShiftDetailsPage, path: "timesheet-shift-details"),
       AutoRoute(page: TimesheetSummaryPage, path: "timesheet-summary"),
+      AutoRoute(page: ChecklistListPage, path: "checklist-list"),
     ]),
   ],
 )
