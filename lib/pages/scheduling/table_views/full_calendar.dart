@@ -258,7 +258,13 @@ class _FullCalendarState extends State<FullCalendar> {
                 : null)
             : null;
         final res = await menus.showFormActionsPopup<ApiResponse?>(
-            appointment, calendarTapDetails.date);
+          appointment,
+          calendarTapDetails.date,
+          onJobCreateSuccess: () async {
+            if (_startDate == null || _endDate == null) return;
+            _events.handleLoadMore(_startDate!, _endDate!);
+          },
+        );
         if (res == null) return;
         await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
         break;

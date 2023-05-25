@@ -254,7 +254,7 @@ enum ScheduleCreatePopupMenus {
       case ScheduleCreatePopupMenus.quote:
         return "Quote";
       case ScheduleCreatePopupMenus.quickSchedule:
-        return "Quick Schedule";
+        return "Schedule Existing ${Constants.propertyName.capitalize}";
       default:
         return "";
     }
@@ -295,22 +295,22 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
           ],
         ),
       ),
-    // if (hasEditJob)
-    PopupMenuItem(
-      value: ScheduleCreatePopupMenus.quickSchedule,
-      child: SpacedRow(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        horizontalSpace: 8,
-        children: const [
-          HeroIcon(
-            HeroIcons.calendar,
-            color: ThemeColors.gray2,
-            size: 18,
-          ),
-          Text("Quick Schedule"),
-        ],
+    if (hasEditJob)
+      PopupMenuItem(
+        value: ScheduleCreatePopupMenus.quickSchedule,
+        child: SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          horizontalSpace: 8,
+          children: [
+            const HeroIcon(
+              HeroIcons.calendar,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+            Text(ScheduleCreatePopupMenus.quickSchedule.label),
+          ],
+        ),
       ),
-    ),
   ];
 }
 
@@ -334,8 +334,12 @@ Widget addIcon(
           )));
 }
 
-Future<T?> showFormsMenus<T>(BuildContext context,
-    {required Offset globalPosition, required JobModel data}) async {
+Future<T?> showFormsMenus<T>(
+  BuildContext context, {
+  required Offset globalPosition,
+  required JobModel data,
+  VoidCallback? onJobCreateSuccess,
+}) async {
   //Positions the menu
   final RenderBox overlay =
       Overlay.of(context)!.context.findRenderObject() as RenderBox;
@@ -379,7 +383,7 @@ Future<T?> showFormsMenus<T>(BuildContext context,
       final updatedJob = await showDialog<T>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => JobEditForm(data: data));
+          builder: (context) => JobEditForm(data: data.copyWith()));
       return updatedJob;
     case ScheduleCreatePopupMenus.jobNew:
       data.allocation = null;
@@ -387,12 +391,13 @@ Future<T?> showFormsMenus<T>(BuildContext context,
       final jobCreated = await showDialog<T>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => JobEditForm(data: data));
+          builder: (context) => JobEditForm(data: data.copyWith()));
       return jobCreated;
     case ScheduleCreatePopupMenus.quote:
       return null;
     case ScheduleCreatePopupMenus.quickSchedule:
-      openEndDrawer(QuickScheduleDrawer(data: data));
+      openEndDrawer(QuickScheduleDrawer(
+          data: data.copyWith(), onJobCreateSuccess: onJobCreateSuccess));
       break;
   }
   return null;

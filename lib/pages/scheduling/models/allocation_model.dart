@@ -67,9 +67,9 @@ class AllocationModel {
     return AllocationModel(
       id: id ?? this.id,
       date: date ?? this.date,
-      shift: shift ?? this.shift,
+      shift: shift?.copyWith() ?? this.shift.copyWith(),
       published: published ?? this.published,
-      user: user ?? this.user,
+      user: user?.copyWith() ?? this.user?.copyWith(),
       guests: guests ?? this.guests,
     );
   }

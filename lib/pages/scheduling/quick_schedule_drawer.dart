@@ -1,6 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get/get.dart' as GET;
+import 'package:get/get.dart' show Get;
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
 import 'package:mca_web_2022_07/comps/title_container.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -9,33 +11,23 @@ import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/job_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/guests.dart';
-import 'package:mca_web_2022_07/pages/scheduling/table_views/data_source.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:mca_web_2022_07/utils/global_functions.dart';
+import '../../comps/modals/custom_date_picker.dart';
 import '../../comps/modals/custom_time_picker.dart';
 import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/states/schedule_state.dart';
 import '../../manager/rest/rest_client.dart';
-
 import 'create_shift_popup.dart';
 import 'models/allocation_model.dart';
 import 'models/timing_model.dart';
 import 'popup_forms/team.dart';
-import 'package:easy_loading_button/easy_loading_button.dart';
-
-enum QuickScheduleDrawerResponse {
-  emptyQuote;
-
-  String get message {
-    switch (this) {
-      case QuickScheduleDrawerResponse.emptyQuote:
-        return "No ${Constants.propertyName.capitalize} found.\nPlease add ${Constants.propertyName} first.";
-    }
-  }
-}
 
 class QuickScheduleDrawer extends StatefulWidget {
   JobModel? data;
-  QuickScheduleDrawer({Key? key, this.data}) : super(key: key) {
+  final VoidCallback? onJobCreateSuccess;
+
+  QuickScheduleDrawer({Key? key, this.data, this.onJobCreateSuccess})
+      : super(key: key) {
     data = data ?? JobModel();
   }
 
@@ -45,13 +37,12 @@ class QuickScheduleDrawer extends StatefulWidget {
 
 class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     with LoadingModel {
-  late final JobModel data;
+  JobModel get data => widget.data!;
   AllocationModel? get allocation => data.allocation;
   TimingModel get timing => data.timingInfo;
 
   @override
   void initState() {
-    data = widget.data!.copyWith();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       //Do after widget is built
@@ -69,7 +60,26 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     setState(() {});
   }
 
-  void _publish() async {}
+  void _publish() async {
+    Get.showOverlay(
+        asyncFunction: () async {
+          try {
+            final ApiResponse? newJob = await appStore
+                .dispatch(CreateJobAction(data, isQuote: data.isQuote));
+            if (newJob?.success == true) {
+              exit(context, newJob).then((value) async {
+                await showError("${data.type.label} created successfully",
+                    titleMsg: "Success");
+                widget.onJobCreateSuccess?.call();
+              });
+            }
+          } catch (e) {
+            showError("Something went wrong");
+          }
+        },
+        loadingWidget: const CustomLoadingWidget());
+  }
+
   void _additionalSettings() async {}
 
   final double width = CalendarConstants.quickScheduleDrawerWidth - 32;
@@ -86,7 +96,8 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             if (mounted) {
               await Navigator.maybePop(context);
             }
-            showError(QuickScheduleDrawerResponse.emptyQuote.message);
+            showError(
+                "No ${Constants.propertyName.capitalize} found.\nPlease add ${Constants.propertyName} first.");
           }
           return;
         }
@@ -109,6 +120,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               if (quoteRes.data['quotes'].isNotEmpty) {
                 final q = quoteRes.data['quotes'][0];
                 data.quote = QuoteInfoMd.fromJson(q);
+                data.quote!.id = 0;
                 setState(() {});
                 if (propertyDetailsRes.success) {
                   if (propertyDetailsRes.data['details']
@@ -133,7 +145,6 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
         final allJobs = [...state.generalState.allJobs];
         final List<UserRes> users = [...state.usersState.users];
         List<ListCurrency> currencies = [...state.generalState.currencies];
-        List<ListCountry> countries = [...state.generalState.countries];
         List<ListPaymentMethods> paymentMethods = [
           ...state.generalState.paymentMethods
         ];
@@ -144,10 +155,20 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             Column(
               children: [
                 const SizedBox(height: 10),
-                Text(
-                  "Quick Schedule"
-                  " ${data.allocation?.guests}",
-                  style: Theme.of(context).textTheme.headline5,
+                Row(
+                  children: [
+                    const SizedBox(width: 8),
+                    Text(
+                      "Quick Schedule"
+                      " ${data.allocation?.guests}",
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => Navigator.maybePop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
                 ),
                 const Divider(height: 30, color: Colors.black54, thickness: 2),
                 Flexible(
@@ -181,7 +202,27 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                         title: "Timing",
                         child: _timing(),
                       ),
-                      // const Divider(height: 30),
+                      // if (!data.isGridInitialized)
+                      const Divider(),
+                      Visibility(
+                        visible: !data.isGridInitialized,
+                        child: SizedBox(
+                          width:
+                              CalendarConstants.quickScheduleDrawerWidth - 50,
+                          height: 100,
+                          child: UsersListTable(
+                              rows: data.isGridInitialized
+                                  ? data.gridStateManager.rows
+                                  : [],
+                              onSmReady: (e) {
+                                if (data.isGridInitialized) return;
+                                data.gridStateManager = e;
+                                data.isGridInitialized = true;
+                                setState(() {});
+                              },
+                              cols: []),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -392,6 +433,24 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        labelWithField(
+          labelWidth: 160,
+          "Date:",
+          null,
+          customLabel: _textField(
+            data.timingInfo.date?.formattedDate,
+            onTap: () async {
+              final date = await showCustomDatePicker(context,
+                  initialTime: data.timingInfo.date);
+              if (date == null) return;
+
+              setState(() {
+                data.timingInfo.date = date;
+              });
+            },
+          ),
+        ),
+        const Divider(),
         labelWithField(
           labelWidth: 160,
           "Start Time:",

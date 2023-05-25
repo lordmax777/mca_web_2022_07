@@ -201,7 +201,7 @@ class JobGuests extends StatelessWidget {
                           onCurrentAddSuccess
                               ?.call(response['current'].values.first);
                         } else {
-                          onCurrentRemoveSuccess?.call(null);
+                          onCurrentAddSuccess?.call(null);
                         }
                       } on ShiftUpdateException catch (e) {
                         showError(e.message);

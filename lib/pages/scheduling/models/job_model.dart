@@ -143,8 +143,8 @@ class JobModel {
   String? quoteComment;
 
   //Getters
-  bool get isCreate => quote == null;
-  bool get isUpdate => quote != null;
+  bool get isCreate => quote == null || quote!.isInit;
+  bool get isUpdate => quote != null && !quote!.isInit;
   bool get isQuote => type == ScheduleCreatePopupMenus.quote;
   String get actionTypeStr => isCreate ? "Create" : "Update";
 
@@ -307,7 +307,7 @@ class JobModel {
   //copyWith
   JobModel copyWith() {
     return JobModel(
-      allocation: allocation!.copyWith(),
+      allocation: allocation?.copyWith(),
       customStartDate: customStartDate,
       customEndDate: customEndDate,
       customResource: customResource,

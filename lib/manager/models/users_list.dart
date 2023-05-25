@@ -120,6 +120,32 @@ class UserRes {
     );
   }
 
+  // copyWith
+  UserRes copyWith() {
+    return UserRes(
+      username: username,
+      title: title,
+      id: id,
+      firstName: firstName,
+      fullname: fullname,
+      lastComment: lastComment,
+      lastIpAddress: lastIpAddress,
+      lastLatitude: lastLatitude,
+      lastLocationId: lastLocationId,
+      lastLongitude: lastLongitude,
+      lastName: lastName,
+      lastStatus: lastStatus,
+      loginRequired: loginRequired,
+      payrollCode: payrollCode,
+      lastTime: lastTime,
+      locked: locked,
+      groupId: groupId,
+      groupAdmin: groupAdmin,
+      locationAdmin: locationAdmin,
+      locationId: locationId,
+    );
+  }
+
   factory UserRes.fromJson(Map<String, dynamic> json) =>
       _$UserResFromJson(json);
 

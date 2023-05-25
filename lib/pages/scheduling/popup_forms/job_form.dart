@@ -235,8 +235,8 @@ class _JobEditFormState extends State<JobEditForm>
   void _saveJob(AppState state) async {
     Get.showOverlay(
         asyncFunction: () async {
-          final ApiResponse? newJob = await appStore
-              .dispatch(CreateJobAction(data, isQuote: data.isQuote));
+          final ApiResponse? newJob =
+              await appStore.dispatch(CreateJobAction(data, isQuote: false));
           if (newJob?.success == true) {
             exit(context, newJob).then((value) {
               showError(

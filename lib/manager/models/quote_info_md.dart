@@ -104,6 +104,7 @@ class QuoteInfoMd {
   //     },
 
   CompanyMd get companyInfo => GeneralController.to.companyInfo;
+  bool get isInit => id == 0;
 
   int id;
   String customerId;

@@ -34,9 +34,8 @@ class ScheduleMenus {
     return RelativeRect.fromLTRB(left, top, right, bottom);
   }
 
-  Future<T?> showMoreAppointmentsPopup<T>(
-    CalendarTapDetails calendarTapDetails,
-  ) async {
+  Future<T?> showMoreAppointmentsPopup<T>(CalendarTapDetails calendarTapDetails,
+      {VoidCallback? onJobCreateSuccess}) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
             ?.map((e) => e as Appointment)
             .toList()) ??
@@ -88,15 +87,17 @@ class ScheduleMenus {
     );
     if (resultFromAppointmentTap == null) return null;
     return await showFormActionsPopup<T>(
-        resultFromAppointmentTap, calendarTapDetails.date);
+        resultFromAppointmentTap, calendarTapDetails.date,
+        onJobCreateSuccess: onJobCreateSuccess);
   }
 
-  Future<T?> showFormActionsPopup<T>(
-      Appointment? appointment, DateTime? date) async {
+  Future<T?> showFormActionsPopup<T>(Appointment? appointment, DateTime? date,
+      {VoidCallback? onJobCreateSuccess}) async {
     final DateTime? stDate = date;
     return await showFormsMenus<T>(
       _context,
       globalPosition: _position!,
+      onJobCreateSuccess: onJobCreateSuccess,
       data: JobModel(
         customStartDate: stDate,
         customEndDate: stDate?.add(const Duration(hours: 1)),

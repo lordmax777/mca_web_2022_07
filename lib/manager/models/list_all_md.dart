@@ -432,6 +432,25 @@ class ListShift {
     );
   }
 
+  // copyWith
+  ListShift copyWith({
+    int? id,
+    String? name,
+    int? location_id,
+    bool? active,
+    int? client_id,
+    int? warehouse_id,
+  }) {
+    return ListShift(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      location_id: location_id ?? this.location_id,
+      active: active ?? this.active,
+      client_id: client_id ?? this.client_id,
+      warehouse_id: warehouse_id ?? this.warehouse_id,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
