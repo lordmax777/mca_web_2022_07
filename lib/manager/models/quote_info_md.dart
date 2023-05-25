@@ -690,6 +690,9 @@ class QuoteMessageInfo {
   @override
   int get hashCode =>
       content.hashCode ^ createdOn.hashCode ^ createdBy.hashCode;
+
+  //copy
+
 }
 
 class UserInfo {

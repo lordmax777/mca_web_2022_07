@@ -201,14 +201,15 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         }
         subject.write("${pr.title} - ");
         subject.write(pr.locationName);
-        // if (kDebugMode) {
-        //   subject.write(" Shift - ");
-        //   subject.write(pr.id);
-        //   subject.write(" Location - ");
-        //   subject.write(pr.locationId);
-        //   subject.write(" User - ");
-        //   subject.write(us?.id);
-        // }
+        if (kDebugMode) {
+          subject.write(" /// ");
+          subject.write(" Shift - ");
+          subject.write(pr.id);
+          subject.write(" Location - ");
+          subject.write(pr.locationId);
+          // subject.write(" User - ");
+          // subject.write(us?.id);
+        }
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,

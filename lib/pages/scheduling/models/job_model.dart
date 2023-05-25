@@ -82,6 +82,10 @@ class JobModel {
   AppState get state => appStore.state;
   QuoteInfoMd? _quote;
   QuoteInfoMd? get quote => _quote;
+  void setQuoteManually(QuoteInfoMd q) {
+    _quote = q;
+  }
+
   set quote(QuoteInfoMd? q) {
     if (q == null) return;
     _quote = q;
@@ -144,7 +148,7 @@ class JobModel {
 
   //Getters
   bool get isCreate => quote == null || quote!.isInit;
-  bool get isUpdate => quote != null && !quote!.isInit;
+  bool get isUpdate => !isCreate;
   bool get isQuote => type == ScheduleCreatePopupMenus.quote;
   String get actionTypeStr => isCreate ? "Create" : "Update";
 
@@ -306,13 +310,26 @@ class JobModel {
 
   //copyWith
   JobModel copyWith() {
-    return JobModel(
+    final job = JobModel(
       allocation: allocation?.copyWith(),
       customStartDate: customStartDate,
       customEndDate: customEndDate,
       customResource: customResource,
       type: type,
     );
+    job.timingInfo = timingInfo.copy();
+    job.quoteComment = quoteComment;
+    job.active = active;
+    job.quote = quote;
+    job.client = client;
+    job.addedChildren = addedChildren;
+    job.setAddress(_address, addressId);
+    job.setWorkAddress(_workAddress);
+    job.isGridInitialized = isGridInitialized;
+    if (isGridInitialized) {
+      job.gridStateManager = gridStateManager;
+    }
+    return job;
   }
 
   @override

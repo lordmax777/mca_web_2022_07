@@ -53,14 +53,14 @@ class CalendarConf {
         ...users
             .map((us) => CalendarResource(
                 id: "US_${us.id}",
-                displayName: "${us.fullname} (${us.id})",
+                displayName: "${us.fullname}${kDebugMode ? " (${us.id})" : ""}",
                 color: us.userRandomBgColor))
             .toList()
       else
         ...properties
             .map((pr) => CalendarResource(
                 id: "PR_${pr.id}",
-                displayName: "${pr.title} (${pr.id})",
+                displayName: "${pr.title}${kDebugMode ? " (${pr.id})" : ""}",
                 color: Colors.blueAccent))
             .toList()
     ];
@@ -213,7 +213,7 @@ class CalendarConf {
     if (type is UserRes) {
       final user = type;
       return _getTypeWidget(
-          title: user.fullname,
+          title: resource.displayName,
           initials: user.initials,
           bgColor: user.userRandomBgColor,
           subtitle: user.username);
@@ -221,7 +221,7 @@ class CalendarConf {
     if (type is PropertiesMd) {
       final location = type;
       return _getTypeWidget(
-        title: location.title,
+        title: resource.displayName,
         initials: location.initials,
         bgColor: Colors.blueAccent,
         subtitle: location.locationName,

@@ -97,12 +97,14 @@ class AppointmentDataSource extends CalendarDataSource {
     notifyListeners(CalendarDataSourceAction.reset, appointments);
   }
 
-  Future<void> clearAppointmentAndReloadMore(
-      DateTime? startTime, DateTime? endTime) async {
+  Future<List<Appointment>> clearAppointmentAndReloadMore(
+      DateTime? startTime, DateTime? endTime,
+      [bool? fetchAdditionalData]) async {
     if (startTime != null && endTime != null) {
       clearAppointments();
-      await handleLoadMore(startTime, endTime);
+      return await handleLoadMore(startTime, endTime, fetchAdditionalData);
     }
+    return [];
   }
 
   AppointmentDataSource(this.source, {this.onRangeChanged});

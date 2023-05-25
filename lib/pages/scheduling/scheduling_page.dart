@@ -253,7 +253,7 @@ enum ScheduleCreatePopupMenus {
       case ScheduleCreatePopupMenus.quickSchedule:
         return "Schedule Existing ${Constants.propertyName.strCapitalize}";
       case ScheduleCreatePopupMenus.delete:
-        return "Delete";
+        return "Remove";
       default:
         return "";
     }
@@ -373,7 +373,7 @@ Future<T?> showFormsMenus<T>(
   if (data.allocation != null) {
     hasEditJob = true;
   }
-  logger(data.customResource);
+
   if (data.customResource != null) {
     if (data.customResource!.isOpen) {
       hasEditJob = false;

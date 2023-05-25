@@ -249,7 +249,7 @@ class _FullCalendarState extends State<FullCalendar> {
         final res = await menus.showFormActionsPopup<ApiResponse?>(
             null, calendarTapDetails.date);
         if (res == null) return;
-        await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
+        await _events.clearAppointmentAndReloadMore(_startDate, _endDate, true);
         break;
       case CalendarElement.appointment:
         final appointment = calendarTapDetails.appointments != null
@@ -257,16 +257,22 @@ class _FullCalendarState extends State<FullCalendar> {
                 ? calendarTapDetails.appointments!.first as Appointment
                 : null)
             : null;
-        final res = await menus.showFormActionsPopup<ApiResponse?>(
+        final res = await menus.showFormActionsPopup(
           appointment,
           calendarTapDetails.date,
           onJobCreateSuccess: () async {
             if (_startDate == null || _endDate == null) return null;
-            return await _events.handleLoadMore(_startDate!, _endDate!);
+            return await _events.clearAppointmentAndReloadMore(
+                _startDate, _endDate, true);
           },
         );
         if (res == null) return;
-        await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
+        if (res is bool && res == true) {
+          await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
+        } else if (res is ApiResponse && res.success == true) {
+          await _events.clearAppointmentAndReloadMore(
+              _startDate, _endDate, true);
+        }
         break;
       case CalendarElement.moreAppointmentRegion:
         menus.showMoreAppointmentsPopup(calendarTapDetails);

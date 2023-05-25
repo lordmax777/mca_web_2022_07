@@ -6,7 +6,6 @@ import '../../../manager/models/users_list.dart';
 import '../../../manager/redux/sets/app_state.dart';
 import '../../../manager/redux/states/users_state/users_state.dart';
 import '../../../theme/theme.dart';
-import '../models/create_shift_type.dart';
 import '../scheduling_page.dart';
 
 class JobTeam extends StatefulWidget {

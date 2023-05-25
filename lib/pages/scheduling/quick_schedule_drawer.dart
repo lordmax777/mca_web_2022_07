@@ -24,6 +24,7 @@ import '../../manager/rest/rest_client.dart';
 import 'create_shift_popup.dart';
 import 'models/allocation_model.dart';
 import 'models/timing_model.dart';
+import 'popup_forms/job_form.dart';
 import 'popup_forms/team.dart';
 
 class QuickScheduleDrawer extends StatefulWidget {
@@ -71,29 +72,29 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             final ApiResponse? newJob = await appStore
                 .dispatch(CreateJobAction(data, isQuote: data.isQuote));
             if (newJob?.success == true) {
-              exit(context, newJob).then((value) async {
-                await showError("${data.type.label} created successfully",
-                    titleMsg: "Success");
-                if (widget.onJobCreateSuccess != null) {
-                  final List<Appointment>? newAddedAppointments =
-                      await widget.onJobCreateSuccess!();
-                  if (newAddedAppointments != null &&
-                      newAddedAppointments.isNotEmpty) {
-                    for (final app in newAddedAppointments) {
-                      logger(app);
-                      final am = app.id as AllocationModel;
-                      final pd = data.allocation!.propertyDetails;
-                      //change property details and guests
+              if (widget.onJobCreateSuccess != null) {
+                final List<Appointment>? newAddedAppointments =
+                    await widget.onJobCreateSuccess!();
+                if (newAddedAppointments != null &&
+                    newAddedAppointments.isNotEmpty) {
+                  for (final app in newAddedAppointments) {
+                    final am = app.id as AllocationModel;
+                    final pd = data.allocation!.propertyDetails;
+                    //change property details and guests
+                    if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
                       ApiResponse pdUpdated = await restClient()
                           .updatePropertyDetails(am.shift.id,
-                              bedrooms: pd.bedrooms,
-                              bathrooms: pd.bathrooms,
+                              bedrooms: 1,
+                              bathrooms: 1,
                               min_sleeps: pd.minSleeps,
                               max_sleeps: pd.maxSleeps,
                               notes: pd.notes)
                           .nocodeErrorHandler();
+                      logger(data.allocation!.guests, hint: 'total guests');
                       //update guests
-                      for (int i = 0; i < am.guests; i++) {
+                      for (int i = 0;
+                          i < data.allocation!.guests - pd.minSleeps;
+                          i++) {
                         await appStore.dispatch(SCShiftGuestAction(
                           action: AllocationActions.more,
                           locationId: am.location.id,
@@ -104,6 +105,10 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                     }
                   }
                 }
+              }
+              exit(context, newJob).then((value) async {
+                await showError("${data.type.label} created successfully",
+                    titleMsg: "Success");
               });
             }
           } catch (e) {
@@ -113,7 +118,65 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
         loadingWidget: const CustomLoadingWidget());
   }
 
-  void _additionalSettings() async {}
+  void _additionalSettings() async {
+    final ApiResponse? newJob = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => JobEditForm(
+              data: data.copyWith(),
+              showSuccessDialog: false,
+            ));
+    Get.showOverlay(
+        asyncFunction: () async {
+          try {
+            if (newJob?.success == true) {
+              if (widget.onJobCreateSuccess != null) {
+                final List<Appointment>? newAddedAppointments =
+                    await widget.onJobCreateSuccess!();
+                // if (newAddedAppointments != null &&
+                //     newAddedAppointments.isNotEmpty) {
+                //   for (final app in newAddedAppointments) {
+                //     final am = app.id as AllocationModel;
+                //     final pd = data.allocation!.propertyDetails;
+                //     //change property details and guests
+                //     if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
+                //       ApiResponse pdUpdated = await restClient()
+                //           .updatePropertyDetails(am.shift.id,
+                //               bedrooms: 1,
+                //               bathrooms: 1,
+                //               min_sleeps: pd.minSleeps,
+                //               max_sleeps: pd.maxSleeps,
+                //               notes: pd.notes)
+                //           .nocodeErrorHandler();
+                //       logger(data.allocation!.guests, hint: 'total guests');
+                //       //update guests
+                //       for (int i = 0;
+                //           i < data.allocation!.guests - pd.minSleeps;
+                //           i++) {
+                //         await appStore.dispatch(SCShiftGuestAction(
+                //           action: AllocationActions.more,
+                //           locationId: am.location.id,
+                //           shiftId: am.shift.id,
+                //           date: am.dateAsDateTime,
+                //         ));
+                //       }
+                //     }
+                //   }
+                // }
+              }
+              exit(context, newJob).then((value) async {
+                await showError("${data.type.label} created successfully",
+                    titleMsg: "Success");
+              });
+            }
+          } catch (e) {
+            exit(context, newJob).then((value) async {
+              showError("Something went wrong", titleMsg: "Error");
+            });
+          }
+        },
+        loadingWidget: const CustomLoadingWidget());
+  }
 
   final double width = CalendarConstants.quickScheduleDrawerWidth - 32;
 
@@ -139,7 +202,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             setLoading(LoadingHelper.loading, 'Getting details!');
             final quoteRes = await restClient()
                 .getQuoteBy(
-                  data.quote?.id ?? 0,
+                  0,
                   date: data.dateAsString,
                   location_id: allocation!.location.id,
                   shift_id: allocation!.shift.id,

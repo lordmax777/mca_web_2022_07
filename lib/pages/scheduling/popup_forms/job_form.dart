@@ -31,8 +31,11 @@ import 'client_form.dart';
 
 class JobEditForm extends StatefulWidget {
   final JobModel data;
+  final bool showSuccessDialog;
 
-  const JobEditForm({Key? key, required this.data}) : super(key: key);
+  const JobEditForm(
+      {Key? key, required this.data, this.showSuccessDialog = true})
+      : super(key: key);
 
   @override
   State<JobEditForm> createState() => _JobEditFormState();
@@ -77,7 +80,7 @@ class _JobEditFormState extends State<JobEditForm>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Get.showOverlay(
         asyncFunction: () async {
-          if (data.allocation != null || data.quote?.id != null) {
+          if (isUpdate) {
             try {
               final res = await restClient()
                   .getQuoteBy(
@@ -90,7 +93,6 @@ class _JobEditFormState extends State<JobEditForm>
               if (res.success) {
                 final q = res.data['quotes'][0];
                 data.quote = QuoteInfoMd.fromJson(q);
-                logger("Quote: ${data.quote?.toJson()}");
                 setState(() {});
               } else {
                 await Navigator.of(context).maybePop();
@@ -239,9 +241,11 @@ class _JobEditFormState extends State<JobEditForm>
               await appStore.dispatch(CreateJobAction(data, isQuote: false));
           if (newJob?.success == true) {
             exit(context, newJob).then((value) {
-              showError(
-                  "${data.type.label} ${data.isCreate ? "created" : "updated"} successfully",
-                  titleMsg: "Success");
+              if (widget.showSuccessDialog) {
+                showError(
+                    "${data.type.label} ${data.isCreate ? "created" : "updated"} successfully",
+                    titleMsg: "Success");
+              }
             });
           }
         },
