@@ -1,8 +1,5 @@
 export './models/create_shift_type.dart';
-
 import 'package:collection/collection.dart';
-import 'package:dropdown_button2/custom_dropdown_button2.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
@@ -11,13 +8,12 @@ import 'package:mca_web_2022_07/pages/scheduling/table_views/full_calendar.dart'
 import 'package:mca_web_2022_07/utils/global_functions.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/simple_popup_menu.dart';
-import '../../manager/models/property_md.dart';
-import '../../manager/models/users_list.dart';
 import '../../manager/redux/sets/app_state.dart';
-import '../../manager/rest/nocode_helpers.dart';
+import '../../manager/redux/states/schedule_state.dart';
 import '../../theme/theme.dart';
 import 'models/job_model.dart';
 import 'quick_schedule_drawer.dart';
+import 'package:get/get.dart';
 
 extension TimeExtenstion on DateTime {
   DateTime get startOfDay => DateTime(year, month, day);
@@ -122,7 +118,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                         dropdownBtnWidth: 300,
                         dropdownOptionsWidth: 300,
                         hintText:
-                            "Filtered ${isUserResource ? "Users" : Constants.propertyName.capitalize.toPlural} ${!isAllSelected ? selectedResources.length : ""}",
+                            "Filtered ${isUserResource ? "Users" : Constants.propertyName.strCapitalize.toPlural} ${!isAllSelected ? selectedResources.length : ""}",
                         hasSearchBox: true,
                         items: [
                           if (isUserResource)
@@ -171,7 +167,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                       showResourceFilter ? _changeResourceType : null,
                   btnIcon: isUserResource ? HeroIcons.home : HeroIcons.user,
                   btnText:
-                      "Change to ${isUserResource ? Constants.propertyName.capitalize.toPlural : "Users"} View",
+                      "Change to ${isUserResource ? Constants.propertyName.strCapitalize.toPlural : "Users"} View",
                 ),
               ),
               SizedBox(
@@ -244,7 +240,8 @@ enum ScheduleCreatePopupMenus {
   jobNew,
   jobUpdate,
   quickSchedule,
-  quote;
+  quote,
+  delete;
 
   String get label {
     switch (this) {
@@ -254,7 +251,9 @@ enum ScheduleCreatePopupMenus {
       case ScheduleCreatePopupMenus.quote:
         return "Quote";
       case ScheduleCreatePopupMenus.quickSchedule:
-        return "Schedule Existing ${Constants.propertyName.capitalize}";
+        return "Schedule Existing ${Constants.propertyName.strCapitalize}";
+      case ScheduleCreatePopupMenus.delete:
+        return "Delete";
       default:
         return "";
     }
@@ -275,7 +274,7 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
             color: ThemeColors.gray2,
             size: 18,
           ),
-          Text("New ${Constants.propertyName.capitalize}"),
+          Text("New ${Constants.propertyName.strCapitalize}"),
         ],
       ),
     ),
@@ -291,7 +290,7 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
               color: ThemeColors.gray2,
               size: 18,
             ),
-            Text("Edit ${Constants.propertyName.capitalize}"),
+            Text("Edit ${Constants.propertyName.strCapitalize}"),
           ],
         ),
       ),
@@ -308,6 +307,22 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
               size: 18,
             ),
             Text(ScheduleCreatePopupMenus.quickSchedule.label),
+          ],
+        ),
+      ),
+    if (hasEditJob)
+      PopupMenuItem(
+        value: ScheduleCreatePopupMenus.delete,
+        child: SpacedRow(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          horizontalSpace: 8,
+          children: [
+            const HeroIcon(
+              HeroIcons.bin,
+              color: ThemeColors.gray2,
+              size: 18,
+            ),
+            Text(ScheduleCreatePopupMenus.delete.label),
           ],
         ),
       ),
@@ -338,7 +353,7 @@ Future<T?> showFormsMenus<T>(
   BuildContext context, {
   required Offset globalPosition,
   required JobModel data,
-  VoidCallback? onJobCreateSuccess,
+  Future<List<Appointment>?> Function()? onJobCreateSuccess,
 }) async {
   //Positions the menu
   final RenderBox overlay =
@@ -399,6 +414,16 @@ Future<T?> showFormsMenus<T>(
       openEndDrawer(QuickScheduleDrawer(
           data: data.copyWith(), onJobCreateSuccess: onJobCreateSuccess));
       break;
+    case ScheduleCreatePopupMenus.delete:
+      final bool? isDel = await showConfirmationDialog(context);
+      if (isDel != null && isDel == true) {
+        return await Get.showOverlay(
+            asyncFunction: () async {
+              return await appStore.dispatch(
+                  SCRemoveAllocationAction(allocation: data.allocation!));
+            },
+            loadingWidget: const CustomLoadingWidget());
+      }
   }
   return null;
 }

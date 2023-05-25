@@ -114,7 +114,7 @@ class Constants {
           "name": const LocationsListRoute(),
         },
         {
-          "title": propertyName.toPlural.capitalize,
+          "title": propertyName.toPlural.strCapitalize,
           "name": const PropertiesRoute(),
         },
         {

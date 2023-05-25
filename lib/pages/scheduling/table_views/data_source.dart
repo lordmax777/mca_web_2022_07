@@ -12,7 +12,7 @@ import '../../../utils/helpers.dart';
 
 class AppointmentDataSource extends CalendarDataSource {
   @override
-  Future<void> handleLoadMore(DateTime startDate, DateTime endDate,
+  Future<List<Appointment>> handleLoadMore(DateTime startDate, DateTime endDate,
       [bool? fetchAdditionalData]) async {
     try {
       onRangeChanged?.call(startDate, endDate);
@@ -60,6 +60,7 @@ class AppointmentDataSource extends CalendarDataSource {
         }
       }
       _addNewAppointments(_meetings);
+      return _meetings;
     } on ShiftFetchException catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
 
@@ -68,11 +69,13 @@ class AppointmentDataSource extends CalendarDataSource {
       }
 
       Logger.e("Error while fetching shifts", tag: 'ShiftsCalendar');
+      return [];
     } on StateError catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
       showError("Something went wrong $e");
       Logger.e("Something went wrong while fetching shifts ${e.stackTrace}",
           tag: 'ShiftsCalendar - StateError');
+      return [];
     } catch (e) {
       notifyListeners(CalendarDataSourceAction.add, []);
 
@@ -80,6 +83,7 @@ class AppointmentDataSource extends CalendarDataSource {
 
       Logger.e("Something went wrong while fetching shifts $e",
           tag: 'ShiftsCalendar - catch');
+      return [];
     }
   }
 

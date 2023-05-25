@@ -40,6 +40,7 @@ class _JobTeamState extends State<JobTeam> {
     // The content must contain a search box and a list of users.
     return await showDialog<List<UserRes>>(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         final filteredUsers = [...users];
         final addedUsers = <UserRes>[...addedChildren.keys.toList()];
@@ -50,16 +51,30 @@ class _JobTeamState extends State<JobTeam> {
               children: [
                 const Text("Select team members"),
                 const Spacer(),
-                TextButton(
+                IconButton(
                   onPressed: () {
-                    Navigator.pop(context, addedUsers);
+                    Navigator.pop(context);
                   },
-                  child: const Text("Done"),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, addedUsers);
+                },
+                child: const Text("Save"),
+              ),
+            ],
             content: SizedBox(
-              height: 400,
+              height: 500,
               width: 400,
               child: Column(
                 children: [
@@ -145,6 +160,7 @@ class _JobTeamState extends State<JobTeam> {
                             },
                           ),
                   ),
+                  const Divider(),
                 ],
               ),
             ),

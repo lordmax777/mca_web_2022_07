@@ -236,7 +236,7 @@ class _FullCalendarState extends State<FullCalendar> {
       // initialDisplayDate: DateTime(2023, 05, 04),
       // initialSelectedDate: DateTime(2023, 05, 04),
       monthViewSettings: conf.getMonthViewSettings(),
-      allowDragAndDrop: kDebugMode,
+      allowDragAndDrop: false,
       resourceViewSettings: conf.getResourceViewSettings(context),
     );
   }
@@ -261,8 +261,8 @@ class _FullCalendarState extends State<FullCalendar> {
           appointment,
           calendarTapDetails.date,
           onJobCreateSuccess: () async {
-            if (_startDate == null || _endDate == null) return;
-            _events.handleLoadMore(_startDate!, _endDate!);
+            if (_startDate == null || _endDate == null) return null;
+            return await _events.handleLoadMore(_startDate!, _endDate!);
           },
         );
         if (res == null) return;

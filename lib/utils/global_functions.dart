@@ -42,7 +42,7 @@ extension StringExtensions on String {
     return plural;
   }
 
-  String get capitalize {
+  String get strCapitalize {
     return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }

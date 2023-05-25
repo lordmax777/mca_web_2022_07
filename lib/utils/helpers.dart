@@ -441,3 +441,25 @@ enum LoadingHelper {
   loading,
   error;
 }
+
+Future<bool?> showConfirmationDialog<bool>(BuildContext context) {
+  return showDialog<bool>(
+      builder: (context) => AlertDialog(
+            icon: const Icon(Icons.warning_amber, color: ThemeColors.red3),
+            title: const Text("Delete"),
+            content: const Text("Are you sure you want to delete?"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text("Yes")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text("Cancel")),
+            ],
+          ),
+      context: context);
+}

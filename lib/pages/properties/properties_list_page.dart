@@ -19,7 +19,8 @@ class PropertiesPage extends StatelessWidget {
       converter: (store) => store.state,
       builder: (_, state) => PageWrapper(
         child: SpacedColumn(verticalSpace: 16.0, children: [
-          PagesTitleWidget(title: Constants.propertyName.toPlural.capitalize),
+          PagesTitleWidget(
+              title: Constants.propertyName.toPlural.strCapitalize),
           ErrorWrapper(errors: [
             state.generalState.paramList.error,
             state.generalState.properties.error,
@@ -79,7 +80,7 @@ class _Body extends StatelessWidget {
                   labelPosition: CheckboxLabelPosition.left,
                 ),
                 ButtonMedium(
-                  text: "New ${Constants.propertyName.capitalize}",
+                  text: "New ${Constants.propertyName.strCapitalize}",
                   icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
                   onPressed: () {
                     context.pushRoute(NewPropertyRoute());

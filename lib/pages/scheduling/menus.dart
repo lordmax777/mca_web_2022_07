@@ -34,8 +34,10 @@ class ScheduleMenus {
     return RelativeRect.fromLTRB(left, top, right, bottom);
   }
 
-  Future<T?> showMoreAppointmentsPopup<T>(CalendarTapDetails calendarTapDetails,
-      {VoidCallback? onJobCreateSuccess}) async {
+  Future<T?> showMoreAppointmentsPopup<T>(
+    CalendarTapDetails calendarTapDetails, {
+    Future<List<Appointment>?> Function()? onJobCreateSuccess,
+  }) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
             ?.map((e) => e as Appointment)
             .toList()) ??
@@ -91,8 +93,11 @@ class ScheduleMenus {
         onJobCreateSuccess: onJobCreateSuccess);
   }
 
-  Future<T?> showFormActionsPopup<T>(Appointment? appointment, DateTime? date,
-      {VoidCallback? onJobCreateSuccess}) async {
+  Future<T?> showFormActionsPopup<T>(
+    Appointment? appointment,
+    DateTime? date, {
+    Future<List<Appointment>?> Function()? onJobCreateSuccess,
+  }) async {
     final DateTime? stDate = date;
     return await showFormsMenus<T>(
       _context,

@@ -263,11 +263,9 @@ class SCCopyAllAllocationAction {
 
 class SCRemoveAllocationAction<T> {
   final AllocationModel allocation;
-  final dynamic fetchAction;
 
   const SCRemoveAllocationAction({
     required this.allocation,
-    required this.fetchAction,
   });
 }
 

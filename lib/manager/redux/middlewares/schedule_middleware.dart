@@ -201,14 +201,14 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         }
         subject.write("${pr.title} - ");
         subject.write(pr.locationName);
-        if (kDebugMode) {
-          subject.write(" Shift - ");
-          subject.write(pr.id);
-          subject.write(" Location - ");
-          subject.write(pr.locationId);
-          subject.write(" User - ");
-          subject.write(us?.id);
-        }
+        // if (kDebugMode) {
+        //   subject.write(" Shift - ");
+        //   subject.write(pr.id);
+        //   subject.write(" Location - ");
+        //   subject.write(pr.locationId);
+        //   subject.write(" User - ");
+        //   subject.write(us?.id);
+        // }
         appointments.add(Appointment(
           startTime: stDate,
           endTime: et,
@@ -493,31 +493,20 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
     }
   }
 
-  void _onRemoveAllocation(AppState state, SCRemoveAllocationAction action,
-      NextDispatcher next) async {
+  Future<ApiResponse?> _onRemoveAllocation(AppState state,
+      SCRemoveAllocationAction action, NextDispatcher next) async {
     final allocation = action.allocation;
-    final stateValue = state.scheduleState.shifts;
     String date = action.allocation.date;
-
-    stateValue.error.isLoading = true;
-    next(UpdateScheduleState(shifts: stateValue));
     final ApiResponse res = await restClient()
         .postShifts(
-          allocation.shift.location_id ?? 0,
+          allocation.shift.location_id,
           allocation.user?.id ?? 0,
           allocation.shift.id,
           date,
           AllocationActions.remove.name,
         )
         .nocodeErrorHandler();
-    stateValue.error.isLoading = false;
-    next(UpdateScheduleState(shifts: stateValue));
-    if (!res.success) {
-      showError(HtmlHelper.replaceBr(res.data), titleMsg: "Error");
-    } else {
-      await appStore.dispatch(action.fetchAction);
-      showError("Removed successfully", titleMsg: "Success");
-    }
+    return res;
   }
 
   Future<Map<String, dynamic>> _onGuestAction(

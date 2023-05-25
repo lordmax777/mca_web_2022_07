@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -13,9 +15,11 @@ import 'package:mca_web_2022_07/pages/scheduling/models/job_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/guests.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:mca_web_2022_07/utils/global_functions.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/modals/custom_date_picker.dart';
 import '../../comps/modals/custom_time_picker.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/schedule_state.dart';
 import '../../manager/rest/rest_client.dart';
 import 'create_shift_popup.dart';
 import 'models/allocation_model.dart';
@@ -24,7 +28,7 @@ import 'popup_forms/team.dart';
 
 class QuickScheduleDrawer extends StatefulWidget {
   JobModel? data;
-  final VoidCallback? onJobCreateSuccess;
+  final Future<List<Appointment>?> Function()? onJobCreateSuccess;
 
   QuickScheduleDrawer({Key? key, this.data, this.onJobCreateSuccess})
       : super(key: key) {
@@ -70,7 +74,36 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               exit(context, newJob).then((value) async {
                 await showError("${data.type.label} created successfully",
                     titleMsg: "Success");
-                widget.onJobCreateSuccess?.call();
+                if (widget.onJobCreateSuccess != null) {
+                  final List<Appointment>? newAddedAppointments =
+                      await widget.onJobCreateSuccess!();
+                  if (newAddedAppointments != null &&
+                      newAddedAppointments.isNotEmpty) {
+                    for (final app in newAddedAppointments) {
+                      logger(app);
+                      final am = app.id as AllocationModel;
+                      final pd = data.allocation!.propertyDetails;
+                      //change property details and guests
+                      ApiResponse pdUpdated = await restClient()
+                          .updatePropertyDetails(am.shift.id,
+                              bedrooms: pd.bedrooms,
+                              bathrooms: pd.bathrooms,
+                              min_sleeps: pd.minSleeps,
+                              max_sleeps: pd.maxSleeps,
+                              notes: pd.notes)
+                          .nocodeErrorHandler();
+                      //update guests
+                      for (int i = 0; i < am.guests; i++) {
+                        await appStore.dispatch(SCShiftGuestAction(
+                          action: AllocationActions.more,
+                          locationId: am.location.id,
+                          shiftId: am.shift.id,
+                          date: am.dateAsDateTime,
+                        ));
+                      }
+                    }
+                  }
+                }
               });
             }
           } catch (e) {
@@ -97,7 +130,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               await Navigator.maybePop(context);
             }
             showError(
-                "No ${Constants.propertyName.capitalize} found.\nPlease add ${Constants.propertyName} first.");
+                "No ${Constants.propertyName.strCapitalize} found.\nPlease add ${Constants.propertyName} first.");
           }
           return;
         }
@@ -148,7 +181,6 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
         List<ListPaymentMethods> paymentMethods = [
           ...state.generalState.paymentMethods
         ];
-
         return Drawer(
           width: CalendarConstants.quickScheduleDrawerWidth,
           child: stack(
@@ -159,8 +191,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                   children: [
                     const SizedBox(width: 8),
                     Text(
-                      "Quick Schedule"
-                      " ${data.allocation?.guests}",
+                      "Quick Schedule",
                       style: Theme.of(context).textTheme.headline5,
                     ),
                     const Spacer(),
@@ -236,7 +267,8 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                       Expanded(
                         child: ButtonLarge(
                           paddingWithoutIcon: true,
-                          text: "Publish ${Constants.propertyName.capitalize}",
+                          text:
+                              "Publish ${Constants.propertyName.strCapitalize}",
                           onPressed: _publish,
                         ),
                       ),
