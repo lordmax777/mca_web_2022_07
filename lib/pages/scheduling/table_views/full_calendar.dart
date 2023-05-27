@@ -14,6 +14,7 @@ import '../../../manager/redux/states/schedule_state.dart';
 import '../../../theme/theme.dart';
 import '../menus.dart';
 import '../models/allocation_model.dart';
+import '../models/job_model.dart';
 import 'data_source.dart';
 export 'data_source.dart';
 
@@ -260,19 +261,27 @@ class _FullCalendarState extends State<FullCalendar> {
         final res = await menus.showFormActionsPopup(
           appointment,
           calendarTapDetails.date,
-          onJobCreateSuccess: () async {
-            if (_startDate == null || _endDate == null) return null;
+          onJobDeleteSuccess: () async {
+            _events.removeAppointment(appointment);
+          },
+          onJobCreateSuccess: (JobModel? createdJob) async {
+            // if (createdJob == null) return null;
+            // final Appointment? app = XAppintment.fromJob(createdJob);
             return await _events.clearAppointmentAndReloadMore(
-                _startDate, _endDate, true);
+                _startDate, _endDate);
+            // logger(app);
+            // if (app == null) return null;
+            // return [app];
           },
         );
         if (res == null) return;
         if (res is bool && res == true) {
           await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
-        } else if (res is ApiResponse && res.success == true) {
-          await _events.clearAppointmentAndReloadMore(
-              _startDate, _endDate, true);
         }
+        // else if (res is JobModel) {
+        //   await _events.clearAppointmentAndReloadMore(
+        //       _startDate, _endDate, true);
+        // }
         break;
       case CalendarElement.moreAppointmentRegion:
         menus.showMoreAppointmentsPopup(calendarTapDetails);

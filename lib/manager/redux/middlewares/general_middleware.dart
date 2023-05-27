@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/models/approval_md.dart';
 
@@ -551,29 +552,28 @@ Future<int?> _onCreateNewStorageItemAction(
     showError("Please add customer price");
     return null;
   }
-  return await Get.showOverlay(
-      asyncFunction: () async {
-        try {
-          final ApiResponse res = await restClient()
-              .postStorageItems(
-                  id: action.id,
-                  name: action.title,
-                  taxId: action.taxId,
-                  outgoingPrice: action.customerPrice.toString(),
-                  service: false,
-                  active: true)
-              .nocodeErrorHandler();
-          if (res.success) {
-            await appStore.dispatch(GetAllStorageItemsAction());
-            return res.data;
-          } else {
-            showError(res.resMessage);
-          }
-        } catch (e) {
-          showError(e.toString());
-        }
-      },
-      loadingWidget: const CustomLoadingWidget());
+  return await McaLoading.futureLoading<int?>(() async {
+    try {
+      final ApiResponse res = await restClient()
+          .postStorageItems(
+              id: action.id,
+              name: action.title,
+              taxId: action.taxId,
+              outgoingPrice: action.customerPrice.toString(),
+              service: false,
+              active: true)
+          .nocodeErrorHandler();
+      if (res.success) {
+        await appStore.dispatch(GetAllStorageItemsAction());
+        return res.data;
+      } else {
+        showError(res.resMessage);
+      }
+    } catch (e) {
+      showError(e.toString());
+    }
+    return null;
+  });
 }
 
 Future _onCreateNewClientTap(

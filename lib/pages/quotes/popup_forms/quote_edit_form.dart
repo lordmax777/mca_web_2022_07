@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
@@ -112,67 +113,64 @@ class _QuoteEditFormState extends State<QuoteEditForm> {
     final quote = data.quote;
     final storageItems = [...state.generalState.storage_items];
     final workRepeats = [...state.generalState.workRepeats];
-    Get.showOverlay(
-        asyncFunction: () async {
-          ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
-            id: quote.id,
-            email: quote.email ?? "",
-            name: quote.name,
-            company: quote.company,
-            phone: quote.phone,
-            addressLine1: quote.addressLine1,
-            addressLine2: quote.addressLine2,
-            addressCounty: quote.addressCounty,
-            addressCity: quote.addressCity,
-            addressCountry: quote.addressCountry,
-            addressPostcode: quote.addressPostcode,
-            active: quote.active,
-            altWorkStartDate: quote.altWorkStartDate,
-            currencyId: quote.currencyId,
-            payingDays: quote.payingDays,
-            paymentMethodId: quote.paymentMethodId,
-            quoteComments: data.quote.quoteComments,
-            workAddressLine1: quote.workAddressLine1,
-            workAddressLine2: quote.workAddressLine2,
-            workAddressCounty: quote.workAddressCounty,
-            workAddressCity: quote.workAddressCity,
-            workAddressCountry: quote.workAddressCountry,
-            workAddressPostcode: quote.workAddressPostcode,
-            notes: quote.notes,
-            workStartDate: quote.workStartDate,
-            workRepeatId: workRepeats
-                    .firstWhereOrNull(
-                        (element) => quote.workRepeat == element.days)
-                    ?.id ??
-                1,
-            workStartTime: quote.workStartTime,
-            workFinishTime: quote.workFinishTime,
-            workDays: quote.workDays,
-            storageItems: gridStateManager.rows
-                .map<StorageItemMd>((row) {
-                  final item = storageItems.firstWhereOrNull(
-                      (element) => element.id == row.cells['id']!.value);
-                  if (item != null) {
-                    item.quantity = row.cells['quantity']!.value;
-                    item.outgoingPrice = row.cells['customer_price']!.value;
-                    item.auto = row.checked ?? false;
+    McaLoading.futureLoading(() async {
+      ApiResponse? quoteCreated = await appStore.dispatch(CreateQuoteAction(
+        id: quote.id,
+        email: quote.email ?? "",
+        name: quote.name,
+        company: quote.company,
+        phone: quote.phone,
+        addressLine1: quote.addressLine1,
+        addressLine2: quote.addressLine2,
+        addressCounty: quote.addressCounty,
+        addressCity: quote.addressCity,
+        addressCountry: quote.addressCountry,
+        addressPostcode: quote.addressPostcode,
+        active: quote.active,
+        altWorkStartDate: quote.altWorkStartDate,
+        currencyId: quote.currencyId,
+        payingDays: quote.payingDays,
+        paymentMethodId: quote.paymentMethodId,
+        quoteComments: data.quote.quoteComments,
+        workAddressLine1: quote.workAddressLine1,
+        workAddressLine2: quote.workAddressLine2,
+        workAddressCounty: quote.workAddressCounty,
+        workAddressCity: quote.workAddressCity,
+        workAddressCountry: quote.workAddressCountry,
+        workAddressPostcode: quote.workAddressPostcode,
+        notes: quote.notes,
+        workStartDate: quote.workStartDate,
+        workRepeatId: workRepeats
+                .firstWhereOrNull((element) => quote.workRepeat == element.days)
+                ?.id ??
+            1,
+        workStartTime: quote.workStartTime,
+        workFinishTime: quote.workFinishTime,
+        workDays: quote.workDays,
+        storageItems: gridStateManager.rows
+            .map<StorageItemMd>((row) {
+              final item = storageItems.firstWhereOrNull(
+                  (element) => element.id == row.cells['id']!.value);
+              if (item != null) {
+                item.quantity = row.cells['quantity']!.value;
+                item.outgoingPrice = row.cells['customer_price']!.value;
+                item.auto = row.checked ?? false;
 
-                    return item;
-                  }
-                  return StorageItemMd.init();
-                })
-                .where((element) => element.id != -1)
-                .toList(),
-          ));
-          if (quoteCreated?.success == true) {
-            exit(context).then((value) {
-              showError(
-                  "Quote ${quote.id == 0 ? "created" : "updated"} successfully",
-                  titleMsg: "Success");
-            });
-          }
-        },
-        loadingWidget: const Center(child: CircularProgressIndicator()));
+                return item;
+              }
+              return StorageItemMd.init();
+            })
+            .where((element) => element.id != -1)
+            .toList(),
+      ));
+      if (quoteCreated?.success == true) {
+        exit(context).then((value) {
+          showError(
+              "Quote ${quote.id == 0 ? "created" : "updated"} successfully",
+              titleMsg: "Success");
+        });
+      }
+    });
   }
 
   void _onEditPm() async {

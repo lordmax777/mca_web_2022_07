@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
@@ -15,12 +16,11 @@ class DashboardPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (!controller.initializedAll)
-            const Center(child: CircularProgressIndicator()),
+          // if (!controller.initializedAll)
+          //   const Center(child: CircularProgressIndicator()),
           if (!controller.initializedAll)
             KText(
-              text:
-                  "Please do not move to other pages until the app is fully initialized.",
+              text: "App is loading, please wait..",
               fontSize: 32,
               fontWeight: FWeight.medium,
               textColor: Colors.black,

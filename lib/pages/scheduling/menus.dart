@@ -35,9 +35,7 @@ class ScheduleMenus {
   }
 
   Future<T?> showMoreAppointmentsPopup<T>(
-    CalendarTapDetails calendarTapDetails, {
-    Future<List<Appointment>?> Function()? onJobCreateSuccess,
-  }) async {
+      CalendarTapDetails calendarTapDetails) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
             ?.map((e) => e as Appointment)
             .toList()) ??
@@ -89,20 +87,22 @@ class ScheduleMenus {
     );
     if (resultFromAppointmentTap == null) return null;
     return await showFormActionsPopup<T>(
-        resultFromAppointmentTap, calendarTapDetails.date,
-        onJobCreateSuccess: onJobCreateSuccess);
+        resultFromAppointmentTap, calendarTapDetails.date);
   }
 
   Future<T?> showFormActionsPopup<T>(
     Appointment? appointment,
     DateTime? date, {
-    Future<List<Appointment>?> Function()? onJobCreateSuccess,
+    Future<List<Appointment>?> Function(JobModel? createdjob)?
+        onJobCreateSuccess,
+    Future<void> Function()? onJobDeleteSuccess,
   }) async {
     final DateTime? stDate = date;
     return await showFormsMenus<T>(
       _context,
       globalPosition: _position!,
       onJobCreateSuccess: onJobCreateSuccess,
+      onJobDeleteSuccess: onJobDeleteSuccess,
       data: JobModel(
         customStartDate: stDate,
         customEndDate: stDate?.add(const Duration(hours: 1)),

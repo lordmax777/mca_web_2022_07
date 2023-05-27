@@ -13,6 +13,7 @@ import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/rest_client.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:mca_web_2022_07/utils/constants.dart';
+import 'mca_loading.dart';
 import 'redux/middlewares/users_middleware.dart';
 import 'redux/states/users_state/users_state.dart';
 
@@ -73,7 +74,7 @@ class GeneralController extends GetxController {
     });
     loggedInUser.listen((_) async {
       if (isLoggedIn) {
-        await initAll();
+        await McaLoading.futureLoading<void>(() => initAll());
       }
     });
   }

@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:convert' show jsonDecode;
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/company_md.dart';
 import 'package:mca_web_2022_07/pages/scheduling/quick_schedule_drawer.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../manager/models/users_list.dart';
 import '../manager/redux/sets/app_state.dart';
 import '../manager/rest/nocode_helpers.dart';
+import '../pages/scheduling/models/job_model.dart';
 import 'currency_format.dart';
 
 extension TimeExtensionsForNum on num {
@@ -462,4 +467,74 @@ Future<bool?> showConfirmationDialog<bool>(BuildContext context) {
             ],
           ),
       context: context);
+}
+
+extension XAppintment on Appointment {
+  static Appointment? fromJob(JobModel job) {
+    final timing = job.timingInfo;
+    final alloc = job.allocation;
+    if (alloc == null) return null;
+    final us = alloc.user;
+    final pr = alloc.property;
+    bool isAllDay = false;
+    if (pr.startTimeAsTimeOfDay.hour == 0 &&
+        pr.startTimeAsTimeOfDay.minute == 0 &&
+        pr.finishTimeAsTimeOfDay.hour == 23 &&
+        pr.finishTimeAsTimeOfDay.minute == 59) {
+      isAllDay = true;
+    }
+
+    bool isOpenShift = false;
+    if (us == null) {
+      isOpenShift = true;
+    }
+    final formatter = DateFormat('HH:mm');
+    final DateTime date = DateTime.parse(alloc.date);
+
+    final stDate = DateTime(date.year, date.month, date.day,
+        pr.startTimeAsTimeOfDay.hour, pr.startTimeAsTimeOfDay.minute);
+    DateTime et = DateTime(date.year, date.month, date.day,
+        pr.finishTimeAsTimeOfDay.hour, pr.finishTimeAsTimeOfDay.minute);
+
+    StringBuffer subject = StringBuffer();
+
+    if (isOpenShift) {
+      subject.write('(Open Shift) ');
+    }
+    if (isAllDay) {
+      subject.write("All Day / ");
+    } else {
+      subject.write("${formatter.format(stDate)} - ");
+      subject.write("${formatter.format(et)} / ");
+    }
+    subject.write("${pr.title} - ");
+    subject.write(pr.locationName);
+    if (kDebugMode) {
+      subject.write(" /// ");
+      subject.write(" Shift - ");
+      subject.write(pr.id);
+      subject.write(" Location - ");
+      subject.write(pr.locationId);
+      // subject.write(" User - ");
+      // subject.write(us?.id);
+    }
+    return Appointment(
+      // startTime: DateTime(timing.date!.year, timing.date!.month,
+      //     timing.date!.day, timing.startTime!.hour, timing.startTime!.minute),
+      // endTime: DateTime(timing.date!.year, timing.date!.month, timing.date!.day,
+      //     timing.endTime!.hour, timing.endTime!.minute),
+      startTime: stDate,
+      endTime: et,
+      isAllDay: isAllDay,
+      color: alloc.shift.randomBgColor,
+      subject: subject.toString(),
+      id: alloc,
+      resourceIds: [
+        isOpenShift ? "OPEN" : "",
+        if (us != null) "US_${us.id}",
+        "PR_${pr.id}",
+        // pr,
+      ],
+    );
+  }
 }

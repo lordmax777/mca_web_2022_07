@@ -1,6 +1,7 @@
 export './models/create_shift_type.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/job_form.dart';
@@ -10,6 +11,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/simple_popup_menu.dart';
 import '../../manager/redux/sets/app_state.dart';
 import '../../manager/redux/states/schedule_state.dart';
+import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
 import 'models/job_model.dart';
 import 'quick_schedule_drawer.dart';
@@ -353,7 +355,8 @@ Future<T?> showFormsMenus<T>(
   BuildContext context, {
   required Offset globalPosition,
   required JobModel data,
-  Future<List<Appointment>?> Function()? onJobCreateSuccess,
+  Future<List<Appointment>?> Function(JobModel? createdjob)? onJobCreateSuccess,
+  Future<void> Function()? onJobDeleteSuccess,
 }) async {
   //Positions the menu
   final RenderBox overlay =
@@ -417,12 +420,14 @@ Future<T?> showFormsMenus<T>(
     case ScheduleCreatePopupMenus.delete:
       final bool? isDel = await showConfirmationDialog(context);
       if (isDel != null && isDel == true) {
-        return await Get.showOverlay(
-            asyncFunction: () async {
-              return await appStore.dispatch(
-                  SCRemoveAllocationAction(allocation: data.allocation!));
-            },
-            loadingWidget: const CustomLoadingWidget());
+        final ApiResponse? removedRes =
+            await McaLoading.futureLoading<ApiResponse?>(() async {
+          return await appStore
+              .dispatch(SCRemoveAllocationAction(allocation: data.allocation!));
+        });
+        if (removedRes != null && removedRes.success) {
+          onJobDeleteSuccess?.call();
+        }
       }
   }
   return null;

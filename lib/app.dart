@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class _McaWebAppState extends State<McaWebApp> {
     Get.addKey(appRouter.navigatorKey);
   }
 
+  final botToastBuilder = BotToastInit(); //1. call BotToastInit
+
   @override
   Widget build(BuildContext context) {
     return StoreProvider(
@@ -66,13 +69,18 @@ class _McaWebAppState extends State<McaWebApp> {
           linearTrackColor: Colors.white,
           refreshBackgroundColor: Colors.white,
         )),
-        builder: (context, child) => ResponsiveWrapper.builder(child,
-            defaultScale: true,
-            breakpoints: const [
-              ResponsiveBreakpoint.resize(480, name: MOBILE),
-              ResponsiveBreakpoint.resize(800, name: TABLET),
-              ResponsiveBreakpoint.resize(1920, name: DESKTOP),
-            ]),
+        navigatorObservers: [BotToastNavigatorObserver()],
+        builder: (context, child) {
+          return botToastBuilder(
+              context,
+              ResponsiveWrapper.builder(child,
+                  defaultScale: true,
+                  breakpoints: const [
+                    ResponsiveBreakpoint.resize(480, name: MOBILE),
+                    ResponsiveBreakpoint.resize(800, name: TABLET),
+                    ResponsiveBreakpoint.resize(1920, name: DESKTOP),
+                  ]));
+        },
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
@@ -534,21 +535,15 @@ class _ClientFormState extends State<ClientForm> {
                   ButtonSmall(
                     text: "Lookup Address",
                     onPressed: () {
-                      Get.showOverlay(
-                        asyncFunction: () async {
-                          try {
-                            await lookupAddress();
-                          } catch (e) {
-                            if (address.postcode == null ||
-                                address.postcode!.isEmpty) {
-                              showError("Postcode is required");
-                            }
+                      McaLoading.futureLoading(() async {
+                        try {
+                          await lookupAddress();
+                        } catch (e) {
+                          if (address.postcode.isEmpty) {
+                            showError("Postcode is required");
                           }
-                        },
-                        loadingWidget: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
+                        }
+                      });
                     },
                   ),
               if (isClient && isClient || !isLocation)
@@ -636,27 +631,21 @@ class _ClientFormState extends State<ClientForm> {
                             type: ClientFormType.location,
                           ));
                   if (data != null && data.locationId != null) {
-                    Get.showOverlay(
-                      asyncFunction: () async {
-                        try {
-                          final ApiResponse createdClient =
-                              await createClient();
-                          if (createdClient.success) {
-                            context.popRoute(CreatedClientReturnValue(
-                                clientId: createdClient.data,
-                                locationId: data.locationId));
-                          } else {
-                            showError(
-                                createdClient.resMessage ?? "Unknown Error");
-                          }
-                        } catch (e) {
-                          showError(e.toString());
+                    McaLoading.futureLoading(() async {
+                      try {
+                        final ApiResponse createdClient = await createClient();
+                        if (createdClient.success) {
+                          context.popRoute(CreatedClientReturnValue(
+                              clientId: createdClient.data,
+                              locationId: data.locationId));
+                        } else {
+                          showError(
+                              createdClient.resMessage ?? "Unknown Error");
                         }
-                      },
-                      loadingWidget: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
+                      } catch (e) {
+                        showError(e.toString());
+                      }
+                    });
                   }
                 }
               })
@@ -692,45 +681,40 @@ class _ClientFormState extends State<ClientForm> {
   }
 
   void _handleCreateClient() async {
-    return await Get.showOverlay(
-      asyncFunction: () async {
-        if (isClient) {
-          final ApiResponse createdClient = await createClient();
-          if (createdClient.success) {
-            context.popRoute(CreatedClientReturnValue(
-                clientId: createdClient.data, locationId: null));
-          } else {
-            showError(
-              ApiHelpers.getRawDataErrorMessages(createdClient).isEmpty
-                  ? "Error"
-                  : ApiHelpers.getRawDataErrorMessages(createdClient),
-            );
-          }
+    return await McaLoading.futureLoading(() async {
+      if (isClient) {
+        final ApiResponse createdClient = await createClient();
+        if (createdClient.success) {
+          context.popRoute(CreatedClientReturnValue(
+              clientId: createdClient.data, locationId: null));
+        } else {
+          showError(
+            ApiHelpers.getRawDataErrorMessages(createdClient).isEmpty
+                ? "Error"
+                : ApiHelpers.getRawDataErrorMessages(createdClient),
+          );
         }
-        if (isLocation) {
-          final ApiResponse createdLoc = await createLocation();
-          if (createdLoc.success) {
+      }
+      if (isLocation) {
+        final ApiResponse createdLoc = await createLocation();
+        if (createdLoc.success) {
+          context
+              .popRoute(CreatedClientReturnValue(locationId: createdLoc.data));
+        } else {
+          //Location already exists
+          if (createdLoc.resCode == 409) {
             context.popRoute(
                 CreatedClientReturnValue(locationId: createdLoc.data));
-          } else {
-            //Location already exists
-            if (createdLoc.resCode == 409) {
-              context.popRoute(
-                  CreatedClientReturnValue(locationId: createdLoc.data));
-              return;
-            }
-            showError(
-              ApiHelpers.getRawDataErrorMessages(createdLoc).isEmpty
-                  ? "Error"
-                  : ApiHelpers.getRawDataErrorMessages(createdLoc),
-            );
+            return;
           }
+          showError(
+            ApiHelpers.getRawDataErrorMessages(createdLoc).isEmpty
+                ? "Error"
+                : ApiHelpers.getRawDataErrorMessages(createdLoc),
+          );
         }
-      },
-      loadingWidget: const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+      }
+    });
   }
 
   void _handleUpdateClient() async {

@@ -92,6 +92,18 @@ class AppointmentDataSource extends CalendarDataSource {
     notifyListeners(CalendarDataSourceAction.add, _appointments);
   }
 
+  void addAppointment(Appointment? appointment) {
+    if (appointment == null) return;
+    appointments.add(appointment);
+    notifyListeners(CalendarDataSourceAction.add, [appointment]);
+  }
+
+  void removeAppointment(Appointment? appointment) {
+    if (appointment == null) return;
+    appointments.remove(appointment);
+    notifyListeners(CalendarDataSourceAction.remove, [appointment]);
+  }
+
   void clearAppointments() {
     appointments.clear();
     notifyListeners(CalendarDataSourceAction.reset, appointments);

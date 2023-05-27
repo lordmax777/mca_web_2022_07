@@ -59,6 +59,7 @@ dependencies:
   fingerprintjs: ^2.0.0
   flutter_svg: ^1.1.6
   easy_loading_button: ^0.3.2
+  bot_toast: ^4.0.4
 
 dev_dependencies:
   flutter_test:

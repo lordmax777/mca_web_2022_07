@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
@@ -78,34 +79,31 @@ class _JobEditFormState extends State<JobEditForm>
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Get.showOverlay(
-        asyncFunction: () async {
-          if (isUpdate) {
-            try {
-              final res = await restClient()
-                  .getQuoteBy(
-                    data.quote?.id ?? 0,
-                    date: data.dateAsString,
-                    location_id: allocation?.location.id,
-                    shift_id: allocation?.shift.id,
-                  )
-                  .nocodeErrorHandler();
-              if (res.success) {
-                final q = res.data['quotes'][0];
-                data.quote = QuoteInfoMd.fromJson(q);
-                setState(() {});
-              } else {
-                await Navigator.of(context).maybePop();
-                showError(ApiHelpers.getRawDataErrorMessages(res));
-              }
-            } catch (e) {
+      McaLoading.futureLoading(() async {
+        if (isUpdate) {
+          try {
+            final res = await restClient()
+                .getQuoteBy(
+                  data.quote?.id ?? 0,
+                  date: data.dateAsString,
+                  location_id: allocation?.location.id,
+                  shift_id: allocation?.shift.id,
+                )
+                .nocodeErrorHandler();
+            if (res.success) {
+              final q = res.data['quotes'][0];
+              data.quote = QuoteInfoMd.fromJson(q);
+              setState(() {});
+            } else {
               await Navigator.of(context).maybePop();
-              showError("Error getting quote");
+              showError(ApiHelpers.getRawDataErrorMessages(res));
             }
+          } catch (e) {
+            await Navigator.of(context).maybePop();
+            showError("Error getting quote");
           }
-        },
-        loadingWidget: const CustomLoadingWidget(),
-      );
+        }
+      });
     });
   }
 
@@ -235,21 +233,20 @@ class _JobEditFormState extends State<JobEditForm>
   }
 
   void _saveJob(AppState state) async {
-    Get.showOverlay(
-        asyncFunction: () async {
-          final ApiResponse? newJob =
-              await appStore.dispatch(CreateJobAction(data, isQuote: false));
-          if (newJob?.success == true) {
-            exit(context, newJob).then((value) {
-              if (widget.showSuccessDialog) {
-                showError(
-                    "${data.type.label} ${data.isCreate ? "created" : "updated"} successfully",
-                    titleMsg: "Success");
-              }
-            });
+    McaLoading.futureLoading(() async {
+      final ApiResponse? newJob =
+          await appStore.dispatch(CreateJobAction(data, isQuote: false));
+
+      if (newJob?.success == true) {
+        exit(context, data).then((value) {
+          if (widget.showSuccessDialog) {
+            showError(
+                "${data.type.label.strCapitalize} ${data.isCreate ? "created" : "updated"} successfully",
+                titleMsg: "Success");
           }
-        },
-        loadingWidget: const CustomLoadingWidget());
+        });
+      }
+    });
   }
 
   void _onCreateNewClient(AppState state) async {
