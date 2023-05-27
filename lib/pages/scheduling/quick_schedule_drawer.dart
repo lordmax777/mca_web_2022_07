@@ -72,51 +72,50 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
       try {
         final ApiResponse? newJob = await appStore
             .dispatch(CreateJobAction(data, isQuote: data.isQuote));
-        await appStore.dispatch(GetPropertiesAction());
-        await appStore.dispatch(GetAllParamListAction());
+        // await appStore.dispatch(GetPropertiesAction());
+        // await appStore.dispatch(GetAllParamListAction());
         if (newJob?.success == true) {
           if (widget.onJobCreateSuccess != null) {
             final List<Appointment>? newAddedAppointments =
                 await widget.onJobCreateSuccess!(data);
-            // if (newAddedAppointments != null &&
-            //     newAddedAppointments.isNotEmpty) {
-            //   for (final app in newAddedAppointments) {
-            //     final am = app.id as AllocationModel;
-            //     final pd = data.allocation!.propertyDetails;
-            //     //change property details and guests
-            //     if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
-            //       ApiResponse pdUpdated = await restClient()
-            //           .updatePropertyDetails(am.shift.id,
-            //               bedrooms: 1,
-            //               bathrooms: 1,
-            //               min_sleeps: pd.minSleeps,
-            //               max_sleeps: pd.maxSleeps,
-            //               notes: pd.notes)
-            //           .nocodeErrorHandler();
-            //       logger(data.allocation!.guests, hint: 'total guests');
-            //       //update guests
-            //       for (int i = 0;
-            //           i < data.allocation!.guests - pd.minSleeps;
-            //           i++) {
-            //         await appStore.dispatch(SCShiftGuestAction(
-            //           action: AllocationActions.more,
-            //           locationId: am.location.id,
-            //           shiftId: am.shift.id,
-            //           date: am.dateAsDateTime,
-            //         ));
-            //       }
-            //     }
-            //   }
-            // }
+            if (newAddedAppointments != null &&
+                newAddedAppointments.isNotEmpty) {
+              for (final app in newAddedAppointments) {
+                final am = app.id as AllocationModel;
+                final pd = data.allocation!.propertyDetails;
+                //change property details and guests
+                if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
+                  ApiResponse pdUpdated = await restClient()
+                      .updatePropertyDetails(am.shift.id,
+                          bedrooms: 1,
+                          bathrooms: 1,
+                          min_sleeps: pd.minSleeps,
+                          max_sleeps: pd.maxSleeps,
+                          notes: pd.notes)
+                      .nocodeErrorHandler();
+                  logger(data.allocation!.guests, hint: 'total guests');
+                  //update guests
+                  for (int i = 0;
+                      i < data.allocation!.guests - pd.minSleeps;
+                      i++) {
+                    await appStore.dispatch(SCShiftGuestAction(
+                      action: AllocationActions.more,
+                      locationId: am.location.id,
+                      shiftId: am.shift.id,
+                      date: am.dateAsDateTime,
+                    ));
+                  }
+                }
+              }
+            }
           }
           exit(context, data).then((value) async {
-            await showError(
-                "${data.type.label.strCapitalize} created successfully",
-                titleMsg: "Success");
+            McaLoading.showSuccess(
+                "${data.type.label.strCapitalize} created successfully");
           });
         }
       } catch (e) {
-        showError("Something went wrong");
+        McaLoading.showFail("Something went wrong");
       }
     });
   }
@@ -133,46 +132,47 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
       try {
         if (newJob?.success == true) {
           if (widget.onJobCreateSuccess != null) {
-            await widget.onJobCreateSuccess!(data);
-            // if (newAddedAppointments != null &&
-            //     newAddedAppointments.isNotEmpty) {
-            //   for (final app in newAddedAppointments) {
-            //     final am = app.id as AllocationModel;
-            //     final pd = data.allocation!.propertyDetails;
-            //     //change property details and guests
-            //     if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
-            //       ApiResponse pdUpdated = await restClient()
-            //           .updatePropertyDetails(am.shift.id,
-            //               bedrooms: 1,
-            //               bathrooms: 1,
-            //               min_sleeps: pd.minSleeps,
-            //               max_sleeps: pd.maxSleeps,
-            //               notes: pd.notes)
-            //           .nocodeErrorHandler();
-            //       logger(data.allocation!.guests, hint: 'total guests');
-            //       //update guests
-            //       for (int i = 0;
-            //           i < data.allocation!.guests - pd.minSleeps;
-            //           i++) {
-            //         await appStore.dispatch(SCShiftGuestAction(
-            //           action: AllocationActions.more,
-            //           locationId: am.location.id,
-            //           shiftId: am.shift.id,
-            //           date: am.dateAsDateTime,
-            //         ));
-            //       }
-            //     }
-            //   }
-            // }
+            final List<Appointment>? newAddedAppointments =
+                await widget.onJobCreateSuccess!(data);
+            if (newAddedAppointments != null &&
+                newAddedAppointments.isNotEmpty) {
+              for (final app in newAddedAppointments) {
+                final am = app.id as AllocationModel;
+                final pd = data.allocation!.propertyDetails;
+                //change property details and guests
+                if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
+                  ApiResponse pdUpdated = await restClient()
+                      .updatePropertyDetails(am.shift.id,
+                          bedrooms: 1,
+                          bathrooms: 1,
+                          min_sleeps: pd.minSleeps,
+                          max_sleeps: pd.maxSleeps,
+                          notes: pd.notes)
+                      .nocodeErrorHandler();
+                  logger(data.allocation!.guests, hint: 'total guests');
+                  //update guests
+                  for (int i = 0;
+                      i < data.allocation!.guests - pd.minSleeps;
+                      i++) {
+                    await appStore.dispatch(SCShiftGuestAction(
+                      action: AllocationActions.more,
+                      locationId: am.location.id,
+                      shiftId: am.shift.id,
+                      date: am.dateAsDateTime,
+                    ));
+                  }
+                }
+              }
+            }
           }
-          exit(context, newJob).then((value) async {
-            await showError("${data.type.label} created successfully",
-                titleMsg: "Success");
+          exit(context, data).then((value) async {
+            McaLoading.showSuccess(
+                "${data.type.label.strCapitalize} created successfully");
           });
         }
       } catch (e) {
         exit(context, newJob).then((value) async {
-          showError("Something went wrong", titleMsg: "Error");
+          McaLoading.showFail("Something went wrong");
         });
       }
     });

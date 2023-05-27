@@ -6,10 +6,12 @@ class SpacedColumn extends StatelessWidget {
   List<Widget> children;
   MainAxisAlignment? mainAxisAlignment;
   CrossAxisAlignment? crossAxisAlignment;
+  MainAxisSize? mainAxisSize;
 
   SpacedColumn(
       {this.verticalSpace = 0.0,
       required this.children,
+      this.mainAxisSize = MainAxisSize.max,
       this.mainAxisAlignment = MainAxisAlignment.start,
       this.crossAxisAlignment = CrossAxisAlignment.center});
 
@@ -28,6 +30,7 @@ class SpacedColumn extends StatelessWidget {
     return Column(
       mainAxisAlignment: mainAxisAlignment!,
       crossAxisAlignment: crossAxisAlignment!,
+      mainAxisSize: mainAxisSize!,
       children: widgets,
     );
   }

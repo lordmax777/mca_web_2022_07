@@ -402,10 +402,6 @@ class ListShift {
     this.client_id,
     this.warehouse_id,
   }) {
-    randomBgColor = Color.fromRGBO(Random().nextInt(255), Random().nextInt(255),
-        Random().nextInt(255), 1.0);
-    randomFgColor =
-        randomBgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
     property =
         state.allSortedProperties.firstWhere((element) => element.id == id);
     warehouse = state.storages
@@ -414,6 +410,15 @@ class ListShift {
         .firstWhereOrNull((element) => element.id == client_id);
     location =
         state.locations.firstWhere((element) => element.id == location_id);
+    // randomBgColor = Color.fromRGBO(Random().nextInt(255), Random().nextInt(255),
+    //     Random().nextInt(255), 1.0);
+    // randomFgColor =
+    //     randomBgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+    //Create a randomBgColor using id, location_id so that it is always the same
+    randomBgColor = Color.fromRGBO((id * location_id) % 255,
+        (id * location_id) % 255, (id * location_id) % 255, 1.0);
+    randomFgColor =
+        randomBgColor.computeLuminance() < 0.5 ? Colors.black : Colors.white;
   }
 
   factory ListShift.fromJson(Map<String, dynamic> json) =>

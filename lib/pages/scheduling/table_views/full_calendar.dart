@@ -2,6 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
+import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
@@ -263,10 +265,11 @@ class _FullCalendarState extends State<FullCalendar> {
           calendarTapDetails.date,
           onJobDeleteSuccess: () async {
             _events.removeAppointment(appointment);
+            McaLoading.showSuccess("Job deleted successfully");
           },
           onJobCreateSuccess: (JobModel? createdJob) async {
             final loadedNewApps =
-                await _events.handleLoadMore(_startDate!, _endDate!);
+                await _events.handleLoadMore(_startDate!, _endDate!, true);
             return loadedNewApps;
           },
         );

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
@@ -34,7 +36,14 @@ class DashboardPage extends StatelessWidget {
               fontWeight: FWeight.medium,
               textColor: Colors.black,
               mainAxisSize: MainAxisSize.min,
-            )
+            ),
+
+          if (kDebugMode)
+            TextButton(
+                onPressed: () {
+                  McaLoading.showLoading(showCancelButton: true);
+                },
+                child: const Text("Show Loading")),
         ],
       ),
     );
