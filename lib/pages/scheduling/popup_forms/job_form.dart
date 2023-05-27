@@ -936,7 +936,7 @@ class _JobEditFormState extends State<JobEditForm>
                       .firstWhereOrNull((element) => element.id == resId);
                   if (item == null) return;
                   data.gridStateManager.insertRows(
-                      0, [data.buildStorageRowRow(item, checked: true)]);
+                      0, [data.buildStorageRow(item, checked: true)]);
                 },
                 icon: HeroIcons.add),
             const SizedBox(width: 10),
@@ -970,7 +970,7 @@ class _JobEditFormState extends State<JobEditForm>
                       }
                     } else {
                       data.gridStateManager.insertRows(
-                          0, [data.buildStorageRowRow(p0, checked: true)]);
+                          0, [data.buildStorageRow(p0, checked: true)]);
                     }
                   },
                   displayStringForOption: (option) {

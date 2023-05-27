@@ -124,7 +124,7 @@ class JobModel {
         for (int i = 0; i < q.items.length; i++) {
           final item = q.items[i];
           gridStateManager.insertRows(i, [
-            buildStorageRowRow(
+            buildStorageRow(
               StorageItemMd(
                 id: item.itemId,
                 active: true,
@@ -152,7 +152,35 @@ class JobModel {
   bool get isQuote => type == ScheduleCreatePopupMenus.quote;
   String get actionTypeStr => isCreate ? "Create" : "Update";
 
-  bool isGridInitialized = false;
+  bool _isGridInitialized = false;
+  bool get isGridInitialized => _isGridInitialized;
+  set isGridInitialized(bool val) {
+    _isGridInitialized = val;
+    if (val && quote != null) {
+      final q = quote as QuoteInfoMd;
+      gridStateManager.rows.clear();
+      if (q.items.isNotEmpty) {
+        for (int i = 0; i < q.items.length; i++) {
+          final item = q.items[i];
+          gridStateManager.insertRows(i, [
+            buildStorageRow(
+              StorageItemMd(
+                id: item.itemId,
+                active: true,
+                name: item.itemName,
+                service: false,
+                outgoingPrice: item.price,
+                incomingPrice: 0,
+                taxId: 1,
+              ),
+              qty: item.quantity,
+              checked: item.auto,
+            )
+          ]);
+        }
+      }
+    }
+  }
 
   late PlutoGridStateManager gridStateManager;
   List<StorageItemMd> getAddedStorageItems(List<StorageItemMd> storageItems) {
@@ -172,7 +200,7 @@ class JobModel {
         .toList();
   }
 
-  PlutoRow buildStorageRowRow(StorageItemMd contractShiftItem,
+  PlutoRow buildStorageRow(StorageItemMd contractShiftItem,
       {bool checked = false, int? qty}) {
     return PlutoRow(
       checked: checked,
@@ -317,15 +345,16 @@ class JobModel {
       customResource: customResource,
       type: type,
     );
+    job.quote = quote;
+    job.client = client;
+    job.setAddress(_address, addressId);
+    job.setWorkAddress(_workAddress);
     job.timingInfo = timingInfo.copy();
     job.quoteComment = quoteComment;
     job.active = active;
-    job.quote = quote;
-    job.client = client;
     job.addedChildren = addedChildren;
-    job.setAddress(_address, addressId);
-    job.setWorkAddress(_workAddress);
     job.isGridInitialized = isGridInitialized;
+    print("isGridInitialized: ${job.isGridInitialized}");
     if (isGridInitialized) {
       job.gridStateManager = gridStateManager;
     }

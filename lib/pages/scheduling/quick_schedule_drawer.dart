@@ -121,6 +121,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
   }
 
   void _additionalSettings() async {
+    data.isGridInitialized = false;
     final ApiResponse? newJob = await showDialog(
         context: context,
         barrierDismissible: false,
@@ -252,7 +253,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 16),
                     Text(
                       "Quick Schedule",
                       style: Theme.of(context).textTheme.headline5,
@@ -264,12 +265,13 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                     ),
                   ],
                 ),
-                const Divider(height: 30, color: Colors.black54, thickness: 2),
+                const Divider(height: 1, color: Colors.black54, thickness: 2),
                 Flexible(
                   child: ListView(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16, bottom: 32),
                     children: [
+                      const SizedBox(height: 20),
                       TitleContainer(
                           width: width,
                           title: "Select Job",
