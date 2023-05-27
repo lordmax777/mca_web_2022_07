@@ -258,30 +258,23 @@ class _FullCalendarState extends State<FullCalendar> {
                 ? calendarTapDetails.appointments!.first as Appointment
                 : null)
             : null;
-        final res = await menus.showFormActionsPopup(
+        final createSuccess = await menus.showFormActionsPopup(
           appointment,
           calendarTapDetails.date,
           onJobDeleteSuccess: () async {
             _events.removeAppointment(appointment);
           },
           onJobCreateSuccess: (JobModel? createdJob) async {
-            // if (createdJob == null) return null;
-            // final Appointment? app = XAppintment.fromJob(createdJob);
-            return await _events.clearAppointmentAndReloadMore(
-                _startDate, _endDate);
-            // logger(app);
-            // if (app == null) return null;
-            // return [app];
+            final loadedNewApps =
+                await _events.handleLoadMore(_startDate!, _endDate!);
+            return loadedNewApps;
           },
         );
-        if (res == null) return;
-        if (res is bool && res == true) {
-          await _events.clearAppointmentAndReloadMore(_startDate, _endDate);
+        if (createSuccess == null) return;
+        if (_startDate == null || _endDate == null) return;
+        if (createSuccess is bool && createSuccess == true) {
+          await _events.handleLoadMore(_startDate!, _endDate!);
         }
-        // else if (res is JobModel) {
-        //   await _events.clearAppointmentAndReloadMore(
-        //       _startDate, _endDate, true);
-        // }
         break;
       case CalendarElement.moreAppointmentRegion:
         menus.showMoreAppointmentsPopup(calendarTapDetails);

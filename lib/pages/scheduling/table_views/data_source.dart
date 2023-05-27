@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:mca_web_2022_07/pages/scheduling/models/allocation_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
+import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../manager/redux/middlewares/users_middleware.dart';
@@ -52,13 +54,17 @@ class AppointmentDataSource extends CalendarDataSource {
           appointment.startTime = stDate;
           appointment.endTime = etDate;
         }
-        if (!appointments.any((element) => element.id == appointment.id)) {
+        if (!appointments.any((element) =>
+            (element.id as AllocationModel).id ==
+            (appointment.id as AllocationModel).id)) {
           if (appointments.indexOf(appointment) == 0) {
             appointment.isAllDay = true;
           }
           _meetings.add(appointment);
         }
       }
+      logger("Loaded new appointments ${_meetings.length}",
+          hint: "DataSource._handleLoadMore");
       _addNewAppointments(_meetings);
       return _meetings;
     } on ShiftFetchException catch (e) {

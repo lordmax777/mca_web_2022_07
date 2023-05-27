@@ -86,7 +86,8 @@ class AllocationModel {
         other.user == user &&
         other.location == location &&
         other.property == property &&
-        other.guests == guests;
+        other.guests == guests &&
+        other.propertyDetails == propertyDetails;
   }
 
   @override
@@ -98,5 +99,6 @@ class AllocationModel {
       user.hashCode ^
       location.hashCode ^
       property.hashCode ^
-      guests.hashCode;
+      guests.hashCode ^
+      propertyDetails.hashCode;
 }
