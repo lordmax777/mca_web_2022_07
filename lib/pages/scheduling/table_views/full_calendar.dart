@@ -7,6 +7,7 @@ import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart'
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
+import 'package:mca_web_2022_07/utils/global_functions.dart';
 import 'package:mix/mix.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../manager/models/property_md.dart';
@@ -226,6 +227,7 @@ class _FullCalendarState extends State<FullCalendar> {
         return FutureBuilder<void>(
           future: loadMoreAppointments(),
           builder: (BuildContext context, AsyncSnapshot<void> snapShot) {
+            return const SizedBox();
             return Container(
                 height: _calendarController.view == CalendarView.schedule
                     ? 50
@@ -253,6 +255,9 @@ class _FullCalendarState extends State<FullCalendar> {
             await menus.showFormActionsPopup(null, calendarTapDetails.date);
         if (!success) return;
         await _events.handleLoadMore(_startDate!, _endDate!, true);
+        showError(
+            "${Constants.propertyName.strCapitalize} created successfully",
+            titleMsg: "Success");
         break;
       case CalendarElement.appointment:
         final appointment = calendarTapDetails.appointments != null
@@ -273,6 +278,7 @@ class _FullCalendarState extends State<FullCalendar> {
             return loadedNewApps;
           },
         );
+        bool isUpdated = false;
         if (!createSuccess) return;
         if (_startDate == null || _endDate == null) return;
         if (createSuccess == true) {
@@ -280,10 +286,16 @@ class _FullCalendarState extends State<FullCalendar> {
           for (Appointment app in apps) {
             if ((app.id as AllocationModel).shift.id ==
                 (appointment?.id as AllocationModel?)?.shift.id) {
+              if (!isUpdated) {
+                isUpdated = true;
+              }
               _events.removeAppointment(app);
             }
           }
           await _events.handleLoadMore(_startDate!, _endDate!, true);
+          showError(
+              "${Constants.propertyName.strCapitalize} ${isUpdated ? "updated" : "created"} successfully",
+              titleMsg: "Success");
         }
         break;
       case CalendarElement.moreAppointmentRegion:

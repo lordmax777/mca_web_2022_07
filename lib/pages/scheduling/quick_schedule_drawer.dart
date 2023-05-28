@@ -72,46 +72,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
       try {
         final ApiResponse? newJob = await appStore
             .dispatch(CreateJobAction(data, isQuote: data.isQuote));
-        if (newJob?.success == true) {
-          if (widget.onJobCreateSuccess != null) {
-            final List<Appointment>? newAddedAppointments =
-                await widget.onJobCreateSuccess!(data);
-            if (newAddedAppointments != null &&
-                newAddedAppointments.isNotEmpty) {
-              for (final app in newAddedAppointments) {
-                final am = app.id as AllocationModel;
-                final pd = data.allocation!.propertyDetails;
-                //change property details and guests
-                if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
-                  ApiResponse pdUpdated = await restClient()
-                      .updatePropertyDetails(am.shift.id,
-                          bedrooms: 1,
-                          bathrooms: 1,
-                          min_sleeps: pd.minSleeps,
-                          max_sleeps: pd.maxSleeps,
-                          notes: pd.notes)
-                      .nocodeErrorHandler();
-                  logger(data.allocation!.guests, hint: 'total guests');
-                  //update guests
-                  for (int i = 0;
-                      i < data.allocation!.guests - pd.minSleeps;
-                      i++) {
-                    await appStore.dispatch(SCShiftGuestAction(
-                      action: AllocationActions.more,
-                      locationId: am.location.id,
-                      shiftId: am.shift.id,
-                      date: am.dateAsDateTime,
-                    ));
-                  }
-                }
-              }
-            }
-          }
-          exit(context, data).then((value) async {
-            McaLoading.showSuccess(
-                "${data.type.label.strCapitalize} created successfully");
-          });
-        }
+        await _handleGuests(newJob?.success);
       } catch (e) {
         McaLoading.showFail("Something went wrong");
       }
@@ -127,54 +88,55 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               data: data.copyWith(),
               showSuccessDialog: false,
             ));
-    McaLoading.futureLoading(() async {
-      try {
-        if (newJob == true) {
-          if (widget.onJobCreateSuccess != null) {
-            final List<Appointment>? newAddedAppointments =
-                await widget.onJobCreateSuccess!(data);
-            if (newAddedAppointments != null &&
-                newAddedAppointments.isNotEmpty) {
-              for (final app in newAddedAppointments) {
-                final am = app.id as AllocationModel;
-                final pd = data.allocation!.propertyDetails;
-                //change property details and guests
-                if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
-                  ApiResponse pdUpdated = await restClient()
-                      .updatePropertyDetails(am.shift.id,
-                          bedrooms: 1,
-                          bathrooms: 1,
-                          min_sleeps: pd.minSleeps,
-                          max_sleeps: pd.maxSleeps,
-                          notes: pd.notes)
-                      .nocodeErrorHandler();
-                  logger(data.allocation!.guests, hint: 'total guests');
-                  //update guests
-                  for (int i = 0;
-                      i < data.allocation!.guests - pd.minSleeps;
-                      i++) {
-                    await appStore.dispatch(SCShiftGuestAction(
-                      action: AllocationActions.more,
-                      locationId: am.location.id,
-                      shiftId: am.shift.id,
-                      date: am.dateAsDateTime,
-                    ));
-                  }
+    McaLoading.futureLoading(() async => await _handleGuests(newJob));
+  }
+
+  Future<void> _handleGuests(bool? newJob) async {
+    try {
+      if (newJob == true) {
+        if (widget.onJobCreateSuccess != null) {
+          final List<Appointment>? newAddedAppointments =
+              await widget.onJobCreateSuccess!(data);
+          if (newAddedAppointments != null && newAddedAppointments.isNotEmpty) {
+            for (final app in newAddedAppointments) {
+              final am = app.id as AllocationModel;
+              final pd = data.allocation!.propertyDetails;
+              //change property details and guests
+              if (pd.minSleeps > 0 && pd.maxSleeps > 0) {
+                ApiResponse pdUpdated = await restClient()
+                    .updatePropertyDetails(am.shift.id,
+                        bedrooms: 1,
+                        bathrooms: 1,
+                        min_sleeps: pd.minSleeps,
+                        max_sleeps: pd.maxSleeps,
+                        notes: pd.notes)
+                    .nocodeErrorHandler();
+                logger(data.allocation!.guests, hint: 'total guests');
+                //update guests
+                for (int i = 0;
+                    i < data.allocation!.guests - pd.minSleeps;
+                    i++) {
+                  await appStore.dispatch(SCShiftGuestAction(
+                    action: AllocationActions.more,
+                    locationId: am.location.id,
+                    shiftId: am.shift.id,
+                    date: am.dateAsDateTime,
+                  ));
                 }
               }
             }
           }
-          exit(context, data).then((value) async {
-            McaLoading.showSuccess(
-                "${data.type.label.strCapitalize} created successfully");
-          });
         }
-      } catch (e) {
-        exit(context, newJob).then((value) async {
-          McaLoading.showFail("Something went wrong");
+        exit(context, data).then((value) async {
+          McaLoading.showSuccess(
+              "${data.type.label.strCapitalize} created successfully");
         });
       }
-    });
+    } catch (e) {
+      exit(context, newJob).then((value) async {
+        McaLoading.showFail("Something went wrong");
+      });
+    }
   }
 
   final double width = CalendarConstants.quickScheduleDrawerWidth - 32;

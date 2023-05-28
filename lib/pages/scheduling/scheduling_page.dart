@@ -402,15 +402,16 @@ Future<bool> showFormsMenus(
       final bool? jobCreated = await showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => JobEditForm(data: data.copyWith()));
+          builder: (context) =>
+              JobEditForm(data: data.copyWith(), showSuccessDialog: false));
       return jobCreated ?? false;
     case ScheduleCreatePopupMenus.jobUpdate:
       //Shows the form
       final bool? updatedJob = await showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) =>
-              JobEditForm(data: data.copyWith(fetchQuote: true)));
+          builder: (context) => JobEditForm(
+              data: data.copyWith(fetchQuote: true), showSuccessDialog: false));
       return updatedJob ?? false;
     case ScheduleCreatePopupMenus.quote:
       return false;
