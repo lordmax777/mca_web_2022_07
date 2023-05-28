@@ -255,7 +255,7 @@ enum ScheduleCreatePopupMenus {
       case ScheduleCreatePopupMenus.quickSchedule:
         return "Schedule Existing ${Constants.propertyName.strCapitalize}";
       case ScheduleCreatePopupMenus.delete:
-        return "Remove";
+        return "Remove ${Constants.propertyName.strCapitalize}";
       default:
         return "";
     }
@@ -351,7 +351,7 @@ Widget addIcon(
           )));
 }
 
-Future<T?> showFormsMenus<T>(
+Future<bool> showFormsMenus(
   BuildContext context, {
   required Offset globalPosition,
   required JobModel data,
@@ -392,31 +392,32 @@ Future<T?> showFormsMenus<T>(
       position: RelativeRect.fromLTRB(left, top, right, bottom),
       items: getPopupCreateMenus(hasEditJob: hasEditJob));
 
-  if (createTapResult == null) return null;
+  if (createTapResult == null) return false;
 
   //Shows the form based on the menu selected
   switch (createTapResult) {
-    case ScheduleCreatePopupMenus.jobUpdate:
-      //Shows the form
-      final updatedJob = await showDialog<T>(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => JobEditForm(data: data.copyWith()));
-      return updatedJob;
     case ScheduleCreatePopupMenus.jobNew:
       data.allocation = null;
       //Shows the form
-      final jobCreated = await showDialog<T>(
+      final bool? jobCreated = await showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => JobEditForm(data: data.copyWith()));
-      return jobCreated;
+      return jobCreated ?? false;
+    case ScheduleCreatePopupMenus.jobUpdate:
+      //Shows the form
+      final bool? updatedJob = await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              JobEditForm(data: data.copyWith(fetchQuote: true)));
+      return updatedJob ?? false;
     case ScheduleCreatePopupMenus.quote:
-      return null;
+      return false;
     case ScheduleCreatePopupMenus.quickSchedule:
       openEndDrawer(QuickScheduleDrawer(
           data: data.copyWith(), onJobCreateSuccess: onJobCreateSuccess));
-      break;
+      return false;
     case ScheduleCreatePopupMenus.delete:
       final bool? isDel = await showConfirmationDialog(context);
       if (isDel != null && isDel == true) {
@@ -427,8 +428,11 @@ Future<T?> showFormsMenus<T>(
         });
         if (removedRes != null && removedRes.success) {
           onJobDeleteSuccess?.call();
+        } else {
+          McaLoading.showFail(
+              "Failed to remove ${data.allocation?.property.title ?? ""}");
         }
       }
   }
-  return null;
+  return false;
 }

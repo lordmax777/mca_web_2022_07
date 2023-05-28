@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/timing_model.dart';
+import 'package:mca_web_2022_07/pages/scheduling/popup_forms/guests.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/qualif_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/staff_req_form.dart';
 import 'package:mca_web_2022_07/pages/scheduling/popup_forms/storage_item_form.dart';
@@ -49,6 +50,7 @@ class _JobEditFormState extends State<JobEditForm>
   //Data values
   bool get isCreate => data.isCreate;
   bool get isUpdate => data.isUpdate;
+  bool get fetchQuote => data.fetchQuote;
   ScheduleCreatePopupMenus get type => data.type;
 
   late final JobModel data = widget.data;
@@ -80,7 +82,7 @@ class _JobEditFormState extends State<JobEditForm>
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       McaLoading.futureLoading(() async {
-        if (isUpdate) {
+        if (fetchQuote) {
           try {
             final res = await restClient()
                 .getQuoteBy(
@@ -101,6 +103,16 @@ class _JobEditFormState extends State<JobEditForm>
           } catch (e) {
             await Navigator.of(context).maybePop();
             showError("Error getting quote");
+          }
+          final propertyDetailsRes = await restClient()
+              .getPropertyDetails(allocation!.shift.id)
+              .nocodeErrorHandler();
+          if (propertyDetailsRes.success) {
+            if (propertyDetailsRes.data['details'] is Map<String, dynamic>) {
+              data.allocation?.propertyDetails = PropertyDetailsMd.fromJson(
+                  propertyDetailsRes.data['details']);
+              setState(() {});
+            }
           }
         }
       });
@@ -192,11 +204,11 @@ class _JobEditFormState extends State<JobEditForm>
               controller: _tabController,
               children: [
                 _Form(state),
-                if (data.shiftId == null)
+                if (isCreate)
                   const SizedBox()
                 else
                   StaffRequirementForm(shiftId: data.shiftId!),
-                if (data.shiftId == null)
+                if (isCreate)
                   const SizedBox()
                 else
                   QualificationReqForm(shiftId: data.shiftId!),
@@ -236,9 +248,8 @@ class _JobEditFormState extends State<JobEditForm>
     McaLoading.futureLoading(() async {
       final ApiResponse? newJob =
           await appStore.dispatch(CreateJobAction(data, isQuote: false));
-
       if (newJob?.success == true) {
-        exit(context, data).then((value) {
+        exit(context, newJob?.success == true).then((value) {
           if (widget.showSuccessDialog) {
             showError(
                 "${data.type.label.strCapitalize} ${data.isCreate ? "created" : "updated"} successfully",
@@ -538,11 +549,11 @@ class _JobEditFormState extends State<JobEditForm>
                                       "Currency:",
                                       null,
                                       customLabel: _textField(currencies
-                                          .firstWhere((element) =>
+                                          .firstWhereOrNull((element) =>
                                               int.parse(
                                                   data.client.currencyId) ==
                                               element.id)
-                                          .title),
+                                          ?.title),
                                     ),
                                     const Divider(),
                                     labelWithField(
@@ -862,20 +873,71 @@ class _JobEditFormState extends State<JobEditForm>
                     ),
                   ),
                   if (!data.isQuote)
-                    TitleContainer(
-                      titleIcon: HeroIcons.add,
-                      title: "Team",
-                      padding: 0,
-                      child: JobTeam(
-                        addedChildren: addedChildren,
-                        date: timing.date!,
-                        onTeamMemberAdded: onTeamMemberAdded,
-                        onUnavUserFetchComplete: (userId) {
-                          data.addedChildren
-                              .removeWhere((user, _) => user.id == userId);
-                        },
-                        users: users,
-                      ),
+                    SpacedColumn(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      verticalSpace: 16,
+                      children: [
+                        TitleContainer(
+                          titleIcon: HeroIcons.add,
+                          title: "Team",
+                          padding: 0,
+                          child: JobTeam(
+                            addedChildren: addedChildren,
+                            date: timing.date!,
+                            onTeamMemberAdded: onTeamMemberAdded,
+                            onUnavUserFetchComplete: (userId) {
+                              data.addedChildren
+                                  .removeWhere((user, _) => user.id == userId);
+                            },
+                            users: users,
+                          ),
+                        ),
+                        TitleContainer(
+                          title: "Guests",
+                          child: JobGuests(
+                            data: data,
+                            isLiveMode: isUpdate,
+                            onMinSleepRemoveSuccess: () {
+                              setState(() {
+                                data.allocation!.propertyDetails.minSleeps =
+                                    data.allocation!.propertyDetails.minSleeps -
+                                        1;
+                              });
+                            },
+                            onMinSleepAddSuccess: () {
+                              setState(() {
+                                data.allocation!.propertyDetails.minSleeps =
+                                    data.allocation!.propertyDetails.minSleeps +
+                                        1;
+                              });
+                            },
+                            onMaxSleepRemoveSuccess: () {
+                              setState(() {
+                                data.allocation!.propertyDetails.maxSleeps =
+                                    data.allocation!.propertyDetails.maxSleeps -
+                                        1;
+                              });
+                            },
+                            onMaxSleepAddSuccess: () {
+                              setState(() {
+                                data.allocation!.propertyDetails.maxSleeps =
+                                    data.allocation!.propertyDetails.maxSleeps +
+                                        1;
+                              });
+                            },
+                            onCurrentRemoveSuccess: (_) {
+                              setState(() {
+                                data.allocation!.guests -= 1;
+                              });
+                            },
+                            onCurrentAddSuccess: (_) {
+                              setState(() {
+                                data.allocation!.guests += 1;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                 ],
               ),

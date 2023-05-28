@@ -226,10 +226,15 @@ class JobGuests extends StatelessWidget {
             height: 30,
             borderRadius: 8,
             idleStateWidget: const Icon(Icons.remove),
-            loadingStateWidget:
-                Transform.scale(scale: .6, child: const CustomLoadingWidget()),
+            loadingStateWidget: Transform.scale(
+              scale: .6,
+              child: const CircularProgressIndicator(
+                  strokeWidth: 4,
+                  backgroundColor: Colors.white,
+                  color: Colors.black),
+            ),
             type: EasyButtonType.elevated,
-            buttonColor: Colors.blueAccent,
+            buttonColor: ThemeColors.MAIN_COLOR,
             onPressed: data.allocation == null ? null : onLess),
         SizedBox(width: 30, child: _textField(value.toString())),
         EasyButton(
@@ -237,10 +242,15 @@ class JobGuests extends StatelessWidget {
           height: 30,
           borderRadius: 8,
           idleStateWidget: const Icon(Icons.add),
-          loadingStateWidget:
-              Transform.scale(scale: .6, child: const CustomLoadingWidget()),
+          loadingStateWidget: Transform.scale(
+            scale: .6,
+            child: const CircularProgressIndicator(
+                strokeWidth: 4,
+                backgroundColor: Colors.white,
+                color: Colors.black),
+          ),
           type: EasyButtonType.elevated,
-          buttonColor: Colors.blueAccent,
+          buttonColor: ThemeColors.MAIN_COLOR,
           onPressed: data.allocation == null ? null : onMore,
         ),
       ],

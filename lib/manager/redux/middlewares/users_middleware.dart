@@ -121,6 +121,8 @@ Future<void> showError(dynamic msg,
     builder: (context) {
       return AlertDialog(
         title: Text(titleMsg),
+        icon: titleMsg == "Error" ? const Icon(Icons.error) : null,
+        iconColor: Colors.red,
         content: Text(msg.toString()),
         actions: [
           TextButton(

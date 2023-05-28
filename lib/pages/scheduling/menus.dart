@@ -34,15 +34,15 @@ class ScheduleMenus {
     return RelativeRect.fromLTRB(left, top, right, bottom);
   }
 
-  Future<T?> showMoreAppointmentsPopup<T>(
+  Future<bool> showMoreAppointmentsPopup(
       CalendarTapDetails calendarTapDetails) async {
     final List<Appointment> appointments = (calendarTapDetails.appointments
             ?.map((e) => e as Appointment)
             .toList()) ??
         <Appointment>[];
 
-    if (_position == null) return null;
-    if (appointments.isEmpty || appointments.length < 3) return null;
+    if (_position == null) return false;
+    if (appointments.isEmpty || appointments.length < 3) return false;
 
     final RelativeRect pos = _getPosition()!;
     final List<PopupMenuItem<Appointment>> items = [];
@@ -85,12 +85,13 @@ class ScheduleMenus {
       position: pos,
       items: items,
     );
-    if (resultFromAppointmentTap == null) return null;
-    return await showFormActionsPopup<T>(
+    if (resultFromAppointmentTap == null) return false;
+    final res = await showFormActionsPopup(
         resultFromAppointmentTap, calendarTapDetails.date);
+    return res;
   }
 
-  Future<T?> showFormActionsPopup<T>(
+  Future<bool> showFormActionsPopup(
     Appointment? appointment,
     DateTime? date, {
     Future<List<Appointment>?> Function(JobModel? createdjob)?
@@ -98,7 +99,7 @@ class ScheduleMenus {
     Future<void> Function()? onJobDeleteSuccess,
   }) async {
     final DateTime? stDate = date;
-    return await showFormsMenus<T>(
+    final res = await showFormsMenus(
       _context,
       globalPosition: _position!,
       onJobCreateSuccess: onJobCreateSuccess,
@@ -112,5 +113,6 @@ class ScheduleMenus {
         allocation: appointment?.id as AllocationModel?,
       ),
     );
+    return res;
   }
 }

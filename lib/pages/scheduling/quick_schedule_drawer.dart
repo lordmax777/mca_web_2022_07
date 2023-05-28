@@ -72,8 +72,6 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
       try {
         final ApiResponse? newJob = await appStore
             .dispatch(CreateJobAction(data, isQuote: data.isQuote));
-        // await appStore.dispatch(GetPropertiesAction());
-        // await appStore.dispatch(GetAllParamListAction());
         if (newJob?.success == true) {
           if (widget.onJobCreateSuccess != null) {
             final List<Appointment>? newAddedAppointments =
@@ -122,7 +120,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
 
   void _additionalSettings() async {
     data.isGridInitialized = false;
-    final ApiResponse? newJob = await showDialog(
+    final bool? newJob = await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => JobEditForm(
@@ -131,7 +129,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             ));
     McaLoading.futureLoading(() async {
       try {
-        if (newJob?.success == true) {
+        if (newJob == true) {
           if (widget.onJobCreateSuccess != null) {
             final List<Appointment>? newAddedAppointments =
                 await widget.onJobCreateSuccess!(data);

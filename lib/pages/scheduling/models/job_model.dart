@@ -150,6 +150,7 @@ class JobModel {
   bool get isCreate => quote == null || quote!.isInit;
   bool get isUpdate => !isCreate;
   bool get isQuote => type == ScheduleCreatePopupMenus.quote;
+  bool fetchQuote = false;
   String get actionTypeStr => isCreate ? "Create" : "Update";
 
   bool _isGridInitialized = false;
@@ -337,7 +338,7 @@ class JobModel {
   }
 
   //copyWith
-  JobModel copyWith() {
+  JobModel copyWith({bool? fetchQuote}) {
     final job = JobModel(
       allocation: allocation?.copyWith(),
       customStartDate: customStartDate,
@@ -354,7 +355,7 @@ class JobModel {
     job.active = active;
     job.addedChildren = addedChildren;
     job.isGridInitialized = isGridInitialized;
-    print("isGridInitialized: ${job.isGridInitialized}");
+    job.fetchQuote = fetchQuote ?? this.fetchQuote;
     if (isGridInitialized) {
       job.gridStateManager = gridStateManager;
     }
@@ -380,7 +381,9 @@ class JobModel {
         other.customEndDate == customEndDate &&
         other._quote == _quote &&
         other._address == _address &&
-        other._workAddress == _workAddress;
+        other._workAddress == _workAddress &&
+        other.customResource == customResource &&
+        other.fetchQuote == fetchQuote;
   }
 
   @override
@@ -396,7 +399,9 @@ class JobModel {
         active.hashCode ^
         quoteComment.hashCode ^
         customStartDate.hashCode ^
-        customEndDate.hashCode;
+        customEndDate.hashCode ^
+        customResource.hashCode ^
+        fetchQuote.hashCode;
   }
 
   @override

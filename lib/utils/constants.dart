@@ -211,21 +211,29 @@ class Constants {
     return format;
   }
 
+  /// returns [DateTime.now()] if [date] is null
   static DateTime isoDateTime(String date) {
     try {
       return DateFormat(isoDateFormat).parse(date);
     } on Exception catch (e) {
       logger(e, hint: "isoDateTime");
-      rethrow;
+      return DateTime.now();
+    } catch (e) {
+      logger(e, hint: "isoDateTime");
+      return DateTime.now();
     }
   }
 
+  // returns [TimeOfDay.now()] if [time] is null
   static TimeOfDay isoTimeOfDay(String time) {
     try {
       return TimeOfDay.fromDateTime(DateTime.parse("2022-05-12 $time"));
     } on Exception catch (e) {
       logger(e, hint: "isoTimeOfDay");
-      rethrow;
+      return TimeOfDay.now();
+    } catch (e) {
+      logger(e, hint: "isoTimeOfDay");
+      return TimeOfDay.now();
     }
   }
 

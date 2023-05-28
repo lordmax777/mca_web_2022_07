@@ -73,20 +73,36 @@ class _GridLoading extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(
-                backgroundColor: backgroundColor ?? Colors.white,
-                color: indicatorColor ?? Colors.lightBlue,
-                strokeWidth: 2,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                text ?? 'Loading',
-                style: textStyle ??
-                    const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
+              // CircularProgressIndicator(
+              //   backgroundColor: backgroundColor ?? Colors.white,
+              //   color: indicatorColor ?? Colors.lightBlue,
+              //   strokeWidth: 2,
+              // ),
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    CircularProgressIndicator(
+                      strokeWidth: 6,
+                      backgroundColor: Colors.white,
                     ),
-              )
+                    // const SizedBox(height: 10),
+                    // Text(
+                    //   text ?? 'Loading',
+                    //   style:
+                    //       // textStyle ??
+                    //       const TextStyle(
+                    //     color: Colors.white,
+                    //     fontSize: 14,
+                    //   ),
+                    // )
+                  ],
+                ),
+              ),
             ],
           ),
         ),

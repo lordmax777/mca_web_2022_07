@@ -506,8 +506,6 @@ Future<ApiResponse?> _createQuoteAction(
     switch (res.statusCode) {
       case 200:
         if (res.data != null) {
-          // await appStore.dispatch(GetAllStorageItemsAction());
-          // await appStore.dispatch(GetQuotesAction());
           return apiResponse;
         }
         showError(res.data ?? 'Error');

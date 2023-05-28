@@ -54,24 +54,17 @@ class AllocationModel {
   }
 
   //copyWith
-  AllocationModel copyWith({
-    int? id,
-    String? date,
-    ListShift? shift,
-    bool? published,
-    UserRes? user,
-    LocationAddress? location,
-    PropertiesMd? property,
-    int? guests,
-  }) {
-    return AllocationModel(
-      id: id ?? this.id,
-      date: date ?? this.date,
-      shift: shift?.copyWith() ?? this.shift.copyWith(),
-      published: published ?? this.published,
-      user: user?.copyWith() ?? this.user?.copyWith(),
-      guests: guests ?? this.guests,
+  AllocationModel copyWith() {
+    final alloc = AllocationModel(
+      id: id,
+      date: date,
+      shift: shift.copyWith(),
+      published: published,
+      user: user?.copyWith(),
+      guests: guests,
     );
+    alloc.propertyDetails = propertyDetails;
+    return alloc;
   }
 
   @override

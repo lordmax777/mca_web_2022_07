@@ -249,10 +249,10 @@ class _FullCalendarState extends State<FullCalendar> {
     final ScheduleMenus menus = ScheduleMenus(context, position);
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.calendarCell:
-        final res = await menus.showFormActionsPopup<ApiResponse?>(
-            null, calendarTapDetails.date);
-        if (res == null) return;
-        await _events.clearAppointmentAndReloadMore(_startDate, _endDate, true);
+        final success =
+            await menus.showFormActionsPopup(null, calendarTapDetails.date);
+        if (!success) return;
+        await _events.handleLoadMore(_startDate!, _endDate!, true);
         break;
       case CalendarElement.appointment:
         final appointment = calendarTapDetails.appointments != null
@@ -273,10 +273,17 @@ class _FullCalendarState extends State<FullCalendar> {
             return loadedNewApps;
           },
         );
-        if (createSuccess == null) return;
+        if (!createSuccess) return;
         if (_startDate == null || _endDate == null) return;
-        if (createSuccess is bool && createSuccess == true) {
-          await _events.handleLoadMore(_startDate!, _endDate!);
+        if (createSuccess == true) {
+          final apps = [..._events.appointments];
+          for (Appointment app in apps) {
+            if ((app.id as AllocationModel).shift.id ==
+                (appointment?.id as AllocationModel?)?.shift.id) {
+              _events.removeAppointment(app);
+            }
+          }
+          await _events.handleLoadMore(_startDate!, _endDate!, true);
         }
         break;
       case CalendarElement.moreAppointmentRegion:

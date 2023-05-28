@@ -182,12 +182,6 @@ class _JobTeamState extends State<JobTeam> {
   }
 
   @override
-  void didUpdateWidget(covariant JobTeam oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // _getUnavUsers();
-  }
-
-  @override
   void initState() {
     super.initState();
     _getUnavUsers();
