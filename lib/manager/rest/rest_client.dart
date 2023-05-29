@@ -611,11 +611,9 @@ abstract class RestClient {
   });
 }
 
-RestClient restClient() => RestClient(
-    DioClientForRetrofit(
-            bearerToken: appStore.state.authState.authRes.data?.access_token)
-        .init(),
-    baseUrl: Constants.apiBaseUrl);
+RestClient restClient() => RestClient(DioClientForRetrofit(
+        bearerToken: appStore.state.authState.authRes.data?.access_token)
+    .init());
 
 Dio restClientWithDio(String contentType) => DioClientForRetrofit(
         bearerToken: appStore.state.authState.authRes.data?.access_token,

@@ -14,20 +14,6 @@ import '../../manager/redux/sets/app_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../scheduling/scheduling_page.dart';
 
-mixin GridOnLoadMixin<T extends StatefulWidget> on State<T> {
-  bool reload = false;
-
-  Future<void> onReload() async {
-    setState(() {
-      reload = true;
-    });
-    await Future.delayed(const Duration(milliseconds: 200));
-    setState(() {
-      reload = false;
-    });
-  }
-}
-
 class QuotesListPage extends StatefulWidget {
   const QuotesListPage({Key? key}) : super(key: key);
 
@@ -35,8 +21,7 @@ class QuotesListPage extends StatefulWidget {
   State<QuotesListPage> createState() => _QuotesListPageState();
 }
 
-class _QuotesListPageState extends State<QuotesListPage>
-    with GridOnLoadMixin<QuotesListPage> {
+class _QuotesListPageState extends State<QuotesListPage> {
   //Etc
   CompanyMd get company => GeneralController.to.companyInfo;
 
@@ -331,30 +316,26 @@ class _QuotesListPageState extends State<QuotesListPage>
   }
 
   Widget _body(AppState state) {
-    if (reload) {
-      return const CustomLoadingWidget();
-    } else {
-      return UsersListTable(
-          gridBorderColor: Colors.grey[300]!,
-          rows: [],
-          noRowsText: 'No quotes found',
-          onSmReady: (p0) async {
-            if (!isStateManagerInitialized) {
-              stateManager = p0;
-              stateManager!.addListener(() {
-                setState(() {});
-              });
-              //appStore.dispatch(GetQuotesAction());
-              final allQuotes = await fetchQuotes();
-              stateManager!.removeAllRows();
-              stateManager!
-                  .appendRows(allQuotes.map((e) => _buildRow(e)).toList());
-            }
-            stateManager!.setPage(1);
-            stateManager!.setPageSize(10);
-          },
-          cols: columns);
-    }
+    return UsersListTable(
+        gridBorderColor: Colors.grey[300]!,
+        rows: [],
+        noRowsText: 'No quotes found',
+        onSmReady: (p0) async {
+          if (!isStateManagerInitialized) {
+            stateManager = p0;
+            stateManager!.addListener(() {
+              setState(() {});
+            });
+            //appStore.dispatch(GetQuotesAction());
+            final allQuotes = await fetchQuotes();
+            stateManager!.removeAllRows();
+            stateManager!
+                .appendRows(allQuotes.map((e) => _buildRow(e)).toList());
+          }
+          stateManager!.setPage(1);
+          stateManager!.setPageSize(10);
+        },
+        cols: columns);
   }
 
   Widget _footer(AppState state) {

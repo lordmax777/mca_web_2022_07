@@ -169,7 +169,7 @@ class JobModel {
             buildStorageRow(
               StorageItemMd(
                 id: item.itemId,
-                active: true,
+                active: storageItem == null ? false : storageItem.active,
                 name: item.itemName,
                 service: storageItem == null ? false : storageItem.service,
                 outgoingPrice: item.price,

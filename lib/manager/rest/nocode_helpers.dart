@@ -58,9 +58,9 @@ extension FutureExceptionHandler on Future {
           apiResponse.requestOptions = dioError.requestOptions;
           switch (errorType) {
             case DioErrorType.response:
-              apiResponse.resCode = dioError.response!.statusCode;
-              apiResponse.resMessage = dioError.response!.statusMessage;
-              apiResponse.data = dioError.response!.data;
+              apiResponse.resCode = dioError.response?.statusCode;
+              apiResponse.resMessage = dioError.response?.statusMessage;
+              apiResponse.data = dioError.response?.data;
               break;
             case DioErrorType.other:
               Type otherErrorType = dioError.error.runtimeType;

@@ -20,20 +20,20 @@ import 'package:get/get.dart';
 import 'manager/hive.dart';
 import 'pages/locations/controllers/locations_controller.dart';
 
+import 'setup_domain.dart';
+
 Future<void> main() async {
-  await setup();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  setupDomain();
+  setupLogger();
+  await setupHiveDb();
+  await setupControllers();
 
   runApp(const McaWebApp());
 }
 
-Future<void> setup() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  Logger.init(
-    true,
-    isShowFile: false,
-    isShowNavigation: false,
-    isShowTime: false,
-  );
+Future<void> setupControllers() async {
   Get.put(GeneralController());
   Get.lazyPut(() => LoginController());
   Get.lazyPut(() => DepartmentsController());
@@ -50,7 +50,14 @@ Future<void> setup() async {
   Get.lazyPut(() => SettingsController());
   Get.lazyPut(() => PreferredShiftsController());
   Get.lazyPut(() => PropertiesController());
+}
 
+void setupLogger() {
+  Logger.init(Constants.isDebug,
+      isShowFile: false, isShowNavigation: false, isShowTime: false);
+}
+
+Future<void> setupHiveDb() async {
   Get.put(TalkerController());
 
   await HiveController.initHive();

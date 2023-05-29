@@ -24,7 +24,8 @@ class Constants {
   static String get apiBaseUrl => isDebug ? apiBaseUrlDev : apiBaseUrlProd;
 
   //Auth
-  static const String domain = "timesheet.skillfill.co.uk";
+  static String domain = "timesheet.skillfill.co.uk";
+  // "https://kashiaba.onlinetimeclock.co.uk";
   static const String clientId =
       "1_3bcbxd9e24g0gk4swg0kwgcwg4o8k8g4g888kwc44gcc0gwwk4";
   static const String clientSecret =
@@ -34,6 +35,7 @@ class Constants {
   static String grant_type({bool refresh = false}) =>
       refresh ? "refresh_token" : "password";
   static const String username = "96189831";
+  // "13150519";
   static const String password = "F00tba11";
 
   ///geo.ipify.org api key
