@@ -163,13 +163,15 @@ class JobModel {
       if (q.items.isNotEmpty) {
         for (int i = 0; i < q.items.length; i++) {
           final item = q.items[i];
+          final storageItem = appStore.state.generalState.storage_items
+              .firstWhereOrNull((element) => element.id == item.itemId);
           gridStateManager.insertRows(i, [
             buildStorageRow(
               StorageItemMd(
                 id: item.itemId,
                 active: true,
                 name: item.itemName,
-                service: false,
+                service: storageItem == null ? false : storageItem.service,
                 outgoingPrice: item.price,
                 incomingPrice: 0,
                 taxId: 1,

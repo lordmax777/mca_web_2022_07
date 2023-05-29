@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 
@@ -17,7 +18,11 @@ class McaLoading {
     return BotToast.showCustomLoading(
       toastBuilder: (cancelFunc) {
         return CustomLoadingWidget(
-            onClose: showCancelButton ? cancelFunc : null);
+            onClose: kDebugMode
+                ? cancelFunc
+                : showCancelButton
+                    ? cancelFunc
+                    : null);
       },
       clickClose: barrierDismissible,
       allowClick: false,
