@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/comps/custom_loading_widget.dart';
@@ -74,7 +75,15 @@ class GeneralController extends GetxController {
     });
     loggedInUser.listen((_) async {
       if (isLoggedIn) {
-        await McaLoading.futureLoading<void>(() => initAll());
+        try {
+          McaLoading.showLoading();
+          await initAll();
+        } catch (e) {
+          Logger.e(e);
+          McaLoading.closeLoading();
+        } finally {
+          McaLoading.closeLoading();
+        }
       }
     });
   }
