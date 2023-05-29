@@ -204,11 +204,11 @@ class _JobEditFormState extends State<JobEditForm>
               controller: _tabController,
               children: [
                 _Form(state),
-                if (isCreate)
+                if (isCreate || data.isQuote)
                   const SizedBox()
                 else
                   StaffRequirementForm(shiftId: data.shiftId!),
-                if (isCreate)
+                if (isCreate || data.isQuote)
                   const SizedBox()
                 else
                   QualificationReqForm(shiftId: data.shiftId!),
@@ -247,7 +247,7 @@ class _JobEditFormState extends State<JobEditForm>
   void _saveJob(AppState state) async {
     McaLoading.futureLoading(() async {
       final ApiResponse? newJob =
-          await appStore.dispatch(CreateJobAction(data, isQuote: false));
+          await appStore.dispatch(CreateJobAction(data, isQuote: data.isQuote));
       if (newJob?.success == true) {
         exit(context, newJob?.success == true).then((value) {
           if (widget.showSuccessDialog) {
@@ -268,7 +268,7 @@ class _JobEditFormState extends State<JobEditForm>
           return ClientForm(
             state: state,
             isQuote: data.isQuote,
-            selectedClient: tempClient ?? data.client,
+            selectedClient: data.isQuote ? null : (tempClient ?? data.client),
           );
         });
     if (res == null) return;
@@ -458,9 +458,8 @@ class _JobEditFormState extends State<JobEditForm>
                         verticalSpace: 16,
                         children: [
                           TitleContainer(
-                            titleOverride: "${data.actionTypeStr} Client",
-                            titleIcon:
-                                data.isQuote ? HeroIcons.edit : HeroIcons.add,
+                            titleOverride: "",
+                            titleIcon: HeroIcons.add,
                             onEdit: isUpdate
                                 ? data.isQuote
                                     ? () => _onCreateNewClient(state)
@@ -610,7 +609,7 @@ class _JobEditFormState extends State<JobEditForm>
                                     ? () => _editInvoiceAddress(state)
                                     : null
                                 : () => _editInvoiceAddress(state),
-                        titleOverride: "${data.actionTypeStr} Location",
+                        titleOverride: "", //${data.actionTypeStr} Location
                         titleIcon:
                             data.isQuote ? HeroIcons.edit : HeroIcons.add,
                         title: "Address",

@@ -62,16 +62,21 @@ class ScheduleMenus {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 4),
+            margin: const EdgeInsets.symmetric(vertical: 1),
             width: double.infinity,
             alignment: Alignment.centerLeft,
             height: 40,
-            color: app.color,
+            decoration: BoxDecoration(
+              // color: app.color,
+              border: Border.all(
+                color: Colors.black,
+                width: .5,
+              ),
+            ),
             child: Text(
               app.subject,
-              style: TextStyle(
-                color: app.color.computeLuminance() > 0.5
-                    ? Colors.black
-                    : Colors.white,
+              style: const TextStyle(
+                color: Colors.black,
                 fontFamily: ThemeText.fontFamilyM,
                 fontSize: 14,
               ),

@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
@@ -12,9 +12,7 @@ import 'package:mca_web_2022_07/theme/theme.dart';
 
 import '../../manager/redux/sets/app_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
-import '../scheduling/create_shift_popup.dart';
 import '../scheduling/scheduling_page.dart';
-import 'popup_forms/quote_edit_form.dart';
 
 mixin GridOnLoadMixin<T extends StatefulWidget> on State<T> {
   bool reload = false;
@@ -118,7 +116,7 @@ class _QuotesListPageState extends State<QuotesListPage>
               onTap: (value) {
                 _onAddQuoteTap(
                     successMessage: "Quote updated successfully",
-                    quoteId: rendererContext.row.cells['quote']!.value.id);
+                    quote: rendererContext.row.cells['quote']!.value);
               },
             );
           },
@@ -208,21 +206,24 @@ class _QuotesListPageState extends State<QuotesListPage>
 
   void _onAddQuoteTap({
     String? successMessage,
-    int? quoteId,
+    QuoteInfoMd? quote,
   }) async {
     final JobModel data = JobModel(type: ScheduleCreatePopupMenus.quote);
-    if (quoteId != null) {
-      data.quote = appStore.state.generalState.quotes
-              .firstWhereOrNull((element) => element.id == quoteId) ??
-          QuoteInfoMd.init();
+    if (quote != null) {
+      data.quote = quote;
     }
-    final quoteCreated = await showDialog<ApiResponse?>(
+    final quoteCreated = await showDialog<bool>(
       context: context,
       barrierDismissible: kDebugMode,
-      builder: (context) => JobEditForm(data: data),
+      builder: (context) => JobEditForm(data: data, showSuccessDialog: false),
     );
-    if (quoteCreated != null) {
-      showError(successMessage ?? "Quote Created Successfully");
+    if (quoteCreated == null) return;
+    if (quoteCreated) {
+      await McaLoading.futureLoading<void>(
+          () async => await appStore.dispatch(GetQuotesAction()));
+      McaLoading.showSuccess(successMessage ?? "Quote Created Successfully");
+    } else {
+      McaLoading.showFail("Quote Creation Failed");
     }
   }
 
@@ -246,9 +247,7 @@ class _QuotesListPageState extends State<QuotesListPage>
           PagesTitleWidget(
             title: 'Quotes',
             btnText: 'Add New Quote',
-            onRightBtnClick: () {
-              _onAddQuoteTap();
-            },
+            onRightBtnClick: _onAddQuoteTap,
           ),
           TableWrapperWidget(
               child: SizedBox(

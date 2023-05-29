@@ -125,6 +125,7 @@ class GridTableHelpers {
     return SpacedRow(
         horizontalSpace: 8,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             width: 8,
@@ -405,14 +406,15 @@ mixin LoadingModel<T extends StatefulWidget> on State<T> {
                     )
                   : const SizedBox(),
           const SizedBox(height: 10),
-          Text(
-            message ?? "",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: ThemeColors.white,
+          if (message != null && message!.isNotEmpty)
+            Text(
+              message ?? "",
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: ThemeColors.white,
+              ),
             ),
-          ),
           const SizedBox(height: 10),
           if (loadingHelper == LoadingHelper.error)
             ButtonSmall(
