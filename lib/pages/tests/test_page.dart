@@ -40,17 +40,24 @@ class _TestPageState extends State<TestPage> {
           child: SpacedColumn(
             verticalSpace: 32,
             children: [
-              CustomMultiSelectDropdown(
-                items: items,
-                width: 300,
-                isMultiSelect: true,
-                onChange: (list) {
-                  logger(list);
-                },
-                initiallySelected: [
-                  items.first.items[2],
-                ],
-              ),
+              // CustomMultiSelectDropdown(
+              //   items: items,
+              //   width: 300,
+              //   onChange: (list) {
+              //     logger(list);
+              //   },
+              // ),
+              // CustomMultiSelectDropdown(
+              //   items: items,
+              //   width: 300,
+              //   isMultiSelect: true,
+              //   onChange: (list) {
+              //     logger(list);
+              //   },
+              //   initiallySelected: [
+              //     items.first.items[2],
+              //   ],
+              // ),
               Text(items.first.label),
               _button(() {
                 final oldItems = items.first.items;

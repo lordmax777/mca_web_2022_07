@@ -210,8 +210,7 @@ class JobModel {
       cells: {
         "item": PlutoCell(value: contractShiftItem),
         "id": PlutoCell(value: contractShiftItem.id),
-        "title": PlutoCell(
-            value: "${contractShiftItem.name} - ${contractShiftItem.service}"),
+        "title": PlutoCell(value: contractShiftItem.name),
         "customer_price": PlutoCell(value: contractShiftItem.outgoingPrice),
         "quantity": PlutoCell(value: qty ?? 1),
         "delete_action": PlutoCell(value: ""),
