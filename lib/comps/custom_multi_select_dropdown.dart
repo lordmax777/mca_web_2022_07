@@ -58,10 +58,14 @@ class CustomMultiSelectDropdown extends StatefulWidget {
   final bool hasSearchBox;
   final bool isMultiSelect;
   final MultiSelectOnChange? onChange;
+  final MultiSelectItem Function()? onItemRemove;
+  final MultiSelectItem Function()? onItemAdd;
   const CustomMultiSelectDropdown({
     super.key,
     required this.items,
     this.initiallySelected,
+    this.onItemAdd,
+    this.onItemRemove,
     this.onChange,
     this.width,
     this.hasSearchBox = false,
@@ -150,6 +154,12 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             initiallySelected!.map<SingleItemCategoryModel>((e) => e.toItem()));
       }
       oldIds.clear();
+    }
+    if (widget.onItemRemove != null) {
+      source.removeSingleSelectedChip(widget.onItemRemove!().toItem());
+    }
+    if (widget.onItemAdd != null) {
+      source.addSelectChip(widget.onItemAdd!().toItem());
     }
   }
 
