@@ -4,7 +4,6 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:mca_web_2022_07/theme/colors.dart';
 import 'package:mca_web_2022_07/theme/text_style.dart';
-import 'package:multiselect_dropdown_flutter/multiselect_dropdown_flutter.dart';
 import 'package:select2dot1/select2dot1.dart';
 
 import '../utils/log_tester.dart';

@@ -2,8 +2,6 @@ import 'dart:math';
 
 import '../../comps/custom_multi_select_dropdown.dart';
 import '../../theme/theme.dart';
-import 'package:multiselect_dropdown_flutter/multiselect_dropdown_flutter.dart';
-import 'package:select2dot1/select2dot1.dart';
 
 class TestPage extends StatefulWidget {
   TestPage({Key? key}) : super(key: key);
