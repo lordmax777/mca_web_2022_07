@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:mca_web_2022_07/manager/model_exporter.dart';
+
 import '../../comps/custom_multi_select_dropdown.dart';
 import '../../theme/theme.dart';
 
@@ -11,16 +13,22 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  final List<MultiSelectGroup> items = [
+  final items = [
     MultiSelectGroup(
+      label: "Numbers",
       items: [
         MultiSelectItem(label: "One", id: "1"),
         MultiSelectItem(label: "One", id: "1.1"),
         MultiSelectItem(label: "Two", id: "2"),
         MultiSelectItem(label: "Three", id: "3"),
-        MultiSelectItem(label: "Four", id: "5"),
+        MultiSelectItem(label: "Four", id: "4"),
       ],
-      label: "Numbers",
+    ),
+    MultiSelectGroup(
+      label: "Colors",
+      items: [
+        MultiSelectItem(label: "Red", id: "red"),
+      ],
     ),
   ];
 
@@ -36,9 +44,12 @@ class _TestPageState extends State<TestPage> {
                 items: items,
                 width: 300,
                 isMultiSelect: true,
-                onChange: (value) {
-                  logger(value);
+                onChange: (list) {
+                  logger(list);
                 },
+                initiallySelected: [
+                  items.first.items[2],
+                ],
               ),
               Text(items.first.label),
               _button(() {

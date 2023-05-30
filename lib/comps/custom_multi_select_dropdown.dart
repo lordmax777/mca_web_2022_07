@@ -1,7 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:mca_web_2022_07/theme/colors.dart';
 import 'package:mca_web_2022_07/theme/text_style.dart';
 import 'package:select2dot1/select2dot1.dart';
@@ -13,14 +11,8 @@ import 'package:equatable/equatable.dart';
 class MultiSelectGroup extends Equatable {
   final List<MultiSelectItem> items;
   final String label;
-  late String id;
 
-  MultiSelectGroup({required this.items, this.label = ""}) {
-    id = "item_cat_$label";
-    for (final item in items) {
-      id += "_${item.id}";
-    }
-  }
+  const MultiSelectGroup({required this.items, this.label = ""});
 
   SingleCategoryModel toGroup() {
     return SingleCategoryModel(
@@ -30,16 +22,16 @@ class MultiSelectGroup extends Equatable {
   }
 
   @override
-  List<Object?> get props => [items, label, id];
+  List<Object?> get props => [items, label];
 }
 
 class MultiSelectItem extends Equatable {
   final String label;
-  final String id;
   final String? extraInfo;
+  final String id;
 
   const MultiSelectItem(
-      {required this.label, required this.id, this.extraInfo});
+      {required this.label, this.extraInfo, required this.id});
 
   SingleItemCategoryModel toItem() {
     return SingleItemCategoryModel(
@@ -52,22 +44,24 @@ class MultiSelectItem extends Equatable {
   factory MultiSelectItem.fromItem(SingleItemCategoryModel item) {
     return MultiSelectItem(
       label: item.nameSingleItem,
-      id: item.value,
       extraInfo: item.extraInfoSingleItem,
+      id: item.value,
     );
   }
 
   @override
-  List<Object?> get props => [label, id, extraInfo];
+  List<Object?> get props => [label, extraInfo, id];
 }
+
+typedef MultiSelectOnChange = void Function(List<MultiSelectItem> list);
 
 class CustomMultiSelectDropdown extends StatefulWidget {
   final List<MultiSelectGroup> items;
-  final List<MultiSelectGroup>? initiallySelected;
+  final List<MultiSelectItem>? initiallySelected;
   final double? width;
   final bool hasSearchBox;
   final bool isMultiSelect;
-  final ValueChanged<List<MultiSelectItem>>? onChange;
+  final MultiSelectOnChange? onChange;
   const CustomMultiSelectDropdown({
     super.key,
     required this.items,
@@ -87,8 +81,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
   late SelectDataController source;
   final List<MultiSelectGroup> oldItems = [];
 
-  List<MultiSelectGroup> get initiallySelected =>
-      widget.initiallySelected ?? [];
+  get initiallySelected => widget.initiallySelected ?? [];
   List<MultiSelectGroup> get items => widget.items;
   double? get width => widget.width;
   bool get hasSearchBox => widget.hasSearchBox;
@@ -100,6 +93,10 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
     source = SelectDataController(
       data: toCategory(items),
       isMultiSelect: isMultiSelect,
+      initSelected: initiallySelected
+          .map<SingleItemCategoryModel>(
+              (e) => e.toItem() as SingleItemCategoryModel)
+          .toList(),
     );
     oldItems.addAll(items);
   }
@@ -123,9 +120,10 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
       width: width,
       child: Select2dot1(
         onChanged: (value) {
-          final selectedGroups =
-              value.map((e) => MultiSelectItem.fromItem(e)).toList();
-          widget.onChange?.call(selectedGroups);
+          final selected = value
+              .map<MultiSelectItem>((e) => MultiSelectItem.fromItem(e))
+              .toList();
+          widget.onChange?.call(selected);
         },
         globalSettings: GlobalSettings(
           mainColor: ThemeColors.MAIN_COLOR,
