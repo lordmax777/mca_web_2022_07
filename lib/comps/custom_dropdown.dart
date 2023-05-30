@@ -54,29 +54,6 @@ class _CustomDropdownV3State extends State<CustomDropdownV3> {
     super.initState();
     menus.addAll(List.from(widget.menus));
     backupMenus.addAll(List.from(menus));
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      controller.addListener(() {
-        // _debouncer.run(() {
-        //   if (controller.text.isEmpty) {
-        //     setState(() {
-        //       menus.clear();
-        //       menus.addAll(backupMenus);
-        //     });
-        //     return;
-        //   }
-        //   setState(() {
-        //     menus.clear();
-        //     menus.addAll(backupMenus.where((e) =>
-        //         e.label.toLowerCase().contains(controller.text.toLowerCase())));
-        //     // Navigator.of(context).pop();
-        //     // if (_popupMenuButton().createState().mounted) {
-        //     // _popupMenuButton().createState().showButtonMenu();
-        //     logger(_popupMenuButton().createState().mounted);
-        //     // }
-        //   });
-        // });
-      });
-    });
   }
 
   @override

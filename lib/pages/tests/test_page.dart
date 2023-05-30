@@ -1,66 +1,30 @@
-import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/model_exporter.dart';
-import 'package:mca_web_2022_07/manager/models/location_item_md.dart';
-import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
+import 'dart:math';
 
-import '../../manager/models/list_all_md.dart';
-import '../../manager/models/property_md.dart';
-import '../../manager/redux/sets/app_state.dart';
-import '../../manager/redux/sets/state_value.dart';
-import '../../manager/rest/rest_client.dart';
+import '../../comps/custom_multi_select_dropdown.dart';
 import '../../theme/theme.dart';
+import 'package:multiselect_dropdown_flutter/multiselect_dropdown_flutter.dart';
+import 'package:select2dot1/select2dot1.dart';
 
-class TestPage extends StatelessWidget {
-  const TestPage({Key? key}) : super(key: key);
+class TestPage extends StatefulWidget {
+  TestPage({Key? key}) : super(key: key);
 
-  List<ListShift> get allShifts => appStore.state.generalState.shifts;
+  @override
+  State<TestPage> createState() => _TestPageState();
+}
 
-  void _testProperties() async {
-    // for (int i = 0; i < allShifts.length; i++) {
-    final ApiResponse res =
-        await restClient().getProperties(0.toString()).nocodeErrorHandler();
-    if (res.success) {
-      final List<PropertiesMd> list = [];
-      list.addAll(res.data['shifts']
-          .map<PropertiesMd>((e) => PropertiesMd.fromJson(e))
-          .toList());
-      for (var e in list) {}
-    }
-    // }
-  }
-
-  void testLocations() async {
-    final ApiResponse res =
-        await restClient().getLocationsOrSingle(id: 0).nocodeErrorHandler();
-    if (res.success) {
-      final List<LocationAddress> list = [];
-      list.addAll(res.data
-          .map<LocationAddress>((e) => LocationAddress.fromJson(e))
-          .toList());
-      for (var e in list) {
-        print(e);
-      }
-    }
-  }
-
-  void _testShifts() {
-    for (var shift in allShifts) {}
-  }
-
-  void testQuotes() async {
-    final ApiResponse res =
-        await restClient().getQuotes(0).nocodeErrorHandler();
-    if (res.success) {
-      final List<QuoteInfoMd> list = [];
-      list.addAll(res.data['quotes']
-          .map<QuoteInfoMd>((e) => QuoteInfoMd.fromJson(e))
-          .toList());
-      for (var e in list) {
-        print(e);
-      }
-    }
-  }
+class _TestPageState extends State<TestPage> {
+  final List<MultiSelectGroup> items = [
+    MultiSelectGroup(
+      items: [
+        MultiSelectItem(label: "One", id: "1"),
+        MultiSelectItem(label: "One", id: "1.1"),
+        MultiSelectItem(label: "Two", id: "2"),
+        MultiSelectItem(label: "Three", id: "3"),
+        MultiSelectItem(label: "Four", id: "5"),
+      ],
+      label: "Numbers",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +34,29 @@ class TestPage extends StatelessWidget {
           child: SpacedColumn(
             verticalSpace: 32,
             children: [
-              _button(_testProperties, title: 'Test Properties'),
-              _button(_testShifts, title: 'Test Shifts'),
-              _button(testLocations, title: 'Test Locations'),
-              _button(testQuotes, title: 'Test Quotes'),
+              CustomMultiSelectDropdown(
+                items: items,
+                width: 300,
+                isMultiSelect: true,
+                onChange: (value) {
+                  logger(value);
+                },
+              ),
+              Text(items.first.label),
+              _button(() {
+                final oldItems = items.first.items;
+                items.clear();
+                items.addAll([
+                  MultiSelectGroup(items: oldItems),
+                ]);
+                setState(() {});
+              }, title: "Update items"),
+              // CustomMultiSelectDropdown(
+              //   items: items,
+              //   onChange: (value) {
+              //     logger(value);
+              //   },
+              // ),
             ],
           ),
         ),

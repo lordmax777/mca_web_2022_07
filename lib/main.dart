@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
@@ -24,6 +25,7 @@ import 'setup_domain.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  EquatableConfig.stringify = true;
 
   setupDomain();
   setupLogger();
