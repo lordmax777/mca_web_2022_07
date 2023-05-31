@@ -981,6 +981,7 @@ class _JobEditFormState extends State<JobEditForm>
                   onTableChangeDone();
                 });
                 data.isGridInitialized = true;
+                setState(() {});
               },
               cols: data.cols(state)),
         ),

@@ -227,7 +227,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
           animationDuration: Duration.zero,
         ),
         pillboxContentMultiSettings: const PillboxContentMultiSettings(
-          pillboxOverload: 3,
+          pillboxOverload: 2,
         ),
         selectChipSettings: SelectChipSettings(
           iconColor: ThemeColors.MAIN_COLOR,

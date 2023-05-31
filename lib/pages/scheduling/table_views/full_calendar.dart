@@ -60,7 +60,7 @@ class _FullCalendarState extends State<FullCalendar> {
   List<CalendarResource> get resources =>
       conf.resources(isUserResource, users, properties);
   List<CalendarResource> get resourcesWithoutAll =>
-      conf.resources(isUserResource, users, properties)..removeAt(1);
+      conf.resources(isUserResource, users, properties);
 
   final GlobalKey _globalKey = GlobalKey();
 

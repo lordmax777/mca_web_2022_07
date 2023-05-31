@@ -351,7 +351,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
           displayStringForOption: (p0) =>
               "${p0.name} (${p0.addressModel.line1})",
           listItemWidget: (p0) => ListTile(
-            title: Text(p0.name),
+            title: Text("${p0.name} ${p0.createdOn}"),
             subtitle: Text(p0.addressModel.line1),
             style: ListTileStyle.drawer,
           ),
@@ -394,40 +394,40 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                 null,
                 customLabel: _textField(data.client.phone),
               ),
-              const Divider(),
-              labelWithField(
-                labelWidth: 160,
-                "Payment Terms:",
-                null,
-                customLabel: _textField(data.client.payingDays.toString()),
-              ),
-              const Divider(),
-              labelWithField(
-                labelWidth: 160,
-                "Currency:",
-                null,
-                customLabel: _textField(currencies
-                    .firstWhere((element) =>
-                        int.parse(data.client.currencyId) == element.id)
-                    .title),
-              ),
-              const Divider(),
-              labelWithField(
-                  labelWidth: 160,
-                  "Payment method:",
-                  null,
-                  customLabel: _textField(paymentMethods
-                      .firstWhereOrNull((element) =>
-                          int.tryParse(data.client.paymentMethodId ?? "") ==
-                          element.id)
-                      ?.name)),
-              const Divider(),
-              labelWithField(
-                labelWidth: 160,
-                "Client Notes:",
-                null,
-                customLabel: _textField(data.client.notes),
-              ),
+              // const Divider(),
+              // labelWithField(
+              //   labelWidth: 160,
+              //   "Payment Terms:",
+              //   null,
+              //   customLabel: _textField(data.client.payingDays.toString()),
+              // ),
+              // const Divider(),
+              // labelWithField(
+              //   labelWidth: 160,
+              //   "Currency:",
+              //   null,
+              //   customLabel: _textField(currencies
+              //       .firstWhere((element) =>
+              //           int.parse(data.client.currencyId) == element.id)
+              //       .title),
+              // ),
+              // const Divider(),
+              // labelWithField(
+              //     labelWidth: 160,
+              //     "Payment method:",
+              //     null,
+              //     customLabel: _textField(paymentMethods
+              //         .firstWhereOrNull((element) =>
+              //             int.tryParse(data.client.paymentMethodId ?? "") ==
+              //             element.id)
+              //         ?.name)),
+              // const Divider(),
+              // labelWithField(
+              //   labelWidth: 160,
+              //   "Client Notes:",
+              //   null,
+              //   customLabel: _textField(data.client.notes),
+              // ),
             ],
           ),
       ],

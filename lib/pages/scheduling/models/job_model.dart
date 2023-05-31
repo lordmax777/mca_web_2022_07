@@ -110,7 +110,6 @@ class JobModel {
     timingInfo.repeat = q.getWorkRepeat;
     timingInfo.setDays(q.workDays);
     final allUsers = [...state.usersState.users];
-    logger(q.getUserIds);
     if (q.users != null && q.users!.isNotEmpty) {
       for (var user in q.users!) {
         final foundUser =

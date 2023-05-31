@@ -1,6 +1,7 @@
 export './models/create_shift_type.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mca_web_2022_07/comps/custom_multi_select_dropdown.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/pages/scheduling/calendar_constants.dart';
@@ -93,13 +94,30 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
   //Getters
   AppState get appState => StoreProvider.of<AppState>(context).state;
-  List<UserRes> get users => [UserRes.all(), ...appState.usersState.users];
+  List<UserRes> get users => [...appState.usersState.users];
   List<PropertiesMd> get properties =>
-      [PropertiesMd.all(), ...appState.generalState.allSortedProperties];
+      [...appState.generalState.allSortedProperties];
   bool get isAllSelected => selectedResources.isEmpty;
 
   @override
   Widget build(BuildContext context) {
+    final List<MultiSelectGroup> items = [
+      MultiSelectGroup(items: [
+        if (isUserResource)
+          for (var user in users)
+            MultiSelectItem(
+              label: user.fulltitle,
+              id: user.id.toString(),
+            )
+        else
+          for (var pr in properties)
+            MultiSelectItem(
+              label: pr.fulltitle,
+              id: pr.id.toString(),
+            )
+      ], label: isUserResource ? "Users" : "Properties")
+    ];
+
     return PageWrapper(
       child: TableWrapperWidget(
         child: SizedBox(
@@ -116,51 +134,35 @@ class _SchedulingPageState extends State<SchedulingPage> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: Visibility(
                       visible: showResourceFilter,
-                      child: DropdownWidgetV2(
-                        dropdownBtnWidth: 300,
-                        dropdownOptionsWidth: 300,
-                        hintText:
-                            "Filtered ${isUserResource ? "Users" : Constants.propertyName.strCapitalize.toPlural} ${!isAllSelected ? selectedResources.length : ""}",
+                      child: CustomMultiSelectDropdown(
+                        isMultiSelect: true,
                         hasSearchBox: true,
-                        items: [
-                          if (isUserResource)
-                            for (var user in users)
-                              CustomDropdownValue(name: user.fulltitle)
-                          else
-                            for (var pr in properties)
-                              CustomDropdownValue(name: pr.fulltitle)
-                        ],
-                        customItemIcons: {
-                          for (var idx in selectedResources)
-                            idx: HeroIcons.check,
-                        },
-                        leftIcon: isAllSelected
-                            ? null
-                            : IconButton(
-                                tooltip: "Clear",
-                                onPressed: () {
-                                  setState(() {
-                                    selectedResources.clear();
-                                  });
-                                },
-                                icon: const HeroIcon(
-                                  HeroIcons.xCircle,
-                                ),
-                              ),
-                        onChanged: (index) {
-                          setState(() {
-                            if (selectedResources.contains(index)) {
-                              if (isAllSelected) return;
-                              selectedResources.remove(index);
-                              return;
-                            }
-                            if (index == 0) {
-                              selectedResources.clear();
-                              return;
-                            }
-                            selectedResources.add(index);
-                            selectedResources.sort();
-                          });
+                        width: 300,
+                        items: items,
+                        onChange: (res) {
+                          switch (res.action) {
+                            case RetAction.empty:
+                              setState(() {
+                                selectedResources.clear();
+                              });
+                              break;
+                            case RetAction.add:
+                              setState(() {
+                                selectedResources.add(users.indexWhere(
+                                    (element) =>
+                                        element.id == int.parse(res.addId!)));
+                                selectedResources.sort();
+                              });
+                              break;
+                            case RetAction.remove:
+                              setState(() {
+                                selectedResources.remove(users.indexWhere(
+                                    (element) =>
+                                        element.id ==
+                                        int.parse(res.removeId!)));
+                              });
+                              break;
+                          }
                         },
                       ),
                     ),
