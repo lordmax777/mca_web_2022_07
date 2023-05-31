@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart' show Get;
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
 import 'package:mca_web_2022_07/comps/title_container.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
@@ -216,7 +215,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                     const SizedBox(width: 16),
                     Text(
                       "Quick Schedule",
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const Spacer(),
                     IconButton(
@@ -359,6 +358,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
           onSelected: (quote) {
             setState(() {
               data.quote = quote;
+              data.quote!.id = 0;
             });
           },
         ),

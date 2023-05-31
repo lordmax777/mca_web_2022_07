@@ -83,7 +83,7 @@ class _StaffRequirementFormState extends State<StaffRequirementForm> {
           (row.cells['depModel']!.value as ShiftStaffReqMd).groupId;
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
-          .deletePropertiesStaff(widget.shiftId!, groupId)
+          .deletePropertiesStaff(widget.shiftId, groupId)
           .nocodeErrorHandler();
       gridStateManager.setShowLoading(false);
       if (res.success) {

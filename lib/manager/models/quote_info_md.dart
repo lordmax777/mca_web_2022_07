@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
@@ -203,8 +205,18 @@ class QuoteInfoMd {
       .firstWhereOrNull((element) => element.id == clientId);
   int? shiftId;
   String? userIds;
-  List<int> get getUserIds =>
-      userIds?.split(',').map((e) => int.parse(e)).toList() ?? [];
+  List<int> get getUserIds {
+    if (userIds == null) return [];
+    try {
+      final map = jsonDecode(userIds!);
+      return map['user_ids']?.cast<int>() ?? [];
+    } catch (e) {
+
+      return [];
+      return userIds?.split(',').map((e) => int.parse(e)).toList() ?? [];
+    }
+  }
+
   List<QuoteMessageInfo>? messages;
   List<UserInfo>? users;
 
@@ -692,7 +704,6 @@ class QuoteMessageInfo {
       content.hashCode ^ createdOn.hashCode ^ createdBy.hashCode;
 
   //copy
-
 }
 
 class UserInfo {

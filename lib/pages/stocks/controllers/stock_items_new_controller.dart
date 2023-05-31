@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/comps/dropdown_widget1.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_controller.dart';
@@ -34,28 +35,27 @@ class StockItemsNewItemController extends GetxController {
   int get forObxValue => forObx.value;
   set forObxValue(int value) => forObx.value = value;
 
-  Future<void> create() async {
+  Future<void> create(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      showLoading();
-      final ApiResponse res = await restClient()
-          .postStorageItems(
-            id: stockItem?.id ?? 0,
-            name: nameController.text,
-            active: true,
-            service: true,
-            incomingPrice: ourPriceController.text,
-            outgoingPrice: customPriceController.text,
-            taxId: int.parse(tax.code!),
-          )
-          .nocodeErrorHandler();
+      final res = await McaLoading.futureLoading<ApiResponse>(() async {
+        final ApiResponse res = await restClient()
+            .postStorageItems(
+              id: stockItem?.id ?? 0,
+              name: nameController.text,
+              active: true,
+              service: true,
+              incomingPrice: ourPriceController.text,
+              outgoingPrice: customPriceController.text,
+              taxId: int.parse(tax.code!),
+            )
+            .nocodeErrorHandler();
 
-      if (res.success) {
-        await appStore.dispatch(GetAllStorageItemsAction());
-        closeLoading();
-      } else {
-        await closeLoading();
-        showError(res.data['errors'].toString());
-      }
+        if (res.success) {
+          await appStore.dispatch(GetAllStorageItemsAction());
+        }
+        return res;
+      });
+      Navigator.maybePop(context, res.success);
     }
   }
 

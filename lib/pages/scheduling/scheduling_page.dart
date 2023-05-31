@@ -296,22 +296,22 @@ List<PopupMenuEntry<ScheduleCreatePopupMenus>> getPopupCreateMenus(
           ],
         ),
       ),
-    if (hasEditJob)
-      PopupMenuItem(
-        value: ScheduleCreatePopupMenus.quickSchedule,
-        child: SpacedRow(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          horizontalSpace: 8,
-          children: [
-            const HeroIcon(
-              HeroIcons.calendar,
-              color: ThemeColors.gray2,
-              size: 18,
-            ),
-            Text(ScheduleCreatePopupMenus.quickSchedule.label),
-          ],
-        ),
+    // if (hasEditJob)
+    PopupMenuItem(
+      value: ScheduleCreatePopupMenus.quickSchedule,
+      child: SpacedRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        horizontalSpace: 8,
+        children: [
+          const HeroIcon(
+            HeroIcons.calendar,
+            color: ThemeColors.gray2,
+            size: 18,
+          ),
+          Text(ScheduleCreatePopupMenus.quickSchedule.label),
+        ],
       ),
+    ),
     if (hasEditJob)
       PopupMenuItem(
         value: ScheduleCreatePopupMenus.delete,

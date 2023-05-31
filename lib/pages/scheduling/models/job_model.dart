@@ -110,6 +110,7 @@ class JobModel {
     timingInfo.repeat = q.getWorkRepeat;
     timingInfo.setDays(q.workDays);
     final allUsers = [...state.usersState.users];
+    logger(q.getUserIds);
     if (q.users != null && q.users!.isNotEmpty) {
       for (var user in q.users!) {
         final foundUser =
@@ -138,6 +139,7 @@ class JobModel {
               checked: item.auto,
             )
           ]);
+          // logger();
         }
       }
     }
@@ -190,7 +192,7 @@ class JobModel {
     return gridStateManager.rows
         .map<StorageItemMd>((row) {
           final item = storageItems.firstWhereOrNull(
-              (element) => element.id == row.cells['id']!.value);
+              (element) => element.id == row.cells['id']?.value);
           if (item != null) {
             item.quantity = row.cells['quantity']!.value;
             item.outgoingPrice = row.cells['customer_price']!.value;

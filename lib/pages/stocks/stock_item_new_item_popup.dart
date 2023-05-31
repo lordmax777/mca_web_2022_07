@@ -165,7 +165,7 @@ class StocksNewItemPopupWidget extends StatelessWidget {
             paddingWithoutIcon: true,
             icon: const HeroIcon(HeroIcons.check, size: 20.0),
             text: 'Add Item',
-            onPressed: controller.create,
+            onPressed: () => controller.create(context),
           ),
         ],
       ),

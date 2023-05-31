@@ -4,6 +4,7 @@ import 'package:mca_web_2022_07/comps/custom_get_builder.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import '../../comps/show_overlay_popup.dart';
+import '../../manager/mca_loading.dart';
 import '../../manager/redux/states/general_state.dart';
 import '../../theme/theme.dart';
 import 'controllers/stock_items_controller.dart';
@@ -13,21 +14,13 @@ class StockItemsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, AppState>(
-      converter: (store) => store.state,
-      onInit: (store) {
-        store.dispatch(GetAllStorageItemsAction());
-      },
-      builder: (_, state) => PageWrapper(
-        child: SpacedColumn(verticalSpace: 16.0, children: [
-          const PagesTitleWidget(
-            title: 'Stock Items',
-          ),
-          ErrorWrapper(errors: [
-            state.generalState.paramList.error,
-            state.generalState.storageItems.error,
-          ], child: _Body())
-        ]),
+    return PageWrapper(
+      child: SpacedColumn(
+        verticalSpace: 16.0,
+        children: [
+          const PagesTitleWidget(title: 'Stock Items'),
+          _Body(),
+        ],
       ),
     );
   }
@@ -76,9 +69,17 @@ class _Body extends StatelessWidget {
             ButtonMedium(
               text: "New Item",
               icon: const HeroIcon(HeroIcons.plusCircle, size: 20),
-              onPressed: () {
-                showOverlayPopup(
+              onPressed: () async {
+                final bool? res = await showOverlayPopup(
                     body: const StocksNewItemPopupWidget(), context: context);
+                logger("res: $res", hint: 'StocksNewItemPopupWidget');
+                if (res == true) {
+                  await McaLoading.futureLoading(() async =>
+                      await appStore.dispatch(GetAllStorageItemsAction()));
+                } else if (res == false) {
+                  McaLoading.showFail("Failed to add new item");
+                }
+                //
               },
             ),
           ]),
@@ -102,19 +103,20 @@ class _Body extends StatelessWidget {
   PlutoRow _buildItem(StorageItemMd e) {
     return PlutoRow(cells: {
       "item": PlutoCell(value: e),
-      "item_name": PlutoCell(value: e.name ?? "-"),
-      "our_price": PlutoCell(value: e.incomingPrice ?? 0),
-      "customer_price": PlutoCell(value: e.outgoingPrice ?? 0),
-      "tax": PlutoCell(value: ListTaxes.byId(e.taxId ?? 1)!.rate),
+      "item_name": PlutoCell(value: e.name),
+      "our_price": PlutoCell(value: e.incomingPrice),
+      "customer_price": PlutoCell(value: e.outgoingPrice),
+      "tax": PlutoCell(value: ListTaxes.byId(e.taxId)?.rate ?? 0),
     });
   }
 
   Widget _footer(StockItemsController controller) {
     return Padding(
-      padding:
-          const EdgeInsets.only(left: 16.0, right: 32.0, top: 4.0, bottom: 4.0),
+      padding: const EdgeInsets.only(
+          left: 16.0, right: 32.0, top: 4.0, bottom: 16.0),
       child: SpacedRow(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SpacedRow(
                 horizontalSpace: 8.0,

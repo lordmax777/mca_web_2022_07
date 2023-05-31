@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 
 import '../theme/theme.dart';
 
-showOverlayPopup({
+Future showOverlayPopup({
   String? buttonText,
   required Widget body,
   EdgeInsetsGeometry? margin,

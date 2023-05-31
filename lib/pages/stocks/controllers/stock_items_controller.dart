@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
-import 'package:mca_web_2022_07/pages/stocks/controllers/stock_items_new_controller.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import '../../../manager/model_exporter.dart';
 import '../../../manager/redux/middlewares/users_middleware.dart';
-import '../../../manager/rest/nocode_helpers.dart';
 import '../../../manager/rest/rest_client.dart';
 import '../../../theme/theme.dart';
 
@@ -84,8 +82,10 @@ class StockItemsController extends GetxController {
     ];
   }
 
-  void setSm(PlutoGridStateManager sm) {
+  void setSm(PlutoGridStateManager sm) async {
     gridStateManager = sm;
+    // await McaLoading.futureLoading(
+    //     () async => await appStore.dispatch(GetAllStorageItemsAction()));
     gridStateManager.setPage(0);
     gridStateManager.setPageSize(10);
     gridStateManager.setPage(page);
@@ -96,7 +96,7 @@ class StockItemsController extends GetxController {
   void onEdit(PlutoGridOnChangedEvent event) async {
     final oldRow = event.row;
     final StorageItemMd item = event.row.cells['item']!.value;
-    final int id = item.id!.toInt();
+    final int id = item.id.toInt();
     final String name = event.row.cells['item_name']!.value;
     final num ourPrice = event.row.cells['our_price']!.value;
     final num customerPrice = event.row.cells['customer_price']!.value;
@@ -108,17 +108,14 @@ class StockItemsController extends GetxController {
       gridStateManager.setShowLoading(true);
       final ApiResponse res = await restClient()
           .postStorageItems(
-            id: id,
-            name: name,
-            active: item.active ?? false,
-            service: item.service ?? false,
-            incomingPrice: ourPrice.toString(),
-            outgoingPrice: customerPrice.toString(),
-            taxId: taxId ?? 1,
-          )
+              id: id,
+              name: name,
+              active: item.active,
+              service: item.service,
+              incomingPrice: ourPrice.toString(),
+              outgoingPrice: customerPrice.toString(),
+              taxId: taxId ?? 1)
           .nocodeErrorHandler();
-
-      // await closeLoading();
       gridStateManager.setShowLoading(false);
 
       if (!res.success) {
