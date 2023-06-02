@@ -33,6 +33,7 @@ class PagesTitleWidget extends StatelessWidget {
         ),
         if (onRightBtnClick != null)
           SpacedRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
             horizontalSpace: 8,
             children: [
               if (buttons != null) ...buttons!,

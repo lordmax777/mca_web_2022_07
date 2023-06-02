@@ -46,8 +46,10 @@ class CalendarConf {
   bool isMonth(CalendarView view) => view == allowedViews[2];
   bool isSchedule(CalendarView view) => view == allowedViews[3];
   List<CalendarResource> resources(
-      bool isUserResource, List<UserRes> users, List<PropertiesMd> properties) {
-    return [
+      bool isUserResource, List<UserRes> users, List<PropertiesMd> properties,
+      {required bool showResourcesWithAppointment,
+      required List<String> resourcesWithAppointment}) {
+    final List<CalendarResource> resources = [
       CalendarConstants.openCalendarResource,
       if (isUserResource)
         ...users
@@ -64,6 +66,20 @@ class CalendarConf {
                 color: Colors.blueAccent))
             .toList()
     ];
+    //if showResourcesWithAppointment is false, then show all slots without using resourcesWithAppointment
+    if (!showResourcesWithAppointment) {
+      return resources;
+    }
+
+    //if showResourcesWithAppointment is true, then show only resourcesWithAppointment
+    if (resourcesWithAppointment.isNotEmpty) {
+      return resources
+          .where((element) => resourcesWithAppointment
+              .any((resourceId) => resourceId == element.id))
+          .toList();
+    }
+    //else show all resources
+    return resources;
   }
 
   final TextStyle textStyle = const TextStyle(

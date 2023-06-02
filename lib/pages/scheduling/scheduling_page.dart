@@ -1,5 +1,6 @@
 export './models/create_shift_type.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/custom_multi_select_dropdown.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
@@ -11,6 +12,7 @@ import 'package:mca_web_2022_07/utils/global_functions.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../comps/simple_popup_menu.dart';
 import '../../manager/redux/sets/app_state.dart';
+import '../../manager/redux/states/general_state.dart';
 import '../../manager/redux/states/schedule_state.dart';
 import '../../manager/rest/nocode_helpers.dart';
 import '../../theme/theme.dart';
@@ -71,6 +73,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   bool isUserResource = true;
   final List<int> selectedResources = [];
   bool showResourceFilter = true;
+  bool showEmptySlots = false;
 
   //Functions
   void _changeResourceType() {
@@ -90,6 +93,29 @@ class _SchedulingPageState extends State<SchedulingPage> {
     showResourceFilter = view == CalendarConstants.conf.allowedViews[0] ||
         view == CalendarConstants.conf.allowedViews[1];
     setState(() {});
+  }
+
+  void _onAddQuoteTap() async {
+    final JobModel data = JobModel(type: ScheduleCreatePopupMenus.quote);
+    final quoteCreated = await showDialog<bool>(
+      context: context,
+      barrierDismissible: kDebugMode,
+      builder: (context) => JobEditForm(data: data, showSuccessDialog: false),
+    );
+    if (quoteCreated == null) return;
+    if (quoteCreated) {
+      await McaLoading.futureLoading<void>(
+          () async => await appStore.dispatch(GetQuotesAction()));
+      McaLoading.showSuccess("Quote Created Successfully");
+    } else {
+      McaLoading.showFail("Quote Creation Failed");
+    }
+  }
+
+  void onShowResourcesWithAppointment() {
+    setState(() {
+      showEmptySlots = !showEmptySlots;
+    });
   }
 
   //Getters
@@ -170,6 +196,43 @@ class _SchedulingPageState extends State<SchedulingPage> {
                   onRightBtnClick:
                       showResourceFilter ? _changeResourceType : null,
                   btnIcon: isUserResource ? HeroIcons.home : HeroIcons.user,
+                  buttons: [
+                    GestureDetector(
+                      onTap: onShowResourcesWithAppointment,
+                      child: SpacedRow(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        horizontalSpace: 8.0,
+                        children: [
+                          Text(
+                            // kDebugMode
+                            //     ? "Show Resources\nwithout appointment"
+                            //     :
+                            "Show Empty Slots",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          ToggleCheckboxWidget(
+                            onToggle: (checked) {
+                              onShowResourcesWithAppointment();
+                            },
+                            inactiveColor: Colors.grey,
+                            value: showEmptySlots,
+                            width: 45,
+                            height: 25,
+                            toggleSize: 15,
+                          ),
+                        ],
+                      ),
+                    ),
+                    ButtonMedium(
+                      text: "Create Quote",
+                      icon: const HeroIcon(
+                        HeroIcons.plusCircle,
+                        size: 20,
+                      ),
+                      onPressed: _onAddQuoteTap,
+                    ),
+                  ],
                   btnText:
                       "Change to ${isUserResource ? Constants.propertyName.strCapitalize.toPlural : "Users"} View",
                 ),
@@ -182,6 +245,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                     selectedResources: selectedResources,
                     users: users,
                     properties: properties,
+                    showResourcesWithAppointment: !showEmptySlots,
                   )),
             ],
           ),

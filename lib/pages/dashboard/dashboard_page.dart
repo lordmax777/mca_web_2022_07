@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -41,9 +43,9 @@ class DashboardPage extends StatelessWidget {
           if (kDebugMode)
             TextButton(
                 onPressed: () {
-                  McaLoading.showLoading(showCancelButton: true);
+                  context.pushRoute(const SchedulingRoute());
                 },
-                child: const Text("Show Loading")),
+                child: const Text("Scheduling")),
         ],
       ),
     );

@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/pages/dashboard/dashboard_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -49,7 +50,7 @@ class _McaWebAppState extends State<McaWebApp> {
         scrollBehavior: CustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
         routerDelegate: appRouter.delegate(initialRoutes: [
-          if (kDebugMode) const HomeRoute(children: [StockItemsListRoute()])
+          if (kDebugMode) const HomeRoute(children: [DashboardRoute()])
         ]),
         routeInformationParser: appRouter.defaultRouteParser(),
         localizationsDelegates: const [

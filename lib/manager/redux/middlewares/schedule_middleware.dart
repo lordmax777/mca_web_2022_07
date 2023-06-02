@@ -214,11 +214,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
           startTime: stDate,
           endTime: et,
           isAllDay: isAllDay,
-          color:
-              // us == null
-              //     ? CalendarConstants.openShiftAppointmentColor
-              //     :
-              shift.shift.randomBgColor,
+          color: shift.shift.randomBgColor,
           subject: subject.toString(),
           id: shift,
           resourceIds: [

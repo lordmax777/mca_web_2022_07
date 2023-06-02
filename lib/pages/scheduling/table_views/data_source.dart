@@ -64,8 +64,12 @@ class AppointmentDataSource extends CalendarDataSource {
             _meetings.add(appointment);
           }
         }
-        logger("Loaded new appointments ${_meetings.length}",
-            hint: "DataSource._handleLoadMore");
+        setResourcesWithAppointmentOnly(
+            getResourcesWithAppointment(fetchedAppointments));
+        logger(
+            "Loaded new appointments ${fetchedAppointments.length}"
+                .toUpperCase(),
+            hint: "DataSource._handleLoadMore".toUpperCase());
         _addNewAppointments(_meetings);
         return _meetings;
       } on ShiftFetchException catch (e) {
@@ -94,7 +98,27 @@ class AppointmentDataSource extends CalendarDataSource {
       }
     }
 
-    return await McaLoading.futureLoading<List<Appointment>>(fetch);
+    return await McaLoading.futureLoading<List<Appointment>>(() async {
+      final list = await fetch();
+      return list;
+    });
+  }
+
+  AppointmentDataSource(this.source,
+      {this.onRangeChanged, required this.setResourcesWithAppointmentOnly});
+
+  List<Appointment> source;
+
+  void Function(DateTime, DateTime)? onRangeChanged;
+
+  void Function(List<String> r) setResourcesWithAppointmentOnly;
+
+  @override
+  List<dynamic> get appointments => source;
+
+  @override
+  set resources(List<CalendarResource>? r) {
+    super.resources = r;
   }
 
   void _addNewAppointments(List<Appointment> _appointments) {
@@ -129,18 +153,23 @@ class AppointmentDataSource extends CalendarDataSource {
     return [];
   }
 
-  AppointmentDataSource(this.source, {this.onRangeChanged});
-
-  List<Appointment> source;
-
-  void Function(DateTime, DateTime)? onRangeChanged;
-
-  @override
-  List<dynamic> get appointments => source;
-
-  @override
-  set resources(List<CalendarResource>? r) {
-    super.resources = r;
+  List<String> getResourcesWithAppointment(
+      List<Appointment> loadedNewAppointments) {
+    //find the resources which have no appointments
+    final List<Appointment> apps = [...loadedNewAppointments];
+    final List<String> availableResourceIds = <String>[];
+    for (final Appointment app in apps) {
+      final rs =
+          (app.resourceIds ?? []).map<String>((e) => e.toString()).toList();
+      for (final String resourceId in rs) {
+        if (!availableResourceIds.contains(resourceId)) {
+          if (resourceId.isNotEmpty) {
+            availableResourceIds.add(resourceId);
+          }
+        }
+      }
+    }
+    return availableResourceIds;
   }
 }
 

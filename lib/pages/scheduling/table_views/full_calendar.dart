@@ -27,12 +27,14 @@ class FullCalendar extends StatefulWidget {
   final List<int> selectedResources;
   final List<UserRes> users;
   final List<PropertiesMd> properties;
+  final bool showResourcesWithAppointment;
   const FullCalendar(
       {Key? key,
       required this.isUserResource,
       required this.onShowResources,
       required this.users,
       required this.properties,
+      required this.showResourcesWithAppointment,
       required this.selectedResources})
       : super(key: key);
 
@@ -41,38 +43,79 @@ class FullCalendar extends StatefulWidget {
 }
 
 class _FullCalendarState extends State<FullCalendar> {
+  late final AppointmentDataSource _events;
+  final GlobalKey _globalKey = GlobalKey();
   final CalendarConf conf = CalendarConstants.conf;
-
+  final CalendarController _calendarController = CalendarController();
   DateTime? _startDate;
   DateTime? _endDate;
-
-  void _setDateRange(DateTime startDate, DateTime endDate) {
-    _startDate = startDate;
-    _endDate = endDate;
-  }
+  CalendarView _view = CalendarView.timelineDay;
+  final List<String> resourcesWithAppointmentOnly = [];
 
   bool get isUserResource => widget.isUserResource;
   ValueChanged<CalendarView> get onShowResources => widget.onShowResources;
   List<int> get selectedResources => widget.selectedResources;
-
   List<UserRes> get users => widget.users;
   List<PropertiesMd> get properties => widget.properties;
   List<CalendarResource> get resources =>
-      conf.resources(isUserResource, users, properties);
+      conf.resources(isUserResource, users, properties,
+          showResourcesWithAppointment: showResourcesWithAppointment,
+          resourcesWithAppointment: resourcesWithAppointmentOnly);
   List<CalendarResource> get resourcesWithoutAll =>
-      conf.resources(isUserResource, users, properties);
-
-  final GlobalKey _globalKey = GlobalKey();
-
-  final CalendarController _calendarController = CalendarController();
-  CalendarView _view = CalendarView.timelineDay;
-
+      conf.resources(isUserResource, users, properties,
+          showResourcesWithAppointment: showResourcesWithAppointment,
+          resourcesWithAppointment: resourcesWithAppointmentOnly);
   bool get isDay => conf.isDay(_calendarController.view!);
   bool get isWeek => conf.isWeek(_calendarController.view!);
   bool get isMonth => conf.isMonth(_calendarController.view!);
   bool get isSchedule => conf.isSchedule(_calendarController.view!);
+  bool get showResourcesWithAppointment => widget.showResourcesWithAppointment;
 
-  late final AppointmentDataSource _events;
+  @override
+  void initState() {
+    _view = appStore.state.scheduleState.calendarView;
+    _calendarController.view = _view;
+
+    _events = AppointmentDataSource(<Appointment>[],
+        onRangeChanged: _setDateRange,
+        setResourcesWithAppointmentOnly: setResourcesWithAppointmentOnly);
+
+    _events.resources = resourcesWithoutAll;
+
+    _calendarController.addPropertyChangedListener((e) {
+      if (e == 'calendarView') {
+        _events.clearAppointments();
+        onShowResources(_calendarController.view!);
+      }
+      if (e == 'displayDate') {
+        logger('DISPLAY DATE CHANGED');
+      }
+    });
+
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      onShowResources(_calendarController.view!);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant FullCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (isMonth) return;
+    if (oldWidget.isUserResource != widget.isUserResource) {
+      _events.resources = resources;
+    }
+    _handleResourceChange();
+
+    // //if showResourcesWithAppointment != true, remove all the resources which do not have any appointment
+    // if (oldWidget.showResourcesWithAppointment != widget.showResourcesWithAppointment) {
+    //   if (showResourcesWithAppointment) {
+    //     _events.resources = resourcesWithoutAll;
+    //   } else {
+    //     _events.onShowEmptyResourcesOnly(isUserResource);
+    //   }
+    // }
+  }
 
   @override
   void dispose() {
@@ -80,13 +123,9 @@ class _FullCalendarState extends State<FullCalendar> {
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(covariant FullCalendar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isUserResource != widget.isUserResource) {
-      _events.resources = resources;
-    }
-    _handleResourceChange();
+  void _setDateRange(DateTime startDate, DateTime endDate) {
+    _startDate = startDate;
+    _endDate = endDate;
   }
 
   void _handleResourceChange() {
@@ -111,30 +150,15 @@ class _FullCalendarState extends State<FullCalendar> {
     _events.resources = conf.resources(
         isUserResource,
         filteredUsers.isEmpty ? users : filteredUsers,
-        filteredProperties.isEmpty ? properties : filteredProperties);
+        filteredProperties.isEmpty ? properties : filteredProperties,
+        showResourcesWithAppointment: showResourcesWithAppointment,
+        resourcesWithAppointment: resourcesWithAppointmentOnly);
   }
 
-  @override
-  void initState() {
-    _view = appStore.state.scheduleState.calendarView;
-    _calendarController.view = _view;
-
-    _events =
-        AppointmentDataSource(<Appointment>[], onRangeChanged: _setDateRange);
-
-    _events.resources = resourcesWithoutAll;
-
-    _calendarController.addPropertyChangedListener((e) {
-      if (e == 'calendarView') {
-        _events.clearAppointments();
-        onShowResources(_calendarController.view!);
-      }
-    });
-
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      onShowResources(_calendarController.view!);
-    });
+  void setResourcesWithAppointmentOnly(List<String> r) {
+    logger('setResourcesWithAppointmentOnly ${r.length}');
+    resourcesWithAppointmentOnly.clear();
+    resourcesWithAppointmentOnly.addAll(r);
   }
 
   @override
