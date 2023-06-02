@@ -73,7 +73,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   bool isUserResource = true;
   final List<int> selectedResources = [];
   bool showResourceFilter = true;
-  bool showEmptySlots = true;
+  bool showEmptySlots = false;
 
   //Functions
   void _changeResourceType() {
@@ -173,18 +173,21 @@ class _SchedulingPageState extends State<SchedulingPage> {
                               break;
                             case RetAction.add:
                               setState(() {
-                                selectedResources.add(users.indexWhere(
-                                    (element) =>
+                                selectedResources.add((isUserResource
+                                        ? users
+                                        : properties)
+                                    .indexWhere((dynamic element) =>
                                         element.id == int.parse(res.addId!)));
                                 selectedResources.sort();
                               });
                               break;
                             case RetAction.remove:
                               setState(() {
-                                selectedResources.remove(users.indexWhere(
-                                    (element) =>
-                                        element.id ==
-                                        int.parse(res.removeId!)));
+                                selectedResources.remove(
+                                    (isUserResource ? users : properties)
+                                        .indexWhere((dynamic element) =>
+                                            element.id ==
+                                            int.parse(res.removeId!)));
                               });
                               break;
                           }
@@ -205,18 +208,16 @@ class _SchedulingPageState extends State<SchedulingPage> {
                           horizontalSpace: 8.0,
                           children: [
                             Text(
-                              kDebugMode
-                                  ? "Show Resources\nwith appointment"
-                                  : "Show Empty Slots",
+                              "Hide Empty Slots",
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             ToggleCheckboxWidget(
                               onToggle: (checked) {
-                                onShowResourcesWithAppointment(checked);
+                                onShowResourcesWithAppointment(!showEmptySlots);
                               },
                               inactiveColor: Colors.grey,
-                              value: showEmptySlots,
+                              value: !showEmptySlots,
                               width: 45,
                               height: 25,
                               toggleSize: 15,

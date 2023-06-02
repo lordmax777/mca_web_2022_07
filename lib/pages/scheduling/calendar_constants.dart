@@ -48,7 +48,8 @@ class CalendarConf {
   List<CalendarResource> resources(
       bool isUserResource, List<UserRes> users, List<PropertiesMd> properties,
       {required bool showResourcesWithAppointment,
-      required List<String> resourcesWithAppointment}) {
+      required List<String> resourcesWithAppointment,
+      required bool isFilterEmpty}) {
     final List<CalendarResource> resources = [
       CalendarConstants.openCalendarResource,
       if (isUserResource)
@@ -72,7 +73,7 @@ class CalendarConf {
     }
 
     //if showResourcesWithAppointment is true, then show only resourcesWithAppointment
-    if (resourcesWithAppointment.isNotEmpty) {
+    if (resourcesWithAppointment.isNotEmpty && isFilterEmpty) {
       return resources
           .where((element) => resourcesWithAppointment
               .any((resourceId) => resourceId == element.id))

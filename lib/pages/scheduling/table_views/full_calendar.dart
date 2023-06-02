@@ -61,10 +61,12 @@ class _FullCalendarState extends State<FullCalendar> {
   List<PropertiesMd> get properties => widget.properties;
   List<CalendarResource> get resources =>
       conf.resources(isUserResource, users, properties,
+          isFilterEmpty: selectedResources.isEmpty,
           showResourcesWithAppointment: showResourcesWithAppointment,
           resourcesWithAppointment: resourcesWithAppointmentOnly);
   List<CalendarResource> get resourcesWithoutAll =>
       conf.resources(isUserResource, users, properties,
+          isFilterEmpty: selectedResources.isEmpty,
           showResourcesWithAppointment: showResourcesWithAppointment,
           resourcesWithAppointment: resourcesWithAppointmentOnly);
   bool get isDay => conf.isDay(_calendarController.view!);
@@ -147,7 +149,8 @@ class _FullCalendarState extends State<FullCalendar> {
         filteredUsers.isEmpty ? users : filteredUsers,
         filteredProperties.isEmpty ? properties : filteredProperties,
         showResourcesWithAppointment: showResourcesWithAppointment,
-        resourcesWithAppointment: resourcesWithAppointmentOnly);
+        resourcesWithAppointment: resourcesWithAppointmentOnly,
+        isFilterEmpty: selectedResources.isEmpty);
   }
 
   void setResourcesWithAppointmentOnly(List<String> r) {
@@ -160,9 +163,8 @@ class _FullCalendarState extends State<FullCalendar> {
   }
 
   void updateUI(VoidCallback callback) {
-    SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-      callback();
-    });
+    SchedulerBinding.instance
+        .addPostFrameCallback((Duration timeStamp) => callback());
   }
 
   @override
