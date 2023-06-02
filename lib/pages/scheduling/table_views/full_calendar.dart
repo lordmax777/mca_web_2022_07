@@ -28,6 +28,7 @@ class FullCalendar extends StatefulWidget {
   final List<UserRes> users;
   final List<PropertiesMd> properties;
   final bool showResourcesWithAppointment;
+  final ValueChanged<bool> onShowResourcesWithAppointment;
   const FullCalendar(
       {Key? key,
       required this.isUserResource,
@@ -35,6 +36,7 @@ class FullCalendar extends StatefulWidget {
       required this.users,
       required this.properties,
       required this.showResourcesWithAppointment,
+      required this.onShowResourcesWithAppointment,
       required this.selectedResources})
       : super(key: key);
 
@@ -70,6 +72,8 @@ class _FullCalendarState extends State<FullCalendar> {
   bool get isMonth => conf.isMonth(_calendarController.view!);
   bool get isSchedule => conf.isSchedule(_calendarController.view!);
   bool get showResourcesWithAppointment => widget.showResourcesWithAppointment;
+  ValueChanged<bool> get onShowResourcesWithAppointment =>
+      widget.onShowResourcesWithAppointment;
 
   @override
   void initState() {
@@ -106,15 +110,6 @@ class _FullCalendarState extends State<FullCalendar> {
       _events.resources = resources;
     }
     _handleResourceChange();
-
-    // //if showResourcesWithAppointment != true, remove all the resources which do not have any appointment
-    // if (oldWidget.showResourcesWithAppointment != widget.showResourcesWithAppointment) {
-    //   if (showResourcesWithAppointment) {
-    //     _events.resources = resourcesWithoutAll;
-    //   } else {
-    //     _events.onShowEmptyResourcesOnly(isUserResource);
-    //   }
-    // }
   }
 
   @override
@@ -156,9 +151,18 @@ class _FullCalendarState extends State<FullCalendar> {
   }
 
   void setResourcesWithAppointmentOnly(List<String> r) {
-    logger('setResourcesWithAppointmentOnly ${r.length}');
     resourcesWithAppointmentOnly.clear();
     resourcesWithAppointmentOnly.addAll(r);
+    //update UI only when showResourcesWithAppointment is true
+    if (showResourcesWithAppointment) {
+      updateUI(() => onShowResourcesWithAppointment(false));
+    }
+  }
+
+  void updateUI(VoidCallback callback) {
+    SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
+      callback();
+    });
   }
 
   @override
@@ -176,22 +180,12 @@ class _FullCalendarState extends State<FullCalendar> {
       ),
     );
 
-    return Scaffold(
-      body: calendar,
-    );
+    return Scaffold(body: calendar);
   }
 
   /// Handle the view changed and it used to update the UI on web platform
   /// whether the calendar view changed from month view or to month view.
   void _onViewChanged() {
-    _view = _calendarController.view!;
-    SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-      setState(() {
-        /// Update the web UI when the calendar view changed from month view
-        /// or to month view.
-      });
-    });
-
     _view = _calendarController.view!;
     appStore.dispatch(SCChangeCalendarView(_view));
   }
@@ -252,13 +246,6 @@ class _FullCalendarState extends State<FullCalendar> {
           future: loadMoreAppointments(),
           builder: (BuildContext context, AsyncSnapshot<void> snapShot) {
             return const SizedBox();
-            return Container(
-                height: _calendarController.view == CalendarView.schedule
-                    ? 50
-                    : double.infinity,
-                width: double.infinity,
-                alignment: Alignment.center,
-                child: const CustomLoadingWidget());
           },
         );
       },

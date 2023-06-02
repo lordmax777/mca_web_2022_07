@@ -73,7 +73,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   bool isUserResource = true;
   final List<int> selectedResources = [];
   bool showResourceFilter = true;
-  bool showEmptySlots = false;
+  bool showEmptySlots = true;
 
   //Functions
   void _changeResourceType() {
@@ -112,10 +112,9 @@ class _SchedulingPageState extends State<SchedulingPage> {
     }
   }
 
-  void onShowResourcesWithAppointment() {
-    setState(() {
-      showEmptySlots = !showEmptySlots;
-    });
+  void onShowResourcesWithAppointment(bool value) {
+    showEmptySlots = value;
+    setState(() {});
   }
 
   //Getters
@@ -193,48 +192,50 @@ class _SchedulingPageState extends State<SchedulingPage> {
                       ),
                     ),
                   ),
-                  onRightBtnClick:
-                      showResourceFilter ? _changeResourceType : null,
-                  btnIcon: isUserResource ? HeroIcons.home : HeroIcons.user,
+                  onRightBtnClick: _onAddQuoteTap,
+                  btnIcon: HeroIcons.plusCircle,
                   buttons: [
-                    GestureDetector(
-                      onTap: onShowResourcesWithAppointment,
-                      child: SpacedRow(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        horizontalSpace: 8.0,
-                        children: [
-                          Text(
-                            // kDebugMode
-                            //     ? "Show Resources\nwithout appointment"
-                            //     :
-                            "Show Empty Slots",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          ToggleCheckboxWidget(
-                            onToggle: (checked) {
-                              onShowResourcesWithAppointment();
-                            },
-                            inactiveColor: Colors.grey,
-                            value: showEmptySlots,
-                            width: 45,
-                            height: 25,
-                            toggleSize: 15,
-                          ),
-                        ],
+                    if (showResourceFilter)
+                      GestureDetector(
+                        onTap: () {
+                          onShowResourcesWithAppointment(!showEmptySlots);
+                        },
+                        child: SpacedRow(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          horizontalSpace: 8.0,
+                          children: [
+                            Text(
+                              kDebugMode
+                                  ? "Show Resources\nwith appointment"
+                                  : "Show Empty Slots",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            ToggleCheckboxWidget(
+                              onToggle: (checked) {
+                                onShowResourcesWithAppointment(checked);
+                              },
+                              inactiveColor: Colors.grey,
+                              value: showEmptySlots,
+                              width: 45,
+                              height: 25,
+                              toggleSize: 15,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    ButtonMedium(
-                      text: "Create Quote",
-                      icon: const HeroIcon(
-                        HeroIcons.plusCircle,
-                        size: 20,
+                    if (showResourceFilter)
+                      ButtonMedium(
+                        text:
+                            "Change to ${isUserResource ? Constants.propertyName.strCapitalize.toPlural : "Users"} View",
+                        icon: HeroIcon(
+                          isUserResource ? HeroIcons.home : HeroIcons.user,
+                          size: 20,
+                        ),
+                        onPressed: _changeResourceType,
                       ),
-                      onPressed: _onAddQuoteTap,
-                    ),
                   ],
-                  btnText:
-                      "Change to ${isUserResource ? Constants.propertyName.strCapitalize.toPlural : "Users"} View",
+                  btnText: "Create Quote",
                 ),
               ),
               SizedBox(
@@ -246,6 +247,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
                     users: users,
                     properties: properties,
                     showResourcesWithAppointment: !showEmptySlots,
+                    onShowResourcesWithAppointment:
+                        onShowResourcesWithAppointment,
                   )),
             ],
           ),
