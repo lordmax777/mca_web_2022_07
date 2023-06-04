@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/manager/router/mca_routes.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 import 'package:mca_web_2022_07/pages/checklist_templates/controllers/checklist_list_controller.dart';
 import 'package:mca_web_2022_07/pages/departments_groups/controllers/deps_list_controller.dart';
@@ -32,7 +33,9 @@ Future<void> main() async {
   await setupHiveDb();
   await setupControllers();
 
-  runApp(const McaWebApp());
+  //TODO:
+  final loginState = MCALoginState();
+  runApp(McaWebApp(loginState: loginState));
 }
 
 Future<void> setupControllers() async {
