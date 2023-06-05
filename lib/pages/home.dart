@@ -21,7 +21,7 @@ class Home extends StatelessWidget {
         drawerEnableOpenDragGesture: false,
         key: Constants.scaffoldKey,
         appBar: NavbarWidget(),
-        body: const UsersListPage(),
+        body: const AutoRouter(),
       ),
     );
   }
