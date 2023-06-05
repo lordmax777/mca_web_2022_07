@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
+import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
 import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
@@ -148,6 +149,11 @@ class _TimingFormState extends State<TimingForm> {
                           final date = await showCustomDatePicker(context,
                               initialTime: returnVal.date);
                           if (date == null) return;
+                          if (date.isBefore(DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day))) {
+                            McaLoading.showFail("Date cannot be before today");
+                            return;
+                          }
 
                           setState(() {
                             returnVal.date = date;
@@ -171,6 +177,12 @@ class _TimingFormState extends State<TimingForm> {
                                 initialTime: returnVal.altStartDate);
 
                             if (date == null) return;
+                            if (date.isBefore(DateTime(DateTime.now().year,
+                                DateTime.now().month, DateTime.now().day))) {
+                              McaLoading.showFail(
+                                  "Date cannot be before today");
+                              return;
+                            }
 
                             setState(() {
                               returnVal.altStartDate = date;

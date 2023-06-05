@@ -758,20 +758,34 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
     final bool isUpdate = data.isUpdate;
 
     if (!data.isClientSelected) {
-      showError("Please select client");
+      McaLoading.showFail("Please select client");
       return;
     }
     if (timing.repeat == null) {
-      showError("Please select repeat type");
+      McaLoading.showFail("Please select repeat type");
       return;
     }
     if (data.getAddedStorageItems(state.generalState.storage_items).isEmpty) {
-      showError("Please add at least one storage item");
+      McaLoading.showFail("Please add at least one storage item");
       return;
     }
     if (data.addressId == null) {
       if (!action.isQuote) {
-        showError("Please add address");
+        McaLoading.showFail("Please add address");
+        return;
+      }
+    }
+    if (data.timingInfo.date != null && data.isCreate) {
+      if (data.timingInfo.date!.isBefore(DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
+        McaLoading.showFail("Date cannot be before today");
+        return;
+      }
+    }
+    if (data.timingInfo.altStartDate != null && data.isCreate) {
+      if (data.timingInfo.altStartDate!.isBefore(DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
+        McaLoading.showFail("Date cannot be before today");
         return;
       }
     }
