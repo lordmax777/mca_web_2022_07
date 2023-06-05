@@ -5,4 +5,5 @@ export 'mca_router.dart';
 abstract class MCARoutes {
   static const String root = '/root';
   static const String login = '/login';
+  static const String home = '/home';
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class MCALoginState extends ChangeNotifier {
-  bool _isLoggedIn = true;
+  bool _isLoggedIn = false;
 
   bool get isLoggedIn => _isLoggedIn;
 

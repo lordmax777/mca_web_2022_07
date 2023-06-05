@@ -29,9 +29,7 @@ class CustomScrollBehavior extends MaterialScrollBehavior {
 }
 
 class McaWebApp extends StatefulWidget {
-  final MCALoginState loginState;
-
-  const McaWebApp({Key? key, required this.loginState}) : super(key: key);
+  const McaWebApp({Key? key}) : super(key: key);
 
   @override
   State<McaWebApp> createState() => _McaWebAppState();
@@ -46,66 +44,63 @@ class _McaWebAppState extends State<McaWebApp> {
 
   final botToastBuilder = BotToastInit(); //1. call BotToastInit
 
+  // ChangeNotifierProvider<MCALoginState>(
+  //   create: (BuildContext createContext) => MCALoginState(),
+  // ),
+  // Provider<MCARouter>(
+  //   create: (BuildContext createContext) => MCARouter(),
+  // ),
   @override
   Widget build(BuildContext context) {
     return StoreProvider(
       store: appStore,
-      child: MultiProvider(
-        providers: [
-          Provider<MCARouter>(
-            lazy: false,
-            create: (BuildContext createContext) =>
-                MCARouter(loginState: widget.loginState),
-          ),
-        ],
-        child: Builder(builder: (context) {
-          final router = Provider.of<MCARouter>(context, listen: false).router;
+      child: Builder(builder: (context) {
+        // final router = Provider.of<MCARouter>(context, listen: false).router;
 
-          return GetMaterialApp.router(
-            scrollBehavior: CustomScrollBehavior(),
-            debugShowCheckedModeBanner: false,
-            routeInformationParser: router.routeInformationParser,
-            routerDelegate: router.routerDelegate,
-            // routerDelegate: appRouter.delegate(initialRoutes: [
-            //   if (kDebugMode) const HomeRoute(children: [DashboardRoute()])
-            // ]),
-            // routeInformationParser: appRouter.defaultRouteParser(),
-            localizationsDelegates: const [
-              AppIntl
-                  .delegate, // Add this line. The name comes from class_name in pubspec.yaml
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              MonthYearPickerLocalizations.delegate,
-            ],
-            locale: const Locale('en'),
-            theme: ThemeData(
-                progressIndicatorTheme: ProgressIndicatorThemeData(
-              color: ThemeColors.MAIN_COLOR,
-              circularTrackColor: Colors.white,
-              linearMinHeight: 8,
-              linearTrackColor: Colors.white,
-              refreshBackgroundColor: Colors.white,
-            )),
-            navigatorObservers: [BotToastNavigatorObserver()],
-            builder: (context, child) {
-              return MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(alwaysUse24HourFormat: true),
-                child: botToastBuilder(
-                    context,
-                    ResponsiveWrapper.builder(child,
-                        defaultScale: true,
-                        breakpoints: const [
-                          ResponsiveBreakpoint.resize(480, name: MOBILE),
-                          ResponsiveBreakpoint.resize(800, name: TABLET),
-                          ResponsiveBreakpoint.resize(1920, name: DESKTOP),
-                        ])),
-              );
-            },
-          );
-        }),
-      ),
+        return GetMaterialApp.router(
+          scrollBehavior: CustomScrollBehavior(),
+          debugShowCheckedModeBanner: false,
+          // routeInformationParser: router.routeInformationParser,
+          // routerDelegate: router.routerDelegate,
+          routerDelegate: appRouter.delegate(initialRoutes: [
+            if (kDebugMode) const HomeRoute(children: [DashboardRoute()])
+          ]),
+          routeInformationParser: appRouter.defaultRouteParser(),
+          localizationsDelegates: const [
+            AppIntl
+                .delegate, // Add this line. The name comes from class_name in pubspec.yaml
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            MonthYearPickerLocalizations.delegate,
+          ],
+          locale: const Locale('en'),
+          theme: ThemeData(
+              progressIndicatorTheme: ProgressIndicatorThemeData(
+            color: ThemeColors.MAIN_COLOR,
+            circularTrackColor: Colors.white,
+            linearMinHeight: 8,
+            linearTrackColor: Colors.white,
+            refreshBackgroundColor: Colors.white,
+          )),
+          navigatorObservers: [BotToastNavigatorObserver()],
+          builder: (context, child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: botToastBuilder(
+                  context,
+                  ResponsiveWrapper.builder(child,
+                      defaultScale: true,
+                      breakpoints: const [
+                        ResponsiveBreakpoint.resize(480, name: MOBILE),
+                        ResponsiveBreakpoint.resize(800, name: TABLET),
+                        ResponsiveBreakpoint.resize(1920, name: DESKTOP),
+                      ])),
+            );
+          },
+        );
+      }),
     );
   }
 }

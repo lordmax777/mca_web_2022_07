@@ -195,7 +195,7 @@ class _JobEditFormState extends State<JobEditForm>
             border: Border.all(
                 color: ThemeColors.gray6,
                 width: 2,
-                strokeAlign: BorderSide.strokeAlignOutside),
+                strokeAlign: StrokeAlign.outside),
           ),
           child: SizedBox(
             width: MediaQuery.of(context).size.width,

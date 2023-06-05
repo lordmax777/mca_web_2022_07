@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:mca_web_2022_07/comps/drawer.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
+import 'package:mca_web_2022_07/pages/user/users_list_page.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
 
 class Home extends StatelessWidget {
@@ -20,7 +21,7 @@ class Home extends StatelessWidget {
         drawerEnableOpenDragGesture: false,
         key: Constants.scaffoldKey,
         appBar: NavbarWidget(),
-        body: const AutoRouter(),
+        body: const UsersListPage(),
       ),
     );
   }

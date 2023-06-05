@@ -33,9 +33,7 @@ Future<void> main() async {
   await setupHiveDb();
   await setupControllers();
 
-  //TODO:
-  final loginState = MCALoginState();
-  runApp(McaWebApp(loginState: loginState));
+  runApp(const McaWebApp());
 }
 
 Future<void> setupControllers() async {

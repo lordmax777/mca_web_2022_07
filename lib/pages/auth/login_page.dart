@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import 'package:mca_web_2022_07/manager/router/mca_login_state.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
+import 'package:provider/provider.dart';
 
 import '../../manager/hive.dart';
 import '../../theme/theme.dart';
@@ -41,13 +43,13 @@ class Body extends GetView<LoginController> {
           padding: EdgeInsets.symmetric(
               vertical: MediaQuery.of(context).size.height / 6,
               horizontal: MediaQuery.of(context).size.height / 8),
-          child: _formLogin(),
+          child: _formLogin(context),
         ),
       ),
     );
   }
 
-  Widget _formLogin() {
+  Widget _formLogin(BuildContext context) {
     return Form(
       key: controller.formKey,
       child: Column(
@@ -95,6 +97,10 @@ class Body extends GetView<LoginController> {
             child: ButtonLarge(
               text: "Login ${Constants.appVersion}",
               onPressed: controller.login, //controller.login
+              // onPressed: () {
+              //   Provider.of<MCALoginState>(context, listen: false)
+              //       .setLoggedIn(true);
+              // },
             ),
           ),
         ],
