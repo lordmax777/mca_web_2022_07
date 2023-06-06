@@ -1123,9 +1123,7 @@ class _JobEditFormState extends State<JobEditForm>
               onSmReady: (e) {
                 if (data.isGridInitialized) return;
                 data.gridStateManager = e;
-                data.gridStateManager.addListener(() {
-                  onTableChangeDone();
-                });
+                data.gridStateManager.addListener(onTableChangeDone);
                 data.isGridInitialized = true;
                 setState(() {});
               },

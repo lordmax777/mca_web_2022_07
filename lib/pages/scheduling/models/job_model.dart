@@ -221,7 +221,9 @@ class JobModel {
   }
 
   CompanyMd get company => GeneralController.to.companyInfo;
-  List<PlutoColumn> cols(AppState state, {bool showAutoColumn = true}) => [
+  List<PlutoColumn> cols(AppState state,
+          {bool showAutoColumn = true, bool showItemsCountFooter = false}) =>
+      [
         PlutoColumn(
           title: "",
           field: "item",
@@ -240,6 +242,28 @@ class JobModel {
           field: "title",
           enableEditingMode: false,
           type: PlutoColumnType.text(),
+          footerRenderer: showItemsCountFooter
+              ? (context) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Count:",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            "${context.stateManager.rows.where((element) => element.checked ?? false).length}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              : null,
         ),
         PlutoColumn(
           title: "Customer's price (${company.currency.sign})",

@@ -163,6 +163,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     }
     data.gridStateManager.removeAllRows(notify: false);
     data.gridStateManager.setShowLoading(true);
+    print("handleProducts");
     //Handle products
     final List<ClientContractItem> products = await appStore.dispatch(
         GetClientContractItemsAction(
@@ -192,6 +193,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             notify: true);
       }
     }
+    setState(() {});
     data.gridStateManager.setShowLoading(false);
   }
 
@@ -217,7 +219,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             }
             data.allocation = allocation;
             data.setClient(allocation!.shift.client);
-            handleProducts(state.generalState.storage_items);
+            await handleProducts(state.generalState.storage_items);
             setLoading(LoadingHelper.idle);
           } catch (e) {
             setLoading(LoadingHelper.error, e.toString());
@@ -266,25 +268,25 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                           title: "Select Job",
                           child: _jobField(allJobs.map((e) => e).toList(),
                               currencies, paymentMethods, state)),
-                      const Divider(height: 30),
-                      TitleContainer(
-                        width: width,
-                        title: "Select Team",
-                        padding: 0,
-                        child: _team(users),
-                      ),
-                      const Divider(height: 30),
-                      TitleContainer(
-                        width: width,
-                        title: "Guests",
-                        child: _guests(),
-                      ),
-                      const Divider(height: 30),
-                      TitleContainer(
-                        width: width,
-                        title: "Timing",
-                        child: _timing(state),
-                      ),
+                      // const Divider(height: 30),
+                      // TitleContainer(
+                      //   width: width,
+                      //   title: "Select Team",
+                      //   padding: 0,
+                      //   child: _team(users),
+                      // ),
+                      // const Divider(height: 30),
+                      // TitleContainer(
+                      //   width: width,
+                      //   title: "Guests",
+                      //   child: _guests(),
+                      // ),
+                      // const Divider(height: 30),
+                      // TitleContainer(
+                      //   width: width,
+                      //   title: "Timing",
+                      //   child: _timing(state),
+                      // ),
                       // if (!data.isGridInitialized)
                       const Divider(),
                       // if (data.isGridInitialized)
@@ -357,14 +359,14 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
         onSmReady: (e) async {
           if (data.isGridInitialized) return;
           data.gridStateManager = e;
+          data.gridStateManager.addListener(() => setState(() {}));
           data.isGridInitialized = true;
-          data.gridStateManager.addListener(() {
-            setState(() {});
-          });
+          setState(() {});
           //Handle products
-          handleProducts(state.generalState.storage_items);
+          await handleProducts(state.generalState.storage_items);
         },
-        cols: data.cols(state, showAutoColumn: false),
+        cols:
+            data.cols(state, showAutoColumn: false, showItemsCountFooter: true),
       ),
     );
   }
@@ -411,7 +413,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               ],
             )
           ],
-          onChange: (res) {
+          onChange: (res) async {
             switch (res.action) {
               case RetAction.empty:
                 // TODO: Handle this case.
@@ -421,51 +423,21 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                 final shift =
                     shifts.firstWhereOrNull((element) => element.id == id);
                 if (shift == null) return;
-                setState(() {
-                  data.allocation = AllocationModel(
-                    date: data.dateAsString ?? "",
-                    id: 0,
-                    shift: shift,
-                    guests: 0,
-                    published: false,
-                  );
-                  data.setClient(shift.client);
-                  handleProducts(state.generalState.storage_items);
-                });
+                data.allocation = AllocationModel(
+                  date: data.dateAsString ?? "",
+                  id: 0,
+                  shift: shift,
+                  guests: 0,
+                  published: false,
+                );
+                data.setClient(shift.client);
+                await handleProducts(state.generalState.storage_items);
                 break;
               default:
                 break;
             }
           },
         ),
-        // CustomAutocompleteTextField<QuoteInfoMd>(
-        //   hintText: "Select a Job",
-        //   height: 50,
-        //   width: double.infinity,
-        //   options: (val) => shifts
-        //       .where((element) =>
-        //           element.name.toLowerCase().contains(val.text.toLowerCase()) ||
-        //           element.addressModel.line1
-        //               .toLowerCase()
-        //               .contains(val.text.toLowerCase()))
-        //       .toList(),
-        //   initialValue: data.quote != null
-        //       ? TextEditingValue(text: data.quote!.name)
-        //       : null,
-        //   displayStringForOption: (p0) =>
-        //       "${p0.name} (${p0.addressModel.line1})",
-        //   listItemWidget: (p0) => ListTile(
-        //     title: Text("${p0.name} ${p0.createdOn}"),
-        //     subtitle: Text(p0.addressModel.line1),
-        //     style: ListTileStyle.drawer,
-        //   ),
-        //   onSelected: (quote) {
-        //     setState(() {
-        //       data.quote = quote;
-        //       data.quote!.id = 0;
-        //     });
-        //   },
-        // ),
         if (data.isClientSelected) const SizedBox(height: 16),
         if (data.isClientSelected)
           SpacedColumn(
@@ -498,40 +470,6 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                 null,
                 customLabel: _textField(data.client.phone),
               ),
-              // const Divider(),
-              // labelWithField(
-              //   labelWidth: 160,
-              //   "Payment Terms:",
-              //   null,
-              //   customLabel: _textField(data.client.payingDays.toString()),
-              // ),
-              // const Divider(),
-              // labelWithField(
-              //   labelWidth: 160,
-              //   "Currency:",
-              //   null,
-              //   customLabel: _textField(currencies
-              //       .firstWhere((element) =>
-              //           int.parse(data.client.currencyId) == element.id)
-              //       .title),
-              // ),
-              // const Divider(),
-              // labelWithField(
-              //     labelWidth: 160,
-              //     "Payment method:",
-              //     null,
-              //     customLabel: _textField(paymentMethods
-              //         .firstWhereOrNull((element) =>
-              //             int.tryParse(data.client.paymentMethodId ?? "") ==
-              //             element.id)
-              //         ?.name)),
-              // const Divider(),
-              // labelWithField(
-              //   labelWidth: 160,
-              //   "Client Notes:",
-              //   null,
-              //   customLabel: _textField(data.client.notes),
-              // ),
             ],
           ),
       ],
@@ -608,8 +546,8 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
               setState(() {
                 data.timingInfo.date = date;
                 //Handle products
-                handleProducts(state.generalState.storage_items);
               });
+              await handleProducts(state.generalState.storage_items);
             },
           ),
         ),
