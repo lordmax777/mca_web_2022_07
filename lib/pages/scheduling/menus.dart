@@ -102,6 +102,7 @@ class ScheduleMenus {
     Future<List<Appointment>?> Function(JobModel? createdjob)?
         onJobCreateSuccess,
     Future<void> Function()? onJobDeleteSuccess,
+    CalendarResource? customResource,
   }) async {
     final DateTime? stDate = date;
     final res = await showFormsMenus(
@@ -113,7 +114,7 @@ class ScheduleMenus {
         customStartDate: stDate,
         customEndDate: stDate?.add(const Duration(hours: 1)),
         customResource: appointment == null
-            ? null
+            ? customResource
             : CalendarResource(id: appointment.resourceIds!.first),
         allocation: appointment?.id as AllocationModel?,
       ),

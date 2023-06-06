@@ -66,28 +66,28 @@ class AppointmentDataSource extends CalendarDataSource {
         }
         setResourcesWithAppointmentOnly(
             getResourcesWithAppointment(fetchedAppointments));
-        logger(
-            "Loaded new appointments ${fetchedAppointments.length}"
-                .toUpperCase(),
-            hint: "DataSource._handleLoadMore".toUpperCase());
+        handleEmptyShift(fetchedAppointments.isEmpty);
+
         _addNewAppointments(_meetings);
         return _meetings;
       } on ShiftFetchException catch (e) {
+        handleEmptyShift(true);
         notifyListeners(CalendarDataSourceAction.add, []);
 
         if (e.apiResponse.resCode != 404) {
           showError(ApiHelpers.getRawDataErrorMessages(e.apiResponse));
         }
-
         Logger.e("Error while fetching shifts", tag: 'ShiftsCalendar');
         return [];
       } on StateError catch (e) {
+        handleEmptyShift(true);
         notifyListeners(CalendarDataSourceAction.add, []);
         showError("Something went wrong $e");
         Logger.e("Something went wrong while fetching shifts ${e.stackTrace}",
             tag: 'ShiftsCalendar - StateError');
         return [];
       } catch (e) {
+        handleEmptyShift(true);
         notifyListeners(CalendarDataSourceAction.add, []);
 
         showError("Something went wrong $e");
@@ -105,13 +105,17 @@ class AppointmentDataSource extends CalendarDataSource {
   }
 
   AppointmentDataSource(this.source,
-      {this.onRangeChanged, required this.setResourcesWithAppointmentOnly});
+      {this.onRangeChanged,
+      required this.setResourcesWithAppointmentOnly,
+      required this.handleEmptyShift});
 
   List<Appointment> source;
 
-  void Function(DateTime, DateTime)? onRangeChanged;
+  final void Function(DateTime, DateTime)? onRangeChanged;
 
-  void Function(List<String> r) setResourcesWithAppointmentOnly;
+  final ValueChanged<List<String>> setResourcesWithAppointmentOnly;
+
+  final ValueChanged<bool> handleEmptyShift;
 
   @override
   List<dynamic> get appointments => source;

@@ -45,6 +45,7 @@ class FullCalendar extends StatefulWidget {
 }
 
 class _FullCalendarState extends State<FullCalendar> {
+  //Vars
   late final AppointmentDataSource _events;
   final GlobalKey _globalKey = GlobalKey();
   final CalendarConf conf = CalendarConstants.conf;
@@ -53,7 +54,9 @@ class _FullCalendarState extends State<FullCalendar> {
   DateTime? _endDate;
   CalendarView _view = CalendarView.timelineDay;
   final List<String> resourcesWithAppointmentOnly = [];
+  bool isEmptyShift = true;
 
+  //Getters
   bool get isUserResource => widget.isUserResource;
   ValueChanged<CalendarView> get onShowResources => widget.onShowResources;
   List<int> get selectedResources => widget.selectedResources;
@@ -77,6 +80,7 @@ class _FullCalendarState extends State<FullCalendar> {
   ValueChanged<bool> get onShowResourcesWithAppointment =>
       widget.onShowResourcesWithAppointment;
 
+  //Functions
   @override
   void initState() {
     _view = appStore.state.scheduleState.calendarView;
@@ -84,7 +88,8 @@ class _FullCalendarState extends State<FullCalendar> {
 
     _events = AppointmentDataSource(<Appointment>[],
         onRangeChanged: _setDateRange,
-        setResourcesWithAppointmentOnly: setResourcesWithAppointmentOnly);
+        setResourcesWithAppointmentOnly: setResourcesWithAppointmentOnly,
+        handleEmptyShift: handleEmptyShift);
 
     _events.resources = resourcesWithoutAll;
 
@@ -167,6 +172,10 @@ class _FullCalendarState extends State<FullCalendar> {
         .addPostFrameCallback((Duration timeStamp) => callback());
   }
 
+  void handleEmptyShift(bool isEmptyShift) {
+    updateUI(() => setState(() => this.isEmptyShift = isEmptyShift));
+  }
+
   @override
   Widget build(BuildContext context) {
     final Widget calendar = Theme(
@@ -182,7 +191,14 @@ class _FullCalendarState extends State<FullCalendar> {
       ),
     );
 
-    return Scaffold(body: calendar);
+    return Scaffold(
+        body: Stack(
+      children: [
+        calendar,
+        if (isEmptyShift)
+          const Align(alignment: Alignment.center, child: _Empty()),
+      ],
+    ));
   }
 
   /// Handle the view changed and it used to update the UI on web platform
@@ -251,8 +267,6 @@ class _FullCalendarState extends State<FullCalendar> {
           },
         );
       },
-      // initialDisplayDate: DateTime(2023, 05, 04),
-      // initialSelectedDate: DateTime(2023, 05, 04),
       monthViewSettings: conf.getMonthViewSettings(),
       allowDragAndDrop: false,
       resourceViewSettings: conf.getResourceViewSettings(context),
@@ -262,10 +276,12 @@ class _FullCalendarState extends State<FullCalendar> {
   void _getOnTap(
       CalendarTapDetails calendarTapDetails, Offset? position) async {
     final ScheduleMenus menus = ScheduleMenus(context, position);
+    final CalendarResource? customResource = calendarTapDetails.resource;
     switch (calendarTapDetails.targetElement) {
       case CalendarElement.calendarCell:
-        final success =
-            await menus.showFormActionsPopup(null, calendarTapDetails.date);
+        final success = await menus.showFormActionsPopup(
+            null, calendarTapDetails.date,
+            customResource: customResource);
         if (!success) return;
         await _events.handleLoadMore(_startDate!, _endDate!, true);
         showError(
@@ -330,5 +346,23 @@ class _FullCalendarState extends State<FullCalendar> {
         // TODO: Handle this case.
         break;
     }
+  }
+}
+
+class _Empty extends StatelessWidget {
+  const _Empty({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: const BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.all(Radius.circular(8))),
+          child: Text('No shifts found\nfor selected date',
+              textAlign: TextAlign.center,
+              style: ThemeText.lg.copyWith(color: Colors.white))),
+    );
   }
 }
