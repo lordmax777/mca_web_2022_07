@@ -101,6 +101,8 @@ class GeneralState {
   }
 
   final List<ClientInfoMd> clientInfos;
+  List<ClientInfoMd> get allSortedClients => clientInfos
+    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
   final List<QuoteInfoMd> quotes;
 

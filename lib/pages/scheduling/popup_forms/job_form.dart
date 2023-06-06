@@ -112,7 +112,9 @@ class _JobEditFormState extends State<JobEditForm>
             if (propertyDetailsRes.data['details'] is Map<String, dynamic>) {
               data.allocation?.propertyDetails = PropertyDetailsMd.fromJson(
                   propertyDetailsRes.data['details']);
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             }
           }
         }
@@ -222,15 +224,15 @@ class _JobEditFormState extends State<JobEditForm>
   }
 
   void resetLocationDp(Function callback) async {
-    setState(() {
-      resetLocation = false;
-    });
+    // setState(() {
+    //   resetLocation = false;
+    // });
     await callback();
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        resetLocation = true;
-      });
-    });
+    // Future.delayed(const Duration(milliseconds: 100), () {
+    //   setState(() {
+    //     resetLocation = true;
+    //   });
+    // });
   }
 
   // //Functions
@@ -269,7 +271,8 @@ class _JobEditFormState extends State<JobEditForm>
           return ClientForm(
             state: state,
             isQuote: data.isQuote,
-            selectedClient: data.isQuote ? null : (tempClient ?? data.client),
+            isNew: !data.isQuote,
+            selectedClient: (tempClient ?? data.client),
           );
         });
     if (res == null) return;
@@ -437,6 +440,8 @@ class _JobEditFormState extends State<JobEditForm>
       locations.add(tempAddress!);
     }
 
+    logger("tempAddress: ${locations.length}");
+
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: CustomScrollbar(
@@ -460,46 +465,82 @@ class _JobEditFormState extends State<JobEditForm>
                         children: [
                           TitleContainer(
                             titleOverride: "",
-                            titleIcon: HeroIcons.add,
+                            titleIcon:
+                                data.isQuote ? HeroIcons.edit : HeroIcons.add,
                             onEdit: isUpdate
-                                ? data.isQuote
-                                    ? () => _onCreateNewClient(state)
-                                    : null
+                                ? null
                                 : () => _onCreateNewClient(state),
                             title: "Personal Information",
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (isCreate || data.isQuote)
-                                  Visibility(
-                                    visible: resetLocation,
-                                    child: CustomAutocompleteTextField<
-                                            ClientInfoMd>(
-                                        width: 400,
-                                        height: 50,
-                                        hintText: "Select Client",
-                                        listItemWidget: (p0) => Text(p0.name),
-                                        onSelected: (p0) {
+                                  CustomMultiSelectDropdown(
+                                    hasSearchBox: true,
+                                    width: 400,
+                                    items: [
+                                      MultiSelectGroup(items: [
+                                        for (var client in state
+                                            .generalState.allSortedClients
+                                            .where((element) => element.active))
+                                          MultiSelectItem(
+                                            id: client.id.toString(),
+                                            label: client.name,
+                                            extraInfo: client.company,
+                                          ),
+                                      ]),
+                                    ],
+                                    initiallySelected: tempClient != null
+                                        ? [
+                                            MultiSelectItem(
+                                              id: tempClient!.id.toString(),
+                                              label: tempClient!.name,
+                                              extraInfo: tempClient!.company,
+                                            ),
+                                          ]
+                                        : data.client.isClientTrue
+                                            ? [
+                                                MultiSelectItem(
+                                                  id: data.client.id.toString(),
+                                                  label: data.client.name,
+                                                  extraInfo:
+                                                      data.client.company,
+                                                ),
+                                              ]
+                                            : null,
+                                    onChange: (res) {
+                                      switch (res.action) {
+                                        case RetAction.empty:
                                           resetLocationDp(() {
                                             setState(() {
-                                              data.setClient(p0);
+                                              data.setClient(
+                                                  ClientInfoMd.init());
                                               tempAddress = null;
                                             });
                                           });
-                                        },
-                                        displayStringForOption: (option) {
-                                          return option.name;
-                                        },
-                                        initialValue: tempClient == null
-                                            ? null
-                                            : TextEditingValue(
-                                                text: tempClient!.name),
-                                        options: (p0) => state
-                                            .generalState.clientInfos
-                                            .where((element) => element.name
-                                                .toLowerCase()
-                                                .contains(
-                                                    p0.text.toLowerCase()))),
+                                          break;
+                                        case RetAction.single:
+                                          String id = res.addId!;
+                                          final client = state
+                                              .generalState.allSortedClients
+                                              .where(
+                                                  (element) => element.active)
+                                              .toList()
+                                              .firstWhereOrNull((element) =>
+                                                  element.id == int.parse(id));
+                                          if (client != null) {
+                                            resetLocationDp(() {
+                                              setState(() {
+                                                data.setClient(client);
+                                                tempAddress = null;
+                                              });
+                                            });
+                                          }
+                                          break;
+                                        default:
+                                          break;
+                                      }
+                                    },
                                   ),
                                 const SizedBox(height: 16),
                                 SpacedColumn(
@@ -524,16 +565,24 @@ class _JobEditFormState extends State<JobEditForm>
                                       labelWidth: 160,
                                       "Email:",
                                       null,
-                                      customLabel:
-                                          _textField(data.client.email),
+                                      customLabel: _textField(
+                                        data.client.email,
+                                        onChanged: (value) {
+                                          data.client.email = value;
+                                        },
+                                      ),
                                     ),
                                     const Divider(),
                                     labelWithField(
                                       labelWidth: 160,
                                       "Phone:",
                                       null,
-                                      customLabel:
-                                          _textField(data.client.phone),
+                                      customLabel: _textField(
+                                        data.client.phone,
+                                        onChanged: (value) {
+                                          data.client.phone = value;
+                                        },
+                                      ),
                                     ),
                                     const Divider(),
                                     labelWithField(
@@ -632,31 +681,62 @@ class _JobEditFormState extends State<JobEditForm>
                                 ),
                             if (isClientSelected)
                               if (isCreate || data.isQuote)
-                                Visibility(
-                                  visible: resetLocation,
-                                  child: CustomAutocompleteTextField<
-                                          LocationAddress>(
-                                      width: 400,
-                                      height: 50,
-                                      hintText: "Select Location",
-                                      listItemWidget: (p0) => Text(p0.name),
-                                      initialValue: tempAddress == null
-                                          ? null
-                                          : TextEditingValue(
-                                              text: tempAddress!.name),
-                                      onSelected: (p0) {
-                                        setState(() {
-                                          data.setAddress(p0.address, p0.id);
-                                        });
-                                      },
-                                      displayStringForOption: (option) {
-                                        return option.name ?? "";
-                                      },
-                                      options: (p0) => locations.where(
-                                          (element) => (element.name ?? "")
-                                              .toLowerCase()
-                                              .contains(
-                                                  p0.text.toLowerCase()))),
+                                CustomMultiSelectDropdown(
+                                  hasSearchBox: true,
+                                  width: 400,
+                                  items: [
+                                    MultiSelectGroup(items: [
+                                      for (var location in locations)
+                                        MultiSelectItem(
+                                          id: location.id.toString(),
+                                          label: location.name,
+                                          extraInfo: location.address.line1,
+                                        ),
+                                    ]),
+                                  ],
+                                  initiallySelected: tempAddress != null
+                                      ? [
+                                          MultiSelectItem(
+                                            id: tempAddress!.id.toString(),
+                                            label: tempAddress!.address.line1,
+                                            extraInfo:
+                                                tempAddress!.address.line2,
+                                          ),
+                                        ]
+                                      : data.addressId != null
+                                          ? [
+                                              MultiSelectItem(
+                                                id: data.addressId.toString(),
+                                                label: data.address.line1,
+                                                extraInfo: data.address.line2,
+                                              ),
+                                            ]
+                                          : null,
+                                  onChange: (res) {
+                                    switch (res.action) {
+                                      case RetAction.empty:
+                                        // TODO: Handle this case.
+                                        break;
+                                      case RetAction.single:
+                                        String? id = res.addId;
+                                        id ??= res.removeId;
+                                        final location = locations
+                                            .toList()
+                                            .where((element) => element.active)
+                                            .toList()
+                                            .firstWhereOrNull((element) =>
+                                                element.id == int.parse(id!));
+                                        if (location != null) {
+                                          setState(() {
+                                            data.setAddress(
+                                                location.address, location.id);
+                                          });
+                                        }
+                                        break;
+                                      default:
+                                        break;
+                                    }
+                                  },
                                 ),
                             const SizedBox(height: 16),
                             labelWithField(
@@ -735,23 +815,72 @@ class _JobEditFormState extends State<JobEditForm>
                                   ),
                                 ),
                               if (isClientSelected)
-                                CustomAutocompleteTextField<LocationAddress>(
-                                    width: 400,
-                                    height: 50,
-                                    hintText: "Select Location",
-                                    listItemWidget: (p0) => Text(p0.name),
-                                    onSelected: (p0) {
-                                      setState(() {
-                                        data.setWorkAddress(p0.address);
-                                      });
-                                    },
-                                    displayStringForOption: (option) {
-                                      return option.name;
-                                    },
-                                    options: (p0) => locations.where(
-                                        (element) => (element.name)
-                                            .toLowerCase()
-                                            .contains(p0.text.toLowerCase()))),
+                                CustomMultiSelectDropdown(
+                                  hasSearchBox: true,
+                                  width: 400,
+                                  items: [
+                                    MultiSelectGroup(items: [
+                                      for (var location in locations)
+                                        MultiSelectItem(
+                                          id: location.id.toString(),
+                                          label: location.name,
+                                          extraInfo: location.address.line1,
+                                        ),
+                                    ]),
+                                  ],
+                                  initiallySelected: data
+                                          .workAddress.line1.isNotEmpty
+                                      ? [
+                                          MultiSelectItem(
+                                            id: "",
+                                            label: data.workAddress.line1,
+                                            extraInfo: data.workAddress.line2,
+                                          ),
+                                        ]
+                                      : null,
+                                  onChange: (res) {
+                                    switch (res.action) {
+                                      case RetAction.empty:
+                                        // TODO: Handle this case.
+                                        break;
+                                      case RetAction.single:
+                                        String? id = res.addId;
+                                        id ??= res.removeId;
+                                        final location = locations
+                                            .toList()
+                                            .where((element) => element.active)
+                                            .toList()
+                                            .firstWhereOrNull((element) =>
+                                                element.id == int.parse(id!));
+                                        if (location != null) {
+                                          setState(() {
+                                            data.setWorkAddress(
+                                                location.address);
+                                          });
+                                        }
+                                        break;
+                                      default:
+                                        break;
+                                    }
+                                  },
+                                ),
+                              // CustomAutocompleteTextField<LocationAddress>(
+                              //     width: 400,
+                              //     height: 50,
+                              //     hintText: "Select Location",
+                              //     listItemWidget: (p0) => Text(p0.name),
+                              //     onSelected: (p0) {
+                              //       setState(() {
+                              //         data.setWorkAddress(p0.address);
+                              //       });
+                              //     },
+                              //     displayStringForOption: (option) {
+                              //       return option.name;
+                              //     },
+                              //     options: (p0) => locations.where(
+                              //         (element) => (element.name)
+                              //             .toLowerCase()
+                              //             .contains(p0.text.toLowerCase()))),
                               const SizedBox(height: 16),
                               labelWithField(
                                 labelWidth: 160,
@@ -949,13 +1078,32 @@ class _JobEditFormState extends State<JobEditForm>
     );
   }
 
-  Widget _textField(String? text) {
-    return SizedBox(
+  Widget _textField(String? text, {ValueChanged<String>? onChanged}) {
+    if (onChanged != null) {
+      return SizedBox(
         width: 200,
-        child: Text(
-          text == null ? "-" : (text.isEmpty ? "-" : text),
+        child: TextField(
+          minLines: 1,
+          maxLines: 2,
+          decoration: const InputDecoration(
+            hintStyle:
+                TextStyle(color: Colors.grey, fontWeight: FontWeight.w300),
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            border: OutlineInputBorder(),
+          ),
+          onChanged: onChanged,
+          controller: TextEditingController(text: text),
           style: ThemeText.tabTextStyle,
-        ));
+        ),
+      );
+    }
+    return SizedBox(
+      width: 200,
+      child: Text(
+        text == null ? "-" : (text.isEmpty ? "-" : text),
+        style: ThemeText.tabTextStyle,
+      ),
+    );
   }
 
   Widget _products(AppState state) {

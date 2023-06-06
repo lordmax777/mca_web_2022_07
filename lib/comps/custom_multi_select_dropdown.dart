@@ -79,6 +79,7 @@ class CustomMultiSelectDropdown extends StatefulWidget {
 
 enum RetAction {
   empty,
+  single,
   add,
   remove;
 }
@@ -104,6 +105,12 @@ class Ret extends Equatable {
     //Add list
     if (removeId == null && addId != null) {
       action = RetAction.add;
+      return;
+    }
+
+    //Single item
+    if (removeId != null && addId != null && removeId == addId) {
+      action = RetAction.single;
       return;
     }
   }
@@ -179,6 +186,24 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
       width: width,
       child: Select2dot1(
         onChanged: (list) {
+          logger(
+              list
+                  .map((e) => {
+                        "name": e.nameSingleItem,
+                        "extra": e.extraInfoSingleItem,
+                        "value": e.value
+                      })
+                  .toList(),
+              hint: 'CUSTOM MULTI SELECT DROPDOWN');
+          if (!isMultiSelect) {
+            if (list.isEmpty) {
+              widget.onChange?.call(Ret(removeId: null, addId: null));
+              return;
+            }
+            widget.onChange?.call(
+                Ret(removeId: list.first.value, addId: list.first.value));
+            return;
+          }
           if (list.isEmpty) {
             addedId = null;
             removedId = null;
@@ -207,7 +232,9 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             removedId = null;
             addedId = ids.last;
           }
+
           widget.onChange?.call(Ret(removeId: removedId, addId: addedId));
+
           addedId = null;
           removedId = null;
           oldIds.clear();

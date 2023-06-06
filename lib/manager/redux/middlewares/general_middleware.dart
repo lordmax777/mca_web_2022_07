@@ -298,11 +298,15 @@ Future<ApiResponse?> _createQuoteAction(
         .init();
 
     if (action.storageItems.isEmpty) {
-      showError('Please add item/service(s)', titleMsg: "Warning");
+      McaLoading.showFail('Please add item/service(s)');
       return null;
     }
     if (action.email.isEmpty) {
-      showError('Please add email', titleMsg: "Warning");
+      McaLoading.showFail('Please add email');
+      return null;
+    }
+    if (action.phone != null && action.phone!.isEmpty) {
+      McaLoading.showFail('Please add phone');
       return null;
     }
     final dio.FormData formData = dio.FormData();

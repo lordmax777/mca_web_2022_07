@@ -169,8 +169,8 @@ class ClientInfoMd {
     return ClientInfoMd(
       id: id ?? -10,
       name: name ?? '',
-      currencyId: companyInfo.currency.id.toString(),
-      payingDays: companyInfo.paying_days,
+      currencyId: currencyId ?? companyInfo.currency.id.toString(),
+      payingDays: payingDays ?? companyInfo.paying_days,
       active: active ?? false,
       notes: notes ?? '',
       address: address ?? Address.init(),
@@ -187,7 +187,8 @@ class ClientInfoMd {
       companyRegNumber: companyRegNumber ?? '',
       VATnumber: VATnumber ?? '',
       VATcalc: VATcalc ?? false,
-      paymentMethodId: companyInfo.payment_method_id.toString(),
+      paymentMethodId:
+          paymentMethodId ?? companyInfo.payment_method_id.toString(),
     );
   }
 

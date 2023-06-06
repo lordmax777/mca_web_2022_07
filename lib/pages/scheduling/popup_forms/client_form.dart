@@ -83,12 +83,14 @@ class ClientForm extends StatefulWidget {
   final ClientInfoMd? selectedClient;
   final Address? selectedAddress;
   final bool isQuote;
+  final bool isNew;
   const ClientForm({
     Key? key,
     required this.state,
     this.type = ClientFormType.client,
     this.selectedClient,
     this.isQuote = false,
+    this.isNew = true,
     this.selectedAddress,
   }) : super(key: key);
 
@@ -114,6 +116,7 @@ class _ClientFormState extends State<ClientForm> {
   String? get clientEmail => selectedClient?.email;
   String? get clientPhone => selectedClient?.phone;
   bool get isQuote => widget.isQuote;
+  bool get isNew => widget.isNew;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -156,26 +159,7 @@ class _ClientFormState extends State<ClientForm> {
               .firstWhereOrNull((element) => element.code == company.country)
               ?.code ??
           company.country;
-      // if (kDebugMode) {
-      //   contactName.text = "Client";
-      //   companyName.text = "Company";
-      //   phoneNumber.text = "1234567890";
-      //   email.text = "kom@gmail.com";
-      //   payingDays = 20;
-      //   paymentMethodId = paymentMethods.first.id;
-      //   currencyId = currencies[2].id;
-      //   notes.text = "Client Notes";
-      //   address.line1 = "Address Line 1";
-      //   address.line2 = "Address Line 2";
-      //   address.city = "City";
-      //   address.county = "County";
-      //   address.postcode = "NW1 8PR";
-      //   address.country = "GB";
-      //   address.latitude = 51.5333;
-      //   address.longitude = -0.1333;
-      //   address.radius = 10;
-      // }
-      if (selectedClient != null && isQuote) {
+      if (selectedClient != null && !isNew) {
         currencyId = int.parse(selectedClient!.currencyId);
         contactName.text = selectedClient!.name;
         companyName.text = selectedClient!.company ?? "";
@@ -296,7 +280,7 @@ class _ClientFormState extends State<ClientForm> {
                           width: fieldWidth,
                           controller: contactName,
                           hintText: "Enter name",
-                          isRequired: true,
+                          isRequired: !isQuote,
                         ),
                       ),
                     if (isClient)
@@ -304,7 +288,7 @@ class _ClientFormState extends State<ClientForm> {
                         "Company Name",
                         TextInputWidget(
                           width: fieldWidth,
-                          isRequired: true,
+                          isRequired: !isQuote,
                           controller: companyName,
                           hintText: "Enter company name",
                         ),
@@ -319,7 +303,7 @@ class _ClientFormState extends State<ClientForm> {
                             TextInputWidget(
                               width: fieldWidth,
                               controller: phoneNumber,
-                              isRequired: isClient,
+                              isRequired: isClient || isQuote,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
@@ -346,7 +330,7 @@ class _ClientFormState extends State<ClientForm> {
                             TextInputWidget(
                               width: fieldWidth,
                               controller: email,
-                              isRequired: isClient,
+                              isRequired: isClient || isQuote,
                               validator: (p0) {
                                 if (p0 != null) {
                                   //validate using Regex
@@ -381,7 +365,7 @@ class _ClientFormState extends State<ClientForm> {
                       "Payment terms",
                       TextInputWidget(
                         width: fieldWidth,
-                        isRequired: true,
+                        isRequired: !isQuote,
                         controller:
                             TextEditingController(text: payingDays?.toString()),
                         hintText: "Enter payment terms",
@@ -397,7 +381,7 @@ class _ClientFormState extends State<ClientForm> {
                       DropdownWidgetV2(
                         hintText: "Select currency",
                         dropdownBtnWidth: fieldWidth,
-                        isRequired: true,
+                        isRequired: !isQuote,
                         dropdownOptionsWidth: fieldWidth,
                         items: currencies
                             .map((e) => CustomDropdownValue(name: e.sign))
@@ -419,7 +403,7 @@ class _ClientFormState extends State<ClientForm> {
                       "Payment Method",
                       DropdownWidgetV2(
                         hasSearchBox: true,
-                        isRequired: true,
+                        isRequired: !isQuote,
                         hintText: "Select payment method",
                         dropdownBtnWidth: fieldWidth,
                         dropdownOptionsWidth: fieldWidth,
@@ -657,7 +641,7 @@ class _ClientFormState extends State<ClientForm> {
                   switch (type) {
                     case ClientFormType.client:
                     case ClientFormType.location:
-                      if (selectedClient != null && isQuote) {
+                      if (isQuote) {
                         _handleUpdateClient();
                         return;
                       }
@@ -667,12 +651,6 @@ class _ClientFormState extends State<ClientForm> {
                       }
                       _handleCreateClient();
                       break;
-                    // case ClientFormType.quoteClient:
-                    //   _handleCreatequoteClient();
-                    //   break;
-                    // case ClientFormType.quoteLocation:
-                    //   _handleCreatequoteLocation();
-                    //   break;
                   }
                 }
               }),
@@ -718,19 +696,18 @@ class _ClientFormState extends State<ClientForm> {
   }
 
   void _handleUpdateClient() async {
-    final client = ClientInfoMd(
-      creditLimit: 0,
-      id: selectedClient!.id,
+    final client = ClientInfoMd.init(
+      id: selectedClient?.id,
       name: contactName.text,
-      active: selectedClient?.active ?? true,
+      active: selectedClient?.active,
       address: address,
-      payingDays: payingDays ?? 1,
-      currencyId: (currencyId ?? 1).toString(),
+      payingDays: payingDays,
+      currencyId: currencyId.toString(),
       notes: notes.text,
       phone: phoneNumber.text,
       company: companyName.text,
       email: email.text,
-      paymentMethodId: (paymentMethodId ?? 1).toString(),
+      paymentMethodId: paymentMethodId.toString(),
     );
     context.popRoute(client);
   }
