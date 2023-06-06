@@ -193,7 +193,9 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             notify: true);
       }
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     data.gridStateManager.setShowLoading(false);
   }
 
@@ -290,14 +292,34 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                       // if (!data.isGridInitialized)
                       const Divider(),
                       // if (data.isGridInitialized)
-                      //   StorageItemsDropdown(
-                      //       data: data.copyWith(),
-                      //       state: state,
-                      //       onChanged: (rows) {
-                      //         data.gridStateManager
-                      //             .removeAllRows(notify: false);
-                      //         data.gridStateManager.insertRows(0, rows);
-                      //       }),
+                      StorageItemsDropdown(
+                        state: state,
+                        initialItems: data.isGridInitialized
+                            ? data.getAddedStorageItems(
+                                state.generalState.storage_items)
+                            : [],
+                        onAdded: (item) async {
+                          if (item != null) {
+                            data.gridStateManager.insertRows(0, [
+                              data.buildStorageRow(item, qty: 1, checked: true)
+                            ]);
+                          }
+                        },
+                        onRemoved: (storageItemId) {
+                          //if null then empty the list
+                          if (storageItemId == null) {
+                            data.gridStateManager.removeAllRows();
+                            return;
+                          }
+                          //remove the item from the list
+                          final row = data.gridStateManager.rows
+                              .firstWhereOrNull((element) =>
+                                  element.cells['id']?.value == storageItemId);
+                          if (row != null) {
+                            data.gridStateManager.removeRows([row]);
+                          }
+                        },
+                      ),
                       TitleContainer(
                         width: width,
                         padding: 0,
@@ -371,7 +393,26 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     );
   }
 
-  Widget _textField(String? text, {VoidCallback? onTap}) {
+  Widget _textField(String? text,
+      {VoidCallback? onTap, ValueChanged<String>? onChanged}) {
+    if (onChanged != null) {
+      return SizedBox(
+        width: 200,
+        child: TextField(
+          minLines: 1,
+          maxLines: 2,
+          decoration: const InputDecoration(
+            hintStyle:
+                TextStyle(color: Colors.grey, fontWeight: FontWeight.w300),
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            border: OutlineInputBorder(),
+          ),
+          onChanged: onChanged,
+          controller: TextEditingController(text: text),
+          style: ThemeText.tabTextStyle,
+        ),
+      );
+    }
     return Tooltip(
       message: onTap == null ? "" : "Edit",
       child: InkWell(
@@ -461,14 +502,18 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                 labelWidth: 160,
                 "Email:",
                 null,
-                customLabel: _textField(data.client.email),
+                customLabel: _textField(data.client.email, onChanged: (value) {
+                  data.client.email = value;
+                }),
               ),
               const Divider(),
               labelWithField(
                 labelWidth: 160,
                 "Phone:",
                 null,
-                customLabel: _textField(data.client.phone),
+                customLabel: _textField(data.client.phone, onChanged: (value) {
+                  data.client.phone = value;
+                }),
               ),
             ],
           ),
