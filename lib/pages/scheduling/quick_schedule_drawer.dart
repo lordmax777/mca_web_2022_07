@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get/get.dart' show FirstWhereExt, Get;
 import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
+import 'package:mca_web_2022_07/comps/custom_multi_select_dropdown.dart';
 import 'package:mca_web_2022_07/comps/title_container.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/model_exporter.dart';
@@ -24,6 +25,7 @@ import 'models/allocation_model.dart';
 import 'models/timing_model.dart';
 import 'popup_forms/job_form.dart';
 import 'popup_forms/team.dart';
+import 'widgets/storage_items_dropdown.dart';
 
 class QuickScheduleDrawer extends StatefulWidget {
   JobModel? data;
@@ -159,6 +161,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
       //TODO: show error
       return;
     }
+    data.gridStateManager.removeAllRows(notify: false);
     data.gridStateManager.setShowLoading(true);
     //Handle products
     final List<ClientContractItem> products = await appStore.dispatch(
@@ -169,21 +172,24 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
         final item = products[i];
         final storageItem = storageItems
             .firstWhereOrNull((element) => element.id == item.itemId);
-        data.gridStateManager.insertRows(i, [
-          data.buildStorageRow(
-            StorageItemMd(
-              id: item.itemId,
-              active: storageItem == null ? false : storageItem.active,
-              name: item.itemName,
-              service: storageItem == null ? false : storageItem.service,
-              outgoingPrice: item.price,
-              incomingPrice: 0,
-              taxId: 1,
-            ),
-            qty: item.amount.toInt(),
-            checked: item.auto,
-          )
-        ]);
+        data.gridStateManager.insertRows(
+            i,
+            [
+              data.buildStorageRow(
+                StorageItemMd(
+                  id: item.itemId,
+                  active: storageItem == null ? false : storageItem.active,
+                  name: item.itemName,
+                  service: storageItem == null ? false : storageItem.service,
+                  outgoingPrice: item.price,
+                  incomingPrice: 0,
+                  taxId: 1,
+                ),
+                qty: item.amount.toInt(),
+                checked: item.auto,
+              )
+            ],
+            notify: true);
       }
     }
     data.gridStateManager.setShowLoading(false);
@@ -194,7 +200,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       onInitialBuild: (state) async {
-        if (data.allocation != null || data.quote?.id != null) {
+        if (data.allocation != null) {
           try {
             setLoading(LoadingHelper.loading, 'Getting details!');
 
@@ -202,12 +208,17 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
             final propertyDetailsRes = await restClient()
                 .getPropertyDetails(allocation!.shift.id)
                 .nocodeErrorHandler();
+
             if (propertyDetailsRes.success) {
               if (propertyDetailsRes.data['details'] is Map<String, dynamic>) {
                 data.allocation?.propertyDetails = PropertyDetailsMd.fromJson(
                     propertyDetailsRes.data['details']);
               }
             }
+            data.allocation = allocation;
+            data.setClient(allocation!.shift.client);
+            handleProducts(state.generalState.storage_items);
+            setLoading(LoadingHelper.idle);
           } catch (e) {
             setLoading(LoadingHelper.error, e.toString());
           }
@@ -215,7 +226,9 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
       },
       rebuildOnChange: false,
       builder: (context, state) {
-        final allJobs = [...state.generalState.allJobs];
+        final allJobs = [...state.generalState.shifts]
+            .where((element) => element.active)
+            .toList();
         final List<UserRes> users = [...state.usersState.users];
         List<ListCurrency> currencies = [...state.generalState.currencies];
         List<ListPaymentMethods> paymentMethods = [
@@ -251,10 +264,8 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                       TitleContainer(
                           width: width,
                           title: "Select Job",
-                          child: _jobField(
-                              allJobs.map((e) => e.quote!).toList(),
-                              currencies,
-                              paymentMethods)),
+                          child: _jobField(allJobs.map((e) => e).toList(),
+                              currencies, paymentMethods, state)),
                       const Divider(height: 30),
                       TitleContainer(
                         width: width,
@@ -276,26 +287,20 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                       ),
                       // if (!data.isGridInitialized)
                       const Divider(),
-                      SizedBox(
-                        width: CalendarConstants.quickScheduleDrawerWidth - 50,
-                        height: 100,
-                        child: UsersListTable(
-                            rows: data.isGridInitialized
-                                ? data.gridStateManager.rows
-                                : [],
-                            onSmReady: (e) async {
-                              logger("1");
-                              if (data.isGridInitialized) return;
-                              logger("2");
-                              data.gridStateManager = e;
-                              data.isGridInitialized = true;
-
-                              //Handle products
-                              await handleProducts(
-                                  state.generalState.storage_items);
-                              setState(() {});
-                            },
-                            cols: []),
+                      // if (data.isGridInitialized)
+                      //   StorageItemsDropdown(
+                      //       data: data.copyWith(),
+                      //       state: state,
+                      //       onChanged: (rows) {
+                      //         data.gridStateManager
+                      //             .removeAllRows(notify: false);
+                      //         data.gridStateManager.insertRows(0, rows);
+                      //       }),
+                      TitleContainer(
+                        width: width,
+                        padding: 0,
+                        title: "Products",
+                        child: _products(state),
                       )
                     ],
                   ),
@@ -312,7 +317,13 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                           paddingWithoutIcon: true,
                           text:
                               "Publish ${Constants.propertyName.strCapitalize}",
-                          onPressed: _publish,
+                          onPressed: shiftId == null ||
+                                  !data.isClientSelected ||
+                                  !data.isGridInitialized
+                              ? null
+                              : data.gridStateManager.rows.isEmpty
+                                  ? null
+                                  : _publish,
                         ),
                       ),
                       Expanded(
@@ -333,6 +344,31 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     );
   }
 
+  Widget _products(AppState state) {
+    return SizedBox(
+      width: CalendarConstants.quickScheduleDrawerWidth - 50,
+      height: 300,
+      child: UsersListTable(
+        enableEditing: true,
+        rows: data.isGridInitialized ? data.gridStateManager.rows : [],
+        mode: PlutoGridMode.normal,
+        gridBorderColor: Colors.grey[300]!,
+        noRowsText: "No product or service",
+        onSmReady: (e) async {
+          if (data.isGridInitialized) return;
+          data.gridStateManager = e;
+          data.isGridInitialized = true;
+          data.gridStateManager.addListener(() {
+            setState(() {});
+          });
+          //Handle products
+          handleProducts(state.generalState.storage_items);
+        },
+        cols: data.cols(state, showAutoColumn: false),
+      ),
+    );
+  }
+
   Widget _textField(String? text, {VoidCallback? onTap}) {
     return Tooltip(
       message: onTap == null ? "" : "Edit",
@@ -348,39 +384,88 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     );
   }
 
-  Widget _jobField(List<QuoteInfoMd> quotes, List<ListCurrency> currencies,
-      List<ListPaymentMethods> paymentMethods) {
+  Widget _jobField(List<ListShift> shifts, List<ListCurrency> currencies,
+      List<ListPaymentMethods> paymentMethods, AppState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomAutocompleteTextField<QuoteInfoMd>(
-          hintText: "Select a Job",
-          height: 50,
+        CustomMultiSelectDropdown(
           width: double.infinity,
-          options: (val) => quotes
-              .where((element) =>
-                  element.name.toLowerCase().contains(val.text.toLowerCase()) ||
-                  element.addressModel.line1
-                      .toLowerCase()
-                      .contains(val.text.toLowerCase()))
-              .toList(),
-          initialValue: data.quote != null
-              ? TextEditingValue(text: data.quote!.name)
+          hasSearchBox: true,
+          initiallySelected: shiftId != null
+              ? [
+                  MultiSelectItem(
+                      label: data.allocation!.shift.name,
+                      id: shiftId!.toString())
+                ]
               : null,
-          displayStringForOption: (p0) =>
-              "${p0.name} (${p0.addressModel.line1})",
-          listItemWidget: (p0) => ListTile(
-            title: Text("${p0.name} ${p0.createdOn}"),
-            subtitle: Text(p0.addressModel.line1),
-            style: ListTileStyle.drawer,
-          ),
-          onSelected: (quote) {
-            setState(() {
-              data.quote = quote;
-              data.quote!.id = 0;
-            });
+          items: [
+            MultiSelectGroup(
+              items: [
+                for (final shift in shifts)
+                  MultiSelectItem(
+                    label: shift.name,
+                    id: shift.id.toString(),
+                    extraInfo: shift.client?.name,
+                  ),
+              ],
+            )
+          ],
+          onChange: (res) {
+            switch (res.action) {
+              case RetAction.empty:
+                // TODO: Handle this case.
+                break;
+              case RetAction.single:
+                final id = int.parse(res.addId!);
+                final shift =
+                    shifts.firstWhereOrNull((element) => element.id == id);
+                if (shift == null) return;
+                setState(() {
+                  data.allocation = AllocationModel(
+                    date: data.dateAsString ?? "",
+                    id: 0,
+                    shift: shift,
+                    guests: 0,
+                    published: false,
+                  );
+                  data.setClient(shift.client);
+                  handleProducts(state.generalState.storage_items);
+                });
+                break;
+              default:
+                break;
+            }
           },
         ),
+        // CustomAutocompleteTextField<QuoteInfoMd>(
+        //   hintText: "Select a Job",
+        //   height: 50,
+        //   width: double.infinity,
+        //   options: (val) => shifts
+        //       .where((element) =>
+        //           element.name.toLowerCase().contains(val.text.toLowerCase()) ||
+        //           element.addressModel.line1
+        //               .toLowerCase()
+        //               .contains(val.text.toLowerCase()))
+        //       .toList(),
+        //   initialValue: data.quote != null
+        //       ? TextEditingValue(text: data.quote!.name)
+        //       : null,
+        //   displayStringForOption: (p0) =>
+        //       "${p0.name} (${p0.addressModel.line1})",
+        //   listItemWidget: (p0) => ListTile(
+        //     title: Text("${p0.name} ${p0.createdOn}"),
+        //     subtitle: Text(p0.addressModel.line1),
+        //     style: ListTileStyle.drawer,
+        //   ),
+        //   onSelected: (quote) {
+        //     setState(() {
+        //       data.quote = quote;
+        //       data.quote!.id = 0;
+        //     });
+        //   },
+        // ),
         if (data.isClientSelected) const SizedBox(height: 16),
         if (data.isClientSelected)
           SpacedColumn(

@@ -221,7 +221,7 @@ class JobModel {
   }
 
   CompanyMd get company => GeneralController.to.companyInfo;
-  List<PlutoColumn> cols(AppState state) => [
+  List<PlutoColumn> cols(AppState state, {bool showAutoColumn = true}) => [
         PlutoColumn(
           title: "",
           field: "item",
@@ -287,14 +287,15 @@ class JobModel {
           },
           type: PlutoColumnType.number(),
         ),
-        PlutoColumn(
-          title: "Included in service (All)",
-          field: "include_in_service",
-          enableRowChecked: true,
-          enableSorting: false,
-          enableEditingMode: false,
-          type: PlutoColumnType.text(),
-        ),
+        if (showAutoColumn)
+          PlutoColumn(
+            title: "Included in service (All)",
+            field: "include_in_service",
+            enableRowChecked: true,
+            enableSorting: false,
+            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+          ),
         PlutoColumn(
           title: "",
           field: "delete_action",

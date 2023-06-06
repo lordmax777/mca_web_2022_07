@@ -775,12 +775,12 @@ Future _createJobAction(AppState state, CreateJobAction action) async {
       McaLoading.showFail("Please add at least one storage item");
       return;
     }
-    if (data.addressId == null) {
-      if (!action.isQuote) {
-        McaLoading.showFail("Please add address");
-        return;
-      }
-    }
+    // if (data.addressId == null) {
+    //   if (!action.isQuote) {
+    //     McaLoading.showFail("Please add address");
+    //     return;
+    //   }
+    // }
     if (data.timingInfo.date != null && data.isCreate) {
       if (data.timingInfo.date!.isBefore(DateTime(
           DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
