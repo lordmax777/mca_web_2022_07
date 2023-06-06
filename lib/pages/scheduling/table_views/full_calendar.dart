@@ -54,7 +54,7 @@ class _FullCalendarState extends State<FullCalendar> {
   DateTime? _endDate;
   CalendarView _view = CalendarView.timelineDay;
   final List<String> resourcesWithAppointmentOnly = [];
-  bool isEmptyShift = true;
+  bool isEmptyShift = false;
 
   //Getters
   bool get isUserResource => widget.isUserResource;

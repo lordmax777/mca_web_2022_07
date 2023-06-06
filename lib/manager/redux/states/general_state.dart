@@ -672,3 +672,30 @@ class ChangeQuoteStatusAction {
 class GetTimesheetDepListAction {
   GetTimesheetDepListAction();
 }
+
+class GetClientContractItemsAction {
+  final int clientId;
+  final int shiftId;
+  final DateTime? date;
+
+  GetClientContractItemsAction(
+      {required this.clientId, required this.shiftId, this.date});
+
+  Future<List<ClientContractItem>> fetch(AppState state) async {
+    final ApiResponse res = await restClient()
+        .getClientContractItems(clientId, shiftId,
+            date?.formatDateForApi ?? DateTime.now().formatDateForApi)
+        .nocodeErrorHandler();
+
+    if (res.success) {
+      final data = res.data;
+      if (data != null && data is List && data.isNotEmpty) {
+        final List<ClientContractItem> list = data
+            .map<ClientContractItem>((e) => ClientContractItem.fromJson(e))
+            .toList();
+        return list;
+      }
+    }
+    return [];
+  }
+}

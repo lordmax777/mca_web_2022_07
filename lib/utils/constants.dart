@@ -90,7 +90,7 @@ class Constants {
         if (kDebugMode)
           {
             "title": "Test Page",
-            "name": const TestRoute(),
+            "name": TestRoute(),
           },
         {
           "title": "Users Management",

@@ -18,7 +18,7 @@ class UIState {
   factory UIState.initial() {
     return UIState(
       endDrawer: null,
-      drawerStates: DrawerStates(initialIndex: 1, name: const TestRoute()),
+      drawerStates: DrawerStates(initialIndex: 1, name: TestRoute()),
     );
   }
 

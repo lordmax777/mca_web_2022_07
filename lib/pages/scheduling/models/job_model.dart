@@ -333,8 +333,10 @@ class JobModel {
           TimeOfDay(hour: customEndDate!.hour, minute: customEndDate!.minute);
     }
     if (customResource != null) {
-      if (customResource!.id is UserRes) {
-        addedChildren.addAll({customResource!.id as UserRes: 0});
+      final resource = customResource?.findType(appStore.state.usersState.users,
+          appStore.state.generalState.allSortedProperties);
+      if (resource is UserRes) {
+        addedChildren.addAll({resource: 0});
       }
     }
   }

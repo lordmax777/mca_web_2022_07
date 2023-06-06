@@ -609,6 +609,10 @@ abstract class RestClient {
     @Field() required int max_sleeps,
     @Field() required String? notes,
   });
+
+  @GET("/api/fe/clients/{clientId}/shifts/{shiftId}/date/{date}")
+  Future<HttpResponse> getClientContractItems(
+      @Path() int clientId, @Path() int shiftId, @Path() String date);
 }
 
 RestClient restClient() => RestClient(DioClientForRetrofit(

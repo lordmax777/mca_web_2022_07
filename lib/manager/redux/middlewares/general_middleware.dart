@@ -75,6 +75,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _changeQuoteStatusAction(store.state, action);
       case GetTimesheetDepListAction:
         return _getTimesheetDepListAction(store.state, action);
+      case GetClientContractItemsAction:
+        return (action as GetClientContractItemsAction).fetch(store.state);
       default:
         return next(action);
     }

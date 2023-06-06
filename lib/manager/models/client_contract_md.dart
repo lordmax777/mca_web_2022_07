@@ -75,7 +75,7 @@ class ClientContractMd {
 
 class ClientContractShift {
   final int shiftId;
-  final List<ClientContractShiftItem> items;
+  final List<ClientContractItem> items;
 
   ClientContractShift({
     required this.shiftId,
@@ -86,7 +86,7 @@ class ClientContractShift {
     return ClientContractShift(
       shiftId: json['shiftId'],
       items: (json['items'] as List)
-          .map((e) => ClientContractShiftItem.fromJson(e))
+          .map((e) => ClientContractItem.fromJson(e))
           .toList(),
     );
   }
@@ -99,15 +99,15 @@ class ClientContractShift {
   }
 }
 
-class ClientContractShiftItem {
+class ClientContractItem {
   final int itemId;
   final String itemName;
   final num amount;
   final num price;
-  final String? notes;
+  final String notes;
   final bool auto;
 
-  ClientContractShiftItem({
+  ClientContractItem({
     required this.itemId,
     required this.itemName,
     required this.amount,
@@ -116,13 +116,13 @@ class ClientContractShiftItem {
     required this.auto,
   });
 
-  factory ClientContractShiftItem.fromJson(Map<String, dynamic> json) {
-    return ClientContractShiftItem(
+  factory ClientContractItem.fromJson(Map<String, dynamic> json) {
+    return ClientContractItem(
       itemId: json['itemId'],
       itemName: json['itemName'],
       amount: json['amount'],
       price: json['price'],
-      notes: json['notes'],
+      notes: json['notes'] ?? "",
       auto: json['auto'],
     );
   }

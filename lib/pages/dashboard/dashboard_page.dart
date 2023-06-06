@@ -5,8 +5,11 @@ import 'package:mca_web_2022_07/app.dart';
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
 import 'package:mca_web_2022_07/manager/redux/middlewares/users_middleware.dart';
+import 'package:mca_web_2022_07/manager/redux/states/general_state.dart';
 import 'package:mca_web_2022_07/manager/router/router.dart';
 import 'package:mca_web_2022_07/theme/theme.dart';
+
+import '../../manager/redux/sets/app_state.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -43,9 +46,11 @@ class DashboardPage extends StatelessWidget {
           if (kDebugMode)
             TextButton(
                 onPressed: () {
+                  // appStore.dispatch(GetClientContractItemsAction(
+                  //     clientId: 3, shiftId: -5, date: DateTime(2020, 05, 22)));
                   context.pushRoute(const SchedulingRoute());
                 },
-                child: const Text("Scheduling")),
+                child: const Text("Test Button")),
         ],
       ),
     );

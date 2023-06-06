@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mca_web_2022_07/comps/simple_popup_menu.dart';
+import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import 'package:mca_web_2022_07/manager/rest/nocode_helpers.dart';
 import 'package:mca_web_2022_07/pages/scheduling/models/job_model.dart';
 import 'package:mca_web_2022_07/pages/scheduling/scheduling_page.dart';
@@ -105,6 +106,10 @@ class ScheduleMenus {
     CalendarResource? customResource,
   }) async {
     final DateTime? stDate = date;
+    CalendarResource? resource = appointment == null
+        ? customResource
+        : CalendarResource(id: appointment.resourceIds!.first);
+
     final res = await showFormsMenus(
       _context,
       globalPosition: _position!,
@@ -113,9 +118,7 @@ class ScheduleMenus {
       data: JobModel(
         customStartDate: stDate,
         customEndDate: stDate?.add(const Duration(hours: 1)),
-        customResource: appointment == null
-            ? customResource
-            : CalendarResource(id: appointment.resourceIds!.first),
+        customResource: resource,
         allocation: appointment?.id as AllocationModel?,
       ),
     );

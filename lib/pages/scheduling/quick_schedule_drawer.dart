@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get/get.dart' show Get;
+import 'package:get/get.dart' show FirstWhereExt, Get;
 import 'package:mca_web_2022_07/comps/autocomplete_input_field.dart';
 import 'package:mca_web_2022_07/comps/title_container.dart';
 import 'package:mca_web_2022_07/manager/mca_loading.dart';
@@ -41,9 +41,18 @@ class QuickScheduleDrawer extends StatefulWidget {
 
 class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     with LoadingModel {
+  //Vars
+  final double width = CalendarConstants.quickScheduleDrawerWidth - 32;
+
+  //Getters
   JobModel get data => widget.data!;
   AllocationModel? get allocation => data.allocation;
   TimingModel get timing => data.timingInfo;
+  DateTime? get startDate => timing.date;
+  int get clientId => data.client.id;
+  int? get shiftId => data.shiftId;
+
+  //Functions
 
   @override
   void initState() {
@@ -136,58 +145,68 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     }
   }
 
-  final double width = CalendarConstants.quickScheduleDrawerWidth - 32;
+  Future<void> handleProducts(List<StorageItemMd> storageItems) async {
+    //Handle errors
+    if (!data.isClientSelected) {
+      //TODO: show error
+      return;
+    }
+    if (!data.client.isClientTrue) {
+      //TODO: show error
+      return;
+    }
+    if (data.shiftId == null) {
+      //TODO: show error
+      return;
+    }
+    data.gridStateManager.setShowLoading(true);
+    //Handle products
+    final List<ClientContractItem> products = await appStore.dispatch(
+        GetClientContractItemsAction(
+            clientId: clientId, shiftId: shiftId!, date: startDate));
+    if (products.isNotEmpty) {
+      for (int i = 0; i < products.length; i++) {
+        final item = products[i];
+        final storageItem = storageItems
+            .firstWhereOrNull((element) => element.id == item.itemId);
+        data.gridStateManager.insertRows(i, [
+          data.buildStorageRow(
+            StorageItemMd(
+              id: item.itemId,
+              active: storageItem == null ? false : storageItem.active,
+              name: item.itemName,
+              service: storageItem == null ? false : storageItem.service,
+              outgoingPrice: item.price,
+              incomingPrice: 0,
+              taxId: 1,
+            ),
+            qty: item.amount.toInt(),
+            checked: item.auto,
+          )
+        ]);
+      }
+    }
+    data.gridStateManager.setShowLoading(false);
+  }
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
       onInitialBuild: (state) async {
-        if (state.generalState.quotes.isEmpty) {
-          final List<QuoteInfoMd> quotes =
-              await appStore.dispatch(GetQuotesAction());
-          if (quotes.isEmpty) {
-            if (mounted) {
-              await Navigator.maybePop(context);
-            }
-            showError(
-                "No ${Constants.propertyName.strCapitalize} found.\nPlease add ${Constants.propertyName} first.");
-          }
-          return;
-        }
         if (data.allocation != null || data.quote?.id != null) {
           try {
             setLoading(LoadingHelper.loading, 'Getting details!');
-            final quoteRes = await restClient()
-                .getQuoteBy(
-                  0,
-                  date: data.dateAsString,
-                  location_id: allocation!.location.id,
-                  shift_id: allocation!.shift.id,
-                )
-                .nocodeErrorHandler();
+
+            //Handle guest information
             final propertyDetailsRes = await restClient()
                 .getPropertyDetails(allocation!.shift.id)
                 .nocodeErrorHandler();
-            if (quoteRes.success) {
-              setLoading(LoadingHelper.idle);
-              if (quoteRes.data['quotes'].isNotEmpty) {
-                final q = quoteRes.data['quotes'][0];
-                data.quote = QuoteInfoMd.fromJson(q);
-                data.quote!.id = 0;
-                setState(() {});
-                if (propertyDetailsRes.success) {
-                  if (propertyDetailsRes.data['details']
-                      is Map<String, dynamic>) {
-                    data.allocation?.propertyDetails =
-                        PropertyDetailsMd.fromJson(
-                            propertyDetailsRes.data['details']);
-                  }
-                }
+            if (propertyDetailsRes.success) {
+              if (propertyDetailsRes.data['details'] is Map<String, dynamic>) {
+                data.allocation?.propertyDetails = PropertyDetailsMd.fromJson(
+                    propertyDetailsRes.data['details']);
               }
-            } else {
-              setLoading(LoadingHelper.error,
-                  ApiHelpers.getRawDataErrorMessages(quoteRes));
             }
           } catch (e) {
             setLoading(LoadingHelper.error, e.toString());
@@ -253,28 +272,30 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                       TitleContainer(
                         width: width,
                         title: "Timing",
-                        child: _timing(),
+                        child: _timing(state),
                       ),
                       // if (!data.isGridInitialized)
                       const Divider(),
-                      Visibility(
-                        visible: !data.isGridInitialized,
-                        child: SizedBox(
-                          width:
-                              CalendarConstants.quickScheduleDrawerWidth - 50,
-                          height: 100,
-                          child: UsersListTable(
-                              rows: data.isGridInitialized
-                                  ? data.gridStateManager.rows
-                                  : [],
-                              onSmReady: (e) {
-                                if (data.isGridInitialized) return;
-                                data.gridStateManager = e;
-                                data.isGridInitialized = true;
-                                setState(() {});
-                              },
-                              cols: []),
-                        ),
+                      SizedBox(
+                        width: CalendarConstants.quickScheduleDrawerWidth - 50,
+                        height: 100,
+                        child: UsersListTable(
+                            rows: data.isGridInitialized
+                                ? data.gridStateManager.rows
+                                : [],
+                            onSmReady: (e) async {
+                              logger("1");
+                              if (data.isGridInitialized) return;
+                              logger("2");
+                              data.gridStateManager = e;
+                              data.isGridInitialized = true;
+
+                              //Handle products
+                              await handleProducts(
+                                  state.generalState.storage_items);
+                              setState(() {});
+                            },
+                            cols: []),
                       )
                     ],
                   ),
@@ -484,7 +505,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
     );
   }
 
-  Widget _timing() {
+  Widget _timing(AppState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -501,6 +522,8 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
 
               setState(() {
                 data.timingInfo.date = date;
+                //Handle products
+                handleProducts(state.generalState.storage_items);
               });
             },
           ),

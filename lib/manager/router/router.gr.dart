@@ -41,9 +41,11 @@ class _$AppRouter extends RootStackRouter {
       );
     },
     TestRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<TestRouteArgs>(orElse: () => const TestRouteArgs());
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: TestPage(),
+        child: TestPage(key: args.key),
       );
     },
     UsersListRoute.name: (routeData) {
@@ -395,14 +397,26 @@ class DashboardRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [TestPage]
-class TestRoute extends PageRouteInfo<void> {
-  const TestRoute()
+class TestRoute extends PageRouteInfo<TestRouteArgs> {
+  TestRoute({Key? key})
       : super(
           TestRoute.name,
           path: 'test',
+          args: TestRouteArgs(key: key),
         );
 
   static const String name = 'TestRoute';
+}
+
+class TestRouteArgs {
+  const TestRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'TestRouteArgs{key: $key}';
+  }
 }
 
 /// generated route for
