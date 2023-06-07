@@ -9,7 +9,7 @@ class Constants {
   static const String appName = "MCA Web";
   static const int mj = 0;
   static const int mn = 1;
-  static const int up = 19;
+  static const int up = 2;
   static String appVersion = "$mj.$mn.$up";
   static bool isDebug = true;
   static bool enableTalker = false;
