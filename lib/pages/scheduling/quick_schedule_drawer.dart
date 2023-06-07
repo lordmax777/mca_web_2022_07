@@ -88,7 +88,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
   }
 
   void _additionalSettings() async {
-    data.isGridInitialized = false;
+    // data.isGridInitialized = false;
     final bool? newJob = await showDialog(
         context: context,
         barrierDismissible: false,
@@ -270,56 +270,98 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                           title: "Select Job",
                           child: _jobField(allJobs.map((e) => e).toList(),
                               currencies, paymentMethods, state)),
-                      // const Divider(height: 30),
-                      // TitleContainer(
-                      //   width: width,
-                      //   title: "Select Team",
-                      //   padding: 0,
-                      //   child: _team(users),
-                      // ),
-                      // const Divider(height: 30),
-                      // TitleContainer(
-                      //   width: width,
-                      //   title: "Guests",
-                      //   child: _guests(),
-                      // ),
-                      // const Divider(height: 30),
-                      // TitleContainer(
-                      //   width: width,
-                      //   title: "Timing",
-                      //   child: _timing(state),
-                      // ),
+                      const Divider(height: 30),
+                      TitleContainer(
+                        width: width,
+                        title: "Select Team",
+                        padding: 0,
+                        child: _team(users),
+                      ),
+                      const Divider(height: 30),
+                      TitleContainer(
+                        width: width,
+                        title: "Guests",
+                        child: _guests(),
+                      ),
+                      const Divider(height: 30),
+                      TitleContainer(
+                        width: width,
+                        title: "Timing",
+                        child: _timing(state),
+                      ),
                       // if (!data.isGridInitialized)
                       const Divider(),
+                      // StorageItemsDropdown(
+                      //   state: state,
+                      //   initialItems: data.isGridInitialized
+                      //       ? data.getAddedStorageItems(
+                      //           state.generalState.storage_items)
+                      //       : [],
+                      //   onAdded: (item) async {
+                      //     if (item != null) {
+                      //       data.gridStateManager.insertRows(0, [
+                      //         data.buildStorageRow(item, qty: 1, checked: true)
+                      //       ]);
+                      //     }
+                      //   },
+                      //   onRemoved: (storageItemId) {
+                      //     //if null then empty the list
+                      //     if (storageItemId == null) {
+                      //       data.gridStateManager.removeAllRows();
+                      //       return;
+                      //     }
+                      //     //remove the item from the list
+                      //     final row = data.gridStateManager.rows
+                      //         .firstWhereOrNull((element) =>
+                      //             element.cells['id']?.value == storageItemId);
+                      //     if (row != null) {
+                      //       data.gridStateManager.removeRows([row]);
+                      //     }
+                      //   },
+                      // ),
                       // if (data.isGridInitialized)
-                      StorageItemsDropdown(
-                        state: state,
-                        initialItems: data.isGridInitialized
-                            ? data.getAddedStorageItems(
-                                state.generalState.storage_items)
-                            : [],
-                        onAdded: (item) async {
-                          if (item != null) {
-                            data.gridStateManager.insertRows(0, [
-                              data.buildStorageRow(item, qty: 1, checked: true)
-                            ]);
-                          }
-                        },
-                        onRemoved: (storageItemId) {
-                          //if null then empty the list
-                          if (storageItemId == null) {
-                            data.gridStateManager.removeAllRows();
-                            return;
-                          }
-                          //remove the item from the list
-                          final row = data.gridStateManager.rows
-                              .firstWhereOrNull((element) =>
-                                  element.cells['id']?.value == storageItemId);
-                          if (row != null) {
-                            data.gridStateManager.removeRows([row]);
-                          }
-                        },
-                      ),
+                      CustomAutocompleteTextField<StorageItemMd>(
+                          listItemWidget: (p0) => Text(p0.name),
+                          onSelected: (p0) {
+                            final StorageItemMd? item = data
+                                .gridStateManager.rows
+                                .firstWhereOrNull((element) =>
+                                    (element.cells['item']?.value
+                                            as StorageItemMd)
+                                        .id ==
+                                    p0.id)
+                                ?.cells['item']
+                                ?.value;
+                            final includedItemIdx = data.gridStateManager.rows
+                                .indexWhere((element) =>
+                                    (element.cells['item']?.value
+                                            as StorageItemMd)
+                                        .id ==
+                                    p0.id);
+                            if (includedItemIdx >= 0 && item != null) {
+                              if (!item.service) {
+                                data.gridStateManager.rows[includedItemIdx]
+                                    .cells['quantity']?.value = data
+                                        .gridStateManager
+                                        .rows[includedItemIdx]
+                                        .cells['quantity']
+                                        ?.value +
+                                    1;
+                                setState(() {});
+                              }
+                            } else {
+                              data.gridStateManager.insertRows(
+                                  0, [data.buildStorageRow(p0, checked: true)]);
+                            }
+                          },
+                          displayStringForOption: (option) {
+                            return option.name;
+                          },
+                          options: (p0) => state.generalState.storage_items
+                              .where((element) => element.name
+                                  .toLowerCase()
+                                  .contains(p0.text.toLowerCase()))
+                              .toList()),
                       TitleContainer(
                         width: width,
                         padding: 0,
@@ -472,6 +514,7 @@ class _QuickScheduleDrawerState extends State<QuickScheduleDrawer>
                   published: false,
                 );
                 data.setClient(shift.client);
+                data.setAddress(shift.location.address);
                 await handleProducts(state.generalState.storage_items);
                 break;
               default:

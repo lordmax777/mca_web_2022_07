@@ -34,14 +34,14 @@ class _StorageItemsDropdownState extends State<StorageItemsDropdown> {
     logger(widget.initialItems.length, hint: 'TESTTES 2');
     if (oldWidget.initialItems.length != widget.initialItems.length) {
       logger('TESTTES 3');
-      setState(() {
-        visible = false;
-      });
-      Future.delayed(Duration(milliseconds: 100), () {
-        setState(() {
-          visible = true;
-        });
-      });
+      // setState(() {
+      //   visible = false;
+      // });
+      // Future.delayed(Duration(milliseconds: 100), () {
+      //   setState(() {
+      //     visible = true;
+      //   });
+      // });
     }
   }
 

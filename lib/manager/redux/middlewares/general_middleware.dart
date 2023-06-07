@@ -307,6 +307,10 @@ Future<ApiResponse?> _createQuoteAction(
       McaLoading.showFail('Please add email');
       return null;
     }
+    if (!action.email.isEmail) {
+      McaLoading.showFail('Email is invalid');
+      return null;
+    }
     if (action.phone != null && action.phone!.isEmpty) {
       McaLoading.showFail('Please add phone');
       return null;
