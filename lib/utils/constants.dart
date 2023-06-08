@@ -11,7 +11,7 @@ class Constants {
   static const int mn = 1;
   static const int up = 2;
   static String appVersion = "$mj.$mn.$up";
-  static bool isDebug = true;
+  static bool isDebug = false;
   static bool enableTalker = false;
 
   static double defaultWidth(BuildContext context) =>
@@ -21,7 +21,8 @@ class Constants {
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";
   static const String apiBaseUrlProd = "https://www.onlinetimeclock.co.uk";
 
-  static String get apiBaseUrl => isDebug ? apiBaseUrlDev : apiBaseUrlProd;
+  static String apiBaseUrl(bool isTest) =>
+      isTest ? apiBaseUrlDev : apiBaseUrlProd;
 
   //Auth
   static String domain = "timesheet.skillfill.co.uk";

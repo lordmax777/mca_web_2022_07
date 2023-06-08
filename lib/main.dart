@@ -37,8 +37,8 @@ Future<void> main() async {
 }
 
 Future<void> setupControllers() async {
+  Get.put(LoginController());
   Get.put(GeneralController());
-  Get.lazyPut(() => LoginController());
   Get.lazyPut(() => DepartmentsController());
   Get.lazyPut(() => HiveController());
   Get.lazyPut(() => GroupsController());

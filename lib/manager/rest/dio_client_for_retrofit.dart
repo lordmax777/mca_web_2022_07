@@ -64,11 +64,9 @@ class DioClientForRetrofit {
   final String? bearerToken;
   final String? contentType;
   final ResponseType responseType;
-  final String? baseUrl;
   DioClientForRetrofit(
       {this.bearerToken,
       this.contentType,
-      this.baseUrl,
       this.responseType = ResponseType.json});
 
   Map<String, dynamic>? get headers {
@@ -98,7 +96,7 @@ class DioClientForRetrofit {
       dio.interceptors.addAll(customInterceptors);
     }
     BaseOptions options = BaseOptions(
-      baseUrl: baseUrl ?? Constants.apiBaseUrl,
+      baseUrl: Constants.apiBaseUrl(LoginController.to.isTestMode),
       headers: headers,
       responseType: responseType,
       connectTimeout: 30000,

@@ -13,7 +13,13 @@ import '../../../manager/rest/nocode_helpers.dart';
 import '../../../theme/theme.dart';
 
 class LoginController extends GetxController {
-  static LoginController get to => Get.find();
+  static LoginController get to {
+    if (Get.isRegistered<LoginController>()) {
+      return Get.find<LoginController>();
+    } else {
+      return Get.put<LoginController>(LoginController());
+    }
+  }
 
   final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
