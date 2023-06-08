@@ -18,14 +18,35 @@ class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
+  final RxBool _isTestMode = false.obs;
+  bool get isTestMode => _isTestMode.value;
+  set isTestMode(bool value) => _isTestMode.value = value;
+
+  @override
+  void onReady() {
+    super.onReady();
+    if (kDebugMode) {
+      nameController.text = Constants.username;
+      passwordController.text = Constants.password;
+    }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> login() async {
     if (formKey.currentState!.validate()) {
       showLoading(barrierDismissible: false);
       final ApiResponse res = await appStore.dispatch(GetAccessTokenAction(
-          domain: Constants.domain,
-          username: nameController.text,
-          password: passwordController.text));
+        domain: Constants.domain,
+        username: nameController.text,
+        password: passwordController.text,
+        isTestMode: isTestMode,
+      ));
 
       final isLoggedIn = GeneralController.to.isLoggedIn;
 
@@ -44,19 +65,9 @@ class LoginController extends GetxController {
     }
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-    if (kDebugMode) {
-      nameController.text = Constants.username;
-      passwordController.text = Constants.password;
-    }
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    passwordController.dispose();
-    super.dispose();
+  void toggleTestMode() {
+    isTestMode = !isTestMode;
+    // nameController.text = "";
+    // passwordController.text = "";
   }
 }

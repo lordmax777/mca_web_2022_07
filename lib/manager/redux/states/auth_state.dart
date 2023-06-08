@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/state_value.dart';
 import '../../model_exporter.dart';
 
-
-
-
-
-
-
 @immutable
 class AuthState {
   final StateValue<AuthRes?> authRes;
@@ -39,18 +33,22 @@ class GetAccessTokenAction {
   final String domain;
   final String username;
   final String password;
+  final bool isTestMode;
 
   GetAccessTokenAction({
     required this.domain,
     required this.username,
     required this.password,
+    required this.isTestMode,
   });
 }
 
 class GetRefreshTokenAction {
   final bool doInitFunc;
+  final bool isTestMode;
 
   GetRefreshTokenAction({
     this.doInitFunc = true,
+    required this.isTestMode,
   });
 }

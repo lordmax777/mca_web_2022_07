@@ -564,6 +564,7 @@ Widget chbx(bool value, ValueChanged<bool> onChanged, String text) {
     },
     child: SpacedRow(
       horizontalSpace: 8.0,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CheckboxWidget(value: value, onChanged: (value) => onChanged(value!)),

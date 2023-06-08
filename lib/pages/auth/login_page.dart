@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:mca_web_2022_07/manager/router/mca_login_state.dart';
 import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
+import 'package:mca_web_2022_07/pages/properties/new_prop_tabs/shift_details_tab.dart';
 import 'package:provider/provider.dart';
 
 import '../../manager/hive.dart';
@@ -27,23 +28,25 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         floatingActionButton: talker.fab(),
         backgroundColor: const Color(0xffe3e3e3),
-        body: const Center(child: Body()));
+        body: const Center(child: _Body()));
   }
 }
 
-class Body extends GetView<LoginController> {
-  const Body({super.key});
+class _Body extends GetView<LoginController> {
+  const _Body({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final TalkerController talker = TalkerController.to;
     return talker.talkerWrapper(
-      child: TableWrapperWidget(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.height / 6,
-              horizontal: MediaQuery.of(context).size.height / 8),
-          child: _formLogin(context),
+      child: Obx(
+        () => TableWrapperWidget(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.height / 6,
+                horizontal: MediaQuery.of(context).size.height / 8),
+            child: _formLogin(context),
+          ),
         ),
       ),
     );
@@ -53,7 +56,7 @@ class Body extends GetView<LoginController> {
     return Form(
       key: controller.formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           KText(
@@ -90,7 +93,10 @@ class Body extends GetView<LoginController> {
               return null;
             },
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
+          chbx(controller.isTestMode, (_) => controller.toggleTestMode(),
+              "Is Test Mode"),
+          const SizedBox(height: 20),
           SizedBox(
             width: 300,
             height: 40,

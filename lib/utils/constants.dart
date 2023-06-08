@@ -26,10 +26,18 @@ class Constants {
   //Auth
   static String domain = "timesheet.skillfill.co.uk";
   // "https://kashiaba.onlinetimeclock.co.uk";
-  static const String clientId =
+  static String clientId(bool isTest) => isTest ? clientIdTest : clientIdReal;
+  static String clientSecret(bool isTest) =>
+      isTest ? clientSecretTest : clientSecretReal;
+  static const String clientIdTest =
       "1_3bcbxd9e24g0gk4swg0kwgcwg4o8k8g4g888kwc44gcc0gwwk4";
-  static const String clientSecret =
+  static const String clientSecretTest =
       "4ok2x70rlfokc8g0wws8c8kwcokw80k44sg48goc0ok4w0so0k";
+  static const String clientIdReal =
+      "2_7wm1uwliqqkggsg8c08g0wg0okc0cogw4o0gkkg0g0k0g4okc";
+  static const String clientSecretReal =
+      "3yu326re70w0wog4css8gswowc48okc4g08ocw8cc4wc0o08k8";
+
   static const String token_type = "bearer";
 
   static String grant_type({bool refresh = false}) =>

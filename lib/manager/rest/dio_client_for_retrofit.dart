@@ -2,6 +2,7 @@ import 'dart:async';
 
 import "package:dio/dio.dart";
 import 'package:flutter_easylogger/flutter_logger.dart';
+import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 
 import 'package:mca_web_2022_07/theme/theme.dart';
 
@@ -20,8 +21,12 @@ class TokenHandler {
     if (options.path != "/oauth/v2/token") {
       if (diff >= tokenExpireTime) {
         logger("The Difference is $diff minutes");
-        final StateValue<AuthRes> res =
-            await appStore.dispatch(GetRefreshTokenAction(doInitFunc: false));
+        final StateValue<AuthRes> res = await appStore.dispatch(
+          GetRefreshTokenAction(
+            doInitFunc: false,
+            isTestMode: LoginController.to.isTestMode,
+          ),
+        );
         options.headers["Authorization"] = "Bearer ${res.data?.access_token}";
         tokenExpireTime = res.data!.expires_in ~/ 100;
         logger("Token Expired and Renewed at ${now.toIso8601String()}");

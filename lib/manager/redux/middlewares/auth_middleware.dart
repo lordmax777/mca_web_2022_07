@@ -1,5 +1,6 @@
 import 'package:mca_web_2022_07/manager/general_controller.dart';
 import 'package:mca_web_2022_07/manager/models/auth.dart';
+import 'package:mca_web_2022_07/pages/auth/controllers/login_controller.dart';
 import 'package:redux/redux.dart';
 import 'package:mca_web_2022_07/manager/redux/sets/app_state.dart';
 import '../../../theme/theme.dart';
@@ -35,8 +36,8 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
         .getAccessToken(
             Constants.grant_type(),
             action.domain,
-            Constants.clientId,
-            Constants.clientSecret,
+            Constants.clientId(action.isTestMode),
+            Constants.clientSecret(action.isTestMode),
             action.username,
             action.password)
         .nocodeErrorHandler();
@@ -78,8 +79,12 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
     final refresh_token = HiveController.to.getRefreshToken()!;
 
     final ApiResponse res = await restClient()
-        .refreshToken(Constants.grant_type(refresh: true), refresh_token,
-            Constants.clientId, Constants.clientSecret)
+        .refreshToken(
+          Constants.grant_type(refresh: true),
+          refresh_token,
+          Constants.clientId(action.isTestMode),
+          Constants.clientSecret(action.isTestMode),
+        )
         .nocodeErrorHandler();
 
     stateValue.error.errorCode = res.resCode;
@@ -112,6 +117,7 @@ class AuthMiddleware extends MiddlewareClass<AppState> {
 ///Must pass the action in StateValue<T> as T type
 Future fetch(action) async {
   final talker = TalkerController.to.talker;
+  final loginController = LoginController.to;
   if (action == null) return;
   final res = await appStore.dispatch(action);
 
@@ -132,9 +138,11 @@ Future fetch(action) async {
           if (eee) {
             talker.error('Token Expired');
             await appStore.dispatch(GetAccessTokenAction(
-                domain: Constants.domain,
-                username: Constants.username,
-                password: Constants.password));
+              domain: Constants.domain,
+              username: Constants.username,
+              password: Constants.password,
+              isTestMode: loginController.isTestMode,
+            ));
 
             return await appStore.dispatch(action);
           }
