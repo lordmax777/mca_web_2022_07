@@ -19,7 +19,8 @@ class Constants {
 
   //REST API related data
   static const String apiBaseUrlDev = "https://timesheet.skillfill.co.uk";
-  static const String apiBaseUrlProd = "http://timesheet.onlinetimeclock.co.uk";
+  static const String apiBaseUrlProd =
+      "https://timesheet.onlinetimeclock.co.uk";
 
   static String apiBaseUrl(bool isTest) =>
       isTest ? apiBaseUrlDev : apiBaseUrlProd;

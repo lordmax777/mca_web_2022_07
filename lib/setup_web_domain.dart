@@ -7,6 +7,9 @@ void setupDomain() {
   final domain =
       // "kashiaba.onlinetimeclock.co.uk";
       Constants.isDebug ? Constants.domain : html.window.location.origin;
-  Constants.domain = domain;
+
+  //Remove http or https
+  Constants.domain =
+      domain.replaceAll("http://", "").replaceAll("https://", "");
   logger('WEB - baseUrl: ${Constants.domain}');
 }
