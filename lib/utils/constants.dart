@@ -26,7 +26,7 @@ class Constants {
 
   //Auth
   static String domain = "timesheet.skillfill.co.uk";
-  // "https://kashiaba.onlinetimeclock.co.uk";
+  // "kashiaba.onlinetimeclock.co.uk";
   static String clientId(bool isTest) => isTest ? clientIdTest : clientIdReal;
   static String clientSecret(bool isTest) =>
       isTest ? clientSecretTest : clientSecretReal;

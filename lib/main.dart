@@ -56,8 +56,10 @@ Future<void> setupControllers() async {
 }
 
 void setupLogger() {
-  Logger.init(Constants.isDebug,
-      isShowFile: false, isShowNavigation: false, isShowTime: false);
+  Logger.init(true, //Constants.isDebug,
+      isShowFile: false,
+      isShowNavigation: false,
+      isShowTime: false);
 }
 
 Future<void> setupHiveDb() async {

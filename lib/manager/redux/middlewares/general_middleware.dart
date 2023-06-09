@@ -105,9 +105,11 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         l.currencies.add(ListCurrency.fromJson(e));
       }
       GeneralController.to.companyInfo.currency.id = l.currencies
-          .firstWhere((element) =>
-              element.code == GeneralController.to.companyInfo.currency.code)
-          .id;
+              .firstWhereOrNull((element) =>
+                  element.code ==
+                  GeneralController.to.companyInfo.currency.code)
+              ?.id ??
+          0;
       for (var e in r['countries']) {
         l.countries.add(ListCountry.fromJson(e));
       }
