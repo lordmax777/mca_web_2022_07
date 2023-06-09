@@ -48,3 +48,4 @@ app.*.map.json
 /.fvm/
 #/website/
 /secret
+/mca_dashboard/
