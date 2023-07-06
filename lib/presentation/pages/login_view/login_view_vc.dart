@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
 import 'package:mca_dashboard/utils/utils.dart';
@@ -28,7 +29,7 @@ class LoginViewVc extends ChangeNotifier {
           GetLoginAction(usernameController.text, passwordController.text));
       res.fold((left) {
         // //Success
-        print("Login success ${left.toJson()}");
+        Logger.i("Login success ${left.toJson()}");
         deps.navigation.loginState.login();
       }, (right) {
         // //Error
