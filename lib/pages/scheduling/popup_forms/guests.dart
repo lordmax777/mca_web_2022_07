@@ -222,9 +222,9 @@ class JobGuests extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         EasyButton(
+            borderRadius: 8,
             width: 30,
             height: 30,
-            borderRadius: 8,
             idleStateWidget: const Icon(Icons.remove),
             loadingStateWidget: Transform.scale(
               scale: .6,

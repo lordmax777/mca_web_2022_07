@@ -1279,6 +1279,7 @@ class GetSaveGeneralDetailsAction {
           nokPhone: savedUser.nextOfKinPhone.text,
           upass: savedUser.upass.text,
           nationality: savedUser.nationalityCountryCode.code,
+        
         )
         .nocodeErrorHandler();
 

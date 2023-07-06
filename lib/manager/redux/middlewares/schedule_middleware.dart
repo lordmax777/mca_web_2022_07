@@ -166,7 +166,7 @@ class ScheduleMiddleware extends MiddlewareClass<AppState> {
         list.add(shift);
         final pr = shift.shift.propertyFromNewState(newProperties.data!);
         final us = shift.user;
-        final DateTime date = DateTime.parse(shift.date);
+        final DateTime date = DateTime.parse(item.date);
         final formatter = DateFormat('HH:mm');
 
         // final stDate = DateTime(date.year, date.month, date.day, 00, 00);
