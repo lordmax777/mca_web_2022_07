@@ -45,6 +45,7 @@ class LoginView extends StatelessWidget {
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         DefaultTextField(
+                          label: "Username",
                           width: double.infinity,
                           controller: vc.usernameController,
                           validator: (value) {
@@ -55,6 +56,7 @@ class LoginView extends StatelessWidget {
                           },
                         ),
                         DefaultTextField(
+                          label: "Password",
                           width: double.infinity,
                           obscureText: true,
                           validator: (value) {
