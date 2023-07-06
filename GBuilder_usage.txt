@@ -1,2 +1,0 @@
-If GBuilder is wrapped for any page or widget, that page or widget 
-must use any observable(Rx) widget
