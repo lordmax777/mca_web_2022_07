@@ -1,0 +1,3 @@
+class GetStorageItemsAction {
+  const GetStorageItemsAction();
+}

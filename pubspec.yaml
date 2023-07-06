@@ -1,0 +1,75 @@
+name: mca_dashboard
+description: MCA Dashboard Refactor
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  #Core
+  go_router: ^8.0.1
+  intl: ^0.18.1
+
+  #State
+  redux: ^5.0.0
+  flutter_redux: ^0.10.0
+
+  #Data
+  freezed: ^2.3.5
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  collection: ^1.16.0
+  get_it: ^7.6.0
+  equatable: ^2.0.5
+  either_dart: ^1.0.0
+
+  #Network
+  dio: ^4.0.6 # DO NOT UPGRADE
+  retrofit: ^3.0.2 # DO NOT UPGRADE
+  get_ip_address: ^0.0.6
+#  flutter_google_places_sdk: ^0.3.2+5
+
+  #UI
+  pluto_grid: ^7.0.2
+  syncfusion_flutter_datepicker: 20.2.43
+  syncfusion_flutter_calendar:
+    path: ./syncfusion_flutter_calendar-20.2.43
+  google_fonts: ^5.0.0
+  file_picker: ^5.3.2
+  dropdown_button2: ^2.1.4
+  bot_toast: ^4.0.4
+
+  #Etc
+  flutter_easylogger: ^2.3.3
+  crypto: ^3.0.3
+  easy_loading_button: ^0.3.2
+
+  #Google Maps
+  google_maps_webservice:
+    git:
+      url: https://github.com/YakivGalkin/google_maps_webservice
+  google_maps_flutter: ^2.2.1
+  google_maps_flutter_web: ^0.4.0+3
+  google_maps_widget: ^1.0.5+1
+
+
+dependency_overrides:
+  http: ^0.13.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  retrofit_generator: ^4.0.3 # DO NOT UPGRADE
+  build_runner: ^2.4.5
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,3 @@
+class GetClearDataAction {
+  const GetClearDataAction();
+}

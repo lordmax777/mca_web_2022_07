@@ -1,0 +1,19 @@
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
+import 'package:mca_dashboard/manager/data/data.dart';
+import 'package:mca_dashboard/utils/utils.dart';
+import 'manager/manager.dart';
+
+void setupDomain() {
+  //1. find the base url
+
+  final domain = kDebugMode
+      ? domainDevStr
+      :
+      // domainDevStr;
+      html.window.location.origin;
+  DependencyManager.instance.db
+      .setDomain(domain.replaceAll("http://", "").replaceAll("https://", ""));
+
+  logger("SETUP DOMAIN - WEB - setting domain to $domain");
+}

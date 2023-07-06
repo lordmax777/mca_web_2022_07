@@ -1,0 +1,3 @@
+class GetClientsAction {
+  const GetClientsAction();
+}

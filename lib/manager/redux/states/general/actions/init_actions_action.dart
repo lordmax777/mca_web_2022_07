@@ -1,0 +1,3 @@
+class GetInitActions {
+  const GetInitActions();
+}

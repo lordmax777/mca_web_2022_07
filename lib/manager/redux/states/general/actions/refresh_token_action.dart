@@ -1,0 +1,3 @@
+class GetRefreshTokenAction {
+  const GetRefreshTokenAction();
+}

@@ -1,0 +1,3 @@
+class GetListsAction {
+  const GetListsAction();
+}

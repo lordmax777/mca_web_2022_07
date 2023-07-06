@@ -1,0 +1,3 @@
+class GetFormatsAction {
+  const GetFormatsAction();
+}
