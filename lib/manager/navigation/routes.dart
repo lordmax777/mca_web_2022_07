@@ -490,8 +490,18 @@ class MCALoginState extends ChangeNotifier {
 
   bool get isLoggedIn => _isLoggedIn;
 
+  bool _isLoggingIn = false;
+
+  /// This is used to hide login page when checking if the user's token is valid or not.
+  ///
+  /// Shows a loading in login page.
+  ///
+  /// [_isLoggingIn] is always false after checking.
+  bool get isLoggingIn => _isLoggingIn;
+
   Future<void> login() async {
     final initSuccess = await dispatch<bool>(const GetInitActions());
+    _isLoggingIn = false;
     if (initSuccess.isLeft) {
       _isLoggedIn = true;
       notifyListeners();
@@ -511,6 +521,8 @@ class MCALoginState extends ChangeNotifier {
   Future<void> init() async {
     logger("MCALoginState created");
     //Check access token is valid, checking by calling getFormats api
+    _isLoggingIn = true;
+    notifyListeners();
     final formats = await dispatch<FormatMd>(const GetFormatsAction());
     formats.fold((left) async {
       Logger.i("Logged in");
@@ -518,6 +530,8 @@ class MCALoginState extends ChangeNotifier {
       await login();
     }, (right) async {
       Logger.e("Not Logged in");
+      _isLoggingIn = false;
+      notifyListeners();
       //if fail then move to login page
       await logout();
     });
