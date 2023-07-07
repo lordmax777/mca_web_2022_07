@@ -56,24 +56,26 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size(double.infinity, kToolbarHeight);
 
   Widget _getTitle() {
-    return StoreConnector<AppState, CompanyInfoMd>(
+    return StoreConnector<AppState, DetailsMd>(
         rebuildOnChange: false,
-        converter: (store) => store.state.generalState.companyInfo,
+        converter: (store) => store.state.generalState.detailsMd,
         builder: (context, vm) {
-          final logoBytes = vm.logoBytes;
-          ImageProvider image = MemoryImage(logoBytes);
+          final logoBytes = null; //vm.logoBytes;
+          ImageProvider? image =
+              logoBytes == null ? null : MemoryImage(logoBytes);
           return SpacedRow(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             horizontalSpace: 8,
             children: [
-              Image(
-                image: image,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(child: Icon(Icons.error_outline));
-                },
-              ),
-              Text(vm.name),
+              if (image != null)
+                Image(
+                  image: image,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.error_outline));
+                  },
+                ),
+              Text(vm.fullName),
             ],
           );
         });

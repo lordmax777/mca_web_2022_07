@@ -257,19 +257,23 @@ class MCANavigation extends IMCANavigation {
   @override
   CancelFunc showLoading(
       {bool barrierDismissible = false, bool showCancelButton = false}) {
-    return BotToast.showCustomLoading(
-      toastBuilder: (cancelFunc) {
-        return MCALoadingWidget(
-            onClose: kDebugMode
-                ? cancelFunc
-                : showCancelButton
-                    ? cancelFunc
-                    : null);
-      },
-      clickClose: barrierDismissible,
-      allowClick: false,
-      backButtonBehavior: BackButtonBehavior.ignore,
-    );
+    if (GlobalConstants.enableLoadingIndicator) {
+      return BotToast.showCustomLoading(
+        toastBuilder: (cancelFunc) {
+          return MCALoadingWidget(
+              onClose: kDebugMode
+                  ? cancelFunc
+                  : showCancelButton
+                      ? cancelFunc
+                      : null);
+        },
+        clickClose: barrierDismissible,
+        allowClick: false,
+        backButtonBehavior: BackButtonBehavior.ignore,
+      );
+    } else {
+      return () {};
+    }
   }
 
   @override

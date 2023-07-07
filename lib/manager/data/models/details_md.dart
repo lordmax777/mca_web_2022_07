@@ -20,6 +20,15 @@ final class DetailsMd extends Equatable {
   final String title;
   final String firstName;
   final String lastName;
+
+  String get fullName {
+    String name = "";
+    if (title.isNotEmpty) name += "$title ";
+    if (firstName.isNotEmpty) name += "$firstName ";
+    if (lastName.isNotEmpty) name += lastName;
+    return name;
+  }
+
   final String dateOfBirth;
   final String location;
   final String department;

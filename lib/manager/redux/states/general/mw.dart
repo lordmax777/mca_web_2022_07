@@ -436,7 +436,6 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       appStore.dispatch(UpdateGeneralState(companyInfo: companyInfo));
       final color =
           companyInfo.colourSchemaMd(state.generalState.lists.colorSchemas);
-      logger(color, hint: "color");
       if (color != null) {
         final primary = Color(int.parse("0xFF${color.colour1.substring(1)}"));
         final secondary = Color(int.parse("0xFF${color.colour2.substring(1)}"));
