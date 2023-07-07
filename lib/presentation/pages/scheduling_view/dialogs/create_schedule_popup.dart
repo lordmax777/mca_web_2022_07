@@ -425,7 +425,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                             constraints: const BoxConstraints(),
                             onPressed: onAddClient,
                             tooltip: "Add Client",
-                            color: Theme.of(context).primaryColor,
+                            color: context.colorScheme.primary,
                             icon: const Icon(Icons.person_add_rounded))),
 
                     //Quote Data
@@ -455,7 +455,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                           constraints: const BoxConstraints(),
                           onPressed: () => onAddAddress(isEditOnly: isQuote),
                           tooltip: "${isQuote ? "Edit" : "Add"} Address",
-                          color: Theme.of(context).primaryColor,
+                          color: context.colorScheme.primary,
                           icon: Icon(isQuote
                               ? Icons.edit_location_alt_rounded
                               : Icons.add_location_alt_rounded)),
@@ -527,7 +527,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                             onPressed: () => onAddAddress(
                                 isWorkAddress: true, isEditOnly: true),
                             tooltip: "Edit Address",
-                            color: Theme.of(context).primaryColor,
+                            color: context.colorScheme.primary,
                             icon: const Icon(Icons.edit_location_alt_rounded)),
                         dropdown: personalData.clientId == null
                             ? null
@@ -606,7 +606,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                           constraints: const BoxConstraints(),
                           onPressed: onEditTiming,
                           tooltip: "Edit Timing",
-                          color: Theme.of(context).primaryColor,
+                          color: context.colorScheme.primary,
                           icon: const Icon(Icons.edit_calendar_rounded)),
                       items: [
                         ShiftCardItem(
@@ -776,7 +776,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                       constraints: const BoxConstraints(),
                       onPressed: onAddTeamMember,
                       tooltip: "Add Member",
-                      color: Theme.of(context).primaryColor,
+                      color: context.colorScheme.primary,
                       icon: const Icon(Icons.people_alt_rounded)),
                   items: [
                     if (teamData.users.isEmpty)
@@ -841,7 +841,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                           constraints: const BoxConstraints(),
                           onPressed: onCreateProduct,
                           tooltip: "Create products and services",
-                          color: Theme.of(context).primaryColor,
+                          color: context.colorScheme.primary,
                           icon: const Icon(Icons.add_shopping_cart_rounded)),
                     ],
                   ),

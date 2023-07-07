@@ -419,7 +419,7 @@ class _TableState extends State<_Table> {
       viewNavigationMode: ViewNavigationMode.none,
       timeSlotViewSettings:
           conf.getTimeSlotSettings(_calendarController.view!, context),
-      todayHighlightColor: Theme.of(context).primaryColor,
+      todayHighlightColor: context.colorScheme.primary,
       viewHeaderHeight: conf.getViewHeaderHeight(_calendarController.view!),
       showCurrentTimeIndicator: false,
       firstDayOfWeek: 1,
@@ -591,8 +591,8 @@ class _TableState extends State<_Table> {
                           TeamData(users: [if (resource != null) resource]),
                       timeData: TimeData.init().copyWith(
                           start: date,
-                          repeat: appStore
-                              .state.generalState.lists.workRepeats.first),
+                          repeat: appStore.state.generalState.lists.workRepeats
+                              .firstOrNull),
                     ),
                   );
                 }) ??
@@ -627,7 +627,7 @@ class _TableState extends State<_Table> {
     int? currentGuestsNumber;
 
     final allocation = generalState.allocations.firstWhereOrNull(
-        (element) => element.id == details.appointments?.first.id);
+        (element) => element.id == details.appointments?.first?.id);
     if (allocation != null) {
       currentGuestsNumber = allocation.guests;
     }
@@ -658,7 +658,7 @@ class _TableState extends State<_Table> {
         break;
       case CalendarTapMenus.delete:
         success = await _handleAppointmentDelete(
-            data, details.appointments?.first, resource);
+            data, details.appointments?.firstOrNull, resource);
         break;
       case CalendarTapMenus.copy:
         success = await _handleAppointmentCopy(data);
@@ -719,7 +719,7 @@ class _TableState extends State<_Table> {
           startTime: property.startTimeOfDay,
           endTime: property.finishTimeOfDay,
           active: property.active,
-          repeat: generalState.lists.workRepeats.first,
+          repeat: generalState.lists.workRepeats.firstOrNull,
         ),
       );
     }

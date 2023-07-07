@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 
 class DefaultDropdownMenu extends StatelessWidget {
   final List<DefaultMenuItem> items;
@@ -28,7 +29,7 @@ class DefaultDropdownMenu extends StatelessWidget {
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.0),
-            borderSide: BorderSide(color: Theme.of(context).primaryColor)),
+            borderSide: BorderSide(color: context.colorScheme.primary)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(color: Colors.grey[400]!),

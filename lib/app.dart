@@ -31,44 +31,13 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
   @override
   Widget build(BuildContext context) {
     print("rebuild app");
-    final textTheme = Theme.of(context).textTheme;
     final router = _dependencyManager.navigation.router;
     return StoreProvider<AppState>(
       store: appStore,
       child: MaterialApp.router(
         routerConfig: router,
         debugShowCheckedModeBanner: kDebugMode,
-        theme: ThemeData(
-          useMaterial3: true,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.blueAccent,
-            foregroundColor: Colors.white,
-          ),
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.blue,
-            backgroundColor: Colors.white,
-            accentColor: Colors.blueAccent,
-            errorColor: Colors.redAccent,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith((states) {
-                if (states.contains(MaterialState.disabled)) {
-                  return Colors.grey;
-                }
-                return Colors.blueAccent;
-              }),
-              foregroundColor: MaterialStateProperty.resolveWith((states) {
-                if (states.contains(MaterialState.disabled)) {
-                  return Colors.black54;
-                }
-                return Colors.white;
-              }),
-            ),
-          ),
-          textTheme: GoogleFonts.nunitoTextTheme(),
-          dividerColor: Colors.grey,
-        ),
+        theme: _dependencyManager.appDep.appTheme.theme,
         title: 'MCA Dashboard',
         builder: (context, child) => botToastBuilder(
             context,

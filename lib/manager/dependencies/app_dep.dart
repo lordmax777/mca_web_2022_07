@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mca_dashboard/presentation/theme/app_theme.dart';
 
 class AppDep {
   //create singleton
@@ -17,4 +18,7 @@ class AppDep {
 
   /// runs setState of the MaterialApp
   late final VoidCallback restart;
+
+  ///App theme
+  final appTheme = AppTheme();
 }

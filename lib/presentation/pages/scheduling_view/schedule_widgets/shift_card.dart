@@ -1,7 +1,7 @@
-import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 
 final class ShiftCardDropdown extends Equatable {
   final Iterable<DefaultMenuItem> items;
@@ -192,10 +192,10 @@ class ShiftCard extends StatelessWidget {
                 decoration: item.onSimpleTextTapped != null
                     ? TextDecoration.underline
                     : null,
-                decorationColor: Theme.of(context).primaryColor,
+                decorationColor: context.colorScheme.primary,
                 decorationThickness: 2,
                 color: item.onSimpleTextTapped != null
-                    ? Theme.of(context).primaryColor
+                    ? context.colorScheme.primary
                     : null,
               ),
         ),

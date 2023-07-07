@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mca_dashboard/utils/global_extensions.dart';
 
 class DefaultSwitch extends StatelessWidget {
   final bool value;
@@ -37,8 +38,8 @@ class DefaultSwitch extends StatelessWidget {
             }
             return null;
           }),
-          activeColor: Theme.of(context).primaryColor,
-          activeTrackColor: Theme.of(context).primaryColor.withOpacity(0.5),
+          activeColor: context.colorScheme.primary,
+          activeTrackColor: context.colorScheme.primary.withOpacity(0.5),
           inactiveThumbColor: Theme.of(context).dividerColor.withOpacity(0.8),
           inactiveTrackColor: Theme.of(context).dividerColor.withOpacity(0.3),
         ),

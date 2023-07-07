@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
@@ -46,7 +46,7 @@ class UsersTable extends StatelessWidget {
       },
       configuration: PlutoGridConfiguration(
           style: PlutoGridStyleConfig(
-            activatedBorderColor: Theme.of(context).primaryColor,
+            activatedBorderColor: context.colorScheme.primary,
             activatedColor: Colors.transparent,
             borderColor: Colors.grey[200]!,
             gridBorderColor: Colors.grey[300]!,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class DefaultTable extends StatelessWidget {
@@ -64,7 +65,7 @@ class DefaultTable extends StatelessWidget {
       configuration: PlutoGridConfiguration(
         style: PlutoGridStyleConfig(
           cellColorGroupedRow: const Color(0x80D0D0D0),
-          activatedBorderColor: Theme.of(context).primaryColor,
+          activatedBorderColor: context.colorScheme.primary,
           borderColor: Colors.grey[200]!,
           gridBorderColor: Colors.grey[300]!,
         ),

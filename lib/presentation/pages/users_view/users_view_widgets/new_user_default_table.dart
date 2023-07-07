@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 
 class NewUserDefaultTable extends StatelessWidget {
   final List<PlutoColumn> columns;
@@ -31,7 +32,7 @@ class NewUserDefaultTable extends StatelessWidget {
       }).toList(),
       configuration: PlutoGridConfiguration(
           style: PlutoGridStyleConfig(
-            activatedBorderColor: Theme.of(context).primaryColor,
+            activatedBorderColor: context.colorScheme.primary,
             borderColor: Colors.grey[200]!,
             gridBorderColor: Colors.grey[300]!,
           ),

@@ -290,11 +290,11 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   Future<Either<bool, ErrorMd>> _getInitActions(
       AppState state, GetInitActions action) async {
     return DependencyManager.instance.navigation.futureLoading(() async {
+      await appStore.dispatch(const GetListsAction());
       return await apiCall(() async {
         await Future.wait([
           appStore.dispatch(const GetFormatsAction()) as Future,
           appStore.dispatch(const GetDetailsAction()) as Future,
-          appStore.dispatch(const GetListsAction()) as Future,
           appStore.dispatch(const GetCompanyInfoAction()) as Future,
           appStore.dispatch(const GetPropertiesAction()) as Future,
           appStore.dispatch(const GetUsersAction()) as Future,
@@ -434,6 +434,24 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       final res = await deps.apiClient.getCompanyInfo();
       final CompanyInfoMd companyInfo = CompanyInfoMd.fromJson(res.data);
       appStore.dispatch(UpdateGeneralState(companyInfo: companyInfo));
+      final color =
+          companyInfo.colourSchemaMd(state.generalState.lists.colorSchemas);
+      logger(color, hint: "color");
+      if (color != null) {
+        final primary = Color(int.parse("0xFF${color.colour1.substring(1)}"));
+        final secondary = Color(int.parse("0xFF${color.colour2.substring(1)}"));
+        final tertiary = Color(int.parse("0xFF${color.colour3.substring(1)}"));
+        deps.appDep.appTheme.theme = deps.appDep.appTheme.theme.copyWith(
+          appBarTheme: deps.appDep.appTheme.theme.appBarTheme
+              .copyWith(backgroundColor: primary),
+          colorScheme: deps.appDep.appTheme.theme.colorScheme.copyWith(
+              primary: primary, secondary: secondary, tertiary: tertiary),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: primary, foregroundColor: Colors.white)),
+        );
+        deps.appDep.restart();
+      }
       return companyInfo;
     });
   }

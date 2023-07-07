@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 
 class DefaultTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
@@ -46,7 +47,7 @@ class DefaultTextField extends StatelessWidget {
         fillColor: disabled ? Colors.grey[200] : null,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.0),
-            borderSide: BorderSide(color: Theme.of(context).primaryColor)),
+            borderSide: BorderSide(color: context.colorScheme.primary)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(color: Colors.grey[400]!),

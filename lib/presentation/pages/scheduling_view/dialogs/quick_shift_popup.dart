@@ -338,7 +338,7 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
                                 constraints: const BoxConstraints(),
                                 onPressed: onAddTeamMember,
                                 tooltip: "Add member",
-                                color: Theme.of(context).primaryColor,
+                                color: context.colorScheme.primary,
                                 icon: const Icon(Icons.add_circle_rounded)),
                             items: [
                               if (teamData.users.isEmpty)

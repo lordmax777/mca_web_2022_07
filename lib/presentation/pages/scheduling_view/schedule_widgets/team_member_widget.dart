@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 
 class TeamMemberWidget extends StatefulWidget {
   final String name;
@@ -32,7 +33,7 @@ class _TeamMemberWidgetState extends State<TeamMemberWidget> {
           constraints: const BoxConstraints(),
           onPressed: widget.onDeleted,
           tooltip: "Delete",
-          color: Theme.of(context).primaryColor,
+          color: context.colorScheme.primary,
           icon: const Icon(Icons.close)),
       title: Row(
         children: [

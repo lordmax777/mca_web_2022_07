@@ -284,7 +284,13 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                       print(response.status);
 
                                       if (response.isOkay) {
-                                        final res = response.results.first;
+                                        final res =
+                                            response.results.firstOrNull;
+                                        if (res == null) {
+                                          context
+                                              .showError("Location Not Found");
+                                          return;
+                                        }
                                         String long = res.geometry.location.lng
                                             .toString();
                                         String lat = res.geometry.location.lat

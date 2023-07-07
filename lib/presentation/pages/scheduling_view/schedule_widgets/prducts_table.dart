@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class ProductsTable extends StatelessWidget {
@@ -25,7 +26,7 @@ class ProductsTable extends StatelessWidget {
         mode: PlutoGridMode.normal,
         configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig(
-              activatedBorderColor: Theme.of(context).primaryColor,
+              activatedBorderColor: context.colorScheme.primary,
               gridBorderColor: Colors.grey[300]!,
             ),
             columnSize: const PlutoGridColumnSizeConfig(

@@ -71,11 +71,11 @@ class _DebugViewState extends State<DebugView> {
                 }),
             label("Enable Live Mode"),
             DefaultSwitch(
-                value: !DependencyManager.instance.db.getIsTestMode(),
+                value: DependencyManager.instance.db.getIsTestMode(),
                 onChanged: (value) {
-                  DependencyManager.instance.db.setIsTestMode(!value);
+                  DependencyManager.instance.db.setIsTestMode(value);
                   DependencyManager.instance.db
-                      .setDomain(!value ? domainRealStr : domainDevStr);
+                      .setDomain(value ? domainRealStr : domainDevStr);
 
                   if (mounted) setState(() {});
                 }),

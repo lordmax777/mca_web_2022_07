@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/utils/global_constants.dart';
+import 'package:mca_dashboard/utils/utils.dart';
 
 //Dropdown features
 // - label
@@ -124,7 +125,7 @@ class _DefaultDropdownState extends State<DefaultDropdown> {
           selectedMenuItemBuilder: (context, child) {
             return DecoratedBox(
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: context.colorScheme.primary.withOpacity(0.1),
               ),
               child: child,
             );
