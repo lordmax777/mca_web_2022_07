@@ -27,12 +27,6 @@ class _RequestWrapperState extends State<RequestWrapper>
 
   late final TabController _tabController;
 
-  void updateUI() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void dispose() {
     _tabController.dispose();
@@ -46,13 +40,6 @@ class _RequestWrapperState extends State<RequestWrapper>
       updateUI();
     });
     super.initState();
-    WidgetsBinding.instance.endOfFrame.then(
-      (_) async {
-        if (mounted) {
-          //init
-        }
-      },
-    );
   }
 
   @override

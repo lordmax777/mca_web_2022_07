@@ -117,6 +117,12 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
   List<PlutoColumn> columns = [];
   List<PlutoColumn> columns1 = [];
 
+  void updateUI() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     focusNode = FocusNode(onKey: (node, event) {
