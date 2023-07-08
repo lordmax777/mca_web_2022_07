@@ -583,4 +583,14 @@ abstract class ApiClient {
 
   @GET("/api/fe/approvals")
   Future<HttpResponse> getApprovals();
+
+  @POST("/api/fe/approvals")
+  @FormUrlEncoded()
+  Future<HttpResponse> postApprovals({
+    @Field() required int id,
+
+    ///true or false
+    @Field() required bool status,
+    @Field() required String? comment,
+  });
 }

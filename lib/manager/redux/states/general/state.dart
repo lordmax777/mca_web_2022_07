@@ -110,6 +110,7 @@ class GeneralState extends Equatable {
           problems: [],
           releaseables: [],
           requests: [],
+          closedRequests: [],
         ));
   }
 

@@ -9,23 +9,58 @@ class UserQualifTable extends StatelessWidget {
   final void Function(PlutoGridOnLoadedEvent) onLoaded;
   final FocusNode? focusNode;
   final List<PlutoRow> rows;
-  final Widget? headerEnd;
+  final void Function(PlutoRow? singleRow, bool isApprove) onApprove;
 
-  const UserQualifTable(
-      {super.key,
-      required this.onLoaded,
-      this.focusNode,
-      required this.rows,
-      this.headerEnd});
+  const UserQualifTable({
+    super.key,
+    required this.onLoaded,
+    this.focusNode,
+    required this.rows,
+    required this.onApprove,
+  });
 
   @override
   Widget build(BuildContext context) {
     return DefaultTable(
       focusNode: focusNode,
-      headerEnd: headerEnd,
       onLoaded: onLoaded,
+      headerEnd: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          //Build PopupMenuButton which has a list of actions [Approve, Decline], and button itself is button with text "Actions", leave on tap empty with switch options
+          PopupMenuButton(
+            offset: const Offset(0, 40),
+            padding: const EdgeInsets.all(0),
+            child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: context.colorScheme.primary),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text("Actions",
+                    style: context.textTheme.bodyMedium!
+                        .copyWith(color: context.colorScheme.primary))),
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: true,
+                child: Text("Approve Selected"),
+              ),
+              const PopupMenuItem(
+                value: false,
+                child: Text("Decline Selected"),
+              ),
+            ],
+            onSelected: (value) => onApprove(null, value),
+          ),
+        ],
+      ),
       columns: [
-        PlutoColumn(title: "User", field: "user", type: PlutoColumnType.text()),
+        PlutoColumn(
+            title: "User",
+            enableRowChecked: true,
+            field: "user",
+            type: PlutoColumnType.text()),
         PlutoColumn(
             title: "Qualification",
             field: "qualification",
@@ -82,24 +117,15 @@ class UserQualifTable extends StatelessWidget {
               padding: const EdgeInsets.all(0),
               itemBuilder: (context) => [
                 const PopupMenuItem(
-                  value: 1,
+                  value: true,
                   child: Text("Approve"),
                 ),
                 const PopupMenuItem(
-                  value: 2,
+                  value: false,
                   child: Text("Decline"),
                 ),
               ],
-              onSelected: (value) {
-                switch (value) {
-                  case 1:
-                    //todo: approve
-                    break;
-                  case 2:
-                    //todo: decline
-                    break;
-                }
-              },
+              onSelected: (value) => onApprove(rendererContext.row, value),
             );
           },
         ),

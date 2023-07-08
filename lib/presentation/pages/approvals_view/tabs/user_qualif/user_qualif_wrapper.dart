@@ -66,10 +66,35 @@ class _UserQualificationWrapperState extends State<UserQualificationWrapper>
       builder: (context, vm) {
         return UserQualifTable(
           onLoaded: onLoaded,
+          onApprove: onApprove,
           focusNode: focusNode,
           rows: stateManager == null ? [] : stateManager!.rows,
         );
       },
     );
+  }
+
+  void onApprove(PlutoRow? singleRow, bool isApprove) {
+    context.futureLoading<void>(() async {
+      final selected = [...stateManager!.checkedRows];
+      if (singleRow != null) {
+        selected.clear();
+        selected.add(singleRow);
+      }
+      if (selected.isEmpty) {
+        return;
+      }
+      final List<String> failed = [];
+      for (final row in selected) {
+        final id = row.cells['action']!.value.id;
+        final success = await dispatch<bool>(ApproveRequestAction(id, true));
+        if (success.isRight) {
+          failed.add(row.cells['user']!.value);
+        }
+      }
+      if (failed.isNotEmpty) {
+        context.showError("Failed ${failed.join(", ")}");
+      }
+    });
   }
 }

@@ -15,13 +15,14 @@ final class ApprovalMd extends Equatable {
   final List<RequestMd> requests;
   final List<ProblemMd> problems;
   final List<PendingUserQualifMd> pendingUserQualifications;
-
+  final List<ClosedRequest> closedRequests;
   const ApprovalMd({
     required this.releaseables,
     required this.acknowledgeables,
     required this.requests,
     required this.problems,
     required this.pendingUserQualifications,
+    required this.closedRequests,
   });
 
   @override
@@ -31,6 +32,7 @@ final class ApprovalMd extends Equatable {
         requests,
         problems,
         pendingUserQualifications,
+        closedRequests,
       ];
 
   //from json
@@ -58,6 +60,11 @@ final class ApprovalMd extends Equatable {
         pendingUserQualifications: json['pending_user_qualifications'] != null
             ? (json['pending_user_qualifications'] as List)
                 .map((e) => PendingUserQualifMd.fromJson(e))
+                .toList()
+            : [],
+        closedRequests: json['closed_requests'] != null
+            ? (json['closed_requests'] as List)
+                .map((e) => ClosedRequest.fromJson(e))
                 .toList()
             : [],
       );
@@ -663,6 +670,239 @@ final class PendingUserQualifMd extends Equatable {
     } on TypeError catch (e) {
       logger(
           'PendingUserQualifMd.fromJson: ${e.stackTrace.toString()} ${e.toString()}');
+      rethrow;
+    }
+  }
+}
+
+final class ClosedRequest extends Equatable {
+  //{
+  //             "id": 336,
+  //             "userId": 870,
+  //             "typeId": 1,
+  //             "start": {
+  //                 "date": "2022-03-17 00:00:00.000000",
+  //                 "timezone_type": 3,
+  //                 "timezone": "UTC"
+  //             },
+  //             "finish": {
+  //                 "date": "2022-03-31 23:59:59.000000",
+  //                 "timezone_type": 3,
+  //                 "timezone": "UTC"
+  //             },
+  //             "comment": "Family holiday",
+  //             "createdBy": 806,
+  //             "createdByName": "Dipen Three",
+  //             "createdOn": {
+  //                 "date": "2022-03-16 14:11:46.000000",
+  //                 "timezone_type": 3,
+  //                 "timezone": "UTC"
+  //             },
+  //             "accepted": 1,
+  //             "acceptedBy": 806,
+  //             "acceptedOn": {
+  //                 "date": "2022-03-16 14:25:25.000000",
+  //                 "timezone_type": 3,
+  //                 "timezone": "UTC"
+  //             },
+  //             "acceptedComment": "Family holiday",
+  //             "requestname": "Holiday",
+  //             "requestcomment": "full day paid holiday",
+  //             "fullday": 1,
+  //             "paid": true,
+  //             "initial": "H",
+  //             "entitlement": -1,
+  //             "username": "96189831",
+  //             "title": "Mr",
+  //             "firstName": "Dipen",
+  //             "lastName": "Flutter",
+  //             "times": "17/03/2022-31/03/2022"
+  //         }
+
+  final int id;
+  final int userId;
+  UserMd? userMd(List<UserMd> users) {
+    return users.firstWhereOrNull((element) => element.id == userId);
+  }
+
+  final int typeId;
+  RequestTypeMd? typeMd(List<RequestTypeMd> requestTypes) {
+    return requestTypes.firstWhereOrNull((element) => element.id == typeId);
+  }
+
+  final String? start;
+  DateTime? get startDt {
+    if (start == null) return null;
+    return DateTime.tryParse(start!);
+  }
+
+  final String? finish;
+  DateTime? get finishDt {
+    if (finish == null) return null;
+    return DateTime.tryParse(finish!);
+  }
+
+  String? get fromToDate {
+    // start.ddMMyyyyHHmm - finish.ddMMyyyyHHmm
+    //if start.ddMMyyyy == finish.ddMMyyyy, show only start.ddMMyyyyHHmm - finish.HHmm
+    if (startDt == null || finishDt == null) return null;
+    String? fromToDate;
+    if (fullday == 0) {
+      return startDt!.ddMMyyyyHHmm;
+    }
+    if (startDt!.day == finishDt!.day &&
+        startDt!.month == finishDt!.month &&
+        startDt!.year == finishDt!.year) {
+      fromToDate =
+          '${startDt!.day.toString().padLeft(2, '0')}/${startDt!.month.toString().padLeft(2, '0')}/${startDt!.year.toString().padLeft(4, '0')} ${startDt!.hour.toString().padLeft(2, '0')}:${startDt!.minute.toString().padLeft(2, '0')} - ${finishDt!.hour.toString().padLeft(2, '0')}:${finishDt!.minute.toString().padLeft(2, '0')}';
+    } else {
+      fromToDate =
+          '${startDt!.day.toString().padLeft(2, '0')}/${startDt!.month.toString().padLeft(2, '0')}/${startDt!.year.toString().padLeft(4, '0')} ${startDt!.hour.toString().padLeft(2, '0')}:${startDt!.minute.toString().padLeft(2, '0')} - ${finishDt!.day.toString().padLeft(2, '0')}/${finishDt!.month.toString().padLeft(2, '0')}/${finishDt!.year.toString().padLeft(4, '0')} ${finishDt!.hour.toString().padLeft(2, '0')}:${finishDt!.minute.toString().padLeft(2, '0')}';
+    }
+    return fromToDate;
+  }
+
+  final String? comment;
+  final int createdBy;
+  UserMd? createdByMd(List<UserMd> users) {
+    return users.firstWhereOrNull((element) => element.id == createdBy);
+  }
+
+  final String? createdByName;
+  final String? createdOn;
+  DateTime? get createdOnDt {
+    if (createdOn == null) return null;
+    return DateTime.tryParse(createdOn!);
+  }
+
+  final int accepted;
+  final int acceptedBy;
+  UserMd? acceptedByMd(List<UserMd> users) {
+    return users.firstWhereOrNull((element) => element.id == acceptedBy);
+  }
+
+  final String? acceptedOn;
+  DateTime? get acceptedOnDt {
+    if (acceptedOn == null) return null;
+    return DateTime.tryParse(acceptedOn!);
+  }
+
+  final String? acceptedComment;
+  final String? requestname;
+  final String? requestcomment;
+  final int fullday;
+  final bool paid;
+  final String? initial;
+  final int entitlement;
+  final String? username;
+  final String? title;
+  final String? firstName;
+  final String? lastName;
+  String? get fullname {
+    String? name;
+    //fullname without title
+    if (firstName != null && lastName != null) {
+      name = '$firstName $lastName';
+    } else if (firstName != null) {
+      name = firstName;
+    } else if (lastName != null) {
+      name = lastName;
+    }
+
+    return name;
+  }
+
+  final String? times;
+
+  const ClosedRequest({
+    required this.id,
+    required this.userId,
+    required this.typeId,
+    required this.start,
+    required this.finish,
+    required this.comment,
+    required this.createdBy,
+    required this.createdByName,
+    required this.createdOn,
+    required this.accepted,
+    required this.acceptedBy,
+    required this.acceptedOn,
+    required this.acceptedComment,
+    required this.requestname,
+    required this.requestcomment,
+    required this.fullday,
+    required this.paid,
+    required this.initial,
+    required this.entitlement,
+    required this.username,
+    required this.title,
+    required this.firstName,
+    required this.lastName,
+    required this.times,
+  });
+
+  @override
+  List<Object?> get props {
+    return [
+      id,
+      userId,
+      typeId,
+      start,
+      finish,
+      comment,
+      createdBy,
+      createdByName,
+      createdOn,
+      accepted,
+      acceptedBy,
+      acceptedOn,
+      acceptedComment,
+      requestname,
+      requestcomment,
+      fullday,
+      paid,
+      initial,
+      entitlement,
+      username,
+      title,
+      firstName,
+      lastName,
+      times,
+    ];
+  }
+
+  //from json
+  factory ClosedRequest.fromJson(Map<String, dynamic> json) {
+    try {
+      return ClosedRequest(
+        id: json['id'] as int,
+        userId: json['userId'] as int,
+        typeId: json['typeId'] as int,
+        start: json['start']?['date'] as String?,
+        finish: json['finish']?['date'] as String?,
+        comment: json['comment'] as String?,
+        createdBy: json['createdBy'] as int,
+        createdByName: json['createdByName'] as String?,
+        createdOn: json['createdOn']?['date'] as String?,
+        accepted: json['accepted'] as int,
+        acceptedBy: json['acceptedBy'] as int,
+        acceptedOn: json['acceptedOn']?['date'] as String?,
+        acceptedComment: json['acceptedComment'] as String?,
+        requestname: json['requestname'] as String?,
+        requestcomment: json['requestcomment'] as String?,
+        fullday: json['fullday'] as int,
+        paid: json['paid'] as bool,
+        initial: json['initial'] as String?,
+        entitlement: json['entitlement'] as int,
+        username: json['username'] as String?,
+        title: json['title'] as String?,
+        firstName: json['firstName'] as String?,
+        lastName: json['lastName'] as String?,
+        times: json['times'] as String?,
+      );
+    } on TypeError catch (e) {
+      logger(
+          'ClosedRequest.fromJson: ${e.stackTrace.toString()} ${e.toString()}');
       rethrow;
     }
   }

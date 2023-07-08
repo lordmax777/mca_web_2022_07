@@ -17,7 +17,7 @@ extension WidgetHelper on PlutoColumnRendererContext {
       IconData? icon,
       MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
       bool isActive = true}) {
-    final isS = cell.value?.toString().isNotEmpty == true && isSelectable;
+    final isS = isSelectable;
     final text = Text(
         (title ?? (cell.value?.toString() ?? "-")).isEmpty
             ? "-"
@@ -61,7 +61,6 @@ extension WidgetHelper on PlutoColumnRendererContext {
       message: cell.value.toString().isEmpty ? "---" : cell.value.toString(),
       child: defaultText(
           title: title ?? "Read Comment",
-          icon: Icons.remove_red_eye_outlined,
           isSelectable: true,
           mainAxisAlignment: MainAxisAlignment.start),
     );

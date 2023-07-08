@@ -195,6 +195,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _deletePropertyQualificationAction(store.state, action);
       case GetApprovalsAction:
         return _getApprovalsAction(store.state, action);
+      case ApproveRequestAction:
+        return _approveRequestAction(store.state, action);
       default:
         return next(action);
     }
@@ -1684,12 +1686,28 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       } catch (e) {
         Logger.e(e.toString(), tag: '_getApprovalsAction');
         return const ApprovalMd(
-            releaseables: [],
-            acknowledgeables: [],
-            requests: [],
-            problems: [],
-            pendingUserQualifications: []);
+          releaseables: [],
+          acknowledgeables: [],
+          requests: [],
+          problems: [],
+          pendingUserQualifications: [],
+          closedRequests: [],
+        );
       }
+    });
+  }
+
+  //ApproveRequestAction
+  Future<Either<bool, ErrorMd>> _approveRequestAction(
+      AppState state, ApproveRequestAction action) async {
+    return await apiCall(() async {
+      final res = await deps.apiClient.postApprovals(
+        id: action.id,
+        comment: action.comment,
+        status: action.isAccept,
+      );
+      await appStore.dispatch(const GetApprovalsAction());
+      return res.response.statusCode == 200;
     });
   }
 }

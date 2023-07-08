@@ -3,13 +3,13 @@ import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-class ReqPendingTable extends StatelessWidget {
+class ReqCompletedTable extends StatelessWidget {
   final void Function(PlutoGridOnLoadedEvent) onLoaded;
   final FocusNode? focusNode;
   final List<PlutoRow> rows;
   final void Function(PlutoRow? singleRow, bool isApprove) onApprove;
 
-  const ReqPendingTable(
+  const ReqCompletedTable(
       {super.key,
       required this.onLoaded,
       this.focusNode,
@@ -20,37 +20,6 @@ class ReqPendingTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTable(
       focusNode: focusNode,
-      headerEnd: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          //Build PopupMenuButton which has a list of actions [Approve, Decline], and button itself is button with text "Actions", leave on tap empty with switch options
-          PopupMenuButton(
-            offset: const Offset(0, 40),
-            padding: const EdgeInsets.all(0),
-            child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: context.colorScheme.primary),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text("Actions",
-                    style: context.textTheme.bodyMedium!
-                        .copyWith(color: context.colorScheme.primary))),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: true,
-                child: Text("Approve Selected"),
-              ),
-              const PopupMenuItem(
-                value: false,
-                child: Text("Decline Selected"),
-              ),
-            ],
-            onSelected: (value) => onApprove(null, value),
-          ),
-        ],
-      ),
       onLoaded: onLoaded,
       columns: [
         PlutoColumn(
@@ -76,6 +45,21 @@ class ReqPendingTable extends StatelessWidget {
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return rendererContext.defaultText();
+          },
+        ),
+        PlutoColumn(
+          title: "Status",
+          field: "status",
+          width: 100,
+          type: PlutoColumnType.text(),
+        ),
+        PlutoColumn(
+          title: "Manager's comment",
+          field: "managerComment",
+          width: 80,
+          type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return rendererContext.defaultTooltipWidget();
           },
         ),
         PlutoColumn(
