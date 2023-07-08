@@ -61,6 +61,7 @@ class GeneralState extends Equatable {
   String get propertyName => companyInfo.specialWord;
   final DetailsMd detailsMd;
   final List<ChecklistTemplateMd> checklistTemplates;
+  final ApprovalMd approvals;
 
   List<LocationMd> clientBasedFullLocations(int? clientId) {
     final clientLocs = lists.clientRelatedLocation(clientId);
@@ -85,24 +86,31 @@ class GeneralState extends Equatable {
     required this.allocations,
     required this.detailsMd,
     required this.checklistTemplates,
+    required this.approvals,
   });
 
   factory GeneralState.initial() {
     return GeneralState(
-      formatMd: FormatMd.init(),
-      lists: ListMd.init(),
-      users: [],
-      locations: [],
-      storageItems: [],
-      clients: [],
-      properties: [],
-      quotes: [],
-      warehouses: [],
-      companyInfo: CompanyInfoMd.init(),
-      allocations: [],
-      detailsMd: DetailsMd.init(),
-      checklistTemplates: [],
-    );
+        formatMd: FormatMd.init(),
+        lists: ListMd.init(),
+        users: [],
+        locations: [],
+        storageItems: [],
+        clients: [],
+        properties: [],
+        quotes: [],
+        warehouses: [],
+        companyInfo: CompanyInfoMd.init(),
+        allocations: [],
+        detailsMd: DetailsMd.init(),
+        checklistTemplates: [],
+        approvals: ApprovalMd(
+          acknowledgeables: [],
+          pendingUserQualifications: [],
+          problems: [],
+          releaseables: [],
+          requests: [],
+        ));
   }
 
   GeneralState copyWith({
@@ -119,6 +127,7 @@ class GeneralState extends Equatable {
     List<AllocationMd>? allocations,
     DetailsMd? detailsMd,
     List<ChecklistTemplateMd>? checklistTemplates,
+    ApprovalMd? approvals,
   }) {
     return GeneralState(
       formatMd: formatMd ?? this.formatMd,
@@ -134,6 +143,7 @@ class GeneralState extends Equatable {
       allocations: allocations ?? this.allocations,
       detailsMd: detailsMd ?? this.detailsMd,
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
+      approvals: approvals ?? this.approvals,
     );
   }
 
@@ -152,6 +162,7 @@ class GeneralState extends Equatable {
         allocations,
         detailsMd,
         checklistTemplates,
+        approvals,
       ];
 }
 
@@ -170,6 +181,7 @@ class UpdateGeneralState {
   final List<AllocationMd>? allocations;
   final DetailsMd? detailsMd;
   final List<ChecklistTemplateMd>? checklistTemplates;
+  final ApprovalMd? approvals;
 
   const UpdateGeneralState({
     this.isReset = false,
@@ -186,5 +198,6 @@ class UpdateGeneralState {
     this.allocations,
     this.detailsMd,
     this.checklistTemplates,
+    this.approvals,
   });
 }

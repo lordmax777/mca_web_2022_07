@@ -92,6 +92,8 @@ extension DateTimeHelpers on DateTime {
 
   //2023-05-01 11:00
   String get toApiDateTime => DateFormat("yyyy-MM-dd HH:mm").format(this);
+
+  String get ddMMyyyyHHmm => DateFormat("dd/MM/yyyy HH:mm").format(this);
 }
 
 ///////////

@@ -65,6 +65,9 @@ class MCANavigation extends IMCANavigation {
   //properties
   static const String properties = '/properties';
 
+  //Approvals
+  static const String approvals = '/approvals';
+
   /// router
   late final router = GoRouter(
     // debugLogDiagnostics: true,
@@ -209,6 +212,16 @@ class MCANavigation extends IMCANavigation {
                 return NoTransitionPage<void>(
                   key: state.pageKey,
                   child: const PropertiesView(),
+                );
+              },
+            ),
+            GoRoute(
+              path: approvals,
+              name: approvals.substring(1),
+              pageBuilder: (context, state) {
+                return NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: const ApprovalsView(),
                 );
               },
             ),

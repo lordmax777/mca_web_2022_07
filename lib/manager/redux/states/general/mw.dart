@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
 import 'package:mca_dashboard/utils/utils.dart';
@@ -192,6 +193,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _postPropertyQualificationAction(store.state, action);
       case DeletePropertyQualificationAction:
         return _deletePropertyQualificationAction(store.state, action);
+      case GetApprovalsAction:
+        return _getApprovalsAction(store.state, action);
       default:
         return next(action);
     }
@@ -304,6 +307,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           appStore.dispatch(const GetQuotesAction()) as Future,
           appStore.dispatch(const GetStorageItemsAction()) as Future,
           appStore.dispatch(const GetChecklistTemplatesAction()) as Future,
+          appStore.dispatch(const GetApprovalsAction()) as Future,
         ]);
         return true;
       });
@@ -1665,6 +1669,27 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       final res = await deps.apiClient
           .deletePropertyQualification(action.shiftId, action.qualificationId);
       return res.response.statusCode == 200;
+    });
+  }
+
+  //GetApprovalsAction
+  Future<Either<ApprovalMd, ErrorMd>> _getApprovalsAction(
+      AppState state, GetApprovalsAction action) async {
+    return await apiCall(() async {
+      final res = await deps.apiClient.getApprovals();
+      try {
+        final data = ApprovalMd.fromJson(res.data);
+        appStore.dispatch(UpdateGeneralState(approvals: data));
+        return data;
+      } catch (e) {
+        Logger.e(e.toString(), tag: '_getApprovalsAction');
+        return const ApprovalMd(
+            releaseables: [],
+            acknowledgeables: [],
+            requests: [],
+            problems: [],
+            pendingUserQualifications: []);
+      }
     });
   }
 }

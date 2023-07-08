@@ -32,5 +32,6 @@ GeneralState _updateGeneralState(
     allocations: action.allocations ?? state.allocations,
     detailsMd: action.detailsMd ?? state.detailsMd,
     checklistTemplates: action.checklistTemplates ?? state.checklistTemplates,
+    approvals: action.approvals ?? state.approvals,
   );
 }

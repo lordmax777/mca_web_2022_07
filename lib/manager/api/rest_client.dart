@@ -580,4 +580,7 @@ abstract class ApiClient {
   @DELETE("/api/fe/shifts/{id}/qualification")
   Future<HttpResponse> deletePropertyQualification(
       @Path('id') int shiftId, @Query("qualificationId") int qualificationId);
+
+  @GET("/api/fe/approvals")
+  Future<HttpResponse> getApprovals();
 }

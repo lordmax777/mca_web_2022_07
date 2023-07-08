@@ -19,3 +19,4 @@ export 'models/user_preferred_shift_md.dart';
 export 'models/user_qualification_md.dart';
 export 'models/user_status_md.dart';
 export 'models/checklist_template_md.dart';
+export 'models/approval_md.dart';
