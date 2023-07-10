@@ -593,4 +593,8 @@ abstract class ApiClient {
     @Field() required bool status,
     @Field() required String? comment,
   });
+
+  //get current stock list
+  @GET("/api/fe/stocklist/{warehouseId}/current")
+  Future<HttpResponse> getStockList(@Path() int warehouseId);
 }

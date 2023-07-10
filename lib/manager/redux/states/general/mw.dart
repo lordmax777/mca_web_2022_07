@@ -19,6 +19,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:dio/dio.dart' as dio;
 
 import '../../../../presentation/pages/users_view/data/user_data_source.dart';
+import 'actions/stocks_action.dart';
 
 final class ErrorMd extends Equatable {
   final String message;
@@ -197,6 +198,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getApprovalsAction(store.state, action);
       case ApproveRequestAction:
         return _approveRequestAction(store.state, action);
+      case GetCurrentStockListAction:
+        return _getCurrentStockListAction(store.state, action);
       default:
         return next(action);
     }
@@ -1708,6 +1711,24 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       );
       await appStore.dispatch(const GetApprovalsAction());
       return res.response.statusCode == 200;
+    });
+  }
+
+  //GetCurrentStockListAction
+  Future<Either<List<StockMd>, ErrorMd>> _getCurrentStockListAction(
+      AppState state, GetCurrentStockListAction action) async {
+    return await apiCall(() async {
+      final res = await deps.apiClient.getStockList(action.warehouseId);
+      try {
+        final list = res.data['stock']
+                ?.map<StockMd>((e) => StockMd.fromJson(e))
+                .toList() ??
+            <StockMd>[];
+        return list;
+      } catch (e) {
+        Logger.e(e.toString(), tag: '_getCurrentStockListAction');
+        return [];
+      }
     });
   }
 }

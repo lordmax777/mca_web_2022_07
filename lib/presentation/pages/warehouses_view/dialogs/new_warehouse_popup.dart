@@ -5,7 +5,7 @@ import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/u
 import 'package:mca_dashboard/utils/global_extensions.dart';
 import 'package:mca_dashboard/utils/global_functions.dart';
 
-import '../../../manager/redux/states/general/actions/warehouse_action.dart';
+import '../../../../manager/redux/states/general/actions/warehouse_action.dart';
 
 class NewWarehousePopup extends StatefulWidget {
   const NewWarehousePopup({super.key, this.model});

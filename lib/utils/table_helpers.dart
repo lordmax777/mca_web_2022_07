@@ -117,6 +117,8 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
   List<PlutoColumn> columns = [];
   List<PlutoColumn> columns1 = [];
 
+  List<PlutoRow> get rows => stateManager == null ? [] : stateManager!.rows;
+
   void updateUI() {
     if (mounted) {
       setState(() {});

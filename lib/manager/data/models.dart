@@ -20,3 +20,4 @@ export 'models/user_qualification_md.dart';
 export 'models/user_status_md.dart';
 export 'models/checklist_template_md.dart';
 export 'models/approval_md.dart';
+export 'models/stock_md.dart';

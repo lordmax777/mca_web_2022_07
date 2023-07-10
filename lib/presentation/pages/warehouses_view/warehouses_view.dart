@@ -4,10 +4,12 @@ import 'package:mca_dashboard/manager/redux/states/general/actions/qualification
 import 'package:mca_dashboard/manager/redux/states/general/actions/warehouse_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/qualifications_view/new_qualification_popup.dart';
-import 'package:mca_dashboard/presentation/pages/warehouses_view/new_warehouse_popup.dart';
-import 'package:mca_dashboard/presentation/pages/warehouses_view/warehouse_properties_popup.dart';
+import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/new_warehouse_popup.dart';
+import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/warehouse_properties_popup.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+
+import 'dialogs/warehouse_inventory_popup.dart';
 
 class WarehousesView extends StatefulWidget {
   const WarehousesView({super.key});
@@ -128,14 +130,59 @@ class _WarehousesViewState extends State<WarehousesView>
           textAlign: PlutoColumnTextAlign.center,
           width: 60,
           renderer: (rendererContext) {
-            return rendererContext.actionMenuWidget(
-              onDelete: () {
-                onDelete(() async {
-                  return await deleteSelected(rendererContext.row);
-                }, showError: false);
+            return PopupMenuButton(
+              offset: const Offset(0, 40),
+              padding: const EdgeInsets.all(0),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 1,
+                  child: SpacedRow(
+                    horizontalSpace: 10,
+                    children: const [
+                      Icon(Icons.edit),
+                      Text("Edit"),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 2,
+                  child: SpacedRow(
+                    horizontalSpace: 10,
+                    children: const [
+                      Icon(Icons.delete),
+                      Text("Delete"),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 3,
+                  child: SpacedRow(
+                    horizontalSpace: 10,
+                    children: const [
+                      Icon(Icons.inventory),
+                      Text("Check Inventory"),
+                    ],
+                  ),
+                ),
+              ],
+              onSelected: (value) {
+                if (stateManager!.hasFocus) {
+                  stateManager?.gridFocusNode.removeListener(handleFocus);
+                }
+                switch (value) {
+                  case 1:
+                    onEdit((p0) => NewWarehousePopup(model: p0),
+                        rendererContext.cell.value);
+                    break;
+                  case 2:
+                    onDelete(() async {
+                      return await deleteSelected(rendererContext.row);
+                    }, showError: false);
+                    break;
+                  case 3:
+                    onCheckInventory(rendererContext.cell.value);
+                }
               },
-              onEdit: () => onEdit((p0) => NewWarehousePopup(model: p0),
-                  rendererContext.cell.value),
             );
           },
         ),
@@ -171,5 +218,9 @@ class _WarehousesViewState extends State<WarehousesView>
       context.showError("Failed to delete ${delFailed.join(", ")}");
     }
     return delFailed.isEmpty;
+  }
+
+  void onCheckInventory(WarehouseMd model) {
+    context.showDialog(WarehouseInventoryPopup(model: model));
   }
 }
