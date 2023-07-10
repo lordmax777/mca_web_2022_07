@@ -86,8 +86,12 @@ class _UserQualificationWrapperState extends State<UserQualificationWrapper>
       }
       final List<String> failed = [];
       for (final row in selected) {
-        final id = row.cells['action']!.value.id;
-        final success = await dispatch<bool>(ApproveRequestAction(id, true));
+        final qualifId = row.cells['action']!.value.id;
+        final userId = row.cells['action']!.value.userId;
+        final success = await dispatch<bool>(ApproveUserQualificationAction(
+          userId: userId,
+          userQualificationId: qualifId,
+        ));
         if (success.isRight) {
           failed.add(row.cells['user']!.value);
         }

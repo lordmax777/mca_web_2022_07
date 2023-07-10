@@ -35,3 +35,13 @@ final class DeleteUserQualifAction {
   const DeleteUserQualifAction(
       {required this.userId, required this.userQualifId});
 }
+
+final class ApproveUserQualificationAction {
+  final int userQualificationId;
+  final int userId;
+
+  const ApproveUserQualificationAction({
+    required this.userQualificationId,
+    required this.userId,
+  });
+}

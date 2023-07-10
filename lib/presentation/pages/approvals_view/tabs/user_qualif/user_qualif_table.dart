@@ -46,10 +46,6 @@ class UserQualifTable extends StatelessWidget {
                 value: true,
                 child: Text("Approve Selected"),
               ),
-              const PopupMenuItem(
-                value: false,
-                child: Text("Decline Selected"),
-              ),
             ],
             onSelected: (value) => onApprove(null, value),
           ),
@@ -119,10 +115,6 @@ class UserQualifTable extends StatelessWidget {
                 const PopupMenuItem(
                   value: true,
                   child: Text("Approve"),
-                ),
-                const PopupMenuItem(
-                  value: false,
-                  child: Text("Decline"),
                 ),
               ],
               onSelected: (value) => onApprove(rendererContext.row, value),

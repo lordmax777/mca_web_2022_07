@@ -202,6 +202,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _getCurrentStockListAction(store.state, action);
       case AddToStockAction:
         return _addToStockAction(store.state, action);
+      case ApproveUserQualificationAction:
+        return _approveUserQualificationAction(store.state, action);
       default:
         return next(action);
     }
@@ -1776,6 +1778,19 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
 
       logger("Response: ${res.data}", hint: "Response <->");
       return res.statusCode == 200;
+    });
+  }
+
+  //ApproveUserQualificationAction
+  Future<Either<bool, ErrorMd>> _approveUserQualificationAction(
+      AppState state, ApproveUserQualificationAction action) async {
+    return await apiCall(() async {
+      final res = await deps.apiClient.approveUserQualification(
+        action.userId,
+        userqualificationId: action.userQualificationId,
+      );
+      await appStore.dispatch(const GetApprovalsAction());
+      return res.response.statusCode == 200;
     });
   }
 }

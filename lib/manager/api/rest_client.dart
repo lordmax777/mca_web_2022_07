@@ -597,4 +597,12 @@ abstract class ApiClient {
   //get current stock list
   @GET("/api/fe/stocklist/{warehouseId}/current")
   Future<HttpResponse> getStockList(@Path() int warehouseId);
+
+  //approve user qualification
+  @POST("/api/fe/userdetails/{userId}/userqualificationapprove")
+  @FormUrlEncoded()
+  Future<HttpResponse> approveUserQualification(
+    @Path() int userId, {
+    @Field() required int userqualificationId,
+  });
 }
