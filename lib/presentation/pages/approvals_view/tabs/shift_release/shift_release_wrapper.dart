@@ -88,14 +88,6 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
       case 0:
         return StoreConnector<AppState, List<ApprovalModelMd>>(
           converter: (store) => store.state.generalState.approvals.releaseables,
-          onDidChange: onDidChange,
-          builder: (context, vm) {
-            return Text("Pending");
-          },
-        );
-      case 1:
-        return StoreConnector<AppState, List<ApprovalModelMd>>(
-          converter: (store) => store.state.generalState.approvals.releaseables,
           onDidChange: onDidChange1,
           builder: (context, vm) {
             return ShiftReleasePendingTable(
@@ -104,6 +96,15 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
               focusNode: focusNode,
               rows: stateManager == null ? [] : stateManager!.rows,
             );
+          },
+        );
+      case 1:
+        return StoreConnector<AppState, List<ApprovalModelMd>>(
+          converter: (store) => store.state.generalState.approvals.releaseables,
+          onDidChange: onDidChange,
+          builder: (context, vm) {
+            return const SizedBox();
+            // return ShiftReleasePublishedTable();
           },
         );
       default:

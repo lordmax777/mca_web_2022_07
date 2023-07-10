@@ -21,6 +21,33 @@ class ReqCompletedTable extends StatelessWidget {
     return DefaultTable(
       focusNode: focusNode,
       onLoaded: onLoaded,
+      headerEnd: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          //Build PopupMenuButton which has a list of actions [Approve, Decline], and button itself is button with text "Actions", leave on tap empty with switch options
+          PopupMenuButton(
+            offset: const Offset(0, 40),
+            padding: const EdgeInsets.all(0),
+            child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: context.colorScheme.primary),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text("Actions",
+                    style: context.textTheme.bodyMedium!
+                        .copyWith(color: context.colorScheme.primary))),
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: false,
+                child: Text("Decline Selected"),
+              ),
+            ],
+            onSelected: (value) => onApprove(null, value),
+          ),
+        ],
+      ),
       columns: [
         PlutoColumn(
             title: "Requested On",
@@ -81,10 +108,6 @@ class ReqCompletedTable extends StatelessWidget {
               offset: const Offset(0, 40),
               padding: const EdgeInsets.all(0),
               itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: true,
-                  child: Text("Approve"),
-                ),
                 const PopupMenuItem(
                   value: false,
                   child: Text("Decline"),
