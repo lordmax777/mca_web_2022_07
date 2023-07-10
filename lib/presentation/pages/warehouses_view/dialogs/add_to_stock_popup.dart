@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/stocks_action.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
 import 'package:mca_dashboard/utils/global_extensions.dart';
+import 'package:mca_dashboard/utils/global_functions.dart';
 
 class AddToStockPopup extends StatefulWidget {
   final WarehouseMd warehouse;
@@ -86,6 +88,20 @@ class _AddToStockPopupState extends State<AddToStockPopup>
 
     context.futureLoading(() async {
       //todo: add/remove to stock
+      final success = await dispatch<bool>(AddToStockAction(
+        quantity: int.parse(controller1.text),
+        warehouseId: widget.warehouse.id,
+        itemId: widget.stock.itemId!,
+        comment: controller3.text,
+        documentNumber: controller2.text,
+      ));
+      if (success.isLeft && success.left) {
+        context.pop(true);
+      } else if (success.isRight) {
+        context.showError(success.right.message);
+      } else {
+        context.showError("Something went wrong, please try again later.");
+      }
     });
   }
 }

@@ -200,6 +200,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _approveRequestAction(store.state, action);
       case GetCurrentStockListAction:
         return _getCurrentStockListAction(store.state, action);
+      case AddToStockAction:
+        return _addToStockAction(store.state, action);
       default:
         return next(action);
     }
@@ -1729,6 +1731,51 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         Logger.e(e.toString(), tag: '_getCurrentStockListAction');
         return [];
       }
+    });
+  }
+
+  //AddToStockAction
+  Future<Either<bool, ErrorMd>> _addToStockAction(
+      AppState state, AddToStockAction action) async {
+    return await apiCall(() async {
+      final dio.Dio apiClient = deps.dioClient.dio
+        ..options.contentType = "multipart/form-data";
+
+      final dio.FormData formData = dio.FormData();
+
+      logger("Items: {${action.itemId}: ${action.quantity}}");
+      final String items = base64.encode(
+          utf8.encode(jsonEncode({"${action.itemId}": "${action.quantity}"})));
+      String? documentNumber;
+      if (action.documentNumber != null && action.documentNumber!.isNotEmpty) {
+        documentNumber =
+            base64.encode(utf8.encode(jsonEncode(action.documentNumber)));
+      }
+      String? comment;
+      if (action.comment != null && action.comment!.isNotEmpty) {
+        comment = base64.encode(utf8.encode(jsonEncode(action.comment)));
+      }
+
+      formData.fields
+        ..add(MapEntry('id', action.warehouseId.toString()))
+        ..add(MapEntry('remove', items));
+
+      if (documentNumber != null) {
+        formData.fields.add(MapEntry('document_number', documentNumber));
+      }
+      if (comment != null) {
+        formData.fields.add(MapEntry('comments', comment));
+      }
+
+      logger(
+          "FormData: ${formData.fields.map((e) => "${e.key}: ${e.value}").toList()}",
+          hint: "FormData fields <->");
+
+      dio.Response res =
+          await apiClient.post('/api/fe/stockchange', data: formData);
+
+      logger("Response: ${res.data}", hint: "Response <->");
+      return res.statusCode == 200;
     });
   }
 }

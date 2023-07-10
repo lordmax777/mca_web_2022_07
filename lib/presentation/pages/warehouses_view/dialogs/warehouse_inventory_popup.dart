@@ -121,28 +121,29 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
                 if (stateManager!.hasFocus) {
                   stateManager?.gridFocusNode.removeListener(handleFocus);
                 }
+                bool? success;
                 switch (value) {
                   case "addToStock":
-                    await context.showDialog(AddToStockPopup(
+                    success = await context.showDialog(AddToStockPopup(
                       stock: rendererContext.cell.value,
                       warehouse: widget.model,
                     ));
                     break;
                   case "removeFromStock":
-                    await context.showDialog(AddToStockPopup(
+                    success = await context.showDialog(AddToStockPopup(
                       stock: rendererContext.cell.value,
                       warehouse: widget.model,
                       isAdd: false,
                     ));
                     break;
                   case "transfer":
-                    await context.showDialog(TransferStockPopup(
+                    success = await context.showDialog(TransferStockPopup(
                       stock: rendererContext.cell.value,
                       warehouse: widget.model,
                     ));
                     break;
                   case "changeMinimumLevel":
-                    await context.showDialog(ChangeMinLevelPopup(
+                    success = await context.showDialog(ChangeMinLevelPopup(
                       stock: rendererContext.cell.value,
                       warehouse: widget.model,
                     ));
@@ -155,6 +156,8 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
                     ));
                     break;
                 }
+                if (success == null) return;
+                if (success) await fetch();
               },
             );
           },
