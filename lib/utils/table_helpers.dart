@@ -222,18 +222,18 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
   }
 
   PlutoRow buildRow(MD model) {
-    return PlutoRow(cells: {});
+    throw UnimplementedError("Please override buildRow method");
   }
 
   PlutoRow buildRow1(MD1 model) {
-    return PlutoRow(cells: {});
+    throw UnimplementedError("Please override buildRow1 method");
   }
 
   void onLoaded(PlutoGridOnLoadedEvent event) async {
     stateManager = event.stateManager;
     stateManager!.keyManager!.eventResult.skip(KeyEventResult.ignored);
     final list = await loading<List<MD>?>(() async => await fetch());
-    stateManager!.gridFocusNode.addListener(handleFocus);
+    // stateManager!.gridFocusNode.addListener(handleFocus);
     if (list != null) {
       setRows(stateManager!, list.map((e) => buildRow(e)).toList());
     }
@@ -243,7 +243,7 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
     stateManager1 = event.stateManager;
     stateManager1!.keyManager!.eventResult.skip(KeyEventResult.ignored);
     final list = await loading1<List<MD1>?>(() async => await fetch1());
-    stateManager1!.gridFocusNode.addListener(handleFocus1);
+    // stateManager1!.gridFocusNode.addListener(handleFocus1);
     if (list != null) {
       setRows(stateManager1!, list.map((e) => buildRow1(e)).toList());
     }

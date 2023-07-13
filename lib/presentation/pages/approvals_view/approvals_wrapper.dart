@@ -82,9 +82,7 @@ class _ApprovalsViewState extends State<ApprovalsView>
           // isScrollable: true,
         ),
       ),
-      body: SizedBox.expand(
-        child: _getChild(),
-      ),
+      body: _getChild(),
     );
   }
 

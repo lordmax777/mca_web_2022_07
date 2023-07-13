@@ -87,26 +87,23 @@ class _RequestWrapperState extends State<RequestWrapper>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        bottom: TabBar(
-          dividerColor: Colors.grey[400],
-          controller: _tabController,
-          tabs: tabs,
-          labelStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+        appBar: AppBar(
+          toolbarHeight: 0,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          bottom: TabBar(
+            dividerColor: Colors.grey[400],
+            controller: _tabController,
+            tabs: tabs,
+            labelStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            // isScrollable: true,
           ),
-          indicatorSize: TabBarIndicatorSize.tab,
-          // isScrollable: true,
         ),
-      ),
-      body: SizedBox.expand(
-        child: _getChild(),
-      ),
-    );
+        body: _getChild());
   }
 
   Widget _getChild() {

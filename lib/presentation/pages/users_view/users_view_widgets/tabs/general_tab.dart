@@ -175,7 +175,7 @@ class UserGeneralTab extends StatelessWidget {
                     title: "Account Status (Active/Inactive)",
                     checked: data.personal.isActive,
                     onChecked: (value) {
-                      print(data.toString());
+                      debugPrint(data.toString());
                       data = data.copyWith(
                           personal: data.personal.copyWith(isActive: value));
                     },

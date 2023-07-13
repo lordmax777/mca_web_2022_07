@@ -127,10 +127,10 @@ final class QuoteMd extends Equatable {
 
   final String? workStartDate;
   DateTime? get workStartDateDt =>
-      workStartDate == null ? null : DateTime.parse(workStartDate!);
+      workStartDate == null ? null : DateTime.tryParse(workStartDate!);
   final String? altWorkStartDate;
   DateTime? get altWorkStartDateDt =>
-      altWorkStartDate == null ? null : DateTime.parse(altWorkStartDate!);
+      altWorkStartDate == null ? null : DateTime.tryParse(altWorkStartDate!);
   final String? workStartTime;
   TimeOfDay? get workStartTimeDt {
     if (workStartTime == null) return null;

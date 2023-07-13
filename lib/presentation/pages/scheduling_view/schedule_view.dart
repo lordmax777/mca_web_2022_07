@@ -287,7 +287,7 @@ class _TableState extends State<_Table> {
     });
 
     state.copyValue.addListener(() {
-      print('COPY MODE CHANGED ${state.copyValue.value}');
+      debugPrint('COPY MODE CHANGED ${state.copyValue.value}');
       updateUI();
     });
 
@@ -443,15 +443,15 @@ class _TableState extends State<_Table> {
       onTap: (calendarTapDetails, position) {
         switch (calendarTapDetails.targetElement) {
           case CalendarElement.calendarCell:
-            print('calendarCell');
+            debugPrint('calendarCell');
             _handleCalendarCellTap(calendarTapDetails, position);
             break;
           case CalendarElement.appointment:
-            print('appointment');
+            debugPrint('appointment');
             _handleAppointmentTap(calendarTapDetails, position);
             break;
           case CalendarElement.moreAppointmentRegion:
-            print('moreAppointmentRegion');
+            debugPrint('moreAppointmentRegion');
             _handleMoreAppointmentRegionTap(calendarTapDetails, position);
             break;
           default:
@@ -523,7 +523,7 @@ class _TableState extends State<_Table> {
     return tappedMenuType;
   }
 
-  //TODO: CELL TAP
+  ///CELL TAP
   void _handleCalendarCellTap(
       CalendarTapDetails details, Offset? position) async {
     final DateTime? date = details.date;
@@ -606,7 +606,7 @@ class _TableState extends State<_Table> {
     }
   }
 
-  //todo: APPOINTMENT TAP
+  /// APPOINTMENT TAP
   void _handleAppointmentTap(
       CalendarTapDetails details, Offset? position) async {
     final generalState = appStore.state.generalState;
@@ -672,8 +672,55 @@ class _TableState extends State<_Table> {
   }
 
   void _handleMoreAppointmentRegionTap(
-      CalendarTapDetails details, Offset? position) {
+      CalendarTapDetails details, Offset? position) async {
+    if (position == null) return;
     //TODO:
+    logger(details.appointments?.length);
+    final list = details.appointments ?? [];
+
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    Offset off;
+    double left;
+    double top;
+    double right;
+    double bottom;
+    off = overlay.globalToLocal(position);
+    left = off.dx;
+    top = off.dy;
+    right = MediaQuery.of(context).size.width - left;
+    bottom = MediaQuery.of(context).size.height - top;
+    final rect = RelativeRect.fromLTRB(left, top, right, bottom);
+
+    final items = list
+        .map((e) => PopupMenuItem(
+              value: e,
+              enabled: false,
+              child: MaterialButton(
+                onPressed: () {
+                  final selectedAppointments = [
+                    ...(details.appointments ?? [])
+                  ];
+                  selectedAppointments
+                      .removeWhere((element) => element.id != e.id);
+                  logger(selectedAppointments.firstOrNull);
+                  if (selectedAppointments.firstOrNull == null) return;
+                  final newDetails = CalendarTapDetails(selectedAppointments,
+                      details.date, details.targetElement, details.resource);
+                  final newPosition = Offset(position.dx, position.dy - 100);
+                  _handleAppointmentTap(
+                    newDetails,
+                    newPosition,
+                  );
+                },
+                child: Text(
+                  e.subject ?? "",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ))
+        .toList();
+    showMenu(context: context, position: rect, items: items);
   }
 
   Future<bool> _handleAppointmentQuickAdd(
@@ -784,43 +831,37 @@ class _TableState extends State<_Table> {
 
   Future<void> _pasteAppointment(
       String? resourceId, DateTime? targetDate) async {
-    print("PASTE");
+    debugPrint("PASTE");
 
     final DateTime fromDate = state.copyValue.value!.timeData.start!;
 
     int? targetShiftId;
     int? targetUserId;
 
-    if (resourceId == null || targetDate == null) {
-      context.showError("Something went wrong");
-      state.copyValue.value = null;
-      return;
-    }
+    // if (resourceId == null || targetDate == null) {
+    //   context.showError("Resource or date is not found");
+    //   state.copyValue.value = null;
+    //   return;
+    // }
 
     if (state.isUserResource.value) {
-      targetUserId = int.tryParse(resourceId);
+      targetUserId = resourceId == null ? null : int.tryParse(resourceId);
     } else {
-      targetShiftId = int.tryParse(resourceId);
+      targetShiftId = resourceId == null ? null : int.tryParse(resourceId);
     }
 
-    if (targetUserId == null && targetShiftId == null) {
-      context.showError("Something went wrong");
-      state.copyValue.value = null;
-      return;
-    }
+    // if (targetUserId == null && targetShiftId == null) {
+    //   context.showError("Something went wrong");
+    //   state.copyValue.value = null;
+    //   return;
+    // }
 
     //0. Check if the copying date is after the current date
-    if (targetDate.isBefore(fromDate)) {
+    if (targetDate?.isBefore(fromDate) == true) {
       context.showError(
           "Cannot copy to a date before the current date.\nPlease select a date after ${fromDate.toApiDateWithDash}");
       return;
     }
-
-    //Need these data:
-    //targetUserId + (targetUserId)
-    //targetShiftId + (targetShiftId)
-    //fromDate + (state.copyValue.value!.timeData.start!)
-    //targetDate + (targetDate)
 
     //Steps to do
     //1. Use PostAllocationAction to copy using action with AllocationPostType.copy

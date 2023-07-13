@@ -470,12 +470,10 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                   )),
                               valueId: addressData.locationId,
                               onChanged: (value) {
-                                print(value.id);
                                 updateUI(() {
                                   final location = vm.locations
                                       .firstWhereOrNull(
                                           (element) => element.id == value.id);
-                                  print(location);
                                   if (location != null) {
                                     addressData.line1 = location.address.line1;
                                     addressData.line2 = location.address.line2;

@@ -29,6 +29,7 @@ class GlobalConstants {
 
   static const List<int> pageSizes = [10, 50, 100];
 
-  static bool enableDebugCodes = true;
+  static bool enableDebugCodes = kDebugMode;
+
   static bool enableLoadingIndicator = true;
 }

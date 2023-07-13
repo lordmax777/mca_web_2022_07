@@ -65,9 +65,7 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
           // isScrollable: true,
         ),
       ),
-      body: SizedBox.expand(
-        child: _getChild(),
-      ),
+      body: _getChild(),
     );
   }
 

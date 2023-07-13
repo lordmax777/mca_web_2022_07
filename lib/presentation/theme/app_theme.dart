@@ -39,8 +39,8 @@ final class AppTheme {
   ThemeData get theme => _theme ?? defaultTheme;
 
   set theme(ThemeData theme) {
-    print("set theme");
+    debugPrint("set theme");
     _theme = theme;
-    print("set theme");
+    debugPrint("set theme");
   }
 }

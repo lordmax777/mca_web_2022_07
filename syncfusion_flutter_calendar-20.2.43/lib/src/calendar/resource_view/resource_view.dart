@@ -173,9 +173,9 @@ class _ResourceViewRenderObjectWidget extends MultiChildRenderObjectWidget {
 }
 
 void logger(dynamic val) {
-  print("DEBUG FROM CALENDAR");
-  print('$val');
-  print("DEBUG FROM CALENDAR");
+  debugPrint("DEBUG FROM CALENDAR");
+  debugPrint('$val');
+  debugPrint("DEBUG FROM CALENDAR");
 }
 
 class _ResourceViewRenderObject extends CustomCalendarRenderObject {

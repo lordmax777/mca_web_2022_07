@@ -281,7 +281,6 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                         Component(Component.postalCode,
                                             controller11.text),
                                       ]);
-                                      print(response.status);
 
                                       if (response.isOkay) {
                                         final res =

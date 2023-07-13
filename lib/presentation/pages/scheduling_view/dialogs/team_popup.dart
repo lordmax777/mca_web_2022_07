@@ -48,7 +48,6 @@ class _TeamPopupState extends State<TeamPopup> {
               SearchBar(
                 hintText: 'Filter users',
                 onChanged: (value) {
-                  print(value);
                   setState(() {
                     if (value.isEmpty) {
                       filteredUsers.clear();

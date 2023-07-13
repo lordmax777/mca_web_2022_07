@@ -956,7 +956,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       AppState state, GetPropertyDetailsAction action) async {
     return await apiCall(() async {
       final res = await deps.apiClient.getPropertyDetails(action.shiftId);
-      print(res.data['details'].runtimeType);
+      debugPrint(res.data['details'].runtimeType.toString());
       if (res.data['details'] is List) {
         throw const ErrorMd(
             message: "No Property Details found", code: null, data: null);
@@ -1284,7 +1284,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
     return await apiCall(() async {
       final res = await deps.apiClient
           .deleteUserDetailsMobile(action.userId.toString());
-      print(res.response.statusCode);
+      debugPrint(res.response.statusCode.toString());
       return res.response.statusCode == 200;
     });
   }

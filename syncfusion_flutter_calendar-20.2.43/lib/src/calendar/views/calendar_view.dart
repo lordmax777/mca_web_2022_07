@@ -8962,7 +8962,7 @@ class _CalendarViewState extends State<_CalendarView>
     try {
       _handleTouchOnTimeline(details, null);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 

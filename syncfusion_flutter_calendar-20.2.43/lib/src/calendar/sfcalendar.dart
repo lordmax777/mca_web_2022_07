@@ -8414,7 +8414,7 @@ class _SfCalendarState extends State<SfCalendar>
               resourceItemHeight;
       return _resourceCollection![index];
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return _resourceCollection![0];
     }
   }
