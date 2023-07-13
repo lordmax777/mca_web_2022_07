@@ -60,6 +60,7 @@ class DefaultTable extends StatelessWidget {
         if (rowColorContext.row.type.isGroup) {
           return Colors.grey[50]!;
         }
+
         return Colors.white;
       },
       configuration: PlutoGridConfiguration(

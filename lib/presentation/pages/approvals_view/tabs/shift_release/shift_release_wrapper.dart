@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/post_shift_release_action.dart';
 import 'package:mca_dashboard/presentation/pages/approvals_view/tabs/shift_release/shift_release_pending_table.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -72,11 +73,14 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
   @override
   PlutoRow buildRow(ApprovalModelMd model) {
     return PlutoRow(cells: {
+      "requestedBy": PlutoCell(
+          value: model
+              .releaseCreatedByMd(appStore.state.generalState.users)
+              ?.fullname),
       "requestedOn": PlutoCell(value: model.createdOn),
       "name": PlutoCell(value: model.title),
-      "type": PlutoCell(value: model.createdOn),
-      "dateTime": PlutoCell(value: model.date), //start - end
-      "comment": PlutoCell(value: model.active),
+      "dateTime": PlutoCell(value: model.fromToDate), //start - end
+      "comment": PlutoCell(value: ""),
       "action": PlutoCell(value: model),
     });
   }
@@ -86,11 +90,11 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
       case 0:
         return StoreConnector<AppState, List<ApprovalModelMd>>(
           converter: (store) => store.state.generalState.approvals.releaseables,
-          onDidChange: onDidChange1,
+          onDidChange: onDidChange,
           builder: (context, vm) {
             return ShiftReleasePendingTable(
               onLoaded: onLoaded,
-              onApprove: (singleRow, isApprove) {},
+              onApprove: onApprove,
               focusNode: focusNode,
               rows: stateManager == null ? [] : stateManager!.rows,
             );
@@ -99,7 +103,7 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
       case 1:
         return StoreConnector<AppState, List<ApprovalModelMd>>(
           converter: (store) => store.state.generalState.approvals.releaseables,
-          onDidChange: onDidChange,
+          onDidChange: onDidChange1,
           builder: (context, vm) {
             return const SizedBox();
             // return ShiftReleasePublishedTable();
@@ -108,5 +112,37 @@ class _ShiftReleaseWrapperState extends State<ShiftReleaseWrapper>
       default:
         return const SizedBox.shrink();
     }
+  }
+
+  void onApprove(PlutoRow? singleRow, String action) {
+    context.futureLoading<void>(() async {
+      final selected = [...stateManager!.checkedRows];
+      if (singleRow != null) {
+        selected.clear();
+        selected.add(singleRow);
+      }
+      if (selected.isEmpty) {
+        return;
+      }
+      final List<String> failed = [];
+      for (final row in selected) {
+        final id = row.cells['action']!.value.id;
+        String? comment = row.cells['comment']?.value;
+        if (comment?.isEmpty ?? true) {
+          comment = null;
+        }
+        final success = await dispatch<bool>(PostShiftReleaseAction(
+          allocationId: id,
+          action: action,
+          comment: comment,
+        ));
+        if (success.isRight) {
+          failed.add(row.cells['name']!.value);
+        }
+      }
+      if (failed.isNotEmpty) {
+        context.showError("Failed ${failed.join(", ")}");
+      }
+    });
   }
 }

@@ -605,4 +605,14 @@ abstract class ApiClient {
     @Path() int userId, {
     @Field() required int userqualificationId,
   });
+
+  //shiftrelease
+  @POST("/api/fe/shiftrelease/{allocationId}")
+  @FormUrlEncoded()
+  Future<HttpResponse> postShiftRelease(
+    @Path() int allocationId, {
+    /// approve, deny, reset, publish, unpublish
+    @Field() required String action,
+    @Field() String? comment,
+  });
 }

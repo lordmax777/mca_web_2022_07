@@ -29,10 +29,12 @@ class _DefaultTablePaginationFooterState
     stateManager.setPageSize(pageSize);
     setState(() {});
     stateManager.addListener(() {
-      setState(() {
-        pageNumber = stateManager.page;
-        pageSize = stateManager.pageSize;
-      });
+      if (mounted) {
+        setState(() {
+          pageNumber = stateManager.page;
+          pageSize = stateManager.pageSize;
+        });
+      }
     });
   }
 

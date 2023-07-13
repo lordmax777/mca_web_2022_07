@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
+import 'package:mca_dashboard/presentation/global_widgets/default_text_field.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -7,7 +8,7 @@ class ShiftReleasePendingTable extends StatelessWidget {
   final void Function(PlutoGridOnLoadedEvent) onLoaded;
   final FocusNode? focusNode;
   final List<PlutoRow> rows;
-  final void Function(PlutoRow? singleRow, bool isApprove) onApprove;
+  final void Function(PlutoRow? singleRow, String action) onApprove;
 
   const ShiftReleasePendingTable(
       {super.key,
@@ -39,12 +40,20 @@ class ShiftReleasePendingTable extends StatelessWidget {
                         .copyWith(color: context.colorScheme.primary))),
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: true,
+                value: "publish",
+                child: Text("Publish Selected"),
+              ),
+              const PopupMenuItem(
+                value: "unpublish",
+                child: Text("Unpublish"),
+              ),
+              const PopupMenuItem(
+                value: "approve",
                 child: Text("Approve Selected"),
               ),
               const PopupMenuItem(
-                value: false,
-                child: Text("Decline Selected"),
+                value: "deny",
+                child: Text("Deny Selected"),
               ),
             ],
             onSelected: (value) => onApprove(null, value),
@@ -54,48 +63,43 @@ class ShiftReleasePendingTable extends StatelessWidget {
       onLoaded: onLoaded,
       columns: [
         PlutoColumn(
-            title: "Requested On",
-            field: "requestedOn",
             enableRowChecked: true,
-            width: 200,
-            // hide: true,
-            type: PlutoColumnType.date(format: "dd/MM/yyyy HH:mm")),
-        PlutoColumn(
-            title: "Name",
-            width: 100,
-            field: "name",
-            hide: true,
+            title: "Requested By",
+            field: "requestedBy",
+            enableEditingMode: false,
             type: PlutoColumnType.text()),
         PlutoColumn(
-            title: "Type",
-            width: 100,
-            field: "type",
-            hide: true,
+            title: "Requested On",
+            field: "requestedOn",
+            enableEditingMode: false,
+            type: PlutoColumnType.date(format: "dd/MM/yyyy HH:mm")),
+        PlutoColumn(
+            enableEditingMode: false,
+            title: "Shift",
+            field: "name",
             type: PlutoColumnType.text()),
         PlutoColumn(
           title: "Date/Time",
           field: "dateTime",
-          hide: true,
-          width: 200,
+          enableEditingMode: false,
           type: PlutoColumnType.text(),
-          renderer: (rendererContext) {
-            return rendererContext.defaultText();
-          },
         ),
         PlutoColumn(
           title: "Comment",
           field: "comment",
-          hide: true,
-          width: 80,
-          type: PlutoColumnType.text(),
+          width: 200,
+          enableEditingMode: true,
+          enableAutoEditing: true,
           renderer: (rendererContext) {
-            return rendererContext.defaultTooltipWidget();
+            //container with rounded corners and border inside text from cell
+            return rendererContext.defaultEditableCellWidget();
           },
+          type: PlutoColumnType.text(),
         ),
         PlutoColumn(
           title: "Action",
           field: "action",
-          hide: true,
+          enableEditingMode: false,
           width: 40,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
@@ -104,12 +108,20 @@ class ShiftReleasePendingTable extends StatelessWidget {
               padding: const EdgeInsets.all(0),
               itemBuilder: (context) => [
                 const PopupMenuItem(
-                  value: true,
+                  value: "publish",
+                  child: Text("Publish"),
+                ),
+                const PopupMenuItem(
+                  value: "unpublish",
+                  child: Text("Unpublish"),
+                ),
+                const PopupMenuItem(
+                  value: "approve",
                   child: Text("Approve"),
                 ),
                 const PopupMenuItem(
-                  value: false,
-                  child: Text("Decline"),
+                  value: "deny",
+                  child: Text("Deny"),
                 ),
               ],
               onSelected: (value) => onApprove(rendererContext.row, value),
@@ -117,6 +129,7 @@ class ShiftReleasePendingTable extends StatelessWidget {
           },
         ),
       ],
+      mode: PlutoGridMode.normal,
       rows: rows,
     );
   }

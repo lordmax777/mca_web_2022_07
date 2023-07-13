@@ -21,7 +21,7 @@ class _ApprovalsViewState extends State<ApprovalsView>
   final tabs = const [
     Tab(text: "Requests"),
     Tab(text: "User Qualifications"),
-    // Tab(text: "Shift Releases"),
+    Tab(text: "Shift Releases"),
   ];
 
   late final TabController _tabController;

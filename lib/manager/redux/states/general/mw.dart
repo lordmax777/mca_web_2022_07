@@ -13,6 +13,7 @@ import 'package:mca_dashboard/manager/redux/redux.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/post_shift_release_action.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -204,6 +205,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return _addToStockAction(store.state, action);
       case ApproveUserQualificationAction:
         return _approveUserQualificationAction(store.state, action);
+      case PostShiftReleaseAction:
+        return action.fetch(store.state, action);
       default:
         return next(action);
     }

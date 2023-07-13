@@ -77,9 +77,9 @@ class _RequestWrapperState extends State<RequestWrapper>
               .typeMd(appStore.state.generalState.lists.requestTypes)
               ?.name),
       "dateTime": PlutoCell(value: model.fromToDate), //start - end
-      "status": PlutoCell(value: model.accepted),
       "managerComment": PlutoCell(value: model.requestcomment),
       "comment": PlutoCell(value: model.comment),
+      "status": PlutoCell(value: model.accepted == 1 ? "Approved" : "Rejected"),
       "action": PlutoCell(value: model),
     });
   }

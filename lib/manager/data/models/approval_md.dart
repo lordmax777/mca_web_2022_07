@@ -16,6 +16,7 @@ final class ApprovalMd extends Equatable {
   final List<ProblemMd> problems;
   final List<PendingUserQualifMd> pendingUserQualifications;
   final List<ClosedRequest> closedRequests;
+
   const ApprovalMd({
     required this.releaseables,
     required this.acknowledgeables,
@@ -73,6 +74,7 @@ final class ApprovalMd extends Equatable {
 final class ApprovalModelMd extends Equatable {
   final int id;
   final String? date;
+
   DateTime? dateDt() {
     if (date == null) return null;
     return DateTime.tryParse(date!);
@@ -80,12 +82,14 @@ final class ApprovalModelMd extends Equatable {
 
   final bool active;
   final String? releaseCreatedOn;
+
   DateTime? releaseCreatedOnDt() {
     if (releaseCreatedOn == null) return null;
     return DateTime.tryParse(releaseCreatedOn!);
   }
 
   final String? releaseCreatedBy;
+
   UserMd? releaseCreatedByMd(List<UserMd> users) {
     if (releaseCreatedBy == null) return null;
     return users.firstWhereOrNull(
@@ -94,12 +98,14 @@ final class ApprovalModelMd extends Equatable {
 
   final String? releaseRequestComment;
   final String? releasePublishedOn;
+
   DateTime? releasePublishedOnDt() {
     if (releasePublishedOn == null) return null;
     return DateTime.tryParse(releasePublishedOn!);
   }
 
   final String? releasePublishedBy;
+
   UserMd? releasePublishedByMd(List<UserMd> users) {
     if (releasePublishedBy == null) return null;
     return users.firstWhereOrNull(
@@ -108,6 +114,7 @@ final class ApprovalModelMd extends Equatable {
 
   final String? releasePublishComment;
   final String? locationId;
+
   LocationMd? locationMd(List<LocationMd> locations) {
     if (locationId == null) return null;
     return locations
@@ -117,60 +124,70 @@ final class ApprovalModelMd extends Equatable {
   final String? locationName;
   final String? title;
   final String? startTime;
+
   DateTime? startTimeDt() {
     if (startTime == null) return null;
     return DateTime.tryParse(startTime!);
   }
 
   final String? finishTime;
+
   DateTime? finishTimeDt() {
     if (finishTime == null) return null;
     return DateTime.tryParse(finishTime!);
   }
 
   final String? startBreak;
+
   DateTime? startBreakDt() {
     if (startBreak == null) return null;
     return DateTime.tryParse(startBreak!);
   }
 
   final String? finishBreak;
+
   DateTime? finishBreakDt() {
     if (finishBreak == null) return null;
     return DateTime.tryParse(finishBreak!);
   }
 
   final String? fpStartTime;
+
   DateTime? fpStartTimeDt() {
     if (fpStartTime == null) return null;
     return DateTime.tryParse(fpStartTime!);
   }
 
   final String? fpFinishTime;
+
   DateTime? fpFinishTimeDt() {
     if (fpFinishTime == null) return null;
     return DateTime.tryParse(fpFinishTime!);
   }
 
   final String? fpStartBreak;
+
   DateTime? fpStartBreakDt() {
     if (fpStartBreak == null) return null;
     return DateTime.tryParse(fpStartBreak!);
   }
 
   final String? fpFinishBreak;
+
   DateTime? fpFinishBreakDt() {
     if (fpFinishBreak == null) return null;
     return DateTime.tryParse(fpFinishBreak!);
   }
 
   final String? specialStartTime;
+
   DateTime? specialStartTimeDt() {
     if (specialStartTime == null) return null;
     return DateTime.tryParse(specialStartTime!);
   }
 
   final String? specialFinishTime;
+
   DateTime? specialFinishTimeDt() {
     if (specialFinishTime == null) return null;
     return DateTime.tryParse(specialFinishTime!);
@@ -181,18 +198,21 @@ final class ApprovalModelMd extends Equatable {
   final num? minPaidTime;
   final bool splitTime;
   final String? createdOn;
+
   DateTime? createdOnDt() {
     if (createdOn == null) return null;
     return DateTime.tryParse(createdOn!);
   }
 
   final String? releaseAcceptCreatedOn;
+
   DateTime? releaseAcceptCreatedOnDt() {
     if (releaseAcceptCreatedOn == null) return null;
     return DateTime.tryParse(releaseAcceptCreatedOn!);
   }
 
   final String? releaseAcceptCreatedBy;
+
   UserMd? releaseAcceptCreatedByMd(List<UserMd> users) {
     if (releaseAcceptCreatedBy == null) return null;
     return users.firstWhereOrNull(
@@ -204,6 +224,23 @@ final class ApprovalModelMd extends Equatable {
   final String? userTitle;
   final String? userFirstName;
   final String? userLastName;
+
+  String? get fromToDate {
+    //get date from date
+    //get startTime from startTime(but startTime is DateTime)
+    //get finishTime from finishTime(but finishTime is DateTime)
+    //last make a format like this: 2021/08/01(date) 08:00(startTime) - 16:00(finishTime)
+    logger(dateDt());
+    logger(startTimeDt());
+    logger(finishTimeDt());
+    if (dateDt() == null) return null;
+    if (startTimeDt() == null) return null;
+    if (finishTimeDt() == null) return null;
+    DateTime date = dateDt()!;
+    String startTime = DateFormat('HH:mm').format(startTimeDt()!);
+    String finishTime = DateFormat('HH:mm').format(finishTimeDt()!);
+    return '${DateFormat('yyyy/MM/dd').format(date)} $startTime - $finishTime';
+  }
 
   const ApprovalModelMd({
     required this.id,
@@ -358,6 +395,7 @@ final class RequestMd extends Equatable {
 
   final int id;
   final String? typeId;
+
   RequestTypeMd? typeMd(List<RequestTypeMd> types) {
     if (typeId == null) return null;
     return types
@@ -365,12 +403,14 @@ final class RequestMd extends Equatable {
   }
 
   final String? start;
+
   DateTime? get startDt {
     if (start == null) return null;
     return DateTime.tryParse(start!);
   }
 
   final String? finish;
+
   DateTime? get finishDt {
     if (finish == null) return null;
     return DateTime.tryParse(finish!);
@@ -395,6 +435,7 @@ final class RequestMd extends Equatable {
 
   final String? comment;
   final String? createdBy;
+
   UserMd? userMd(List<UserMd> users) {
     if (createdBy == null) return null;
     return users
@@ -402,6 +443,7 @@ final class RequestMd extends Equatable {
   }
 
   final String? createdOn;
+
   DateTime? get createdOnDt {
     if (createdOn == null) return null;
     return DateTime.tryParse(createdOn!);
@@ -410,6 +452,7 @@ final class RequestMd extends Equatable {
   final String? title;
   final String? firstName;
   final String? lastName;
+
   String? get fullname {
     String? name;
     //fullname without title
@@ -425,6 +468,7 @@ final class RequestMd extends Equatable {
   }
 
   final String? locationId;
+
   LocationMd? locationMd(List<LocationMd> locations) {
     if (locationId == null) return null;
     return locations
@@ -432,6 +476,7 @@ final class RequestMd extends Equatable {
   }
 
   final String? groupId;
+
   GroupMd? groupMd(List<GroupMd> groups) {
     if (groupId == null) return null;
     return groups
@@ -502,6 +547,7 @@ final class ProblemMd extends Equatable {
   //         }
   final String? type;
   final String? description;
+
   const ProblemMd({
     required this.type,
     required this.description,
@@ -562,12 +608,14 @@ final class PendingUserQualifMd extends Equatable {
 
   final int id;
   final int qualificationId;
+
   QualificationMd? qualificationMd(List<QualificationMd> qualifications) {
     return qualifications
         .firstWhereOrNull((element) => element.id == qualificationId);
   }
 
   final int userId;
+
   UserMd? userMd(List<UserMd> users) {
     return users.firstWhereOrNull((element) => element.id == userId);
   }
@@ -577,12 +625,14 @@ final class PendingUserQualifMd extends Equatable {
   final String? qualComment;
   final String? comments;
   final String? achievementDate;
+
   DateTime? get achievementDateDt {
     if (achievementDate == null) return null;
     return DateTime.tryParse(achievementDate!);
   }
 
   final String? expiryDate;
+
   DateTime? get expiryDateDt {
     if (expiryDate == null) return null;
     return DateTime.tryParse(expiryDate!);
@@ -590,12 +640,14 @@ final class PendingUserQualifMd extends Equatable {
 
   final String? certificateNumber;
   final int createdBy;
+
   UserMd? createdByMd(List<UserMd> users) {
     return users.firstWhereOrNull((element) => element.id == createdBy);
   }
 
   final String? imageType;
   final String? createdOn;
+
   DateTime? get createdOnDt {
     if (createdOn == null) return null;
     return DateTime.tryParse(createdOn!);
@@ -603,6 +655,7 @@ final class PendingUserQualifMd extends Equatable {
 
   final String? fullname;
   final String? thumbnail;
+
   Uint8List? get thumbnailBytes {
     if (thumbnail == null) return null;
     return base64.decode(thumbnail!);
@@ -721,22 +774,26 @@ final class ClosedRequest extends Equatable {
 
   final int id;
   final int userId;
+
   UserMd? userMd(List<UserMd> users) {
     return users.firstWhereOrNull((element) => element.id == userId);
   }
 
   final int typeId;
+
   RequestTypeMd? typeMd(List<RequestTypeMd> requestTypes) {
     return requestTypes.firstWhereOrNull((element) => element.id == typeId);
   }
 
   final String? start;
+
   DateTime? get startDt {
     if (start == null) return null;
     return DateTime.tryParse(start!);
   }
 
   final String? finish;
+
   DateTime? get finishDt {
     if (finish == null) return null;
     return DateTime.tryParse(finish!);
@@ -764,12 +821,14 @@ final class ClosedRequest extends Equatable {
 
   final String? comment;
   final int createdBy;
+
   UserMd? createdByMd(List<UserMd> users) {
     return users.firstWhereOrNull((element) => element.id == createdBy);
   }
 
   final String? createdByName;
   final String? createdOn;
+
   DateTime? get createdOnDt {
     if (createdOn == null) return null;
     return DateTime.tryParse(createdOn!);
@@ -777,11 +836,13 @@ final class ClosedRequest extends Equatable {
 
   final int accepted;
   final int acceptedBy;
+
   UserMd? acceptedByMd(List<UserMd> users) {
     return users.firstWhereOrNull((element) => element.id == acceptedBy);
   }
 
   final String? acceptedOn;
+
   DateTime? get acceptedOnDt {
     if (acceptedOn == null) return null;
     return DateTime.tryParse(acceptedOn!);
@@ -798,6 +859,7 @@ final class ClosedRequest extends Equatable {
   final String? title;
   final String? firstName;
   final String? lastName;
+
   String? get fullname {
     String? name;
     //fullname without title

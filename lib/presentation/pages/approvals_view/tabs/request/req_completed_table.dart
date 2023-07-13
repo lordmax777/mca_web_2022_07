@@ -75,12 +75,6 @@ class ReqCompletedTable extends StatelessWidget {
           },
         ),
         PlutoColumn(
-          title: "Status",
-          field: "status",
-          width: 100,
-          type: PlutoColumnType.text(),
-        ),
-        PlutoColumn(
           title: "Manager's comment",
           field: "managerComment",
           width: 80,
@@ -97,6 +91,12 @@ class ReqCompletedTable extends StatelessWidget {
           renderer: (rendererContext) {
             return rendererContext.defaultTooltipWidget();
           },
+        ),
+        PlutoColumn(
+          title: "Status",
+          field: "status",
+          width: 100,
+          type: PlutoColumnType.text(),
         ),
         PlutoColumn(
           title: "Action",

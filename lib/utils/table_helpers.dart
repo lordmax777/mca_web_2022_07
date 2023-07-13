@@ -97,6 +97,21 @@ extension WidgetHelper on PlutoColumnRendererContext {
       },
     );
   }
+
+  Widget defaultEditableCellWidget() {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          cell.value.toString(),
+          style: stateManager.style.cellTextStyle,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ));
+  }
 }
 
 /////////
