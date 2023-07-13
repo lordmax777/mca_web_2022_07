@@ -212,6 +212,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state, action);
       case GetChecklistPdfAction:
         return action.fetch(store.state, action);
+      case GetChecklistImagesAction:
+        return action.fetch(store.state, action);
       default:
         return next(action);
     }
@@ -325,6 +327,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           appStore.dispatch(const GetStorageItemsAction()) as Future,
           appStore.dispatch(const GetChecklistTemplatesAction()) as Future,
           appStore.dispatch(const GetApprovalsAction()) as Future,
+          appStore.dispatch(const GetChecklistsAction(page: 1)) as Future,
         ]);
         return true;
       });

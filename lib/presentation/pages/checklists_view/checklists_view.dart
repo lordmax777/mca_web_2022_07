@@ -5,6 +5,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/presentation/pages/checklists_view/users_view_popup.dart';
 import 'package:mca_dashboard/utils/global_extensions.dart';
 import 'package:mca_dashboard/utils/global_functions.dart';
 import 'package:mca_dashboard/utils/table_helpers.dart';
@@ -12,6 +13,8 @@ import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../../manager/manager.dart';
 import '../../../utils/base64_download/base_64_download.dart';
+import 'comments_view_popup.dart';
+import 'damages_view_popup.dart';
 
 class ChecklistsView extends StatefulWidget {
   const ChecklistsView({super.key});
@@ -125,6 +128,66 @@ class _ChecklistsViewState extends State<ChecklistsView>
     });
   }
 
+  void onViewDamage(ChecklistMd model) {
+    showGeneralDialog<bool>(
+        context: context,
+        barrierLabel: 'Damage',
+        barrierDismissible: true,
+        transitionBuilder: (ctx, a1, a2, child) {
+          //build a transition that slides from left to right
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(a1),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            DamagesViewPopup(model: model));
+  }
+
+  void onViewComment(ChecklistMd model) {
+    showGeneralDialog<bool>(
+        context: context,
+        barrierLabel: 'Comment',
+        barrierDismissible: true,
+        transitionBuilder: (ctx, a1, a2, child) {
+          //build a transition that slides from left to right
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(a1),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            CommentsViewPopup(model: model));
+  }
+
+  void onViewUsers(ChecklistMd model) {
+    showGeneralDialog<bool>(
+        context: context,
+        barrierLabel: 'Users',
+        barrierDismissible: true,
+        transitionBuilder: (ctx, a1, a2, child) {
+          //build a transition that slides from left to right
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(a1),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            UsersViewPopup(model: model));
+  }
+
   Future<PlutoLazyPaginationResponse> lazyFetch(
     PlutoLazyPaginationRequest request,
   ) async {
@@ -170,12 +233,33 @@ class _ChecklistsViewState extends State<ChecklistsView>
   }
 
   @override
+  Future<List<ChecklistMd>?> fetch() async {
+    return appStore.state.generalState.checklists.checklists;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTable(
       columns: columns,
       rows: rows,
       onLoaded: onLoaded,
       focusNode: focusNode,
+      onSelected: (p0) {
+        switch (p0.cell?.column.field) {
+          case "damages":
+            if (p0.row!.cells["damages"]!.value == 0) return;
+            onViewDamage(p0.row!.cells["action"]!.value);
+            break;
+          case "comments":
+            if (p0.row!.cells["comments"]!.value == 0) return;
+            onViewComment(p0.row!.cells["action"]!.value);
+            break;
+          case "users":
+            if (p0.row!.cells["users"]!.value == 0) return;
+            onViewUsers(p0.row!.cells["action"]!.value);
+            break;
+        }
+      },
       customFooter: (p0) {
         return PlutoLazyPagination(
           stateManager: p0,

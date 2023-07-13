@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
 
 final class ChecklistFullMd extends Equatable {
@@ -311,5 +314,62 @@ final class SimpleUserMd extends Equatable {
         id,
         fullname,
         status,
+      ];
+}
+
+final class ChecklistDamageImageMd extends Equatable {
+  //"room": "KITCHEN",
+  //             "id": 72546,
+  //             "photo": "string"
+  //      "type": "image/jpeg",
+  //             "width": 400,
+  //             "height": 190
+
+  final String room;
+  final int id;
+  final String photo;
+  Uint8List get photoBytes {
+    return base64.decode(photo);
+  }
+
+  final String type;
+  final int width;
+  final int height;
+
+  const ChecklistDamageImageMd({
+    required this.room,
+    required this.id,
+    required this.photo,
+    required this.type,
+    required this.width,
+    required this.height,
+  });
+
+  //from json
+  factory ChecklistDamageImageMd.fromJson(Map<String, dynamic> json) {
+    try {
+      return ChecklistDamageImageMd(
+        room: json['room'] as String,
+        id: json['id'] as int,
+        photo: json['photo'] as String,
+        type: json['type'] as String,
+        width: json['width'] as int,
+        height: json['height'] as int,
+      );
+    } on TypeError catch (e) {
+      print('ChecklistDamageImageMd.fromJson ${e.stackTrace}');
+      rethrow;
+    }
+  }
+
+  @override
+  List<Object?> get props => [
+        room,
+        id,
+        photo,
+        photoBytes,
+        type,
+        width,
+        height,
       ];
 }

@@ -52,3 +52,31 @@ final class GetChecklistPdfAction {
     });
   }
 }
+
+final class GetChecklistImagesAction {
+  final List<int> ids;
+
+  const GetChecklistImagesAction({
+    required this.ids,
+  });
+
+  Future<Either<List<ChecklistDamageImageMd>, ErrorMd>> fetch(
+      AppState state, GetChecklistImagesAction action) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .getChecklistImages(id: action.ids.join(','));
+      try {
+        final data = res.data['images'];
+        final images = data
+            .map<ChecklistDamageImageMd>(
+                (e) => ChecklistDamageImageMd.fromJson(e))
+            .toList();
+        return images;
+      } catch (e) {
+        Logger.e(e.toString(), tag: 'GetChecklistImagesAction');
+        throw const ErrorMd(
+            message: 'Error while getting images', data: null, code: null);
+      }
+    });
+  }
+}

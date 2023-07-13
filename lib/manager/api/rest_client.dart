@@ -626,4 +626,11 @@ abstract class ApiClient {
       {
       ///if multiple ids, separate with comma
       @Path() required String id});
+
+  //get checklist images
+  @GET("/api/fe/checklist/{id}/images")
+  Future<HttpResponse> getChecklistImages(
+      {
+      ///if multiple ids, separate with comma
+      @Path() required String id});
 }
