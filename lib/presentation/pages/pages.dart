@@ -13,3 +13,4 @@ export 'locations_view/locations_view.dart';
 export 'checklist_template_view/checklist_template_view.dart';
 export 'properties_view/properties_view.dart';
 export 'approvals_view/approvals_wrapper.dart';
+export 'checklists_view/checklists_view.dart';

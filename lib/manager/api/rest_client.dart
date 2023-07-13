@@ -615,4 +615,8 @@ abstract class ApiClient {
     @Field() required String action,
     @Field() String? comment,
   });
+
+  //get checklist
+  @GET("/api/fe/checklists")
+  Future<HttpResponse> getChecklists({@Query('page') required int page});
 }

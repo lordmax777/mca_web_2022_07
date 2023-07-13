@@ -5,20 +5,18 @@ import 'package:mca_dashboard/utils/global_constants.dart';
 import 'package:mca_dashboard/utils/global_extensions.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-class DefaultTablePaginationFooter extends StatefulWidget {
+class LazyTableFooter extends StatefulWidget {
   final PlutoGridStateManager stateManager;
-  const DefaultTablePaginationFooter({
+  const LazyTableFooter({
     super.key,
     required this.stateManager,
   });
 
   @override
-  State<DefaultTablePaginationFooter> createState() =>
-      _DefaultTablePaginationFooterState();
+  State<LazyTableFooter> createState() => _LazyTableFooterState();
 }
 
-class _DefaultTablePaginationFooterState
-    extends State<DefaultTablePaginationFooter> {
+class _LazyTableFooterState extends State<LazyTableFooter> {
   PlutoGridStateManager get stateManager => widget.stateManager;
 
   int pageNumber = 1;
@@ -65,26 +63,26 @@ class _DefaultTablePaginationFooterState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //Page size changer
-            DefaultDropdown(
-              height: 60,
-              width: MediaQuery.sizeOf(context).width * 0.15,
-              label: "Page Size",
-              valueId: stateManager.pageSize,
-              onChanged: (value) {
-                changePageSize(value.id);
-              },
-              items: [
-                for (int pageSize in GlobalConstants.pageSizes)
-                  DefaultMenuItem(
-                    id: pageSize,
-                    title: pageSize.toString(),
-                  ),
-              ],
-            ),
-            // Text(
-            //   "Total: ${stateManager.totalPage * stateManager.pageSize} items",
-            //   style: context.textTheme.titleMedium,
+            // DefaultDropdown(
+            //   height: 60,
+            //   width: MediaQuery.sizeOf(context).width * 0.15,
+            //   label: "Page Size",
+            //   valueId: stateManager.pageSize,
+            //   onChanged: (value) {
+            //     changePageSize(value.id);
+            //   },
+            //   items: [
+            //     for (int pageSize in GlobalConstants.pageSizes)
+            //       DefaultMenuItem(
+            //         id: pageSize,
+            //         title: pageSize.toString(),
+            //       ),
+            //   ],
             // ),
+            Text(
+              "Total: ${stateManager.totalPage * stateManager.pageSize} items",
+              style: context.textTheme.titleMedium,
+            ),
 
             //Page number
             TablePaginationWidget(

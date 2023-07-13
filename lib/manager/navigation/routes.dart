@@ -68,6 +68,9 @@ class MCANavigation extends IMCANavigation {
   //Approvals
   static const String approvals = '/approvals';
 
+  //Checklists
+  static const String checklists = '/checklists';
+
   /// router
   late final router = GoRouter(
     // debugLogDiagnostics: true,
@@ -222,6 +225,16 @@ class MCANavigation extends IMCANavigation {
                 return NoTransitionPage<void>(
                   key: state.pageKey,
                   child: const ApprovalsView(),
+                );
+              },
+            ),
+            GoRoute(
+              path: checklists,
+              name: checklists.substring(1),
+              pageBuilder: (context, state) {
+                return NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: const ChecklistsView(),
                 );
               },
             ),

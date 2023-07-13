@@ -68,6 +68,11 @@ final List<Map<String, dynamic>> _destinations = [
     'title': 'Approvals',
     'icon': Icons.approval,
   },
+  {
+    'route': MCANavigation.checklists,
+    'title': 'Checklists',
+    'icon': Icons.checklist,
+  },
   if (kDebugMode)
     {
       'route': MCANavigation.debug,

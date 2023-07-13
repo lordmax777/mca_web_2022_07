@@ -11,6 +11,7 @@ import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/post_shift_release_action.dart';
@@ -206,6 +207,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       case ApproveUserQualificationAction:
         return _approveUserQualificationAction(store.state, action);
       case PostShiftReleaseAction:
+        return action.fetch(store.state, action);
+      case GetChecklistsAction:
         return action.fetch(store.state, action);
       default:
         return next(action);

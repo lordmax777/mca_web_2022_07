@@ -33,5 +33,6 @@ GeneralState _updateGeneralState(
     detailsMd: action.detailsMd ?? state.detailsMd,
     checklistTemplates: action.checklistTemplates ?? state.checklistTemplates,
     approvals: action.approvals ?? state.approvals,
+    checklists: action.checklists ?? state.checklists,
   );
 }
