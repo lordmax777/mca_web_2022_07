@@ -53,20 +53,24 @@ class ReqCompletedTable extends StatelessWidget {
             title: "Requested On",
             field: "requestedOn",
             enableRowChecked: true,
+            enableEditingMode: false,
             width: 200,
             type: PlutoColumnType.date(format: "dd/MM/yyyy HH:mm")),
         PlutoColumn(
             title: "Name",
             width: 100,
+            enableEditingMode: false,
             field: "name",
             type: PlutoColumnType.text()),
         PlutoColumn(
             title: "Type",
             width: 100,
+            enableEditingMode: false,
             field: "type",
             type: PlutoColumnType.text()),
         PlutoColumn(
           title: "Date/Time",
+          enableEditingMode: false,
           field: "dateTime",
           width: 200,
           type: PlutoColumnType.text(),
@@ -75,9 +79,17 @@ class ReqCompletedTable extends StatelessWidget {
           },
         ),
         PlutoColumn(
+          title: "Status",
+          enableEditingMode: false,
+          field: "status",
+          width: 100,
+          type: PlutoColumnType.text(),
+        ),
+        PlutoColumn(
           title: "Manager's comment",
+          enableEditingMode: false,
           field: "managerComment",
-          width: 80,
+          width: 120,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return rendererContext.defaultTooltipWidget();
@@ -86,19 +98,25 @@ class ReqCompletedTable extends StatelessWidget {
         PlutoColumn(
           title: "Comment",
           field: "comment",
-          width: 80,
+          enableEditingMode: false,
+          width: 120,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return rendererContext.defaultTooltipWidget();
           },
         ),
         PlutoColumn(
-          title: "Status",
-          field: "status",
-          width: 100,
+          title: "Your Comment",
+          field: "yourComment",
+          enableAutoEditing: true,
+          width: 200,
           type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return rendererContext.defaultEditableCellWidget();
+          },
         ),
         PlutoColumn(
+          enableEditingMode: false,
           title: "Action",
           field: "action",
           width: 40,
@@ -118,6 +136,7 @@ class ReqCompletedTable extends StatelessWidget {
           },
         ),
       ],
+      mode: PlutoGridMode.normal,
       rows: rows,
     );
   }

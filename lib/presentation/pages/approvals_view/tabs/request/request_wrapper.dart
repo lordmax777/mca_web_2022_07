@@ -63,6 +63,7 @@ class _RequestWrapperState extends State<RequestWrapper>
               ?.name),
       "dateTime": PlutoCell(value: model.fromToDate), //start - end
       "comment": PlutoCell(value: model.comment),
+      "yourComment": PlutoCell(value: ""),
       "action": PlutoCell(value: model),
     });
   }
@@ -79,6 +80,7 @@ class _RequestWrapperState extends State<RequestWrapper>
       "dateTime": PlutoCell(value: model.fromToDate), //start - end
       "managerComment": PlutoCell(value: model.requestcomment),
       "comment": PlutoCell(value: model.comment),
+      "yourComment": PlutoCell(value: ""),
       "status": PlutoCell(value: model.accepted == 1 ? "Approved" : "Rejected"),
       "action": PlutoCell(value: model),
     });
@@ -153,7 +155,12 @@ class _RequestWrapperState extends State<RequestWrapper>
       final List<String> failed = [];
       for (final row in selected) {
         final id = row.cells['action']!.value.id;
-        final success = await dispatch<bool>(ApproveRequestAction(id, true));
+        String? comment = row.cells['yourComment']?.value;
+        if (comment == "") {
+          comment = null;
+        }
+        final success = await dispatch<bool>(
+            ApproveRequestAction(id, isApprove, comment: comment));
         if (success.isRight) {
           failed.add(row.cells['name']!.value);
         }
@@ -177,7 +184,12 @@ class _RequestWrapperState extends State<RequestWrapper>
       final List<String> failed = [];
       for (final row in selected) {
         final id = row.cells['action']!.value.id;
-        final success = await dispatch<bool>(ApproveRequestAction(id, true));
+        String? comment = row.cells['yourComment']?.value;
+        if (comment == "") {
+          comment = null;
+        }
+        final success = await dispatch<bool>(
+            ApproveRequestAction(id, isApprove, comment: comment));
         if (success.isRight) {
           failed.add(row.cells['name']!.value);
         }

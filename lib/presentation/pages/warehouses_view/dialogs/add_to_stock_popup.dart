@@ -60,7 +60,7 @@ class _AddToStockPopupState extends State<AddToStockPopup>
             ),
             UserCardItem(
               title: "Current Stock",
-              simpleText: widget.stock.current.toString(),
+              simpleText: widget.stock.current?.toString(),
             ),
             UserCardItem(
               title: "Amount to ${widget.isAdd ? "add" : "remove"}",

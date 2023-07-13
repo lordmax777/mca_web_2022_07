@@ -57,20 +57,24 @@ class ReqPendingTable extends StatelessWidget {
             title: "Requested On",
             field: "requestedOn",
             enableRowChecked: true,
+            enableEditingMode: false,
             width: 200,
             type: PlutoColumnType.date(format: "dd/MM/yyyy HH:mm")),
         PlutoColumn(
             title: "Name",
+            enableEditingMode: false,
             width: 100,
             field: "name",
             type: PlutoColumnType.text()),
         PlutoColumn(
             title: "Type",
+            enableEditingMode: false,
             width: 100,
             field: "type",
             type: PlutoColumnType.text()),
         PlutoColumn(
           title: "Date/Time",
+          enableEditingMode: false,
           field: "dateTime",
           width: 200,
           type: PlutoColumnType.text(),
@@ -81,15 +85,27 @@ class ReqPendingTable extends StatelessWidget {
         PlutoColumn(
           title: "Comment",
           field: "comment",
-          width: 80,
+          enableEditingMode: false,
+          width: 100,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             return rendererContext.defaultTooltipWidget();
           },
         ),
         PlutoColumn(
+          title: "Your Comment",
+          field: "yourComment",
+          enableAutoEditing: true,
+          width: 200,
+          type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return rendererContext.defaultEditableCellWidget();
+          },
+        ),
+        PlutoColumn(
           title: "Action",
           field: "action",
+          enableEditingMode: false,
           width: 40,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
@@ -111,6 +127,7 @@ class ReqPendingTable extends StatelessWidget {
           },
         ),
       ],
+      mode: PlutoGridMode.normal,
       rows: rows,
     );
   }

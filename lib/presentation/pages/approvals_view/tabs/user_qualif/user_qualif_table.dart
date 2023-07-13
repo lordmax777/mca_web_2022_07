@@ -86,18 +86,20 @@ class UserQualifTable extends StatelessWidget {
         PlutoColumn(
           title: "Date acquired",
           field: "dateAcquired",
+          width: 100,
           type: PlutoColumnType.date(format: "dd/MM/yyyy"),
         ),
         PlutoColumn(
           title: "Expiry date",
           field: "expiryDate",
+          width: 100,
           type: PlutoColumnType.date(format: "dd/MM/yyyy"),
         ),
         PlutoColumn(
           title: "Comments",
           field: "comments",
           type: PlutoColumnType.text(),
-          width: 100,
+          width: 120,
           renderer: (rendererContext) {
             return rendererContext.defaultTooltipWidget();
           },

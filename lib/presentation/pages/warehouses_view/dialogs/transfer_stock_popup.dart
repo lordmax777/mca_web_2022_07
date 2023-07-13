@@ -60,7 +60,7 @@ class _TransferStockPopupState extends State<TransferStockPopup>
               ),
               UserCardItem(
                 title: "Current Stock",
-                simpleText: widget.stock.current.toString(),
+                simpleText: widget.stock.current?.toString(),
               ),
               UserCardItem(
                 title: "Transfer to",
