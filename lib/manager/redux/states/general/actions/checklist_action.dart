@@ -28,3 +28,27 @@ final class GetChecklistsAction {
     });
   }
 }
+
+final class GetChecklistPdfAction {
+  final List<int> ids;
+
+  const GetChecklistPdfAction({
+    required this.ids,
+  });
+
+  Future<Either<String, ErrorMd>> fetch(
+      AppState state, GetChecklistPdfAction action) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .getChecklistPdfs(id: action.ids.join(','));
+      try {
+        final data = res.data['data'];
+        return data;
+      } catch (e) {
+        Logger.e(e.toString(), tag: 'GetChecklistPdfAction');
+        throw const ErrorMd(
+            message: 'Error while downloading pdf', data: null, code: null);
+      }
+    });
+  }
+}

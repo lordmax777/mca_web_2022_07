@@ -11,6 +11,7 @@ import 'package:mca_dashboard/utils/table_helpers.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../../manager/manager.dart';
+import '../../../utils/base64_download/base_64_download.dart';
 
 class ChecklistsView extends StatefulWidget {
   const ChecklistsView({super.key});
@@ -77,10 +78,18 @@ class _ChecklistsViewState extends State<ChecklistsView>
             field: 'status',
             type: PlutoColumnType.text()),
         PlutoColumn(
-            width: 50,
-            title: "Action",
-            field: 'action',
-            type: PlutoColumnType.text()),
+          width: 50,
+          title: "Document",
+          field: 'action',
+          type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return IconButton(
+                onPressed: () {
+                  downloadDocument(rendererContext.cell.value);
+                },
+                icon: const Icon(Icons.file_download));
+          },
+        ),
       ];
 
   @override
@@ -94,6 +103,25 @@ class _ChecklistsViewState extends State<ChecklistsView>
       'comments': PlutoCell(value: model.comments.length),
       'status': PlutoCell(value: model.done ? "Done" : "In Progress"),
       'action': PlutoCell(value: model),
+    });
+  }
+
+  void downloadDocument(ChecklistMd model) {
+    context.futureLoading(() async {
+      final ids = model.ids;
+
+      final success = await dispatch<String>(GetChecklistPdfAction(ids: ids));
+      if (success.isLeft) {
+        try {
+          base64Download(success.left);
+        } catch (e) {
+          context.showError(e.toString());
+        }
+      } else if (success.isRight) {
+        context.showError(success.right.message);
+      } else {
+        context.showError("Error");
+      }
     });
   }
 

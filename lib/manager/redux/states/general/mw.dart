@@ -210,6 +210,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state, action);
       case GetChecklistsAction:
         return action.fetch(store.state, action);
+      case GetChecklistPdfAction:
+        return action.fetch(store.state, action);
       default:
         return next(action);
     }
