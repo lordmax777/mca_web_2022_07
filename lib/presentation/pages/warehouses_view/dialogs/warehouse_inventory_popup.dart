@@ -83,6 +83,7 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
           field: "action",
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
+            final model = rendererContext.cell.value as StockMd;
             return PopupMenuButton(
               offset: const Offset(0, 40),
               padding: const EdgeInsets.all(0),
@@ -95,6 +96,7 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
                     ])),
                 PopupMenuItem(
                     value: "removeFromStock",
+                    enabled: (model.current ?? 0) > 0,
                     child: SpacedRow(horizontalSpace: 10, children: const [
                       Icon(Icons.remove),
                       Text("Remove from Stock")
@@ -125,20 +127,20 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
                 switch (value) {
                   case "addToStock":
                     success = await context.showDialog(AddToStockPopup(
-                      stock: rendererContext.cell.value,
+                      stock: model,
                       warehouse: widget.model,
                     ));
                     break;
                   case "removeFromStock":
                     success = await context.showDialog(AddToStockPopup(
-                      stock: rendererContext.cell.value,
+                      stock: model,
                       warehouse: widget.model,
                       isAdd: false,
                     ));
                     break;
                   case "transfer":
                     success = await context.showDialog(TransferStockPopup(
-                      stock: rendererContext.cell.value,
+                      stock: model,
                       warehouse: widget.model,
                     ));
                     break;
