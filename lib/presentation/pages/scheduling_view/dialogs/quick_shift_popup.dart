@@ -115,6 +115,8 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
           GetUnavailableUserListAction(
               // DateTime(2023, 04, 23),
               timingData.start!));
+      unavailableUsers.clear();
+      logger('unavailable users: ${unavailableUsers.length}');
       if (users.isLeft) {
         // can use users from store
         unavailableUsers.addAll(users.left);

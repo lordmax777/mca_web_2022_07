@@ -27,10 +27,6 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (widget.model != null) {
-        logger(widget.model?.toJson());
-        logger(widget.model?.phone.toString());
-        logger(widget.model?.members.map((e) => e.toString()).toList());
-        logger(widget.model?.address.toAddressStr());
         isCreate = false;
         controller1.text = widget.model!.name;
         controller2.text =

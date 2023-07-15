@@ -597,7 +597,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
     return await apiCall(() async {
       final res = await deps.apiClient
           .getUnavailableUserList(action.date.toApiDateWithDash);
-      final List<UserMd> users = [...state.generalState.users];
+      final List<UserMd> users =
+          state.generalState.users.map((e) => e.copyWith()).toList();
       for (final data in res.data) {
         final user =
             users.firstWhereOrNull((element) => element.id == data['userId']);

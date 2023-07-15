@@ -161,6 +161,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
               timingData.start!));
       if (users.isLeft) {
         // can use users from store
+        unavailableUsers.clear();
         unavailableUsers.addAll(users.left);
 
         //removing initially added members if they are unavailable
@@ -179,6 +180,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
   }
 
   Future<void> fetchGuests() async {
+    if (personalData.shiftId == null) return;
     final guestsSuccess = await dispatch<PropertyDetailMd>(
         GetPropertyDetailsAction(personalData.shiftId!));
     if (guestsSuccess.isLeft) {

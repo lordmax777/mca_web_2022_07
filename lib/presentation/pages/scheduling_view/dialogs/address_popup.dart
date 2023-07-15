@@ -28,11 +28,11 @@ class _AddressPopupState extends State<AddressPopup> {
 
   @override
   void initState() {
-    data = widget.data?.copyWith(
+    data = widget.data?.copyWith(radius: 100
             // latitude: GlobalConstants.enableLogger ? 1.10 : null,
             // longitude: GlobalConstants.enableLogger ? 1.20 : null,
             ) ??
-        AddressData(
+        AddressData(radius: 100
             // latitude: GlobalConstants.enableLogger ? 1.10 : null,
             // longitude: GlobalConstants.enableLogger ? 1.20 : null,
             );
@@ -100,7 +100,17 @@ class _AddressPopupState extends State<AddressPopup> {
                 AddressAutocompleteWidget(
                   width: 400,
                   onSelected: (value) {
-                    data = value;
+                    data.copyWith(
+                      city: value.city,
+                      line2: value.line2,
+                      name: value.name,
+                      longitude: value.longitude,
+                      line1: value.line1,
+                      postcode: value.postcode,
+                      county: value.county,
+                      latitude: value.latitude,
+                      country: value.country,
+                    );
                     if (mounted) {
                       setState(() {});
                     }
