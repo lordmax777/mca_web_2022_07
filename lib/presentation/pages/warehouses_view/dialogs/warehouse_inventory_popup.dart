@@ -157,7 +157,14 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
                     break;
                 }
                 if (success == null) return;
-                if (success) await fetch();
+                if (success) {
+                  final list =
+                      await loading<List<StockMd>?>(() async => await fetch());
+                  if (list != null) {
+                    setRows(
+                        stateManager!, list.map((e) => buildRow(e)).toList());
+                  }
+                }
               },
             );
           },

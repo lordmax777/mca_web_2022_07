@@ -214,6 +214,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state, action);
       case GetChecklistImagesAction:
         return action.fetch(store.state, action);
+      case StockTransferAction:
+        return action.fetch(store.state, action);
       default:
         return next(action);
     }
@@ -1756,9 +1758,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
 
       final dio.FormData formData = dio.FormData();
 
-      logger("Items: {${action.itemId}: ${action.quantity}}");
-      final String items = base64.encode(
-          utf8.encode(jsonEncode({"${action.itemId}": "${action.quantity}"})));
+      logger("ItemsList: ${action.items}", hint: "ItemsList <->");
+      final String items = base64.encode(utf8.encode(jsonEncode(action.items)));
       String? documentNumber;
       if (action.documentNumber != null && action.documentNumber!.isNotEmpty) {
         documentNumber =

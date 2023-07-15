@@ -88,10 +88,13 @@ class _AddToStockPopupState extends State<AddToStockPopup>
 
     context.futureLoading(() async {
       //todo: add/remove to stock
+      /// Map<itemId, quantity>
+      final Map<String, String> items = {
+        "${widget.stock.itemId}": controller1.text
+      };
       final success = await dispatch<bool>(AddToStockAction(
-        quantity: int.parse(controller1.text),
         warehouseId: widget.warehouse.id,
-        itemId: widget.stock.itemId!,
+        items: items,
         comment: controller3.text,
         documentNumber: controller2.text,
       ));

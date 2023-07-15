@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/stocks_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
 import 'package:mca_dashboard/utils/global_extensions.dart';
@@ -7,12 +8,9 @@ import 'package:mca_dashboard/utils/global_extensions.dart';
 class TransferStockPopup extends StatefulWidget {
   final WarehouseMd warehouse;
   final StockMd stock;
-  final bool isAdd;
+
   const TransferStockPopup(
-      {super.key,
-      required this.warehouse,
-      required this.stock,
-      this.isAdd = true});
+      {super.key, required this.warehouse, required this.stock});
 
   @override
   State<TransferStockPopup> createState() => _TransferStockPopupState();
@@ -110,7 +108,26 @@ class _TransferStockPopupState extends State<TransferStockPopup>
       return;
     }
     context.futureLoading(() async {
+      /// Map<itemId, quantity>
+      final Map<String, String> items = {
+        "${widget.stock.itemId}": controller1.text
+      };
       //todo: transfer stock
+      final success = await dispatch<bool>(StockTransferAction(
+        fromWarehouseId: widget.stock.storageId!,
+        toWarehouseId: selected1!.id,
+        items: items,
+        comment: controller3.text,
+        documentNumber: controller2.text,
+      ));
+      if (success.isLeft && success.left) {
+        //success
+        context.pop(true);
+      } else if (success.isRight) {
+        context.showError(success.right.message);
+      } else {
+        context.showError("Something went wrong");
+      }
     });
   }
 }
