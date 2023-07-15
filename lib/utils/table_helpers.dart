@@ -250,6 +250,7 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
 
   void onLoaded(PlutoGridOnLoadedEvent event) async {
     stateManager = event.stateManager;
+    // stateManager!.setPageSize(GlobalConstants.pageSizes.first);
     stateManager!.keyManager!.eventResult.skip(KeyEventResult.ignored);
     final list = await loading<List<MD>?>(() async => await fetch());
     // stateManager!.gridFocusNode.addListener(handleFocus);

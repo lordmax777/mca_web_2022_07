@@ -7,9 +7,11 @@ import 'package:pluto_grid/pluto_grid.dart';
 
 class DefaultTablePaginationFooter extends StatefulWidget {
   final PlutoGridStateManager stateManager;
+  final void Function(int page, int pageSize)? fetch;
   const DefaultTablePaginationFooter({
     super.key,
     required this.stateManager,
+    this.fetch,
   });
 
   @override
@@ -46,6 +48,9 @@ class _DefaultTablePaginationFooterState
     });
     stateManager.setPageSize(size);
     stateManager.setPage(1);
+    if (widget.fetch != null) {
+      widget.fetch!(1, size);
+    }
   }
 
   void changePageNumber(int number) {
@@ -53,6 +58,9 @@ class _DefaultTablePaginationFooterState
       pageNumber = number;
     });
     stateManager.setPage(number);
+    if (widget.fetch != null) {
+      widget.fetch!(number, pageSize);
+    }
   }
 
   @override

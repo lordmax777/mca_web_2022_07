@@ -2576,9 +2576,16 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> getChecklists({required page}) async {
+  Future<HttpResponse<dynamic>> getChecklists({
+    required page,
+    pageSize,
+  }) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'page_size': pageSize,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =

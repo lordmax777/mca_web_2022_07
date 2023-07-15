@@ -15,6 +15,7 @@ class DefaultTable extends StatelessWidget {
   final PlutoGridMode mode;
   final void Function(PlutoGridOnChangedEvent)? onChanged;
   final Widget Function(PlutoGridStateManager)? customFooter;
+  final void Function(int page, int pageSize)? fetch;
 
   const DefaultTable(
       {super.key,
@@ -26,6 +27,7 @@ class DefaultTable extends StatelessWidget {
       this.onChanged,
       this.mode = PlutoGridMode.selectWithOneTap,
       this.headerEnd,
+      this.fetch,
       this.hasFooter = true,
       this.hasHeader = true,
       this.focusNode});
@@ -51,7 +53,10 @@ class DefaultTable extends StatelessWidget {
               if (customFooter != null) {
                 return customFooter!(stateManager);
               }
-              return DefaultTablePaginationFooter(stateManager: stateManager);
+              return DefaultTablePaginationFooter(
+                stateManager: stateManager,
+                fetch: fetch,
+              );
             }
           : null,
       createHeader: hasHeader

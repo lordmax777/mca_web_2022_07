@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -191,8 +192,8 @@ class _ChecklistsViewState extends State<ChecklistsView>
   Future<PlutoLazyPaginationResponse> lazyFetch(
     PlutoLazyPaginationRequest request,
   ) async {
-    final success = await dispatch<ChecklistFullMd>(
-        GetChecklistsAction(page: request.page - 1));
+    final success = await dispatch<ChecklistFullMd>(GetChecklistsAction(
+        page: request.page - 1, pageSize: stateManager!.pageSize));
 
     List<PlutoRow> tempList = [];
     if (success.isLeft) {
@@ -244,6 +245,17 @@ class _ChecklistsViewState extends State<ChecklistsView>
       rows: rows,
       onLoaded: onLoaded,
       focusNode: focusNode,
+      // fetch: (page, pageSize) async {
+      //   stateManager!.setPage(page);
+      //   stateManager!.setPageSize(pageSize);
+      //   stateManager!.setShowLoading(true);
+      //   await lazyFetch(PlutoLazyPaginationRequest(
+      //     page: stateManager!.page,
+      //     sortColumn: stateManager!.getSortedColumn,
+      //     filterRows: stateManager!.filterRows,
+      //   ));
+      //   stateManager!.setShowLoading(false);
+      // },
       onSelected: (p0) {
         switch (p0.cell?.column.field) {
           case "damages":
@@ -272,4 +284,11 @@ class _ChecklistsViewState extends State<ChecklistsView>
       },
     );
   }
+
+  //     .fetch(
+//       PlutoLazyPaginationRequest(
+//         page: page,
+//         sortColumn: stateManager.getSortedColumn,
+//         filterRows: stateManager.filterRows,
+//       ),
 }

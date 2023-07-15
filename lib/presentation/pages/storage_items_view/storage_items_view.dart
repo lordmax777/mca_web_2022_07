@@ -111,22 +111,31 @@ class _StorageItemsViewState extends State<StorageItemsView>
           enableAutoEditing: true,
           enableRowChecked: true,
           type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            return rendererContext.defaultEditableCellWidget();
+          },
         ),
         PlutoColumn(
-          title: "Our Price",
+          title:
+              "Our Price (${appStore.state.generalState.companyInfo.currency.sign})",
           enableAutoEditing: true,
           field: "incomingPrice",
           width: 100,
-          type: PlutoColumnType.currency(
-              symbol: appStore.state.generalState.companyInfo.currency.sign),
+          type: PlutoColumnType.currency(),
+          renderer: (rendererContext) {
+            return rendererContext.defaultEditableCellWidget();
+          },
         ),
         PlutoColumn(
-          title: "Customer Price",
+          title:
+              "Customer Price (${appStore.state.generalState.companyInfo.currency.sign})",
           enableAutoEditing: true,
           field: "outgoingPrice",
           width: 100,
-          type: PlutoColumnType.currency(
-              symbol: appStore.state.generalState.companyInfo.currency.sign),
+          type: PlutoColumnType.currency(),
+          renderer: (rendererContext) {
+            return rendererContext.defaultEditableCellWidget();
+          },
         ),
         PlutoColumn(
           title: "Tax",

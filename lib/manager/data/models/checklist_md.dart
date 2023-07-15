@@ -28,7 +28,9 @@ final class ChecklistFullMd extends Equatable {
       }
       return ChecklistFullMd(
         checklists: tempChecklists,
-        pageSize: json['page_size'] as int,
+        pageSize: json['page_size'] is int
+            ? json['page_size'] as int
+            : int.parse(json['page_size'] as String),
         currentPage: json['current_page'] as int,
         maxPages: json['max_pages'] as int,
       );

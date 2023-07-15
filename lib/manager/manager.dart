@@ -7,3 +7,4 @@ export 'data/models.dart';
 export 'package:go_router/go_router.dart';
 export 'package:either_dart/either.dart';
 export '../utils/utils.dart';
+export 'package:flutter_easylogger/flutter_logger.dart';

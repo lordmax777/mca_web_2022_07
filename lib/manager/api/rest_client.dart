@@ -618,7 +618,8 @@ abstract class ApiClient {
 
   //get checklist
   @GET("/api/fe/checklists")
-  Future<HttpResponse> getChecklists({@Query('page') required int page});
+  Future<HttpResponse> getChecklists(
+      {@Query('page') required int page, @Query('page_size') int? pageSize});
 
   //get checklist pdf
   @GET("/api/fe/checklist/{id}/pdf")
