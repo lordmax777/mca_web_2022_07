@@ -1,3 +1,5 @@
+// ignore_for_file: empty_catches
+
 import 'dart:async';
 import 'dart:math';
 
@@ -32,7 +34,7 @@ class _ChecklistsViewState extends State<ChecklistsView>
             title: "Date",
             field: 'date',
             width: 80,
-            type: PlutoColumnType.date(format: 'dd/MM/yyyy')),
+            type: PlutoColumnType.date(format: 'yyyy-MM-dd')),
         PlutoColumn(
             title: "Shift", field: 'shift', type: PlutoColumnType.text()),
         PlutoColumn(
@@ -51,11 +53,13 @@ class _ChecklistsViewState extends State<ChecklistsView>
             title: "Time",
             field: 'time',
             width: 80,
+            enableFilterMenuItem: false,
             type: PlutoColumnType.text()),
         PlutoColumn(
           title: "Damages",
           field: 'damages',
           width: 50,
+          enableFilterMenuItem: false,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             if (rendererContext.cell.value == 0) return const SizedBox();
@@ -68,6 +72,7 @@ class _ChecklistsViewState extends State<ChecklistsView>
           title: "Comments",
           field: 'comments',
           width: 50,
+          enableFilterMenuItem: false,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             if (rendererContext.cell.value == 0) return const SizedBox();
@@ -86,6 +91,7 @@ class _ChecklistsViewState extends State<ChecklistsView>
           title: "Document",
           field: 'action',
           type: PlutoColumnType.text(),
+          enableFilterMenuItem: false,
           renderer: (rendererContext) {
             return IconButton(
                 onPressed: () {
@@ -192,23 +198,50 @@ class _ChecklistsViewState extends State<ChecklistsView>
   Future<PlutoLazyPaginationResponse> lazyFetch(
     PlutoLazyPaginationRequest request,
   ) async {
-    final success = await dispatch<ChecklistFullMd>(GetChecklistsAction(
-        page: request.page - 1, pageSize: stateManager!.pageSize));
-
-    List<PlutoRow> tempList = [];
-    if (success.isLeft) {
-      tempList = success.left.checklists.map((e) => buildRow(e)).toList();
-    } else {
-      return PlutoLazyPaginationResponse(rows: [], totalPage: 0);
-    }
+    bool? filterStatus;
+    String? filterShift;
+    String? filterDate;
+    String? filterUser;
 
     if (request.filterRows.isNotEmpty) {
       final filter = FilterHelper.convertRowsToFilter(
         request.filterRows,
         stateManager!.refColumns,
       );
+      final rowsToMap = FilterHelper.convertRowsToMap(request.filterRows);
+      try {
+        for (final row in rowsToMap.entries) {
+          switch (row.key) {
+            case "date":
+              filterDate = row.value.first['Contains'];
+              break;
+            case "shift":
+              filterShift = row.value.first['Contains'];
+              break;
+            case "status":
+              filterStatus = row.value.first['Contains'] == "Done";
+              break;
+            case "users":
+              filterUser = row.value.first['Contains'];
+              break;
+          }
+        }
+      } catch (e) {}
+    }
+    final success = await dispatch<ChecklistFullMd>(GetChecklistsAction(
+      page: request.page - 1,
+      pageSize: stateManager!.pageSize,
+      filterDate: filterDate,
+      filterShift: filterShift,
+      filterStatus: filterStatus,
+      filterUser: filterUser,
+    ));
 
-      tempList = tempList.where(filter!).toList();
+    List<PlutoRow> tempList = [];
+    if (success.isLeft) {
+      tempList = success.left.checklists.map((e) => buildRow(e)).toList();
+    } else {
+      return PlutoLazyPaginationResponse(rows: [], totalPage: 0);
     }
 
     if (request.sortColumn != null && !request.sortColumn!.sort.isNone) {
@@ -243,8 +276,10 @@ class _ChecklistsViewState extends State<ChecklistsView>
     return DefaultTable(
       columns: columns,
       rows: rows,
-      onLoaded: onLoaded,
-      focusNode: focusNode,
+      onLoaded: (p0) {
+        p0.stateManager.setShowColumnFilter(true);
+        onLoaded(p0);
+      },
       // fetch: (page, pageSize) async {
       //   stateManager!.setPage(page);
       //   stateManager!.setPageSize(pageSize);
@@ -256,6 +291,7 @@ class _ChecklistsViewState extends State<ChecklistsView>
       //   ));
       //   stateManager!.setShowLoading(false);
       // },
+      hasHeader: false,
       onSelected: (p0) {
         switch (p0.cell?.column.field) {
           case "damages":

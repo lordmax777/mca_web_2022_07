@@ -1,20 +1,52 @@
+import 'dart:convert';
+
 import '../../../../manager.dart';
 
 final class GetChecklistsAction {
   final int page;
   final int? pageSize;
+  final String? filterTitle;
+  final bool? filterStatus;
+  final String? filterShift;
+  final String? filterDate;
+  final String? filterUser;
 
   const GetChecklistsAction({
     required this.page,
     this.pageSize,
+    this.filterTitle,
+    this.filterStatus,
+    this.filterShift,
+    this.filterDate,
+    this.filterUser,
   });
 
   //GetApprovalsAction
   Future<Either<ChecklistFullMd, ErrorMd>> fetch(
       AppState state, GetChecklistsAction action) async {
     return await apiCall(() async {
-      final res = await DependencyManager.instance.apiClient
-          .getChecklists(page: action.page, pageSize: action.pageSize);
+      final Map<String, String> query = {};
+      if (action.filterTitle != null) {
+        query['title'] = action.filterTitle!;
+      }
+      if (action.filterStatus != null) {
+        query['status'] = action.filterStatus!.toString();
+      }
+      if (action.filterShift != null) {
+        query['shift'] = action.filterShift!;
+      }
+      if (action.filterDate != null) {
+        query['date'] = action.filterDate!;
+      }
+      if (action.filterUser != null) {
+        query['user'] = action.filterUser!;
+      }
+      // query['datetime'] = "10:50";
+      logger('query $query');
+      final encodedQuery = base64.encode(utf8.encode(jsonEncode(query)));
+
+      final res = await DependencyManager.instance.apiClient.getChecklists(
+          page: action.page, pageSize: action.pageSize, filters: encodedQuery);
       try {
         final data = ChecklistFullMd.fromJson(res.data);
         appStore.dispatch(UpdateGeneralState(checklists: data));
