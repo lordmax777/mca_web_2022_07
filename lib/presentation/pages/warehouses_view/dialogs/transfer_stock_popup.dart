@@ -112,7 +112,6 @@ class _TransferStockPopupState extends State<TransferStockPopup>
       final Map<String, String> items = {
         "${widget.stock.itemId}": controller1.text
       };
-      //todo: transfer stock
       final success = await dispatch<bool>(StockTransferAction(
         fromWarehouseId: widget.stock.storageId!,
         toWarehouseId: selected1!.id,

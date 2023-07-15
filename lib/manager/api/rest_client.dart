@@ -633,4 +633,9 @@ abstract class ApiClient {
       {
       ///if multiple ids, separate with comma
       @Path() required String id});
+
+  //get stock history
+  @GET("/api/fe/stockhistory/{storageid}/{itemid}")
+  Future<HttpResponse> getStockHistory(
+      {@Path() required int storageid, @Path() required int itemid});
 }

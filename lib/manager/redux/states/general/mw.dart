@@ -216,6 +216,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state, action);
       case StockTransferAction:
         return action.fetch(store.state, action);
+      case GetStockHistoryAction:
+        return action.fetch(store.state, action);
       default:
         return next(action);
     }

@@ -2648,33 +2648,23 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> postStockTransfer({
-    required fromWarehouseId,
-    required toWarehouseId,
-    required items,
-    required docno,
-    required comment,
+  Future<HttpResponse<dynamic>> getStockHistory({
+    required storageid,
+    required itemid,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {
-      'storageid': fromWarehouseId,
-      'targetid': toWarehouseId,
-      'items': items,
-      'docno': docno,
-      'comment': comment,
-    };
+    final _data = <String, dynamic>{};
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
-      method: 'POST',
+      method: 'GET',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
     )
             .compose(
               _dio.options,
-              '/api/fe/stocktransfer',
+              '/api/fe/stockhistory/${storageid}/${itemid}',
               queryParameters: queryParameters,
               data: _data,
             )

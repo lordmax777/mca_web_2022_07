@@ -64,3 +64,63 @@ final class StockMd {
             : json["removed"],
       );
 }
+
+final class StockHistoryMd {
+  //{
+  //             "timestamp": "2022-02-22 10:15:12",
+  //             "quantity": -1,
+  //             "transfer": false,
+  //             "comment": "",
+  //             "docno": "",
+  //             "entered_by": "Mr Margaret Staff",
+  //             "shift_id": 294,
+  //             "checklist_id": 14880
+  //         }
+
+  final String? timestamp;
+  DateTime? get timestampDt {
+    if (timestamp == null) return null;
+    return DateTime.tryParse(timestamp!);
+  }
+
+  final num? quantity;
+  final bool? transfer;
+  final String? comment;
+  final String? docno;
+  final String? enteredBy;
+  final int? shiftId;
+  ShiftMd? shiftMd(List<ShiftMd> shifts) {
+    return shifts.firstWhereOrNull((element) => element.id == shiftId);
+  }
+
+  final int? checklistId;
+  ChecklistMd? checklistMd(List<ChecklistMd> checklists) {
+    return checklists.firstWhereOrNull((element) =>
+        element.ids.firstWhereOrNull((e) => e == checklistId) != null);
+  }
+
+  const StockHistoryMd({
+    this.timestamp,
+    this.quantity,
+    this.transfer,
+    this.comment,
+    this.docno,
+    this.enteredBy,
+    this.shiftId,
+    this.checklistId,
+  });
+
+  //from json
+  factory StockHistoryMd.fromJson(Map<String, dynamic> json) => StockHistoryMd(
+        timestamp: json["timestamp"],
+        quantity: json["quantity"] is String
+            ? num.tryParse(json["quantity"])
+            : json["quantity"],
+        transfer: json["transfer"],
+        comment: json["comment"],
+        docno: json["docno"],
+        enteredBy: json["entered_by"],
+        shiftId: json["shift_id"],
+        checklistId: json["checklist_id"],
+      );
+}

@@ -81,3 +81,30 @@ final class StockTransferAction {
     });
   }
 }
+
+final class GetStockHistoryAction {
+  final int warehouseId;
+  final int itemId;
+
+  const GetStockHistoryAction({
+    required this.warehouseId,
+    required this.itemId,
+  });
+
+  //fetch
+  Future<Either<List<StockHistoryMd>, ErrorMd>> fetch(
+      AppState state, GetStockHistoryAction action) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient.getStockHistory(
+          storageid: action.warehouseId, itemid: action.itemId);
+      try {
+        final data = res.data['history'];
+        return data
+            .map<StockHistoryMd>((e) => StockHistoryMd.fromJson(e))
+            .toList();
+      } catch (e) {
+        return [];
+      }
+    });
+  }
+}

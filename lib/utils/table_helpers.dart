@@ -25,6 +25,7 @@ extension WidgetHelper on PlutoColumnRendererContext {
         textAlign: mainAxisAlignment.toTextAlign,
         maxLines: 2,
         softWrap: true,
+        overflow: TextOverflow.ellipsis,
         style: stateManager.style.cellTextStyle.copyWith(
           color: isS ? Colors.blueAccent : null,
           decoration:

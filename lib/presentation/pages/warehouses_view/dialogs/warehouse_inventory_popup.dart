@@ -149,7 +149,6 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
                     ));
                     break;
                   case "viewStockHistory":
-                    //todo: implement
                     await context.showDialog(ViewStockHistoryPopup(
                       stock: rendererContext.cell.value,
                       warehouse: widget.model,
