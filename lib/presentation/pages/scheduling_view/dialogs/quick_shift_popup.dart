@@ -73,7 +73,6 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
     final success = await context.futureLoading<bool>(() async {
       bool success = false;
 
-      //todo:
       //1. if personal.shiftId!=null && personal.clientId!=null
       //2. fetch client contract items API
       //3. add result to product table

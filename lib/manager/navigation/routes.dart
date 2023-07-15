@@ -542,9 +542,9 @@ class MCALoginState extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    //clear all data
     await dispatch<void>(const GetClearDataAction());
     _isLoggedIn = false;
-    //clear all data
     notifyListeners();
   }
 

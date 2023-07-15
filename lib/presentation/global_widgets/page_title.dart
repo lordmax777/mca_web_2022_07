@@ -14,11 +14,7 @@ class PageTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16, right: 16),
       height: 56,
       width: double.infinity,
-      child: Row(
-        children: [
-          Text(title, style: Theme.of(context).textTheme.headlineLarge),
-        ],
-      ),
+      child: Text(title, style: Theme.of(context).textTheme.headlineLarge),
     );
   }
 }

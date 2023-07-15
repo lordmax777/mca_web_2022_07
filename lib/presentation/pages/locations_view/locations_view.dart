@@ -27,7 +27,6 @@ class _LocationsViewState extends State<LocationsView>
             onLoaded: onLoaded,
             focusNode: focusNode,
             onSelected: (p0) {
-              //todo: show location on map when pressed on address
               if (stateManager!.hasFocus) {
                 stateManager?.gridFocusNode.removeListener(handleFocus);
               }
@@ -127,8 +126,7 @@ class _LocationsViewState extends State<LocationsView>
           width: 120,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
-            return rendererContext
-                .defaultText(); //todo: can make selectable which opens as warehouse properties
+            return rendererContext.defaultText();
           },
         ),
         PlutoColumn(

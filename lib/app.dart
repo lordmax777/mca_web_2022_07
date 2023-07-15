@@ -36,7 +36,7 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
       store: appStore,
       child: MaterialApp.router(
         routerConfig: router,
-        debugShowCheckedModeBanner: kDebugMode,
+        debugShowCheckedModeBanner: false,
         theme: _dependencyManager.appDep.appTheme.theme,
         title: 'MCA Dashboard',
         builder: (context, child) => botToastBuilder(

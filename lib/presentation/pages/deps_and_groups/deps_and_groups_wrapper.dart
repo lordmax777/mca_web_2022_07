@@ -33,13 +33,6 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
     tabController = TabController(length: tabs.length, vsync: this);
     lists = appStore.state.generalState.lists;
     super.initState();
-    WidgetsBinding.instance.endOfFrame.then(
-      (_) async {
-        if (mounted) {
-          //todo:
-        }
-      },
-    );
   }
 
   @override

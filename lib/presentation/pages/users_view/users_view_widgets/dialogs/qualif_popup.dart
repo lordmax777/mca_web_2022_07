@@ -28,7 +28,6 @@ class _QualifPopupState extends State<QualifPopup>
   void initState() {
     super.initState();
     if (!isNew) {
-      //todo: implement initState
       selected1 = DefaultMenuItem(
           id: item!
               .qualificationMd(

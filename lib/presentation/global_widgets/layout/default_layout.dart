@@ -56,26 +56,98 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size(double.infinity, kToolbarHeight);
 
   Widget _getTitle() {
-    return StoreConnector<AppState, DetailsMd>(
+    return StoreConnector<AppState, GeneralState>(
         rebuildOnChange: false,
-        converter: (store) => store.state.generalState.detailsMd,
+        converter: (store) => store.state.generalState,
         builder: (context, vm) {
-          final logoBytes = null; //vm.logoBytes;
-          ImageProvider? image =
-              logoBytes == null ? null : MemoryImage(logoBytes);
-          return SpacedRow(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            horizontalSpace: 8,
+          final companyLogoBytes = vm.companyInfo.logoBytes;
+          ImageProvider companyImage = MemoryImage(companyLogoBytes);
+          //company info
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (image != null)
-                Image(
-                  image: image,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(child: Icon(Icons.error_outline));
-                  },
+              SpacedRow(
+                horizontalSpace: 8,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image(
+                    image: companyImage,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          child: Icon(Icons.person));
+                    },
+                  ),
+                  Text(vm.companyInfo.name),
+                ],
+              ),
+              PopupMenuButton(
+                tooltip: "User menu",
+                offset: const Offset(0, 40),
+                padding: const EdgeInsets.all(0),
+                itemBuilder: (context) {
+                  return [
+                    // logout button
+                    PopupMenuItem(
+                      value: "logout",
+                      child: SpacedRow(
+                        horizontalSpace: 8,
+                        children: const [
+                          Icon(Icons.logout, color: Colors.red),
+                          Text("Logout"),
+                        ],
+                      ),
+                    ),
+                  ];
+                },
+                onSelected: (value) {
+                  switch (value) {
+                    case "logout":
+                      //show logout dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text("Logout"),
+                            content: const Text("Are you sure?"),
+                            actions: [
+                              TextButton(
+                                onPressed: context.pop,
+                                child: const Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  DependencyManager
+                                      .instance.navigation.loginState
+                                      .logout();
+                                },
+                                child: const Text("Logout"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      break;
+                  }
+                },
+                child: SpacedRow(
+                  horizontalSpace: 8,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: context.colorScheme.primary,
+                      ),
+                    ),
+                    Text(vm.detailsMd.fullName,
+                        style: context.textTheme.bodyLarge!
+                            .copyWith(color: Colors.white)),
+                    const Icon(Icons.arrow_drop_down, color: Colors.white),
+                  ],
                 ),
-              Text(vm.fullName),
+              ),
             ],
           );
         });

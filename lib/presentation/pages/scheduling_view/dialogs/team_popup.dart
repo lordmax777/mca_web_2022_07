@@ -95,7 +95,7 @@ class _TeamPopupState extends State<TeamPopup> {
                           onPressed: user.unavailability.isUnavailable
                               ? null
                               : () {
-                                  //todo: add/remove user
+                                  //add/remove user
                                   if (isAdded) {
                                     data.users.removeWhere(
                                         (element) => element.id == user.id);

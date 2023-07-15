@@ -198,7 +198,7 @@ class _ChecklistsViewState extends State<ChecklistsView>
     if (success.isLeft) {
       tempList = success.left.checklists.map((e) => buildRow(e)).toList();
     } else {
-      return PlutoLazyPaginationResponse(rows: [], totalPage: 0); //todo:
+      return PlutoLazyPaginationResponse(rows: [], totalPage: 0);
     }
 
     if (request.filterRows.isNotEmpty) {

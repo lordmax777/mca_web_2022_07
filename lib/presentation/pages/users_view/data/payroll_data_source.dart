@@ -163,7 +163,6 @@ class PayrollDataSource with DataSourceMixin<PayrollDataSource> {
   }) {
     if (contract == null) return PayrollDataSource.init();
     return PayrollDataSource(
-      // jobDescriptionController: //todo:
       annualHolidayEntitlementStart:
           contract.AHEonYS == true ? contractStarts[1] : contractStarts[0],
       id: contract.id,

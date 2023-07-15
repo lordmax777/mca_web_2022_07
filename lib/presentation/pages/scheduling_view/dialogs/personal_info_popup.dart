@@ -390,7 +390,6 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                             return AddressPopup(data: addressData);
                           });
                   if (res != null) {
-                    //todo: handle res as AddressData
                     final newClient =
                         await createClient(currencies, paymentMethods);
                     if (newClient != null) {
@@ -408,7 +407,6 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                     context.showError('Failed to create address');
                   }
                 } else {
-                  //todo:handle create client
                   final newClient =
                       await createClient(currencies, paymentMethods);
                   if (newClient != null) {
@@ -449,5 +447,6 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
     } else {
       context.showError("Failed to create client ${newClient.right.message}");
     }
+    return null;
   }
 }

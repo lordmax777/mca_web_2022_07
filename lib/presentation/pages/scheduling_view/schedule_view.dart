@@ -674,7 +674,6 @@ class _TableState extends State<_Table> {
   void _handleMoreAppointmentRegionTap(
       CalendarTapDetails details, Offset? position) async {
     if (position == null) return;
-    //TODO:
     logger(details.appointments?.length);
     final list = details.appointments ?? [];
 
