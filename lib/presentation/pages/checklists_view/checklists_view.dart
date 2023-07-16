@@ -219,8 +219,19 @@ class _ChecklistsViewState extends State<ChecklistsView>
               filterShift = row.value.first['Contains'];
               break;
             case "status":
-              filterStatus =
-                  row.value.first['Contains']?.toLowerCase() == "done;
+              logger(row.value.first.values.first);
+              final key = row.value.first.values.first;
+              if (row.value.first.values.first.length > 1) {
+                break;
+              }
+              if (key == "T") {
+                filterStatus = true;
+              }
+              if (key == "F") {
+                filterStatus = false;
+              }
+              // filterStatus =
+              //     row.value.first['Contains']?.toLowerCase() == "done";
               break;
             case "users":
               filterUser = row.value.first['Contains'];
@@ -281,6 +292,19 @@ class _ChecklistsViewState extends State<ChecklistsView>
         p0.stateManager.setShowColumnFilter(true);
         onLoaded(p0);
       },
+      columnFilter: PlutoGridColumnFilterConfig(
+        filters: [
+          ...FilterHelper.defaultFilters,
+          StatusColumnFilter(),
+        ],
+        debounceMilliseconds: 1000,
+        resolveDefaultColumnFilter: (column, resolver) {
+          if (column.field == "status") {
+            return resolver<StatusColumnFilter>() as PlutoFilterType;
+          }
+          return resolver<PlutoFilterTypeContains>() as PlutoFilterType;
+        },
+      ),
       // fetch: (page, pageSize) async {
       //   stateManager!.setPage(page);
       //   stateManager!.setPageSize(pageSize);

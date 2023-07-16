@@ -16,13 +16,14 @@ class DefaultTable extends StatelessWidget {
   final void Function(PlutoGridOnChangedEvent)? onChanged;
   final Widget Function(PlutoGridStateManager)? customFooter;
   final void Function(int page, int pageSize)? fetch;
-
+  final PlutoGridColumnFilterConfig? columnFilter;
   const DefaultTable(
       {super.key,
       required this.onLoaded,
       required this.columns,
       required this.rows,
       this.onSelected,
+      this.columnFilter,
       this.customFooter,
       this.onChanged,
       this.mode = PlutoGridMode.selectWithOneTap,
@@ -75,6 +76,7 @@ class DefaultTable extends StatelessWidget {
         return Colors.white;
       },
       configuration: PlutoGridConfiguration(
+        columnFilter: columnFilter ?? const PlutoGridColumnFilterConfig(),
         style: PlutoGridStyleConfig(
           cellColorGroupedRow: const Color(0x80D0D0D0),
           activatedBorderColor: context.colorScheme.primary,

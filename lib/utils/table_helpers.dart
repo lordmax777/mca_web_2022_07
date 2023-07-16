@@ -354,3 +354,22 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
 }
 
 /////////
+class StatusColumnFilter implements PlutoFilterType {
+  @override
+  PlutoCompareFunction get compare => (
+          {required String? base,
+          required String? search,
+          required PlutoColumn? column}) {
+        final key = search![0];
+        if (key == "T") {
+          return true;
+        }
+        if (key == "F") {
+          return false;
+        }
+        return true;
+      };
+
+  @override
+  String get title => "T or F";
+}

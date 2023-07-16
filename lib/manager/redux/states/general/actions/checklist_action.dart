@@ -33,17 +33,20 @@ final class GetChecklistsAction {
         query['status'] = action.filterStatus!.toString();
       }
       if (action.filterShift != null) {
-        query['shift'] = action.filterShift!;
+        query['shift'] = action.filterShift!.toLowerCase();
       }
       if (action.filterDate != null) {
         query['date'] = action.filterDate!;
       }
       if (action.filterUser != null) {
-        query['user'] = action.filterUser!;
+        query['user'] = action.filterUser!.toLowerCase();
       }
       // query['datetime'] = "10:50";
       logger('query $query');
-      final encodedQuery = base64.encode(utf8.encode(jsonEncode(query)));
+      String? encodedQuery;
+      if (query.isNotEmpty) {
+        encodedQuery = base64.encode(utf8.encode(jsonEncode(query)));
+      }
 
       final res = await DependencyManager.instance.apiClient.getChecklists(
           page: action.page, pageSize: action.pageSize, filters: encodedQuery);
