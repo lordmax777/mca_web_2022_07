@@ -1,11 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_visa_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown.dart';
 import 'package:mca_dashboard/presentation/global_widgets/spaced_column.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';

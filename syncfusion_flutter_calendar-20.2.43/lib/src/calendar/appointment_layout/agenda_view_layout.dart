@@ -237,7 +237,7 @@ class _AgendaViewLayoutState extends State<AgendaViewLayout> {
 }
 
 class _AgendaViewRenderWidget extends MultiChildRenderObjectWidget {
-  _AgendaViewRenderWidget(
+  const _AgendaViewRenderWidget(
       this.monthViewSettings,
       this.scheduleViewSettings,
       this.selectedDate,

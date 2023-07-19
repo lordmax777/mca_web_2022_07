@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 

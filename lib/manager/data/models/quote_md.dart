@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/models.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 final class QuoteMd extends Equatable {
   //{

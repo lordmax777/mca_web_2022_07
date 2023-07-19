@@ -7,7 +7,6 @@ import 'package:mca_dashboard/presentation/pages/properties_view/tabs/capacity_t
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/qualification_requirements_tab.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/shift_details_tab.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/staff_requirements_tab.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class NewPropertyPopup extends StatefulWidget {
@@ -39,6 +38,7 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
     const Tab(text: 'Capacity'),
   ];
 
+  @override
   void updateUI() {
     if (mounted) {
       setState(() {});

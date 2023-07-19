@@ -9,7 +9,6 @@ import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown_menu.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
 
 class AddressAutocompleteWidget extends StatefulWidget {
   final ValueChanged<AddressData> onSelected;

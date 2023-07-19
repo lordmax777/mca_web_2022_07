@@ -11,7 +11,6 @@ import '../common/calendar_view_helper.dart';
 import '../common/date_time_engine.dart';
 import '../common/event_args.dart';
 import '../resource_view/calendar_resource.dart';
-import '../resource_view/resource_view.dart';
 import '../settings/time_slot_view_settings.dart';
 import '../settings/view_header_style.dart';
 
@@ -342,7 +341,7 @@ class _TimelineWidgetState extends State<TimelineWidget> {
 }
 
 class _TimelineRenderWidget extends MultiChildRenderObjectWidget {
-  _TimelineRenderWidget(
+  const _TimelineRenderWidget(
       this.horizontalLinesCountPerView,
       this.visibleDates,
       this.timeSlotViewSettings,

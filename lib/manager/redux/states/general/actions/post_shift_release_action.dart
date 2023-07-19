@@ -1,7 +1,5 @@
-import 'package:either_dart/either.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 final class PostShiftReleaseAction {
   final int allocationId;

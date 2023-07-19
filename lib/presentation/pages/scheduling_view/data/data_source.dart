@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/presentation/pages/pages.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_helper.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../../manager/manager.dart';
@@ -24,7 +22,7 @@ class AppointmentDataSource extends CalendarDataSource {
         final bool isMonth = view == CalendarView.month;
         final bool isWeek = view == CalendarView.timelineWeek;
 
-        final List<Appointment> _meetings = <Appointment>[];
+        final List<Appointment> meetings = <Appointment>[];
         DateTime st = startDate;
         DateTime et = endDate;
 
@@ -63,10 +61,10 @@ class AppointmentDataSource extends CalendarDataSource {
               if (appointments.indexOf(appointment) == 0) {
                 appointment.isAllDay = true;
               }
-              _meetings.add(appointment);
+              meetings.add(appointment);
             }
           }
-          _addNewAppointments(_meetings);
+          _addNewAppointments(meetings);
           handleShowEmptySlots(ScheduleState().showEmptySlots.value);
         } else {
           lastFetchedAppointments.clear();
@@ -74,7 +72,7 @@ class AppointmentDataSource extends CalendarDataSource {
               .showFail(fetchedAppointments.right.message);
           notifyListeners(CalendarDataSourceAction.add, []);
         }
-        return _meetings;
+        return meetings;
       } on TypeError catch (e) {
         lastFetchedAppointments.clear();
         notifyListeners(CalendarDataSourceAction.add, []);
@@ -133,9 +131,9 @@ class AppointmentDataSource extends CalendarDataSource {
     super.resources = r;
   }
 
-  void _addNewAppointments(List<Appointment> _appointments) {
-    appointments.addAll(_appointments);
-    notifyListeners(CalendarDataSourceAction.add, _appointments);
+  void _addNewAppointments(List<Appointment> appointments) {
+    appointments.addAll(appointments);
+    notifyListeners(CalendarDataSourceAction.add, appointments);
   }
 
   void addAppointment(Appointment? appointment) {

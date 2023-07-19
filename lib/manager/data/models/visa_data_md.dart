@@ -1,8 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
 
 final class UserVisaMd extends Equatable {
   // {

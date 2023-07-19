@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
 
 class ChangeMinLevelPopup extends StatefulWidget {
   final WarehouseMd warehouse;
@@ -23,7 +22,7 @@ class _ChangeMinLevelPopupState extends State<ChangeMinLevelPopup>
     return AlertDialog(
       title: Row(
         children: [
-          Text('Minimum stock level'),
+          const Text('Minimum stock level'),
           const Spacer(),
           IconButton(
             onPressed: context.pop,

@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
-import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
-import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/new_user_default_table.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-import '../dialogs/review_popup.dart';
 
 class UserReviewsTab extends StatelessWidget {
   final ValueChanged<PlutoGridOnLoadedEvent> onLoaded;

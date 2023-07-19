@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/pages.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
 import 'dashboard_view_vc.dart';
 
 export 'dashboard_view_helper.dart';
@@ -28,7 +27,7 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: vc,
-      builder: (context, child) => Scaffold(
+      builder: (context, child) => const Scaffold(
         body: Center(
           child: Column(
             children: [

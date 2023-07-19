@@ -10,10 +10,8 @@ import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_m
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/create_schedule_popup.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/quick_shift_popup.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_helper.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'dart:math' as math;
 
 class ScheduleState extends Equatable {
   //Create singleton
@@ -714,7 +712,7 @@ class _TableState extends State<_Table> {
                 },
                 child: Text(
                   e.subject ?? "",
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             ))

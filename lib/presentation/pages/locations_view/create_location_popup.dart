@@ -6,8 +6,6 @@ import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 class CreateLocationPopup extends StatefulWidget {
   final LocationMd? model;

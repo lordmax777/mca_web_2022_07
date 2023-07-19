@@ -15,7 +15,7 @@ Future<DateTimeRange?> showCustomDateRangePicker(
     builder: (BuildContext context, Widget? child) {
       return Theme(
         data: ThemeData.light(useMaterial3: true)
-            .copyWith(colorScheme: ColorScheme.dark()),
+            .copyWith(colorScheme: const ColorScheme.dark()),
         child: child!,
       );
     },

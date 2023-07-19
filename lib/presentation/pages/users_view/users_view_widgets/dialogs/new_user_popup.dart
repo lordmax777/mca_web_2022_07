@@ -1,17 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/delete_user_contract_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/delete_user_review_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/post_user_details_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_pref_shift_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_qualif_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_reviews_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_status_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_visa_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/data/data_source.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/data/user_data_source.dart';
@@ -112,7 +100,7 @@ class _UserTabsWidget extends StatefulWidget {
   final UserMd? user;
   final int? initialTabIndex;
 
-  const _UserTabsWidget({super.key, this.user, this.initialTabIndex});
+  const _UserTabsWidget({this.user, this.initialTabIndex});
 
   @override
   State<_UserTabsWidget> createState() => _UserTabsWidgetState();

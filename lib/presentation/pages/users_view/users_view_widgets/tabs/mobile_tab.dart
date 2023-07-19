@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown.dart';
 import 'package:mca_dashboard/presentation/global_widgets/spaced_column.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
 
 import '../../../../../manager/manager.dart';
-import '../../../../../manager/redux/states/general/actions/user_status_action.dart';
 
 class UserMobileTab extends StatefulWidget {
   final UserMd user;

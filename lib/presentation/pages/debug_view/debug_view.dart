@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_switch.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/create_schedule_popup.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 class DebugView extends StatefulWidget {
   const DebugView({super.key});

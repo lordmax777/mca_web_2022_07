@@ -1,12 +1,9 @@
-import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/user_qualif_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 class QualifPopup extends StatefulWidget {
   final UserQualificationMd? item;

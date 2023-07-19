@@ -1082,7 +1082,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
 }
 
 class _AppointmentRenderWidget extends MultiChildRenderObjectWidget {
-  _AppointmentRenderWidget(
+  const _AppointmentRenderWidget(
       this.calendar,
       this.view,
       this.visibleDates,

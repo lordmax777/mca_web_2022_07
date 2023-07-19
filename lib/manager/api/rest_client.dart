@@ -11,10 +11,10 @@ abstract class ApiClient {
   @POST("/oauth/v2/token")
   @FormUrlEncoded()
   Future<HttpResponse> getAccessToken(
-    @Field() String grant_type,
+    @Field() String grantType,
     @Field() String domain,
-    @Field() String client_id,
-    @Field() String client_secret,
+    @Field() String clientId,
+    @Field() String clientSecret,
     @Field() String username,
     @Field() String password,
   );
@@ -22,10 +22,10 @@ abstract class ApiClient {
   @POST("/oauth/v2/token")
   @FormUrlEncoded()
   Future<HttpResponse> getRefreshToken(
-    @Field() String grant_type,
-    @Field() String refresh_token,
-    @Field() String client_id,
-    @Field() String client_secret,
+    @Field() String grantType,
+    @Field() String refreshToken,
+    @Field() String clientId,
+    @Field() String clientSecret,
   );
 
   @GET("/api/fe/formats")

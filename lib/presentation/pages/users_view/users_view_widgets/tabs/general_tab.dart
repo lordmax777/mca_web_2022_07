@@ -541,15 +541,3 @@ class UserGeneralTab extends StatelessWidget {
     // );
   }
 }
-
-class _Item {
-  _Item({
-    required this.title,
-    required this.body,
-    this.isExpanded = false,
-  });
-
-  final String title;
-  final Widget body;
-  bool isExpanded;
-}

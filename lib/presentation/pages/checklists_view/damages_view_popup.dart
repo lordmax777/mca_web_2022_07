@@ -1,9 +1,7 @@
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 class DamagesViewPopup extends StatefulWidget {
   final ChecklistMd model;

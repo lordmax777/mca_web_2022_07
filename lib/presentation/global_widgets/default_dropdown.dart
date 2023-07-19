@@ -3,7 +3,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
-import 'package:mca_dashboard/utils/global_constants.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 
 //Dropdown features

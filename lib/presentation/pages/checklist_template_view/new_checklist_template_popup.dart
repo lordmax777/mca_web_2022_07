@@ -4,8 +4,6 @@ import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_tem
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/checklist_template_view/data/checklist_template_datasource.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
 
 class NewChecklistTemplatePopup extends StatefulWidget {
   final ChecklistTemplateMd? model;

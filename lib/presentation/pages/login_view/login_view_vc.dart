@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
-import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/redux/redux.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 import '../../../manager/manager.dart';
 

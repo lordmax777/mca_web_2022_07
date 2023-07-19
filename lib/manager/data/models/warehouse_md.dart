@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../utils/global_functions.dart';
 
 final class WarehouseMd extends Equatable {
   //{

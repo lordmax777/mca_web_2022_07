@@ -53,7 +53,7 @@ class _Header extends StatefulWidget {
   final void Function(UserReviewMd?) onEditReview;
   final void Function(UserReviewMd) onDeleteReview;
   const _Header(this.stateManager,
-      {super.key, required this.onDeleteReview, required this.onEditReview});
+      {required this.onDeleteReview, required this.onEditReview});
 
   @override
   State<_Header> createState() => _HeaderState();

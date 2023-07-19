@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 class NewPropertyStaffPopup extends StatefulWidget {
   final int shiftId;

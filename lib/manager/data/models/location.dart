@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/data/models/quote_md.dart';
 
 final class LocationMd extends Equatable {
   //{

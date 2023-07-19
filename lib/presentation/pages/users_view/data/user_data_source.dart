@@ -84,7 +84,7 @@ class UserDataSource extends Equatable {
         nationalInsuranceNumber: TextEditingController(
           text: kDebugMode ? "nationalInsuranceNumber202306" : null,
         ),
-        loginMethods: [],
+        loginMethods: const [],
       ),
       address: Address(
         line1: TextEditingController(

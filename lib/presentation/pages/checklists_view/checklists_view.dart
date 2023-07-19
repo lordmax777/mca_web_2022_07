@@ -1,21 +1,15 @@
 // ignore_for_file: empty_catches
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/checklists_view/users_view_popup.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
-import 'package:mca_dashboard/utils/table_helpers.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../../manager/manager.dart';
-import '../../../utils/base64_download/base_64_download.dart';
 import 'comments_view_popup.dart';
 import 'damages_view_popup.dart';
 

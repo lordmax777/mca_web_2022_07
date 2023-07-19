@@ -1,9 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'manager/manager.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 class MCADashboardApp extends StatefulWidget {
   const MCADashboardApp({super.key});

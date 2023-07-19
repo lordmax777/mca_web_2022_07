@@ -79,8 +79,6 @@ class DefaultInterceptor {
             return;
           }
           try {
-            JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-            // Logger.i(encoder.convert(response.data));
             Logger.json(jsonEncode(response.data));
           } catch (e) {
             Logger.i(

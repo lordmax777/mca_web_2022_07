@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 
 final class StockMd {
   //{

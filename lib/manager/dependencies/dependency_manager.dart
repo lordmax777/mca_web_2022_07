@@ -34,9 +34,9 @@ class DependencyManager {
     //DB
 
     //DioClient
-    final _dioClient = DioClient();
-    await _dioClient.init();
-    _getIt.registerSingleton<DioClient>(_dioClient);
+    final dioClient = DioClient();
+    await dioClient.init();
+    _getIt.registerSingleton<DioClient>(dioClient);
     //DioClient
 
     //ApiClient

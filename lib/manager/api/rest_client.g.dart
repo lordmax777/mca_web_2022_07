@@ -10,9 +10,7 @@ part of 'rest_client.dart';
 
 class _ApiClient implements ApiClient {
   _ApiClient(
-    this._dio, {
-    this.baseUrl,
-  });
+    this._dio);
 
   final Dio _dio;
 
@@ -20,10 +18,10 @@ class _ApiClient implements ApiClient {
 
   @override
   Future<HttpResponse<dynamic>> getAccessToken(
-    grant_type,
+    grantType,
     domain,
-    client_id,
-    client_secret,
+    clientId,
+    clientSecret,
     username,
     password,
   ) async {
@@ -31,10 +29,10 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'grant_type': grant_type,
+      'grant_type': grantType,
       'domain': domain,
-      'client_id': client_id,
-      'client_secret': client_secret,
+      'client_id': clientId,
+      'client_secret': clientSecret,
       'username': username,
       'password': password,
     };
@@ -59,19 +57,19 @@ class _ApiClient implements ApiClient {
 
   @override
   Future<HttpResponse<dynamic>> getRefreshToken(
-    grant_type,
-    refresh_token,
-    client_id,
-    client_secret,
+    grantType,
+    refreshToken,
+    clientId,
+    clientSecret,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'grant_type': grant_type,
-      'refresh_token': refresh_token,
-      'client_id': client_id,
-      'client_secret': client_secret,
+      'grant_type': grantType,
+      'refresh_token': refreshToken,
+      'client_id': clientId,
+      'client_secret': clientSecret,
     };
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(

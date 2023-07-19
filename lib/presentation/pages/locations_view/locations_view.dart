@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/locations_view/create_location_popup.dart';
-import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/new_warehouse_popup.dart';
-import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/warehouse_properties_popup.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class LocationsView extends StatefulWidget {

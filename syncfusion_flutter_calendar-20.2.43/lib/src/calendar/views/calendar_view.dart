@@ -12416,7 +12416,7 @@ class _TimeRulerView extends CustomPainter {
 }
 
 class _CalendarMultiChildContainer extends Stack {
-  _CalendarMultiChildContainer(
+  const _CalendarMultiChildContainer(
       // ignore: unused_element
       {this.painter,
       List<Widget> children = const <Widget>[],

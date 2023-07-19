@@ -47,7 +47,7 @@ final class FormatMd extends Equatable {
   final String monthday;
   final String shortMonthday;
 
-  FormatMd({
+  const FormatMd({
     required this.short,
     required this.datetime,
     required this.long,

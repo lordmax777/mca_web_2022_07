@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class UserPreferredShiftsTab extends StatelessWidget {

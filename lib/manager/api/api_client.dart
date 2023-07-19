@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/manager/api/default_int.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';

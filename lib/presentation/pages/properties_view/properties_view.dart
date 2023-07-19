@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/new_property_popup.dart';
-import 'package:mca_dashboard/utils/table_helpers.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class PropertiesView extends StatefulWidget {
@@ -20,6 +15,7 @@ class _PropertiesViewState extends State<PropertiesView>
     with TableFocusNodeMixin<PropertiesView, PropertyMd, PropertyMd> {
   final _dependencies = DependencyManager.instance;
 
+  @override
   void updateUI() {
     if (mounted) {
       setState(() {});

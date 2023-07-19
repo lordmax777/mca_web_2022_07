@@ -1,7 +1,5 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
 
 import '../../../../manager/manager.dart';
 

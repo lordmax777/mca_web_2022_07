@@ -1,4 +1,3 @@
-import 'package:redux/redux.dart';
 import 'redux.dart';
 
 final appStore = Store<AppState>(

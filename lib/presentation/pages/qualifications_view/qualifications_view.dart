@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/qualification_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/qualifications_view/new_qualification_popup.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class QualificationsView extends StatefulWidget {

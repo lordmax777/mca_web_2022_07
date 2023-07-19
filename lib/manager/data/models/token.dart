@@ -14,7 +14,7 @@ final class TokenMd extends Equatable {
   final String tokenType;
   final String refreshToken;
 
-  TokenMd({
+  const TokenMd({
     required this.accessToken,
     required this.expiresIn,
     required this.tokenType,

@@ -1,4 +1,3 @@
-import 'package:mca_dashboard/manager/data/models.dart';
 
 class GetCreateUserReviewAction {
   final int? userId;

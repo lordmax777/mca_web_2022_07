@@ -11,7 +11,7 @@ Future<TimeOfDay?> showCustomTimePicker(
     builder: (context, child) {
       return Theme(
         data: ThemeData.light(useMaterial3: true)
-            .copyWith(colorScheme: ColorScheme.light()),
+            .copyWith(colorScheme: const ColorScheme.light()),
         child: child!,
       );
     },

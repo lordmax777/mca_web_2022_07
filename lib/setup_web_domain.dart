@@ -1,7 +1,6 @@
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'manager/manager.dart';
 
 void setupDomain() {

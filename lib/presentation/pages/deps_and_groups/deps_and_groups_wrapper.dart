@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/group_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/job_title_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/pages/deps_and_groups/new_dep_popup.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import 'new_group_popup.dart';

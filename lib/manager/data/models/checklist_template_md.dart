@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_easylogger/flutter_logger.dart';
-import 'package:mca_dashboard/utils/global_extensions.dart';
 
 class ChecklistTemplateMd extends Equatable {
   //{
@@ -49,7 +47,7 @@ class ChecklistTemplateMd extends Equatable {
           id: json['id'],
           name: json['name'],
           title: json['title'],
-          contents: [],
+          contents: const [],
           active: json['active'],
         );
       }

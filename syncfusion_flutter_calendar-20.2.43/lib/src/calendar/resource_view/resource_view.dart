@@ -107,7 +107,7 @@ class _ResourceViewWidgetState extends State<ResourceViewWidget> {
 }
 
 class _ResourceViewRenderObjectWidget extends MultiChildRenderObjectWidget {
-  _ResourceViewRenderObjectWidget(
+  const _ResourceViewRenderObjectWidget(
       this.resources,
       this.resourceViewSettings,
       this.resourceItemHeight,
@@ -173,9 +173,9 @@ class _ResourceViewRenderObjectWidget extends MultiChildRenderObjectWidget {
 }
 
 void logger(dynamic val) {
-  debugPrint("DEBUG FROM CALENDAR");
+  debugPrint('DEBUG FROM CALENDAR');
   debugPrint('$val');
-  debugPrint("DEBUG FROM CALENDAR");
+  debugPrint('DEBUG FROM CALENDAR');
 }
 
 class _ResourceViewRenderObject extends CustomCalendarRenderObject {
