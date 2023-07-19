@@ -107,15 +107,12 @@ class UserCard extends StatelessWidget {
             mergeDividerWithSpace: true,
             verticalSpace: 8,
             children: [
-              for (var item in items)
-                if (item.customWidget != null)
-                  item.customWidget!
+              for (int i = 0; i < items.length; i++)
+                if (items[i].customWidget != null)
+                  items[i].customWidget!
                 else
-                  labelWithField(
-                    context,
-                    item,
-                    labelWidth: width / 3,
-                  ),
+                  labelWithField(context, items[i],
+                      labelWidth: width / 3, order: i),
             ],
           )),
       context,
@@ -123,39 +120,42 @@ class UserCard extends StatelessWidget {
   }
 
   Widget titleWithDivider(String? title, Widget? child, BuildContext context) {
-    return SpacedColumn(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != null && title.isNotEmpty)
-            SpacedRow(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              horizontalSpace: 6,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                if (trailing != null) trailing!,
-              ],
-            ),
-          if (title != null && title.isNotEmpty)
-            Container(
-              margin: const EdgeInsets.only(top: 8, bottom: 16),
-              width: isExpanded ? double.infinity : width,
-              height: 1,
-              color: Colors.grey,
-            ),
-          if (child != null) child,
-        ]);
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: SpacedColumn(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null && title.isNotEmpty)
+              SpacedRow(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                horizontalSpace: 6,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  if (trailing != null) trailing!,
+                ],
+              ),
+            if (title != null && title.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 16),
+                width: isExpanded ? double.infinity : width,
+                height: 1,
+                color: Colors.grey,
+              ),
+            if (child != null) child,
+          ]),
+    );
   }
 
   Widget labelWithField(BuildContext context, UserCardItem item,
-      {double? labelWidth}) {
+      {double? labelWidth, required int order}) {
     return SpacedRow(
       horizontalSpace: 12,
       mainAxisSize: MainAxisSize.min,
@@ -192,6 +192,7 @@ class UserCard extends StatelessWidget {
         _textField(
           context,
           item,
+          order,
         ),
       ],
     );
@@ -200,24 +201,28 @@ class UserCard extends StatelessWidget {
   Widget _textField(
     BuildContext context,
     UserCardItem item,
+    int order,
   ) {
     if (item.controller != null) {
-      return DefaultTextField(
-        width: width / 1.8,
-        validator: (value) {
-          if (item.isRequired && value!.isEmpty) {
-            return "This field is required";
-          }
+      return FocusTraversalOrder(
+        order: NumericFocusOrder(order.toDouble()),
+        child: DefaultTextField(
+          width: width / 1.8,
+          validator: (value) {
+            if (item.isRequired && value!.isEmpty) {
+              return "This field is required";
+            }
 
-          return null;
-        },
-        disabled: item.disabled,
-        height: (item.maxLines ?? 1) * 40,
-        label: item.title,
-        controller: item.controller,
-        maxLines: item.maxLines,
-        keyboardType: item.keyboardType ?? TextInputType.text,
-        obscureText: item.isObscured,
+            return null;
+          },
+          disabled: item.disabled,
+          height: (item.maxLines ?? 1) * 40,
+          label: item.title,
+          controller: item.controller,
+          maxLines: item.maxLines,
+          keyboardType: item.keyboardType ?? TextInputType.text,
+          obscureText: item.isObscured,
+        ),
       );
     }
     if (item.onChecked != null && item.checked != null) {

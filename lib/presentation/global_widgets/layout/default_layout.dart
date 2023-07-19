@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
@@ -38,6 +41,8 @@ class _DefaultLayoutState extends State<DefaultLayout> {
     );
   }
 }
+
+final tokenTimerListenable = ValueNotifier<Timer?>(null);
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DefaultAppBar({super.key, required this.onMenuPressed});
@@ -81,6 +86,13 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Text(vm.companyInfo.name),
                 ],
               ),
+              if (kDebugMode)
+                ValueListenableBuilder(
+                  valueListenable: tokenTimerListenable,
+                  builder: (context, value, child) => Text(
+                    "Token Expire Time: ${value?.tick}",
+                  ),
+                ),
               PopupMenuButton(
                 tooltip: "User menu",
                 offset: const Offset(0, 40),

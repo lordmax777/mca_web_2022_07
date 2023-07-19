@@ -24,8 +24,6 @@ import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/t
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/tabs/qualification_tab.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/tabs/reviews_tab.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/tabs/visa_tab.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
-import 'package:mca_dashboard/utils/utils.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import 'qualif_popup.dart';

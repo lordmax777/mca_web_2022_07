@@ -1,9 +1,6 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
-import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/utils/global_functions.dart';
 import '../manager.dart';
 
 class DefaultInterceptor {
@@ -123,6 +120,7 @@ class DefaultInterceptor {
                   //Renew token by calling the refresh token endpoint
                   final res =
                       await dispatch<TokenMd>(const GetRefreshTokenAction());
+
                   if (res.isLeft) {
                     e.requestOptions.headers['Authorization'] =
                         'Bearer ${res.left.accessToken}';
