@@ -13,7 +13,7 @@ void setupDomain() {
       html.window.location.origin;
   String dom = domain.replaceAll("http://", "").replaceAll("https://", "");
   if (dom == "mca-web-2022-07.vercel.app") {
-    dom = domainRealStr;
+    dom = domainDevStr;
   }
   DependencyManager.instance.db.setDomain(dom);
 
