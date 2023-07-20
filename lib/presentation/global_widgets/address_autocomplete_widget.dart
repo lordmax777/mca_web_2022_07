@@ -95,6 +95,7 @@ class _AddressAutocompleteWidgetState extends State<AddressAutocompleteWidget> {
           final res = await geocoding.searchByPlaceId(placeId);
           if (res.results.isEmpty) return;
           final place = res.results.first;
+          logger(place.addressComponents.map((e) => e.toJson()));
           final countryCode = place.addressComponents
               .firstWhereOrNull((element) => element.types.contains("country"))
               ?.shortName;
@@ -103,8 +104,8 @@ class _AddressAutocompleteWidgetState extends State<AddressAutocompleteWidget> {
                   (element) => element.types.contains("postal_code"))
               ?.longName;
           final city = place.addressComponents
-              .firstWhereOrNull((element) =>
-                  element.types.contains("administrative_area_level_1"))
+              .firstWhereOrNull(
+                  (element) => element.types.contains("postal_town"))
               ?.longName;
           final road = place.addressComponents
               .firstWhereOrNull((element) => element.types.contains("route"))
