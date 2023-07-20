@@ -96,7 +96,7 @@ class _AddressPopupState extends State<AddressPopup> {
                 AddressAutocompleteWidget(
                   width: 400,
                   onSelected: (value) {
-                    data.copyWith(
+                    data = data.copyWith(
                       city: value.city,
                       line2: value.line2,
                       name: value.name,
