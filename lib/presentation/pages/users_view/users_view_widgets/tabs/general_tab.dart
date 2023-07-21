@@ -131,6 +131,10 @@ class UserGeneralTab extends StatelessWidget {
                         title: "Payroll Code",
                         controller: data.personal.payrollCode),
                     UserCardItem(
+                        title: "National Insurance Number",
+                        controller: data.roleDepartmentLoginOptions
+                            .nationalInsuranceNumber),
+                    UserCardItem(
                         title: "Username",
                         simpleText: data.personal.username.text),
                     UserCardItem(
@@ -296,10 +300,6 @@ class UserGeneralTab extends StatelessWidget {
                             title: "Notes",
                             maxLines: 3,
                             controller: data.roleDepartmentLoginOptions.notes),
-                        UserCardItem(
-                            title: "National Insurance Number",
-                            controller: data.roleDepartmentLoginOptions
-                                .nationalInsuranceNumber),
                         if (data.roleDepartmentLoginOptions.role?.code ==
                             "ROLE_MANAGER")
                           UserCardItem(
@@ -326,56 +326,56 @@ class UserGeneralTab extends StatelessWidget {
                                       .copyWith(isLocationManager: value));
                             },
                           ),
-                        UserCardItem(
-                          customWidget: Row(
-                            children: [
-                              Text("Login Options:",
-                                  style: Theme.of(context).textTheme.bodyLarge),
-                              const SizedBox(width: 16),
-                              SizedBox(
-                                width: 320,
-                                child: Wrap(
-                                  spacing: 16,
-                                  alignment: WrapAlignment.center,
-                                  children: [
-                                    for (final loginMethod in loginMethods)
-                                      DefaultCheckbox(
-                                          value: data.roleDepartmentLoginOptions
-                                              .loginMethods
-                                              .any((element) =>
-                                                  element.id == loginMethod.id),
-                                          onChanged: (value) {
-                                            if (value) {
-                                              data = data.copyWith(
-                                                  roleDepartmentLoginOptions: data
-                                                      .roleDepartmentLoginOptions
-                                                      .copyWith(loginMethods: [
-                                                ...data
-                                                    .roleDepartmentLoginOptions
-                                                    .loginMethods,
-                                                loginMethod
-                                              ]));
-                                            } else {
-                                              data = data.copyWith(
-                                                  roleDepartmentLoginOptions: data
-                                                      .roleDepartmentLoginOptions
-                                                      .copyWith(loginMethods: [
-                                                ...data
-                                                    .roleDepartmentLoginOptions
-                                                    .loginMethods
-                                                    .where((element) =>
-                                                        element.id !=
-                                                        loginMethod.id)
-                                              ]));
-                                            }
-                                          },
-                                          label: loginMethod.name)
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
+                        // UserCardItem(
+                        //   customWidget: Row(
+                        //     children: [
+                        //       Text("Login Options:",
+                        //           style: Theme.of(context).textTheme.bodyLarge),
+                        //       const SizedBox(width: 16),
+                        //       SizedBox(
+                        //         width: 320,
+                        //         child: Wrap(
+                        //           spacing: 16,
+                        //           alignment: WrapAlignment.center,
+                        //           children: [
+                        //             for (final loginMethod in loginMethods)
+                        //               DefaultCheckbox(
+                        //                   value: data.roleDepartmentLoginOptions
+                        //                       .loginMethods
+                        //                       .any((element) =>
+                        //                           element.id == loginMethod.id),
+                        //                   onChanged: (value) {
+                        //                     if (value) {
+                        //                       data = data.copyWith(
+                        //                           roleDepartmentLoginOptions: data
+                        //                               .roleDepartmentLoginOptions
+                        //                               .copyWith(loginMethods: [
+                        //                         ...data
+                        //                             .roleDepartmentLoginOptions
+                        //                             .loginMethods,
+                        //                         loginMethod
+                        //                       ]));
+                        //                     } else {
+                        //                       data = data.copyWith(
+                        //                           roleDepartmentLoginOptions: data
+                        //                               .roleDepartmentLoginOptions
+                        //                               .copyWith(loginMethods: [
+                        //                         ...data
+                        //                             .roleDepartmentLoginOptions
+                        //                             .loginMethods
+                        //                             .where((element) =>
+                        //                                 element.id !=
+                        //                                 loginMethod.id)
+                        //                       ]));
+                        //                     }
+                        //                   },
+                        //                   label: loginMethod.name)
+                        //           ],
+                        //         ),
+                        //       )
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
 

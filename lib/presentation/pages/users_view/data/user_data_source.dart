@@ -48,7 +48,7 @@ class UserDataSource extends Equatable {
   }
 
   //factory init
-  factory UserDataSource.init() {
+  factory UserDataSource.init({List<LoginMethodMd>? loginMethods}) {
     return UserDataSource(
       religion: const Religion(),
       personal: Personal(
@@ -84,7 +84,7 @@ class UserDataSource extends Equatable {
         nationalInsuranceNumber: TextEditingController(
           text: kDebugMode ? "nationalInsuranceNumber202306" : null,
         ),
-        loginMethods: const [],
+        loginMethods: [if (loginMethods != null) ...loginMethods],
       ),
       address: Address(
         line1: TextEditingController(

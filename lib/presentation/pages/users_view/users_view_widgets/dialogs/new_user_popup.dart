@@ -31,9 +31,11 @@ class NewUserPopup extends StatelessWidget {
 }
 
 class _UserInfoWidget extends StatelessWidget {
-  final UserMd user;
+  final String? name;
+  final String? phoneNumber;
+  final String? email;
 
-  const _UserInfoWidget({required this.user});
+  const _UserInfoWidget({this.email, this.name, this.phoneNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -49,19 +51,19 @@ class _UserInfoWidget extends StatelessWidget {
                 context,
                 icon: Icons.person,
                 title: "Name",
-                subtitle: user.fullname,
+                subtitle: name ?? "-",
               ),
               _buildIconItem(
                 context,
                 icon: Icons.phone,
                 title: "Phone Number",
-                subtitle: "-",
+                subtitle: phoneNumber ?? "-",
               ),
               _buildIconItem(
                 context,
                 icon: Icons.mail,
                 title: "Email",
-                subtitle: "-",
+                subtitle: email ?? "-",
               ),
             ]),
       ),
@@ -114,6 +116,9 @@ class _UserTabsWidgetState extends State<_UserTabsWidget>
 
   late UserDataSource detailDataSource;
 
+  String? userPhoneNumber;
+  String? userEmail;
+
   late final TabController _tabController;
   final List<Tab> tabs = [
     const Tab(text: "General"),
@@ -129,7 +134,8 @@ class _UserTabsWidgetState extends State<_UserTabsWidget>
 
   @override
   void initState() {
-    detailDataSource = UserDataSource.init();
+    detailDataSource = UserDataSource.init(
+        loginMethods: appStore.state.generalState.lists.loginMethods);
     isCreate = widget.user == null;
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
@@ -157,7 +163,8 @@ class _UserTabsWidgetState extends State<_UserTabsWidget>
         detailDataSource = success.left.copyWith(
             personal: success.left.personal.copyWith(id: widget.user!.id));
         detailDataSource.personal.username.text = widget.user!.username;
-
+        userPhoneNumber = detailDataSource.personal.phoneNumber.text;
+        userEmail = detailDataSource.personal.email.text;
         updateUI();
       } else {
         context.showError(success.right.message);
@@ -210,7 +217,10 @@ class _UserTabsWidgetState extends State<_UserTabsWidget>
                     backgroundColor: Colors.white,
                     titleSpacing: 0.0,
                     title: widget.user != null
-                        ? _UserInfoWidget(user: widget.user!)
+                        ? _UserInfoWidget(
+                            name: widget.user?.fullname,
+                            phoneNumber: userPhoneNumber,
+                            email: userEmail)
                         : null,
                     bottom: TabBar(
                       tabs: tabs,
