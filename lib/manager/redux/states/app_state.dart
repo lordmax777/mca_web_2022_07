@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
 
 export 'general/state.dart';
 
+@immutable
 class AppState extends Equatable {
   const AppState({required this.generalState});
 

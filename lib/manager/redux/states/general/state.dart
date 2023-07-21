@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 
 export 'mw.dart';
@@ -46,6 +47,7 @@ export 'actions/user_status_action.dart';
 export 'actions/user_visa_action.dart';
 export 'actions/warehouse_action.dart';
 
+@immutable
 class GeneralState extends Equatable {
   final FormatMd formatMd;
   final List<UserMd> users;

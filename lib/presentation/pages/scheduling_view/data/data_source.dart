@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mca_dashboard/presentation/pages/pages.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_helper.dart';
 import 'package:retrofit/retrofit.dart';
@@ -22,7 +23,8 @@ class AppointmentDataSource extends CalendarDataSource {
         final bool isMonth = view == CalendarView.month;
         final bool isWeek = view == CalendarView.timelineWeek;
 
-        final List<Appointment> meetings = <Appointment>[];
+        List<Appointment> meetings = [];
+
         DateTime st = startDate;
         DateTime et = endDate;
 
@@ -44,26 +46,39 @@ class AppointmentDataSource extends CalendarDataSource {
           lastFetchedAppointments
             ..clear()
             ..addAll(fetchedAppointments.left);
-          for (final Appointment appointment in fetchedAppointments.left) {
-            final DateTime date = appointment.startTime;
 
-            if (isWeek) {
-              appointment.isAllDay = true;
-            }
-            if (appointment.isAllDay) {
-              final stDate = DateTime(date.year, date.month, date.day, 00, 00);
-              final DateTime etDate =
-                  DateTime(date.year, date.month, date.day, 01, 00);
-              appointment.startTime = stDate;
-              appointment.endTime = etDate;
-            }
-            if (!appointments.any((element) => element.id == appointment.id)) {
-              if (appointments.indexOf(appointment) == 0) {
-                appointment.isAllDay = true;
-              }
-              meetings.add(appointment);
+          // for (final Appointment appointment in fetchedAppointments.left) {
+          //   final DateTime date = appointment.startTime;
+          //
+          //   if (isWeek) {
+          //     appointment.isAllDay = true;
+          //   }
+          //   if (appointment.isAllDay) {
+          //     // final stDate = DateTime(date.year, date.month, date.day, 00, 00);
+          //     // final DateTime etDate =
+          //     //     DateTime(date.year, date.month, date.day, 01, 00);
+          //     // appointment.startTime = stDate;
+          //     // appointment.endTime = etDate;
+          //     // }
+          //     // if (!appointments.any((element) => element.id == appointment.id)) {
+          //     //   if (appointments.indexOf(appointment) == 0) {
+          //     //     appointment.isAllDay = true;
+          //     //   }
+          //     meetings.add(appointment);
+          //   }
+          // }
+          Future<List<Appointment>> useIsolate() async {
+            try {
+              final res = await compute<List, List<Appointment>>(
+                  heavyLoad, [fetchedAppointments.left, appointments, isWeek]);
+              return res;
+            } catch (e) {
+              Logger.e(e.toString(), tag: "useIsolate");
+              return [];
             }
           }
+
+          meetings = await useIsolate();
           _addNewAppointments(meetings);
           handleShowEmptySlots(ScheduleState().showEmptySlots.value);
         } else {
@@ -80,7 +95,19 @@ class AppointmentDataSource extends CalendarDataSource {
         _dependencyManager.navigation.showFail("Something went wrong $e");
 
         Logger.e("Something went wrong while fetching shifts ${e.stackTrace}",
-            tag: 'ShiftsCalendar - catch');
+            tag: 'ShiftsCalendar - catch 1');
+        return [];
+      } on RangeError catch (e) {
+        lastFetchedAppointments.clear();
+        notifyListeners(CalendarDataSourceAction.add, []);
+        Logger.e("Something went wrong while fetching shifts ${e.stackTrace}",
+            tag: 'ShiftsCalendar - catch 3');
+        return [];
+      } on ConcurrentModificationError catch (e) {
+        lastFetchedAppointments.clear();
+        notifyListeners(CalendarDataSourceAction.add, []);
+        Logger.e("Something went wrong while fetching shifts ${e.stackTrace}",
+            tag: 'ShiftsCalendar - catch 4');
         return [];
       } catch (e) {
         lastFetchedAppointments.clear();
@@ -89,7 +116,8 @@ class AppointmentDataSource extends CalendarDataSource {
         _dependencyManager.navigation.showFail("Something went wrong $e");
 
         Logger.e("Something went wrong while fetching shifts ${e.runtimeType}",
-            tag: 'ShiftsCalendar - catch');
+            tag: 'ShiftsCalendar - catch 2');
+        print(e.runtimeType);
         return [];
       }
     }
@@ -131,9 +159,9 @@ class AppointmentDataSource extends CalendarDataSource {
     super.resources = r;
   }
 
-  void _addNewAppointments(List<Appointment> appointments) {
-    appointments.addAll(appointments);
-    notifyListeners(CalendarDataSourceAction.add, appointments);
+  void _addNewAppointments(List<Appointment> apps) {
+    appointments.addAll(apps);
+    notifyListeners(CalendarDataSourceAction.add, apps);
   }
 
   void addAppointment(Appointment? appointment) {
@@ -180,6 +208,31 @@ class AppointmentDataSource extends CalendarDataSource {
     }
     return availableResourceIds;
   }
+}
+
+List<Appointment> heavyLoad(List<dynamic> args) {
+  final List<Appointment> meetings = [];
+  for (final Appointment appointment in args[0]) {
+    final DateTime date = appointment.startTime;
+
+    if (args[2]) {
+      appointment.isAllDay = true;
+    }
+    if (appointment.isAllDay) {
+      final stDate = DateTime(date.year, date.month, date.day, 00, 00);
+      final DateTime etDate = DateTime(date.year, date.month, date.day, 01, 00);
+      appointment.startTime = stDate;
+      appointment.endTime = etDate;
+    }
+    if (!args[1].any((element) => element.id == appointment.id)) {
+      if (args[1].indexOf(appointment) == 0) {
+        appointment.isAllDay = true;
+      }
+      meetings.add(appointment);
+    }
+  }
+
+  return meetings;
 }
 
 class ShiftFetchException implements Exception {
