@@ -506,7 +506,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       final Either<List<AllocationMd>, ErrorMd> res = await appStore.dispatch(
           GetAllocationsAction(date: action.startDate, until: action.endDate));
       if (res.isRight) {
-        throw res.right.message;
+        throw res.right;
       } else {
         final List<AllocationMd> list = res.left;
 
@@ -536,20 +536,20 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           if (us == null) {
             isOpenShift = true;
           }
-          //   StringBuffer subject = StringBuffer();
-          //
-          //   if (isOpenShift) {
-          //     subject.write('(Open Shift) ');
-          //   }
-          //   if (isAllDay) {
-          //     subject.write("All Day - ");
-          //   } else {
-          //     subject.write("${formatter.format(stDate)} - ");
-          //     subject.write("${formatter.format(et)} - ");
-          //   }
-          //   subject.write("${allocation.shiftName} - ");
-          //   subject.write(allocation.locationName);
-          //
+          StringBuffer subject = StringBuffer();
+
+          if (isOpenShift) {
+            subject.write('(Open Shift) ');
+          }
+          if (isAllDay) {
+            subject.write("All Day - ");
+          } else {
+            subject.write("${formatter.format(stDate)} - ");
+            subject.write("${formatter.format(et)} - ");
+          }
+          subject.write("${allocation.shiftName} - ");
+          subject.write(allocation.locationName);
+
           Color generateColorFromIds(
               int shiftId, int locationId, int clientId) {
             String combinedIds = shiftId.toString() +
@@ -578,7 +578,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
               startTime: stDate,
               endTime: et,
               isAllDay: isAllDay,
-              subject: "subject.toString()",
+              subject: subject.toString(),
               color: objectColor,
               resourceIds: [
                 if (isOpenShift) "OPEN",

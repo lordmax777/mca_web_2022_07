@@ -47,26 +47,6 @@ class AppointmentDataSource extends CalendarDataSource {
             ..clear()
             ..addAll(fetchedAppointments.left);
 
-          // for (final Appointment appointment in fetchedAppointments.left) {
-          //   final DateTime date = appointment.startTime;
-          //
-          //   if (isWeek) {
-          //     appointment.isAllDay = true;
-          //   }
-          //   if (appointment.isAllDay) {
-          //     // final stDate = DateTime(date.year, date.month, date.day, 00, 00);
-          //     // final DateTime etDate =
-          //     //     DateTime(date.year, date.month, date.day, 01, 00);
-          //     // appointment.startTime = stDate;
-          //     // appointment.endTime = etDate;
-          //     // }
-          //     // if (!appointments.any((element) => element.id == appointment.id)) {
-          //     //   if (appointments.indexOf(appointment) == 0) {
-          //     //     appointment.isAllDay = true;
-          //     //   }
-          //     meetings.add(appointment);
-          //   }
-          // }
           Future<List<Appointment>> useIsolate() async {
             try {
               final res = await compute<List, List<Appointment>>(
@@ -83,8 +63,11 @@ class AppointmentDataSource extends CalendarDataSource {
           handleShowEmptySlots(ScheduleState().showEmptySlots.value);
         } else {
           lastFetchedAppointments.clear();
-          _dependencyManager.navigation
-              .showFail(fetchedAppointments.right.message);
+          print(fetchedAppointments.right.toString());
+          if (fetchedAppointments.right.code != 404) {
+            _dependencyManager.navigation
+                .showFail(fetchedAppointments.right.message);
+          }
           notifyListeners(CalendarDataSourceAction.add, []);
         }
         return meetings;
