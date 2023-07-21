@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
@@ -93,9 +92,23 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
                       value: "logout",
                       child: SpacedRow(
                         horizontalSpace: 8,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
                           Icon(Icons.logout, color: Colors.red),
                           Text("Logout"),
+                        ],
+                      ),
+                    ),
+                    //Account settings
+                    PopupMenuItem(
+                      value: "account_settings",
+                      child: SpacedRow(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        horizontalSpace: 8,
+                        children: [
+                          Icon(Icons.settings,
+                              color: context.colorScheme.primary),
+                          const Text("Account settings"),
                         ],
                       ),
                     ),
@@ -129,6 +142,8 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
                         },
                       );
                       break;
+                    case "account_settings":
+                      context.go("/account");
                   }
                 },
                 child: SpacedRow(
