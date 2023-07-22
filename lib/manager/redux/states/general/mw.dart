@@ -222,6 +222,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case DeleteAccountUserAvailabilityAction:
         return action.fetch(store.state);
+      case CreateAccountUserAvailabilityAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }

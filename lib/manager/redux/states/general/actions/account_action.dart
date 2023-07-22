@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 
 final class GetAccountUserAvailabilityAction
@@ -34,6 +35,40 @@ final class DeleteAccountUserAvailabilityAction with ActionMixin<bool> {
     return apiCall(() async {
       final res = await DependencyManager.instance.apiClient
           .deleteAccountUserAvailability(id);
+      return res.response.statusCode == 200;
+    });
+  }
+}
+
+final class CreateAccountUserAvailabilityAction with ActionMixin<bool> {
+  final DateTime startDate;
+  final DateTime? endDate;
+  final TimeOfDay? startTime;
+  final TimeOfDay? endTime;
+  final bool isFullDay;
+  final String? comment;
+
+  const CreateAccountUserAvailabilityAction({
+    required this.startDate,
+    this.endDate,
+    this.startTime,
+    this.endTime,
+    required this.isFullDay,
+    this.comment,
+  });
+
+  @override
+  fetch(AppState state) {
+    return apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .createAccountUserAvailability(
+        startDate: startDate.toApiDateWithDash,
+        isFullDay: isFullDay,
+        comment: comment,
+        startTime: startTime?.toApiTime,
+        endDate: endDate?.toApiDateWithDash,
+        endTime: endTime?.toApiTime,
+      );
       return res.response.statusCode == 200;
     });
   }

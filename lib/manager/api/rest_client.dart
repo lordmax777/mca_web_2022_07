@@ -651,4 +651,17 @@ abstract class ApiClient {
   //delete account user availability
   @DELETE("/api/fe/userdetails/{id}/availability")
   Future<HttpResponse> deleteAccountUserAvailability(@Path() String id);
+
+  //todo:
+  //create account user availability: startDate, endDate, startTime, endTime, isFullDay, comment
+  @POST("/api/fe/userdetails/{id}/availability")
+  @FormUrlEncoded()
+  Future<HttpResponse> createAccountUserAvailability({
+    @Field() required String startDate,
+    @Field() String? endDate,
+    @Field() String? startTime,
+    @Field() String? endTime,
+    @Field() required bool isFullDay,
+    @Field() String? comment,
+  });
 }

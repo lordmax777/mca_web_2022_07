@@ -39,17 +39,27 @@ class _AvailabilityTabState extends State<AvailabilityTab>
         PlutoColumn(
             title: "Start Date",
             field: "startDate",
-            type: PlutoColumnType.date()),
+            enableRowChecked: true,
+            width: 90,
+            type: PlutoColumnType.date(format: "dd/MM/yyyy")),
         PlutoColumn(
-            title: "End Date", field: "endDate", type: PlutoColumnType.date()),
+            title: "End Date",
+            field: "endDate",
+            width: 80,
+            type: PlutoColumnType.date(format: "dd/MM/yyyy")),
         PlutoColumn(
             title: "Start Time",
             field: "startTime",
+            width: 60,
             type: PlutoColumnType.time()),
         PlutoColumn(
-            title: "End Time", field: "endTime", type: PlutoColumnType.time()),
+            title: "End Time",
+            field: "endTime",
+            width: 60,
+            type: PlutoColumnType.time()),
         PlutoColumn(
             title: "Comment",
+            width: 80,
             field: "comment",
             type: PlutoColumnType.text(),
             renderer: (rendererContext) {
@@ -63,7 +73,9 @@ class _AvailabilityTabState extends State<AvailabilityTab>
           renderer: (rendererContext) {
             return rendererContext.actionMenuWidget(
               onDelete: () {
-                //todo:
+                onDelete(() async {
+                  return await deleteSelected(rendererContext.row);
+                }, showError: false);
               },
             );
           },
@@ -127,7 +139,8 @@ class _AvailabilityTabState extends State<AvailabilityTab>
     final List<String> delFailed = [];
     for (final row in selected) {
       final id = row.cells['action']!.value.id;
-      final res = await dispatch<bool>(DeleteAccountUserAvailabilityAction(id));
+      final res = await dispatch<bool>(
+          DeleteAccountUserAvailabilityAction(id.toString()));
       if (res.isRight) {
         delFailed.add(row.cells['startDate']!.value);
       }
