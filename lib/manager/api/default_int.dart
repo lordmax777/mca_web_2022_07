@@ -149,12 +149,35 @@ class DefaultInterceptor {
           final bool hasAccessToken = accessToken.isNotEmpty;
           if (hasAccessToken && !options.path.contains("/oauth")) {
             //add bearer token
-            options.headers.addAll({"Authorization": "Bearer $accessToken"});
+            if (accessToken.isNotEmpty) {
+              options.headers.addAll({"Authorization": "Bearer $accessToken"});
+            }
           }
           handler.next(options); //continue
         },
         onError: (e, handler) {
           handler.next(e); //continue
+        },
+        onResponse: (e, handler) {
+          handler.next(e); //continue
+        },
+      );
+
+  Interceptor get handleInvalidToken => InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.next(options); //continue
+        },
+        onError: (e, handler) {
+          if (e.response?.statusCode == 400) {
+            if (e.response?.data is Map<String, dynamic>) {
+              if (e.response?.data?['error_description'].toString().contains(
+                      "Invalid grant_type parameter or parameter missing") ==
+                  true) {
+                //todo: logout
+                deps.navigation.loginState.logout();
+              }
+            }
+          }
         },
         onResponse: (e, handler) {
           handler.next(e); //continue

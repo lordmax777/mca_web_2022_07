@@ -8,6 +8,7 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
+import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 
@@ -497,3 +498,11 @@ extension StringHelpers on String {
     }
   }
 }
+
+///////////////////////
+
+mixin ActionMixin<R> {
+  Future<Either<R, ErrorMd>> fetch(AppState state);
+}
+
+//////////////////////

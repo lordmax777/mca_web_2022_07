@@ -22,3 +22,4 @@ export 'models/checklist_template_md.dart';
 export 'models/approval_md.dart';
 export 'models/stock_md.dart';
 export 'models/checklist_md.dart';
+export 'models/account_md.dart';

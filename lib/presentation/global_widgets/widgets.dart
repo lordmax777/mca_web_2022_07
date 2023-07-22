@@ -21,3 +21,4 @@ export 'address_autocomplete_widget.dart';
 export 'default_table.dart';
 export 'custom_gmaps_widget.dart';
 export 'lazy_table_footer.dart';
+export 'default_tab_wrapper.dart';

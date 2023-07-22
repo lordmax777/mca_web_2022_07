@@ -10,7 +10,9 @@ part of 'rest_client.dart';
 
 class _ApiClient implements ApiClient {
   _ApiClient(
-    this._dio);
+    this._dio, {
+    this.baseUrl,
+  });
 
   final Dio _dio;
 
@@ -29,10 +31,10 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'grant_type': grantType,
+      'grantType': grantType,
       'domain': domain,
-      'client_id': clientId,
-      'client_secret': clientSecret,
+      'clientId': clientId,
+      'clientSecret': clientSecret,
       'username': username,
       'password': password,
     };
@@ -66,10 +68,10 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'grant_type': grantType,
-      'refresh_token': refreshToken,
-      'client_id': clientId,
-      'client_secret': clientSecret,
+      'grantType': grantType,
+      'refreshToken': refreshToken,
+      'clientId': clientId,
+      'clientSecret': clientSecret,
     };
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
@@ -2672,6 +2674,54 @@ class _ApiClient implements ApiClient {
             .compose(
               _dio.options,
               '/api/fe/stockhistory/${storageid}/${itemid}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getAccountUserAvailability(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/availability',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> deleteAccountUserAvailability(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/userdetails/${id}/availability',
               queryParameters: queryParameters,
               data: _data,
             )

@@ -641,4 +641,14 @@ abstract class ApiClient {
   @GET("/api/fe/stockhistory/{storageid}/{itemid}")
   Future<HttpResponse> getStockHistory(
       {@Path() required int storageid, @Path() required int itemid});
+
+  //todo:
+  //get account user availability
+  @GET("/api/fe/userdetails/{id}/availability")
+  Future<HttpResponse> getAccountUserAvailability(@Path() String id);
+
+  //todo:
+  //delete account user availability
+  @DELETE("/api/fe/userdetails/{id}/availability")
+  Future<HttpResponse> deleteAccountUserAvailability(@Path() String id);
 }
