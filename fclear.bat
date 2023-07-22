@@ -1,9 +1,9 @@
 @echo off
 :build
 
-call fvm flutter clean
+call flutter clean
 del pubspec.lock
-call fvm flutter pub get
+call flutter pub get
 
 goto end
 :end
