@@ -31,10 +31,10 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'grantType': grantType,
+      'grant_type': grantType,
       'domain': domain,
-      'clientId': clientId,
-      'clientSecret': clientSecret,
+      'client_id': clientId,
+      'client_secret': clientSecret,
       'username': username,
       'password': password,
     };
@@ -68,10 +68,10 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'grantType': grantType,
-      'refreshToken': refreshToken,
-      'clientId': clientId,
-      'clientSecret': clientSecret,
+      'grant_type': grantType,
+      'refresh_token': refreshToken,
+      'client_id': clientId,
+      'client_secret': clientSecret,
     };
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
