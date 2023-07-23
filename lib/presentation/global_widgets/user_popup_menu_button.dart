@@ -14,18 +14,6 @@ class UserPopupMenuButton extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       itemBuilder: (context) {
         return [
-          // logout button
-          PopupMenuItem(
-            value: "logout",
-            child: SpacedRow(
-              horizontalSpace: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                Icon(Icons.logout, color: Colors.red),
-                Text("Logout"),
-              ],
-            ),
-          ),
           //Account settings
           PopupMenuItem(
             value: "account_settings",
@@ -47,6 +35,30 @@ class UserPopupMenuButton extends StatelessWidget {
               children: [
                 Icon(Icons.lock, color: context.colorScheme.primary),
                 const Text("Change password"),
+              ],
+            ),
+          ),
+          //Change language
+          PopupMenuItem(
+            value: "change_language",
+            child: SpacedRow(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              horizontalSpace: 8,
+              children: [
+                Icon(Icons.language, color: context.colorScheme.primary),
+                const Text("Change language"),
+              ],
+            ),
+          ),
+          // logout button
+          PopupMenuItem(
+            value: "logout",
+            child: SpacedRow(
+              horizontalSpace: 8,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Icon(Icons.logout, color: Colors.red),
+                Text("Logout"),
               ],
             ),
           ),
@@ -84,6 +96,9 @@ class UserPopupMenuButton extends StatelessWidget {
             break;
           case "change_password":
             context.showDialog(const ChangePasswordPopup());
+            break;
+          case "change_language":
+            context.showDialog(const ChangeLanguagePopup());
             break;
         }
       },

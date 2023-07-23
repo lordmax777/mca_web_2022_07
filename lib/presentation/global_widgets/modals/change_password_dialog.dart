@@ -22,7 +22,7 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup>
             onPressed: () {
               context.pop();
             },
-            icon: const Icon(Icons.close),
+            icon: const Icon(Icons.close, color: Colors.black),
           ),
         ],
       ),

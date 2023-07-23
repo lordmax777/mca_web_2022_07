@@ -93,3 +93,20 @@ final class ChangeAccountPasswordAction with ActionMixin<bool> {
     });
   }
 }
+
+//change account language
+final class ChangeAccountLanguageAction with ActionMixin<bool> {
+  final String language;
+
+  const ChangeAccountLanguageAction(this.language);
+
+  @override
+  Future<Either<bool, ErrorMd>> fetch(AppState state) {
+    return apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .changeAccountLanguage(locale: language);
+      await appStore.dispatch(const GetDetailsAction());
+      return res.response.statusCode == 200;
+    });
+  }
+}

@@ -24,3 +24,4 @@ export 'lazy_table_footer.dart';
 export 'default_tab_wrapper.dart';
 export 'user_popup_menu_button.dart';
 export 'modals/change_password_dialog.dart';
+export 'modals/change_language_dialog.dart';

@@ -666,11 +666,19 @@ abstract class ApiClient {
   });
 
   //todo:
-//change account password
+  //change account password
   @POST("/api/fe/userdetails/{id}/password")
   @FormUrlEncoded()
   Future<HttpResponse> changeAccountPassword({
     @Field() required String oldPassword,
     @Field() required String newPassword,
+  });
+
+  //todo:
+  //change account language
+  @POST("/api/fe/userdetails/{id}/language")
+  @FormUrlEncoded()
+  Future<HttpResponse> changeAccountLanguage({
+    @Field() required String locale,
   });
 }
