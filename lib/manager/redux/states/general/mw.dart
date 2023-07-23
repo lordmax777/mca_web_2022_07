@@ -224,6 +224,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case CreateAccountUserAvailabilityAction:
         return action.fetch(store.state);
+      case ChangeAccountPasswordAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }

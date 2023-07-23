@@ -664,4 +664,13 @@ abstract class ApiClient {
     @Field() required bool isFullDay,
     @Field() String? comment,
   });
+
+  //todo:
+//change account password
+  @POST("/api/fe/userdetails/{id}/password")
+  @FormUrlEncoded()
+  Future<HttpResponse> changeAccountPassword({
+    @Field() required String oldPassword,
+    @Field() required String newPassword,
+  });
 }

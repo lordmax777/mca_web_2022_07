@@ -22,3 +22,5 @@ export 'default_table.dart';
 export 'custom_gmaps_widget.dart';
 export 'lazy_table_footer.dart';
 export 'default_tab_wrapper.dart';
+export 'user_popup_menu_button.dart';
+export 'modals/change_password_dialog.dart';

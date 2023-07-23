@@ -73,3 +73,23 @@ final class CreateAccountUserAvailabilityAction with ActionMixin<bool> {
     });
   }
 }
+
+final class ChangeAccountPasswordAction with ActionMixin<bool> {
+  final String oldPassword;
+  final String newPassword;
+
+  const ChangeAccountPasswordAction({
+    required this.oldPassword,
+    required this.newPassword,
+  });
+
+  @override
+  Future<Either<bool, ErrorMd>> fetch(AppState state) {
+    return apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .changeAccountPassword(
+              oldPassword: oldPassword, newPassword: newPassword);
+      return res.response.statusCode == 200;
+    });
+  }
+}

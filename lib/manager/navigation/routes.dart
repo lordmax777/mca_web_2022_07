@@ -76,7 +76,7 @@ class MCANavigation extends IMCANavigation {
 
   /// router
   late final router = GoRouter(
-    // debugLogDiagnostics: true,
+    debugLogDiagnostics: true,
     refreshListenable: loginState,
     navigatorKey: navigatorKey,
     observers: [BotToastNavigatorObserver()],
@@ -267,7 +267,6 @@ class MCANavigation extends IMCANavigation {
               ),
           ]),
     ],
-
     errorPageBuilder: (context, state) => NoTransitionPage<void>(
       key: state.pageKey,
       child: Scaffold(
@@ -280,6 +279,7 @@ class MCANavigation extends IMCANavigation {
       )),
     ),
     redirect: (context, state) {
+      //todo: redirect to old page
       final loginLoc = state.namedLocation(login.substring(1));
       final dashName = state.namedLocation(dashboard.substring(1));
 
