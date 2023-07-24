@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/presentation/global_widgets/default_text_field.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 
 class CompanyTab extends StatefulWidget {
@@ -17,9 +18,8 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
   @override
   void initState() {
     super.initState();
-    final generalState = appStore.state.generalState;
     controller1.text = generalState.companyInfo.name;
-    final locale = generalState.detailsMd.locale;
+    final locale = generalState.companyInfo.locale;
     final loc = languages.firstWhereOrNull((element) => element.code == locale);
     setState(() {
       if (loc != null) {
@@ -35,14 +35,22 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
             "${generalState.companyInfo.currency.code} (${generalState.companyInfo.currency.sign})",
         additionalId: generalState.companyInfo.currency.code,
       );
+      selected2 = DefaultMenuItem(
+        id: 0,
+        title: generalState.companyInfo.timezone,
+        additionalId: generalState.companyInfo.timezone,
+      );
     });
   }
 
+  final generalState = appStore.state.generalState;
+  final double fieldWidth = 450;
   final currencies = [...appStore.state.generalState.lists.currencies];
   final languages = [...appStore.state.generalState.lists.languages];
+  late final timezones = getTimezones().keys.toList();
+
   @override
   Widget build(BuildContext context) {
-    final fieldWidth = context.width * 0.3;
     return AlertDialog(
       alignment: Alignment.topCenter,
       surfaceTintColor: Colors.white,
@@ -77,7 +85,6 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
                   return null;
                 },
               ),
-              //todo: company logo
               _buildCompanyLogo(),
               DefaultDropdown(
                 label: "Timezone",
@@ -90,7 +97,12 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
                 },
                 valueAdditionalId: selected2?.additionalId ?? "",
                 items: [
-                  //todo: get timezones
+                  for (int i = 0; i < timezones.length; i++)
+                    DefaultMenuItem(
+                      id: i,
+                      title: timezones[i],
+                      additionalId: timezones[i],
+                    )
                 ],
               ),
               DefaultDropdown(
@@ -134,7 +146,7 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
         ),
       ),
       actions: [
-        ElevatedButton(onPressed: save, child: Text("Save")),
+        ElevatedButton(onPressed: save, child: const Text("Save")),
       ],
     );
   }
@@ -154,23 +166,34 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
       return;
     }
     context.futureLoading(() async {
-      // final res = await dispatch<bool>(SaveCompanyDetailsAction(
-      //   companyName: controller1.text,
-      //   currencyCode: selected3!.additionalId,
-      //   locale: selected1!.additionalId,
-      //   timezone: selected2!.additionalId,
-      // ));
-      // if (res.isLeft) {
-      //   context.showSuccess("Saved successfully");
-      // } else if (res.isRight) {
-      //   context.showError(res.right.message);
-      // } else {
-      //   context.showError("Something went wrong");
-      // }
+      final res = await dispatch<bool>(SaveCompanyDetailsAction(
+        companyName: controller1.text,
+        locale: selected1!.additionalId,
+        timezone: selected2!.additionalId,
+        logo:
+            file1?.bytes != null ? base64.encode(file1!.bytes!.toList()) : null,
+
+        // currencyId: selected3!.id,
+      ));
+      if (res.isLeft) {
+        context.showSuccess("Saved successfully");
+      } else if (res.isRight) {
+        context.showError(res.right.message);
+      } else {
+        context.showError("Something went wrong");
+      }
     });
   }
 
   Widget _buildCompanyLogo() {
-    return SizedBox();
+    return SelectAvatarWidget(
+      width: fieldWidth,
+      height: 200,
+      title: "Company Logo",
+      image: generalState.companyInfo.logoBytes,
+      onImageChanged: (value) {
+        file1 = value;
+      },
+    );
   }
 }

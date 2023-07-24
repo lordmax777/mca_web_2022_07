@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/settings_view/tabs/availability_tab.dart';
+import 'package:mca_dashboard/presentation/pages/settings_view/tabs/change_password_tab.dart';
 
 import 'tabs/company_tab.dart';
 

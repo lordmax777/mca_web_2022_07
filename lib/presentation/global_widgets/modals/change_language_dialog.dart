@@ -18,7 +18,7 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
     super.initState();
     WidgetsBinding.instance.endOfFrame.then((value) {
       if (mounted) {
-        final locale = appStore.state.generalState.detailsMd.locale;
+        final locale = appStore.state.generalState.companyInfo.locale;
         final loc =
             languages.firstWhereOrNull((element) => element.code == locale);
         setState(() {

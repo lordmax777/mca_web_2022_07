@@ -23,5 +23,5 @@ export 'custom_gmaps_widget.dart';
 export 'lazy_table_footer.dart';
 export 'default_tab_wrapper.dart';
 export 'user_popup_menu_button.dart';
-export '../pages/settings_view/tabs/change_password_tab.dart';
 export 'modals/change_language_dialog.dart';
+export 'select_avatar_widget.dart';
