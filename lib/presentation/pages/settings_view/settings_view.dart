@@ -14,8 +14,7 @@ class SettingsView extends StatelessWidget {
   final List<TabChild> tabs = [
     const TabChild(tabName: "Company Settings", child: CompanyTab()),
     const TabChild(tabName: "Account Availability", child: AvailabilityTab()),
-    const TabChild(
-        tabName: "Change Account Password", child: ChangePasswordTab()),
+    const TabChild(tabName: "Account Password", child: ChangePasswordTab()),
     const TabChild(tabName: "Login and Status", child: LoginStatusTab()),
     const TabChild(tabName: "Holidays and Sick", child: HolidaysTab()),
     const TabChild(tabName: "Shift", child: ShiftTab()),

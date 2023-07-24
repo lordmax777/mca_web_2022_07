@@ -33,7 +33,7 @@ class _DefaultTabWrapperState extends State<DefaultTabWrapper>
             child: Text(
               e.tabName,
               softWrap: true,
-              maxLines: 2,
+              maxLines: 3,
               textAlign: TextAlign.center,
             ),
           ))

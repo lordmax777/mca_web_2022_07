@@ -174,6 +174,7 @@ mixin FormsMixin<T extends StatefulWidget> on State<T> {
   final controller12 = TextEditingController();
   final controller13 = TextEditingController();
   final controller14 = TextEditingController();
+  final controller15 = TextEditingController();
 
   Widget textField5(
       {required String label, String? Function(String?)? validator}) {
@@ -418,6 +419,7 @@ mixin FormsMixin<T extends StatefulWidget> on State<T> {
     controller12.dispose();
     controller13.dispose();
     controller14.dispose();
+    controller15.dispose();
     super.dispose();
   }
 }
