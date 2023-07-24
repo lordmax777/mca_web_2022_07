@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 
 final class GetCompanyInfoAction {
@@ -187,7 +188,7 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         annualHolidayEntitlement:
             annualHolidayEntitlement ?? companyInfo.ahe.toInt(),
         timezone: timezone ?? companyInfo.timezone,
-        // currencyId: currencyId ?? companyInfo.currency.id,
+        currencyId: currencyId ?? companyInfo.currency.id,
         logo: logo ?? companyInfo.logo,
         rotaLength: rotaLength ?? companyInfo.rotalength.toInt(),
         autoLogoutTime: autoLogoutTime ?? companyInfo.autoLogout.toInt(),
@@ -199,7 +200,9 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
             annualHolidayEntitlementWeeks ?? companyInfo.ahew.toInt(),
         holidayCalculationType:
             holidayCalculationType ?? companyInfo.hct.toInt(),
-        yearStart: yearStart ?? companyInfo.yearstart,
+        yearStart: yearStart ??
+            DateFormat('dd/MM/yyyy')
+                .format(DateTime.parse(companyInfo.yearstart)),
         paidSickness: paidSickness ?? companyInfo.paidSickness.toInt(),
         periodOfIncapacity: periodOfIncapacity ?? companyInfo.piw.toInt(),
         minRest: minRest ?? companyInfo.minRest.toInt(),
