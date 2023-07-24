@@ -2,33 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
 
-class ChangePasswordPopup extends StatefulWidget {
-  const ChangePasswordPopup({super.key});
+class ChangePasswordTab extends StatefulWidget {
+  const ChangePasswordTab({super.key});
 
   @override
-  State<ChangePasswordPopup> createState() => _ChangePasswordPopupState();
+  State<ChangePasswordTab> createState() => _ChangePasswordTabState();
 }
 
-class _ChangePasswordPopupState extends State<ChangePasswordPopup>
-    with FormsMixin<ChangePasswordPopup> {
+class _ChangePasswordTabState extends State<ChangePasswordTab>
+    with FormsMixin<ChangePasswordTab> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text('Change Password'),
-          IconButton(
-            onPressed: () {
-              context.pop();
-            },
-            icon: const Icon(Icons.close, color: Colors.black),
-          ),
-        ],
-      ),
+      surfaceTintColor: Colors.white,
+      alignment: Alignment.topCenter,
       content: Form(
         key: formKey,
-        child: UserCard(title: "", items: [
+        child: UserCard(width: context.width * .6, title: "", items: [
           UserCardItem(
             title: 'Old Password',
             controller: controller1,
@@ -50,13 +40,7 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup>
         ]),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            context.pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             //todo:
             if (!isFormValid) return;

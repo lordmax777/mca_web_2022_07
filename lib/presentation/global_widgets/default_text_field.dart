@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 
-class DefaultTextField extends StatelessWidget {
+class DefaultTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final String? label;
   final double? width;
@@ -35,42 +35,68 @@ class DefaultTextField extends StatelessWidget {
       this.validator});
 
   @override
+  State<DefaultTextField> createState() => _DefaultTextFieldState();
+}
+
+class _DefaultTextFieldState extends State<DefaultTextField> {
+  bool isObscured = false;
+
+  void toggleObscureText() {
+    setState(() {
+      isObscured = !isObscured;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      focusNode: focusNode ?? FocusNode(),
-      readOnly: !enabled,
-      enabled: !disabled,
-      maxLines: maxLines ?? 1,
+      focusNode: widget.focusNode ?? FocusNode(),
+      readOnly: !widget.enabled,
+      enabled: !widget.disabled,
+      maxLines: widget.maxLines ?? 1,
       decoration: InputDecoration(
-        labelText: label,
-        filled: disabled,
-        fillColor: disabled ? Colors.grey[200] : null,
-        border: OutlineInputBorder(
+          labelText: widget.label,
+          filled: widget.disabled,
+          fillColor: widget.disabled ? Colors.grey[200] : null,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.0),
+              borderSide: BorderSide(color: context.colorScheme.primary)),
+          enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.0),
-            borderSide: BorderSide(color: context.colorScheme.primary)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(color: Colors.grey[400]!),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        errorStyle: const TextStyle(color: Colors.red),
-        labelStyle: const TextStyle(color: Colors.grey),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        constraints: BoxConstraints(
-          maxWidth: width ?? 200,
-        ),
-      ),
-      controller: controller,
-      obscureText: obscureText,
-      initialValue: initialValue,
-      validator: validator,
-      onChanged: onChanged,
-      onTap: onTap,
+            borderSide: BorderSide(color: Colors.grey[400]!),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16.0),
+            borderSide: const BorderSide(color: Colors.red),
+          ),
+          errorStyle: const TextStyle(color: Colors.red),
+          labelStyle: const TextStyle(color: Colors.grey),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          constraints: BoxConstraints(
+            maxWidth: widget.width ?? 200,
+          ),
+          suffixIcon: widget.obscureText
+              ? IconButton(
+                  onPressed: widget.obscureText ? toggleObscureText : null,
+                  icon: Icon(
+                    widget.obscureText
+                        ? isObscured
+                            ? Icons.visibility
+                            : Icons.visibility_off
+                        : null,
+                    color: Colors.grey,
+                  ),
+                )
+              : null),
+      controller: widget.controller,
+      obscureText: widget.obscureText ? !isObscured : false,
+      initialValue: widget.initialValue,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
+      onTap: widget.onTap,
       inputFormatters: [
-        if (keyboardType == TextInputType.number)
+        if (widget.keyboardType == TextInputType.number)
           FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
       ],
     );

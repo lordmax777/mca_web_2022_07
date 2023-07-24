@@ -3,7 +3,7 @@ import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/account_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
-import 'package:mca_dashboard/presentation/pages/account_view/modals/create_new_unav_to_work_popup.dart';
+import 'package:mca_dashboard/presentation/pages/settings_view/modals/create_new_unav_to_work_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class AvailabilityTab extends StatefulWidget {

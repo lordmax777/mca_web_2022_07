@@ -73,6 +73,11 @@ final List<Map<String, dynamic>> _destinations = [
     'title': 'Checklists',
     'icon': Icons.checklist,
   },
+  {
+    'route': MCANavigation.settings,
+    'title': 'Settings',
+    'icon': Icons.settings,
+  },
   if (kDebugMode)
     {
       'route': MCANavigation.debug,
@@ -104,7 +109,7 @@ class DefaultNavigationRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
+      width: 180,
       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: NavigationDrawer(
           indicatorColor: Theme.of(context).colorScheme.primary,
@@ -124,8 +129,16 @@ class DefaultNavigationRail extends StatelessWidget {
     return NavigationRail(
       selectedIndex: selectedIndex,
       extended: true,
-      minExtendedWidth: 160,
+      minExtendedWidth: 140,
       onDestinationSelected: (index) => onDestinationSelected(index, context),
+      trailing: IconButton(
+        icon: Icon(Icons.logout),
+        onPressed: () {},
+      ),
+      leading: IconButton(
+        icon: Icon(Icons.menu),
+        onPressed: () {},
+      ),
       destinations: [
         for (final destination in _destinations)
           NavigationRailDestination(
@@ -138,7 +151,7 @@ class DefaultNavigationRail extends StatelessWidget {
 
   Widget label(String label) {
     return SizedBox(
-      width: 120,
+      width: 100,
       child: Text(
         label,
         maxLines: 2,

@@ -15,29 +15,29 @@ class UserPopupMenuButton extends StatelessWidget {
       itemBuilder: (context) {
         return [
           //Account settings
-          PopupMenuItem(
-            value: "account_settings",
-            child: SpacedRow(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              horizontalSpace: 8,
-              children: [
-                Icon(Icons.settings, color: context.colorScheme.primary),
-                const Text("Account settings"),
-              ],
-            ),
-          ),
+          // PopupMenuItem(
+          //   value: "account_settings",
+          //   child: SpacedRow(
+          //     crossAxisAlignment: CrossAxisAlignment.center,
+          //     horizontalSpace: 8,
+          //     children: [
+          //       Icon(Icons.settings, color: context.colorScheme.primary),
+          //       const Text("Account settings"),
+          //     ],
+          //   ),
+          // ),
           //Change password
-          PopupMenuItem(
-            value: "change_password",
-            child: SpacedRow(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              horizontalSpace: 8,
-              children: [
-                Icon(Icons.lock, color: context.colorScheme.primary),
-                const Text("Change password"),
-              ],
-            ),
-          ),
+          // PopupMenuItem(
+          //   value: "change_password",
+          //   child: SpacedRow(
+          //     crossAxisAlignment: CrossAxisAlignment.center,
+          //     horizontalSpace: 8,
+          //     children: [
+          //       Icon(Icons.lock, color: context.colorScheme.primary),
+          //       const Text("Change password"),
+          //     ],
+          //   ),
+          // ),
           //Change language
           PopupMenuItem(
             value: "change_language",
@@ -91,12 +91,12 @@ class UserPopupMenuButton extends StatelessWidget {
               },
             );
             break;
-          case "account_settings":
-            context.go("/account");
-            break;
-          case "change_password":
-            context.showDialog(const ChangePasswordPopup());
-            break;
+          // case "account_settings":
+          //   context.go("/account");
+          //   break;
+          // case "change_password":
+          //   context.showDialog(const ChangePasswordPopup());
+          //   break;
           case "change_language":
             context.showDialog(const ChangeLanguagePopup());
             break;

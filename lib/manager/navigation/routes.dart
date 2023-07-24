@@ -71,8 +71,8 @@ class MCANavigation extends IMCANavigation {
   //Checklists
   static const String checklists = '/checklists';
 
-  //Account
-  static const String account = '/account';
+  //Settings
+  static const String settings = '/settings';
 
   /// router
   late final router = GoRouter(
@@ -241,14 +241,15 @@ class MCANavigation extends IMCANavigation {
                 );
               },
             ),
-            //Account
+
+            //Settings
             GoRoute(
-              path: account,
-              name: account.substring(1),
+              path: settings,
+              name: settings.substring(1),
               pageBuilder: (context, state) {
                 return NoTransitionPage<void>(
                   key: state.pageKey,
-                  child: const AccountView(),
+                  child: SettingsView(),
                 );
               },
             ),
