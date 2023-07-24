@@ -6,6 +6,7 @@ import 'package:mca_dashboard/presentation/pages/settings_view/tabs/holidays_tab
 import 'package:mca_dashboard/presentation/pages/settings_view/tabs/login_status_tab.dart';
 
 import 'tabs/company_tab.dart';
+import 'tabs/shift_tab.dart';
 
 class SettingsView extends StatelessWidget {
   SettingsView({super.key});
@@ -17,6 +18,7 @@ class SettingsView extends StatelessWidget {
         tabName: "Change Account Password", child: ChangePasswordTab()),
     const TabChild(tabName: "Login and Status", child: LoginStatusTab()),
     const TabChild(tabName: "Holidays and Sick", child: HolidaysTab()),
+    const TabChild(tabName: "Shift", child: ShiftTab()),
   ];
 
   @override
