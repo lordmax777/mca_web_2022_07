@@ -68,56 +68,59 @@ class _ReviewPopupState extends State<ReviewPopup>
               crossAxisAlignment: CrossAxisAlignment.start,
               verticalSpace: 32.0,
               children: [
-                UserCard(title: "", items: [
-                  UserCardItem(
-                    title: "Title",
-                    controller: controller1,
-                    isRequired: true,
-                  ),
-                  UserCardItem(
-                    title: "Conducted By",
-                    isRequired: true,
-                    dropdown: UserCardDropdown(
-                        valueId: selected1?.id,
-                        items: [
-                          for (var user in users)
-                            DefaultMenuItem(
-                              id: user.id,
-                              title: user.fulltitle,
-                              subtitle: user.username,
-                            )
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selected1 = value;
-                          });
-                        }),
-                  ),
-                  UserCardItem(
-                    title: "Conducted On",
-                    simpleText:
-                        selectedDate1?.toApiDateWithDash ?? "Select Date",
-                    onSimpleTextTapped: () {
-                      showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      ).then((value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedDate1 = value;
-                          });
-                        }
-                      });
-                    },
-                  ),
-                  UserCardItem(
-                    title: "Comment",
-                    controller: controller2,
-                    maxLines: 4,
-                  ),
-                ]),
+                UserCard(
+                  title: "",
+                  items: [
+                    UserCardItem(
+                      title: "Title",
+                      controller: controller1,
+                      isRequired: true,
+                    ),
+                    UserCardItem(
+                      title: "Conducted By",
+                      isRequired: true,
+                      dropdown: UserCardDropdown(
+                          valueId: selected1?.id,
+                          items: [
+                            for (var user in users)
+                              DefaultMenuItem(
+                                id: user.id,
+                                title: user.fulltitle,
+                                subtitle: user.username,
+                              )
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              selected1 = value;
+                            });
+                          }),
+                    ),
+                    UserCardItem(
+                      title: "Conducted On",
+                      simpleText:
+                          selectedDate1?.toApiDateWithDash ?? "Select Date",
+                      onSimpleTextTapped: () {
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        ).then((value) {
+                          if (value != null) {
+                            setState(() {
+                              selectedDate1 = value;
+                            });
+                          }
+                        });
+                      },
+                    ),
+                    UserCardItem(
+                      title: "Comment",
+                      controller: controller2,
+                      maxLines: 4,
+                    ),
+                  ],
+                ),
               ],
             ),
           );

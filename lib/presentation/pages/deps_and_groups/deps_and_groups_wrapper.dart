@@ -21,8 +21,8 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
 
   late final TabController tabController;
   final List<Tab> tabs = const [
-    Tab(text: "Departments"),
     Tab(text: "Groups"),
+    Tab(text: "Departments"),
   ];
 
   @override
@@ -67,7 +67,7 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
                 headerEnd: ElevatedButton(
                     onPressed: () =>
                         onEdit((p0) => NewDepPopup(jobTitle: p0), null),
-                    child: const Text("Add Department")),
+                    child: const Text("Add Group")),
                 onLoaded: onLoaded,
                 columns: columns,
                 focusNode: focusNode,
@@ -77,7 +77,7 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
                 headerEnd: ElevatedButton(
                     onPressed: () =>
                         onEdit1((p0) => NewGroupPopup(model: p0), null),
-                    child: const Text("Add Group")),
+                    child: const Text("Add Department")),
                 onLoaded: onLoaded1,
                 columns: columns1,
                 focusNode: focusNode1,
@@ -90,8 +90,8 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
     );
   }
 
-  @override
-  bool get enableLoading => false;
+  // @override
+  // bool get enableLoading => false;
 
   @override
   PlutoRow buildRow(JobTitleMd model) {
@@ -132,7 +132,7 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
   @override
   List<PlutoColumn> get columns => [
         PlutoColumn(
-          title: "Department Name",
+          title: "Group Name",
           field: "name",
           type: PlutoColumnType.text(),
         ),
@@ -168,7 +168,7 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
   @override
   List<PlutoColumn> get columns1 => [
         PlutoColumn(
-          title: "Group Name",
+          title: "Department Name",
           field: "name",
           type: PlutoColumnType.text(),
         ),
