@@ -217,7 +217,7 @@ class UserCard extends StatelessWidget {
           },
           disabled: item.disabled,
           height: (item.maxLines ?? 1) * 40,
-          label: item.title,
+          // label: item.title,
           controller: item.controller,
           maxLines: item.maxLines,
           keyboardType: item.keyboardType ?? TextInputType.text,

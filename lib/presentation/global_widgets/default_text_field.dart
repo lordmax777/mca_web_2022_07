@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 
 class DefaultTextField extends StatefulWidget {
@@ -55,7 +56,21 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
       enabled: !widget.disabled,
       maxLines: widget.maxLines ?? 1,
       decoration: InputDecoration(
-          labelText: widget.label,
+          // labelText: widget.label,
+          label: widget.label != null
+              ? SpacedRow(
+                  horizontalSpace: 4,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(widget.label!),
+                    if (widget.validator != null)
+                      const Text(
+                        "*",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                  ],
+                )
+              : null,
           filled: widget.disabled,
           fillColor: widget.disabled ? Colors.grey[200] : null,
           border: OutlineInputBorder(
@@ -70,7 +85,10 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
             borderSide: const BorderSide(color: Colors.red),
           ),
           errorStyle: const TextStyle(color: Colors.red),
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+            color: Colors.grey,
+            fontSize: 18,
+          ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           constraints: BoxConstraints(
@@ -89,6 +107,11 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
                   ),
                 )
               : null),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: widget.disabled ? Colors.grey[600] : Colors.grey[800],
+      ),
+      mouseCursor: widget.disabled ? SystemMouseCursors.forbidden : null,
       controller: widget.controller,
       obscureText: widget.obscureText ? !isObscured : false,
       initialValue: widget.initialValue,

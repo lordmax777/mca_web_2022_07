@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_dropdown.dart';
@@ -18,16 +19,22 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
     WidgetsBinding.instance.endOfFrame.then((value) {
       if (mounted) {
         final locale = appStore.state.generalState.detailsMd.locale;
+        final loc =
+            languages.firstWhereOrNull((element) => element.code == locale);
         setState(() {
-          selected1 = DefaultMenuItem(
-            id: 0,
-            title: GlobalConstants.userDisplayLanguages[locale] ?? "",
-            additionalId: locale,
-          );
+          if (loc != null) {
+            selected1 = DefaultMenuItem(
+              id: 0,
+              title: loc.name,
+              additionalId: loc.code,
+            );
+          }
         });
       }
     });
   }
+
+  final languages = [...appStore.state.generalState.lists.languages];
 
   @override
   Widget build(BuildContext context) {
@@ -48,24 +55,19 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
         UserCardItem(
           title: "Language",
           dropdown: UserCardDropdown(
+            label: selected1?.title,
             additionalValueId: selected1?.additionalId,
-            label: GlobalConstants
-                .userDisplayLanguages[selected1?.additionalId ?? ""],
             onChanged: (value) {
               setState(() {
                 selected1 = value;
               });
             },
             items: [
-              for (int i = 0;
-                  i < GlobalConstants.userDisplayLanguages.length;
-                  i++)
+              for (int i = 0; i < languages.length; i++)
                 DefaultMenuItem(
                   id: i,
-                  title:
-                      GlobalConstants.userDisplayLanguages.values.toList()[i],
-                  additionalId:
-                      GlobalConstants.userDisplayLanguages.keys.toList()[i],
+                  title: languages[i].name,
+                  additionalId: languages[i].code,
                 )
             ],
           ),
@@ -80,16 +82,18 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
         ),
         TextButton(
           onPressed: () {
-            //todo:
             if (selected1 == null) {
               context.showError('Please select language');
               return;
             }
             context.futureLoading(() async {
               final res = await dispatch<bool>(
-                  ChangeAccountLanguageAction(selected1!.additionalId!));
+                  SaveCompanyDetailsAction(locale: selected1!.additionalId!));
               if (res.isLeft && res.left) {
-                context.pop(true);
+                context.showSuccess('Language changed successfully',
+                    onClose: () {
+                  context.pop(true);
+                });
               } else if (res.isRight) {
                 context.showError(res.right.message);
               } else {

@@ -674,11 +674,98 @@ abstract class ApiClient {
     @Field() required String newPassword,
   });
 
-  //todo:
-  //change account language
-  @POST("/api/fe/userdetails/{id}/language")
+  //save company details
+  @POST("/api/fe/company")
   @FormUrlEncoded()
-  Future<HttpResponse> changeAccountLanguage({
-    @Field() required String locale,
+  Future<HttpResponse> postCompanyDetails({
+    @Field('companyname') required String companyName,
+    @Field('domain') required String domain,
+    @Field('companyemail') String? companyEmail,
+    @Field('ahe') int? annualHolidayEntitlement,
+    @Field('timezone') String? timezone,
+    @Field('currencyid') int? currencyId,
+
+    ///Base64 encoded String
+    @Field('logo') String? logo,
+    @Field('rotalength') int? rotaLength,
+
+    ///in minutes
+    @Field('autologout') int? autoLogoutTime,
+
+    ///Locking time after failed login
+    @Field('locktime') int? lockingTime,
+
+    ///Auto sign out after shift finish time
+    @Field('autosignout') int? autoSignOutTime,
+
+    ///Time before and after shift to allow to change status
+    @Field('time_validity') int? timeValidity,
+
+    ///Number of attempts allowed to sign in to web interface. After this the account will be locked.
+    @Field('maxattempts') int? maxAttempts,
+    @Field('colorSchemaId') int? colorSchemaId,
+    @Field('ahew') int? annualHolidayEntitlementWeeks,
+
+    ///Holiday calculation type id
+    @Field('hct') int? holidayCalculationType,
+
+    ///Year Start in yyyy-MM-dd format
+    @Field('yearstart') String? yearStart,
+
+    ///Paid sickness in days
+    @Field('paidsickness') int? paidSickness,
+
+    ///in weeks
+    @Field('pid') int? periodOfIncapacity,
+
+    ///min res between shifts in hours
+    @Field('min_rest') int? minRest,
+
+    ///in minutes
+    @Field('lunchtime') int? lunchtime,
+
+    ///in minutes
+    @Field('lunchtimeUnpaid') int? lunchtimeUnpaid,
+    @Field('rounding') int? rounding,
+    @Field('grace') int? gracePeriod,
+
+    ///Number of break times in a shift
+    @Field('breaks') int? breaks,
+
+    ///Allowed break time in each time
+    @Field('breaktime') int? breakTime,
+
+    ///Allowed break time in each time
+    @Field('breaktimetotal') int? breakTimeTotal,
+
+    ///Minimum working hours to allow lunch break
+    @Field('minhoursforlunch') int? minHoursForLunch,
+
+    ///Comma separated minutes
+    @Field('latereminders') String? lateReminders,
+
+    ///Comma separated minutes
+    @Field('longbreakreminders') String? longBreakReminders,
+
+    ///Comma separated minutes
+    @Field('signoutreminders') String? signOutReminders,
+
+    ///Indicate if need to send photo with each status change
+    @Field('photorequired') bool? isPhotoRequired,
+
+    ///Indicate if need to be within range of the location to change status
+    @Field('strictlocation') bool? isStrictLocation,
+
+    ///Allow to undo the last status change within this time, in minutes
+    @Field('undotime') int? undoTime,
+
+    ///Default locale
+    @Field('locale') String? locale,
+
+    ///Indicate if the company is active or not
+    @Field('status') bool? status,
+
+    ///Indicate if the title is part of the full name
+    @Field('showtitle') bool? showTitle,
   });
 }

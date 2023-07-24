@@ -438,8 +438,8 @@ extension ContextHelper on BuildContext {
     });
   }
 
-  void showSuccess(String message) {
-    _deps.navigation.showSuccess(message);
+  void showSuccess(String message, {VoidCallback? onClose}) {
+    _deps.navigation.showSuccess(message, onClose: onClose);
   }
 
   Future<T?> showDialog<T>(Widget dialog) async {

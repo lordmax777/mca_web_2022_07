@@ -44,8 +44,6 @@ export 'actions/user_pref_shift_action.dart';
 export 'actions/user_qualif_action.dart';
 export 'actions/user_status_action.dart';
 export 'actions/user_visa_action.dart';
-export 'actions/account_action.dart';
-export 'actions/account_action.dart';
 
 @immutable
 class GeneralState extends Equatable {

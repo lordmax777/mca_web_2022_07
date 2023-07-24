@@ -360,7 +360,7 @@ class MCANavigation extends IMCANavigation {
   }
 
   @override
-  void showSuccess(String msg) {
+  void showSuccess(String msg, {VoidCallback? onClose}) {
     CancelFunc cancel = BotToast.showCustomText(
       duration: const Duration(seconds: 4),
       wrapToastAnimation: (controller, cancelFunc, widget) {
@@ -407,7 +407,10 @@ class MCANavigation extends IMCANavigation {
               title: const Text('Success'),
               actions: [
                 ElevatedButton(
-                  onPressed: cancelFunc,
+                  onPressed: () {
+                    cancelFunc();
+                    onClose?.call();
+                  },
                   child: const Text('Close'),
                 ),
               ],
@@ -513,7 +516,7 @@ abstract class IMCANavigation {
 
   Future<bool?> showAlert(BuildContext context);
 
-  void showSuccess(String msg);
+  void showSuccess(String msg, {VoidCallback? onClose});
 
   void showFail(String msg);
 

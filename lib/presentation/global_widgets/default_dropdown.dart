@@ -61,7 +61,12 @@ class _DefaultDropdownState extends State<DefaultDropdown> {
                     (element) =>
                         element.additionalId == widget.valueAdditionalId,
                   )
-                : null,
+                : widget.valueAdditionalId != null
+                    ? widget.items.firstWhereOrNull(
+                        (element) =>
+                            element.additionalId == widget.valueAdditionalId,
+                      )
+                    : null,
         isExpanded: true,
         dropdownSearchData: widget.hasSearchBox
             ? DropdownSearchData(
@@ -104,7 +109,9 @@ class _DefaultDropdownState extends State<DefaultDropdown> {
         ),
         buttonStyleData: ButtonStyleData(
           decoration: BoxDecoration(
-            color: widget.onChanged == null ? Colors.grey[200] : null,
+            color: widget.items.isEmpty || widget.onChanged == null
+                ? Colors.grey[200]
+                : null,
             borderRadius: BorderRadius.circular(16.0),
             border: Border.all(color: Colors.grey[400]!),
           ),
@@ -112,11 +119,13 @@ class _DefaultDropdownState extends State<DefaultDropdown> {
           height: 48,
           width: widget.width ?? 200,
         ),
-        hint: widget.items.isEmpty
-            ? Text("No items".toUpperCase())
-            : widget.label != null
+        hint:
+            // widget.items.isEmpty
+            //     ? Text("No items".toUpperCase())
+            //     :
+            widget.label != null
                 ? Text(
-                    widget.label!,
+                    widget.label! + (widget.items.isEmpty ? " (Empty)" : ""),
                     style: const TextStyle(color: Colors.grey),
                   )
                 : null,
@@ -149,7 +158,12 @@ class _DefaultDropdownState extends State<DefaultDropdown> {
                             TextSpan(
                                 text:
                                     "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.title}",
-                                style: Theme.of(context).textTheme.bodyLarge),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    )),
                             if (e.subtitle != null)
                               TextSpan(
                                   text: " / ${e.subtitle}",

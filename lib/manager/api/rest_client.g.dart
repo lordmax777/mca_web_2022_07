@@ -2804,11 +2804,89 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> changeAccountLanguage({required locale}) async {
+  Future<HttpResponse<dynamic>> postCompanyDetails({
+    required companyName,
+    required domain,
+    companyEmail,
+    annualHolidayEntitlement,
+    timezone,
+    currencyId,
+    logo,
+    rotaLength,
+    autoLogoutTime,
+    lockingTime,
+    autoSignOutTime,
+    timeValidity,
+    maxAttempts,
+    colorSchemaId,
+    annualHolidayEntitlementWeeks,
+    holidayCalculationType,
+    yearStart,
+    paidSickness,
+    periodOfIncapacity,
+    minRest,
+    lunchtime,
+    lunchtimeUnpaid,
+    rounding,
+    gracePeriod,
+    breaks,
+    breakTime,
+    breakTimeTotal,
+    minHoursForLunch,
+    lateReminders,
+    longBreakReminders,
+    signOutReminders,
+    isPhotoRequired,
+    isStrictLocation,
+    undoTime,
+    locale,
+    status,
+    showTitle,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = {'locale': locale};
+    final _data = {
+      'companyname': companyName,
+      'domain': domain,
+      'companyemail': companyEmail,
+      'ahe': annualHolidayEntitlement,
+      'timezone': timezone,
+      'currencyid': currencyId,
+      'logo': logo,
+      'rotalength': rotaLength,
+      'autologout': autoLogoutTime,
+      'locktime': lockingTime,
+      'autosignout': autoSignOutTime,
+      'time_validity': timeValidity,
+      'maxattempts': maxAttempts,
+      'colorSchemaId': colorSchemaId,
+      'ahew': annualHolidayEntitlementWeeks,
+      'hct': holidayCalculationType,
+      'yearstart': yearStart,
+      'paidsickness': paidSickness,
+      'pid': periodOfIncapacity,
+      'min_rest': minRest,
+      'lunchtime': lunchtime,
+      'lunchtimeUnpaid': lunchtimeUnpaid,
+      'rounding': rounding,
+      'grace': gracePeriod,
+      'breaks': breaks,
+      'breaktime': breakTime,
+      'breaktimetotal': breakTimeTotal,
+      'minhoursforlunch': minHoursForLunch,
+      'latereminders': lateReminders,
+      'longbreakreminders': longBreakReminders,
+      'signoutreminders': signOutReminders,
+      'photorequired': isPhotoRequired,
+      'strictlocation': isStrictLocation,
+      'undotime': undoTime,
+      'locale': locale,
+      'status': status,
+      'showtitle': showTitle,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
       method: 'POST',
@@ -2818,7 +2896,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/userdetails/{id}/language',
+              '/api/fe/company',
               queryParameters: queryParameters,
               data: _data,
             )
