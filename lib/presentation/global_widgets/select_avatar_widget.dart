@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
@@ -56,6 +57,7 @@ class _SelectAvatarWidgetState extends State<SelectAvatarWidget> {
         ),
         MaterialButton(
             onPressed: () async {
+              if (!kIsWeb) return;
               final result = await FilePicker.platform.pickFiles(
                 type: FileType.image,
                 allowMultiple: false,

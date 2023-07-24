@@ -41,6 +41,8 @@ class _DefaultTabWrapperState extends State<DefaultTabWrapper>
     super.initState();
   }
 
+  bool get isLarge => _tabs.length > 7;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +56,10 @@ class _DefaultTabWrapperState extends State<DefaultTabWrapper>
                   unselectedLabelColor: Colors.black,
                   controller: tabController,
                   tabs: _tabs,
-                  indicatorSize: TabBarIndicatorSize.tab,
+                  isScrollable: isLarge,
+                  indicatorSize: isLarge
+                      ? TabBarIndicatorSize.label
+                      : TabBarIndicatorSize.tab,
                   dividerColor: Colors.grey[500],
                 )),
         body: TabBarView(

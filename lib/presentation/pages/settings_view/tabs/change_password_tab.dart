@@ -20,7 +20,7 @@ class _ChangePasswordTabState extends State<ChangePasswordTab>
         key: formKey,
         child: UserCard(width: context.width * .6, title: "", items: [
           UserCardItem(
-            title: 'Old Password',
+            title: 'Current Password',
             controller: controller1,
             isRequired: true,
             isObscured: true,
