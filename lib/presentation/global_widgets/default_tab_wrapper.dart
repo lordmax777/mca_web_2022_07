@@ -28,7 +28,16 @@ class _DefaultTabWrapperState extends State<DefaultTabWrapper>
   List<TabChild> get children => widget.children;
   OnTabChange? get onTabChange => widget.onTabChange;
 
-  List<Tab> get _tabs => children.map((e) => Tab(text: e.tabName)).toList();
+  List<Tab> get _tabs => children
+      .map((e) => Tab(
+            child: Text(
+              e.tabName,
+              softWrap: true,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+            ),
+          ))
+      .toList();
 
   @override
   void initState() {
@@ -41,7 +50,8 @@ class _DefaultTabWrapperState extends State<DefaultTabWrapper>
     super.initState();
   }
 
-  bool get isLarge => _tabs.length > 7;
+  bool get isLarge => false;
+  // _tabs.length > 7;
 
   @override
   Widget build(BuildContext context) {

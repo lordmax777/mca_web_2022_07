@@ -75,6 +75,8 @@ final class UserMd extends Equatable {
 
   double? specialPrice;
 
+  bool get isManager => groupId != null;
+
   factory UserMd.all() {
     return UserMd(
         locationId: null,

@@ -60,7 +60,9 @@ class _ReviewPopupState extends State<ReviewPopup>
       content: StoreConnector<AppState, GeneralState>(
         converter: (store) => store.state.generalState,
         builder: (context, vm) {
-          final users = [...vm.users];
+          final users = [...vm.users]
+              // .where((element) => element.isManager)
+              ;
           return Form(
             key: formKey,
             child: SpacedColumn(
@@ -87,6 +89,7 @@ class _ReviewPopupState extends State<ReviewPopup>
                                 id: user.id,
                                 title: user.fulltitle,
                                 subtitle: user.username,
+                                additionalId: user.groupId,
                               )
                           ],
                           onChanged: (value) {
