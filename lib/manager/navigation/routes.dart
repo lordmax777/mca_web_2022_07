@@ -16,9 +16,6 @@ class MCANavigation extends IMCANavigation {
   /// Global key for the navigator
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  /// Route observer
-  RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
   // Routes
   /// Debug Page
   static const String debug = '/debug';
@@ -79,7 +76,9 @@ class MCANavigation extends IMCANavigation {
     debugLogDiagnostics: true,
     refreshListenable: loginState,
     navigatorKey: navigatorKey,
-    observers: [BotToastNavigatorObserver()],
+    observers: [
+      BotToastNavigatorObserver(),
+    ],
     routes: [
       GoRoute(
         path: "/",
@@ -288,8 +287,8 @@ class MCANavigation extends IMCANavigation {
 
       final loggingIn = state.location == loginLoc;
 
-      if (!loggedIn && !loggingIn) return loginLoc;
-      if (loggedIn && loggingIn) return dashName;
+      if (!loggedIn && !loggingIn) return login;
+      if (loggedIn && loggingIn) return dashboard;
       return null;
     },
   );
