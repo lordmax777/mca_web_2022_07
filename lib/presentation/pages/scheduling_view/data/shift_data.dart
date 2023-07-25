@@ -208,15 +208,35 @@ class PersonalData extends Equatable {
     );
   }
 
+  PersonalData copyFromProperty(
+    PropertyMd pr, {
+    required List<ShiftMd> shifts,
+    required List<ClientMd> clients,
+    required List<CurrencyMd> currencies,
+    required List<PaymentMethodMd> paymentMethods,
+  }) {
+    PersonalData data = PersonalData(shiftId: pr.id);
+    final shift = shifts.firstWhereOrNull((element) => element.id == pr.id);
+    if (shift != null) {
+      final client = shift.getClientMd(clients);
+      if (client != null) {
+        data = data.copyFromClient(client,
+            currencies: currencies, paymentMethods: paymentMethods);
+      }
+    }
+    return data;
+  }
+
   //Validate
   bool isValid(BuildContext context) {
     if (name.isEmpty ||
-        phone.isEmpty ||
-        email.isEmpty ||
+        // phone.isEmpty ||
+        // email.isEmpty ||
         paymentMethod == null ||
         currency == null) {
-      context.showError(
-          "Please fill ${name.isEmpty ? "name, " : ""}${phone.isEmpty ? "phone, " : ""}${email.isEmpty ? "email, " : ""}${paymentMethod == null ? "payment method, " : ""}${currency == null ? "currency, " : ""}");
+      context.showError("Please fill ${name.isEmpty ? "name, " : ""}"
+          // "${phone.isEmpty ? "phone, " : ""}${email.isEmpty ? "email, " : ""}"
+          "${paymentMethod == null ? "payment method, " : ""}${currency == null ? "currency, " : ""}");
       return false;
     }
     return name.isNotEmpty &&
@@ -378,6 +398,23 @@ class AddressData extends Equatable {
       email: quote.email,
       locationId: quote.locationId,
     );
+  }
+
+  AddressData copyFromProperty(
+    PropertyMd pr, {
+    required List<ShiftMd> shifts,
+    required List<LocationMd> locations,
+    required List<CountryMd> countries,
+  }) {
+    AddressData data = AddressData();
+    final shift = shifts.firstWhereOrNull((element) => element.id == pr.id);
+    if (shift != null) {
+      final location = shift.getLocationMd(locations);
+      if (location != null) {
+        data = data.copyFromAddress(location.address, countries: countries);
+      }
+    }
+    return data;
   }
 
   //Validate

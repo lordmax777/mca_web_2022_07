@@ -1006,9 +1006,9 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
     if (!timingData.isValid(context)) {
       return;
     }
-    if (!productData.isValid(context)) {
-      return;
-    }
+    // if (!productData.isValid(context)) {
+    //   return;
+    // }
     if (!guestData.isValid(context)) {
       return;
     }

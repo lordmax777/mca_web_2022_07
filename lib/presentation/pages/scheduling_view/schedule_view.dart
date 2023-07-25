@@ -237,11 +237,11 @@ class _TableState extends State<_Table> {
   final CalendarController _calendarController = CalendarController();
   final ScheduleState state = ScheduleState();
 
-  List<UserMd> get users => [...widget.appState.generalState.users];
-  List<PropertyMd> get properties =>
-      [...widget.appState.generalState.properties];
-  List<AllocationMd> get allocations =>
-      [...widget.appState.generalState.allocations];
+  List<UserMd> get users => [...appState.generalState.users];
+  List<PropertyMd> get properties => [...appState.generalState.properties];
+  List<AllocationMd> get allocations => [...appState.generalState.allocations];
+
+  AppState get appState => widget.appState;
   // bool get isDay => conf.isDay(_calendarController.view!);
   // bool get isWeek => conf.isWeek(_calendarController.view!);
   // bool get isMonth => conf.isMonth(_calendarController.view!);
@@ -526,14 +526,21 @@ class _TableState extends State<_Table> {
       CalendarTapDetails details, Offset? position) async {
     final DateTime? date = details.date;
     UserMd? resource;
+    PropertyMd? property;
     final resourceId = details.resource?.id.toString().substring(3);
+
     if (resourceId != null) {
       final int? resourceIdInt = int.tryParse(resourceId);
       if (resourceIdInt != null) {
         final user =
             users.firstWhereOrNull((element) => element.id == resourceIdInt);
+        final pr = properties
+            .firstWhereOrNull((element) => element.id == resourceIdInt);
         if (user != null) {
           resource = user;
+        }
+        if (pr != null) {
+          property = pr;
         }
       }
     }
@@ -585,12 +592,28 @@ class _TableState extends State<_Table> {
                 pageBuilder: (context, animation, secondaryAnimation) {
                   return QuickShiftPopup(
                     shiftData: ShiftData.init(
+                      personalData: property != null
+                          ? PersonalData().copyFromProperty(property,
+                              paymentMethods:
+                                  appState.generalState.lists.paymentMethods,
+                              clients: appState.generalState.clients,
+                              currencies:
+                                  appState.generalState.lists.currencies,
+                              shifts: appState.generalState.lists.shifts)
+                          : null,
+                      addressData: property != null
+                          ? AddressData().copyFromProperty(property,
+                              locations: appState.generalState.locations,
+                              shifts: appState.generalState.lists.shifts,
+                              countries: appState.generalState.lists.countries)
+                          : null,
                       teamData:
                           TeamData(users: [if (resource != null) resource]),
                       timeData: TimeData.init().copyWith(
-                          start: date,
-                          repeat: appStore.state.generalState.lists.workRepeats
-                              .firstOrNull),
+                        start: date,
+                        repeat: appStore
+                            .state.generalState.lists.workRepeats.firstOrNull,
+                      ),
                     ),
                   );
                 }) ??

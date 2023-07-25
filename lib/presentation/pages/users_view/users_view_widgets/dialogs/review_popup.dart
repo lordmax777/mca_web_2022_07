@@ -99,6 +99,7 @@ class _ReviewPopupState extends State<ReviewPopup>
                           }),
                     ),
                     UserCardItem(
+                      isRequired: true,
                       title: "Conducted On",
                       simpleText:
                           selectedDate1?.toApiDateWithDash ?? "Select Date",

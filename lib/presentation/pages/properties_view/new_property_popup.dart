@@ -88,9 +88,10 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
       if (result1.isLeft) {
         propertyDetail = result1.left;
         updateUI();
-      } else {
-        context.showError(result1.right.message);
       }
+      // else {
+      // context.showError(result1.right.message);
+      // }
     });
   }
 

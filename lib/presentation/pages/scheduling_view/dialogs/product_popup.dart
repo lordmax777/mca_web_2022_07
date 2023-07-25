@@ -127,6 +127,8 @@ class _ProductPopupState extends State<ProductPopup> {
                         } else {
                           context.showError('Something went wrong');
                         }
+                      } else if (id.isRight) {
+                        context.showError(id.right.message);
                       } else {
                         context.showError('Cannot create a product!');
                       }
