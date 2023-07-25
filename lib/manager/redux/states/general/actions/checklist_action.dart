@@ -42,7 +42,6 @@ final class GetChecklistsAction {
         query['user'] = action.filterUser!.toLowerCase();
       }
       // query['datetime'] = "10:50";
-      logger('query $query');
       String? encodedQuery;
       if (query.isNotEmpty) {
         encodedQuery = base64.encode(utf8.encode(jsonEncode(query)));

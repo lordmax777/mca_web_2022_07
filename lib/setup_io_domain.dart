@@ -3,6 +3,6 @@ import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 
 void setupDomain() {
-  logger("SETUP DOMAIN - IO - setting to default: $domainDevStr");
-  DependencyManager.instance.db.setDomain(domainDevStr);
+  logger("SETUP DOMAIN - IO - setting to default: $domainRealStr");
+  DependencyManager.instance.db.setDomain(domainRealStr);
 }

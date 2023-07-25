@@ -7,13 +7,13 @@ void setupDomain() {
   //1. find the base url
 
   final domain = kDebugMode
-      ? domainDevStr
+      ? domainRealStr
       :
       // domainDevStr;
       html.window.location.origin;
   String dom = domain.replaceAll("http://", "").replaceAll("https://", "");
   if (dom == "mca-web-2022-07.vercel.app") {
-    dom = domainDevStr;
+    dom = domainRealStr;
   }
   DependencyManager.instance.db.setDomain(dom);
 

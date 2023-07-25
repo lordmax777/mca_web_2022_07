@@ -186,11 +186,14 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
   }
 
   Widget _buildCompanyLogo() {
+    print("Company logo: ${generalState.companyInfo.logoBytes}");
     return SelectAvatarWidget(
       width: fieldWidth,
       height: 200,
       title: "Company Logo",
-      image: generalState.companyInfo.logoBytes,
+      image: generalState.companyInfo.logoBytes.isEmpty
+          ? null
+          : generalState.companyInfo.logoBytes,
       onImageChanged: (value) {
         file1 = value;
       },

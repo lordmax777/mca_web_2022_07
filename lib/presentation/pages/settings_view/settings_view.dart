@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/settings_view/tabs/availability_tab.dart';
 import 'package:mca_dashboard/presentation/pages/settings_view/tabs/change_password_tab.dart';
+import 'package:mca_dashboard/presentation/pages/settings_view/tabs/color_tab.dart';
 import 'package:mca_dashboard/presentation/pages/settings_view/tabs/holidays_tab.dart';
 import 'package:mca_dashboard/presentation/pages/settings_view/tabs/login_status_tab.dart';
 
@@ -18,6 +19,7 @@ class SettingsView extends StatelessWidget {
     const TabChild(tabName: "Login and Status", child: LoginStatusTab()),
     const TabChild(tabName: "Holidays and Sick", child: HolidaysTab()),
     const TabChild(tabName: "Shift", child: ShiftTab()),
+    const TabChild(tabName: "Color Theme", child: ColorTab()),
   ];
 
   @override

@@ -920,90 +920,148 @@ final class ListMd extends Equatable {
 
   factory ListMd.fromJson(Map<String, dynamic> json) {
     return ListMd(
-      clients: (json['clients'] as List<dynamic>)
+      clients:
+      json['clients'] == null ? [] :
+      (json['clients'] as List<dynamic>)
           .map((e) => ClientShortMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      colorSchemas: (json['colour_schemas'] as List<dynamic>)
+      colorSchemas:
+      json['colour_schemas'] == null ? [] :
+      (json['colour_schemas'] as List<dynamic>)
           .map((e) => ColorSchemeMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      contractStarts: (json['contract_starts'] as List<dynamic>)
+      contractStarts:
+      json['contract_starts'] == null ? [] :
+      (json['contract_starts'] as List<dynamic>)
           .map((e) => ContractStartMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      contractTypes: (json['contract_types'] as List<dynamic>)
+      contractTypes:
+      json['contract_types'] == null ? [] :
+      (json['contract_types'] as List<dynamic>)
           .map((e) => ContractTypeMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      countries: (json['countries'] as List<dynamic>)
+      countries:
+      json['countries'] == null ? [] :
+      (json['countries'] as List<dynamic>)
           .map((e) => CountryMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      currencies: (json['currencies'] as List<dynamic>)
+      currencies:
+      json['currencies'] == null ? [] :
+      (json['currencies'] as List<dynamic>)
           .map((e) => CurrencyMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      ethnics: (json['ethnics'] as List<dynamic>)
+      ethnics:
+      json['ethnics'] == null ? [] :
+      (json['ethnics'] as List<dynamic>)
           .map((e) => EthnicMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      groups: (json['groups'] as List<dynamic>)
+      groups:
+
+      json['groups'] == null ? [] :
+      (json['groups'] as List<dynamic>)
           .map((e) => GroupMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      handoverTypes: (json['handover_types'] as List<dynamic>)
+      handoverTypes:
+      json['handover_types'] == null ? [] :
+      (json['handover_types'] as List<dynamic>)
           .map((e) => HandoverTypeMd.fromJson(e as Map<String, dynamic>))
           .toList(),
       holidayCalculationTypes:
+
+      json['holiday_calculation_types'] == null ? [] :
           (json['holiday_calculation_types'] as List<dynamic>)
               .map((e) =>
                   HolidayCalculationTypeMd.fromJson(e as Map<String, dynamic>))
               .toList(),
-      jobTitles: (json['jobtitles'] as List<dynamic>)
+      jobTitles:
+      json['jobtitles'] == null ? [] :
+      (json['jobtitles'] as List<dynamic>)
           .map((e) => JobTitleMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      locations: (json['locations'] as List<dynamic>)
+      locations:
+      json['locations'] == null ? [] :
+      (json['locations'] as List<dynamic>)
           .map((e) => LocationShortMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      loginMethods: (json['login_methods'] as List<dynamic>)
+      loginMethods:
+          json['login_methods'] == null ? [] :
+      (json['login_methods'] as List<dynamic>)
           .map((e) => LoginMethodMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      maritalStatuses: (json['marital_statuses'] as List<dynamic>)
+      maritalStatuses:
+          json['marital_statuses'] == null ? [] :
+      (json['marital_statuses'] as List<dynamic>)
           .map((e) => MaritalStatusMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      paymentMethods: (json['payment_methods'] as List<dynamic>)
+      paymentMethods:
+          json['payment_methods'] == null ? [] :
+      (json['payment_methods'] as List<dynamic>)
           .map((e) => PaymentMethodMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      qualifications: (json['qualifications'] as List<dynamic>)
+      qualifications:
+      json['qualifications'] == null ? [] :
+      (json['qualifications'] as List<dynamic>)
           .map((e) => QualificationMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      qualificationLevels: (json['qualification_levels'] as List<dynamic>)
+      qualificationLevels:
+          json['qualification_levels'] == null ? [] :
+      (json['qualification_levels'] as List<dynamic>)
           .map((e) => QualificationLevelMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      religions: (json['religions'] as List<dynamic>)
+      religions:
+
+      json['religions'] == null ? [] :
+      (json['religions'] as List<dynamic>)
           .map((e) => ReligionMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      requestTypes: (json['request_types'] as List<dynamic>)
+      requestTypes:
+      json['request_types'] == null ? [] :
+      (json['request_types'] as List<dynamic>)
           .map((e) => RequestTypeMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      shifts: (json['shifts'] as List<dynamic>)
+      shifts:
+      json['shifts'] == null ? [] :
+      (json['shifts'] as List<dynamic>)
           .map((e) => ShiftMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      services: (json['services'] as List<dynamic>)
+      services:
+      json['services'] == null ? [] :
+      (json['services'] as List<dynamic>)
           .map((e) => ServiceMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      specialRates: (json['special_rates'] as List<dynamic>)
+      specialRates:
+          json['special_rates'] == null ? [] :
+      (json['special_rates'] as List<dynamic>)
           .map((e) => SpecialRateMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      warehouses: (json['storages'] as List<dynamic>)
+      warehouses:
+      json['storages'] == null ? [] :
+      (json['storages'] as List<dynamic>)
           .map((e) => WarehouseShortMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      warehouseItems: (json['storage_items'] as List<dynamic>)
+      warehouseItems:
+      json['storage_items'] == null ? [] :
+      (json['storage_items'] as List<dynamic>)
           .map((e) => WarehouseItemShortMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      roles: (json['roles'] as List<dynamic>)
+      roles:
+      json['roles'] == null ? [] :
+       (json['roles'] as List<dynamic>)
           .map((e) => RoleMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      taxes: (json['taxes'] as List<dynamic>)
+      taxes:
+      json['taxes'] == null ? [] :
+       (json['taxes'] as List<dynamic>)
           .map((e) => TaxMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      visas: (json['visas'] as List<dynamic>)
+      visas:
+      json['visas'] == null ? [] :
+      (json['visas'] as List<dynamic>)
           .map((e) => VisaMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-      workRepeats: (json['work_repeats'] as List<dynamic>)
+      workRepeats:
+          json['work_repeats'] == null ? [] :
+      (json['work_repeats'] as List<dynamic>)
           .map((e) => WorkRepeatMd.fromJson(e as Map<String, dynamic>))
           .toList(),
       userTitles: GlobalConstants.userTitleTypes.entries
@@ -1012,10 +1070,14 @@ final class ListMd extends Equatable {
       languages: GlobalConstants.userDisplayLanguages.entries
           .map((e) => LanguageMd(code: e.key, name: e.value))
           .toList(),
-      statuses: (json['statuses'] as List<dynamic>)
+      statuses:
+      json['statuses'] == null ? [] :
+      (json['statuses'] as List<dynamic>)
           .map((e) => StatusMd.fromJson(e as Map<String, dynamic>))
           .toList(),
-          payPeriods:  (json['pay_periods'] as List<dynamic>)
+          payPeriods:
+          json['pay_periods'] == null ? [] :
+          (json['pay_periods'] as List<dynamic>)
           .map((e) => PayPeriodMd.fromJson(e as Map<String, dynamic>))
           .toList()
     );

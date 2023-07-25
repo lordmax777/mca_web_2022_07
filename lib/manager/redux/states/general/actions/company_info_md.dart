@@ -188,7 +188,6 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         annualHolidayEntitlement:
             annualHolidayEntitlement ?? companyInfo.ahe.toInt(),
         timezone: timezone ?? companyInfo.timezone,
-        currencyId: currencyId ?? companyInfo.currency.id,
         logo: logo ?? companyInfo.logo,
         rotaLength: rotaLength ?? companyInfo.rotalength.toInt(),
         autoLogoutTime: autoLogoutTime ?? companyInfo.autoLogout.toInt(),
@@ -226,6 +225,7 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         status: status ?? companyInfo.status,
         showTitle: showTitle ?? companyInfo.showTitle,
         lockingTime: lockingTime, //todo:
+        // currencyId: currencyId ?? companyInfo.currency.id,//todo:
       );
       await appStore.dispatch(const GetCompanyInfoAction());
       return res.response.statusCode == 200;

@@ -63,6 +63,9 @@ class _ShiftTabState extends State<ShiftTab> with FormsMixin<ShiftTab> {
                 SpacedColumn(
                   verticalSpace: 36,
                   children: [
+                    Text("Shift Timings",
+                        style: context.textTheme.headlineLarge),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -289,7 +292,6 @@ class _ShiftTabState extends State<ShiftTab> with FormsMixin<ShiftTab> {
                 ),
                 SpacedColumn(verticalSpace: 36, children: [
                   Text("Reminders", style: context.textTheme.headlineLarge),
-
                   //Late reminder (Minutes)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -87,7 +87,12 @@ class _SelectAvatarWidgetState extends State<SelectAvatarWidget> {
                               widget.image!,
                               fit: BoxFit.fitHeight,
                             )
-                          : const SizedBox(),
+                          : const Center(
+                              child: Text(
+                                "No image. Click to add",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
                 ),
                 const Positioned(
                     bottom: 10, right: 10, child: Icon(Icons.add_a_photo)),
