@@ -17,7 +17,7 @@ export 'actions/clients_action.dart';
 export 'actions/create_user_review_action.dart';
 export 'actions/delete_user_review_action.dart';
 export 'actions/refresh_token_action.dart';
-export 'actions/company_info_md.dart';
+export 'actions/company_action.dart';
 export 'actions/quotes_action.dart';
 export 'actions/warehouses_action.dart';
 export 'actions/allocations_action.dart';

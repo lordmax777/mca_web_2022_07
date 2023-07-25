@@ -230,6 +230,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case GetLanguagesAction:
         return action.fetch(store.state);
+      case ChangeLanguageAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }

@@ -87,7 +87,8 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
             }
             context.futureLoading(() async {
               final res = await dispatch<bool>(
-                  SaveCompanyDetailsAction(locale: selected1!.additionalId!));
+                  // SaveCompanyDetailsAction(locale: selected1!.additionalId!)
+                  ChangeLanguageAction(selected1!.additionalId!));
               if (res.isLeft && res.left) {
                 context.showSuccess('Language changed successfully',
                     onClose: () {

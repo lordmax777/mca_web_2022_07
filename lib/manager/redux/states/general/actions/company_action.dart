@@ -137,7 +137,7 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
   final bool? showTitle;
 
   const SaveCompanyDetailsAction({
-    this.locale,
+    @Deprecated('Use [ChangeLanguageAction] instead') this.locale,
     this.status,
     this.showTitle,
     this.companyName,
@@ -226,6 +226,21 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         // currencyId: currencyId ?? companyInfo.currency.id,//todo:
       );
       await appStore.dispatch(const GetCompanyInfoAction());
+      return res.response.statusCode == 200;
+    });
+  }
+}
+
+class ChangeLanguageAction with ActionMixin<bool> {
+  final String locale;
+
+  const ChangeLanguageAction(this.locale);
+
+  @override
+  Future<Either<bool, ErrorMd>> fetch(AppState state) {
+    return apiCall(() async {
+      final res =
+          await DependencyManager.instance.apiClient.postLanguage(locale);
       return res.response.statusCode == 200;
     });
   }

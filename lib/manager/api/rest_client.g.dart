@@ -2781,8 +2781,8 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'oldPassword': oldPassword,
-      'newPassword': newPassword,
+      'oldpassword': oldPassword,
+      'newpassword': newPassword,
     };
     final _result =
         await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
@@ -2793,7 +2793,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/userdetails/{id}/password',
+              '/api/fe/myaccount/password',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -2917,6 +2917,31 @@ class _ApiClient implements ApiClient {
       method: 'GET',
       headers: _headers,
       extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/myaccount/language',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> postLanguage(language) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {'language': language};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
     )
             .compose(
               _dio.options,

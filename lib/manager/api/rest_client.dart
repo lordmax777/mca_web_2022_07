@@ -669,13 +669,12 @@ abstract class ApiClient {
     @Field() String? comment,
   });
 
-  //todo:
   //change account password
-  @POST("/api/fe/userdetails/{id}/password")
+  @POST("/api/fe/myaccount/password")
   @FormUrlEncoded()
   Future<HttpResponse> changeAccountPassword({
-    @Field() required String oldPassword,
-    @Field() required String newPassword,
+    @Field("oldpassword") required String oldPassword,
+    @Field('newpassword') required String newPassword,
   });
 
   //save company details
@@ -764,7 +763,7 @@ abstract class ApiClient {
     @Field('undotime') int? undoTime,
 
     ///Default locale
-    @Field('locale') String? locale,
+    @Deprecated("use [postLanguage] instead") @Field('locale') String? locale,
 
     ///Indicate if the company is active or not
     @Field('status') bool? status,
@@ -776,4 +775,9 @@ abstract class ApiClient {
   //GET languages
   @GET("/api/fe/myaccount/language")
   Future<HttpResponse> getLanguages();
+
+  //POST language
+  @POST("/api/fe/myaccount/language")
+  @FormUrlEncoded()
+  Future<HttpResponse> postLanguage(@Field('language') String language);
 }

@@ -42,7 +42,6 @@ class _ChangePasswordTabState extends State<ChangePasswordTab>
       actions: [
         ElevatedButton(
           onPressed: () {
-            //todo:
             if (!isFormValid) return;
             if (controller2.text != controller3.text) {
               context.showError('Passwords do not match');
@@ -54,7 +53,10 @@ class _ChangePasswordTabState extends State<ChangePasswordTab>
                 newPassword: controller2.text,
               ));
               if (res.isLeft && res.left) {
-                context.pop(true);
+                controller1.clear();
+                controller2.clear();
+                controller3.clear();
+                context.showSuccess('Password changed successfully');
               } else if (res.isRight) {
                 context.showError(res.right.message);
               } else {

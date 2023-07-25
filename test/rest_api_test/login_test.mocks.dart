@@ -2624,4 +2624,20 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
           ),
         )),
       ) as _i4.Future<_i2.HttpResponse<dynamic>>);
+  @override
+  _i4.Future<_i2.HttpResponse<dynamic>> postLanguage(String? language) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #postLanguage,
+          [language],
+        ),
+        returnValue: _i4.Future<_i2.HttpResponse<dynamic>>.value(
+            _FakeHttpResponse_0<dynamic>(
+          this,
+          Invocation.method(
+            #postLanguage,
+            [language],
+          ),
+        )),
+      ) as _i4.Future<_i2.HttpResponse<dynamic>>);
 }
