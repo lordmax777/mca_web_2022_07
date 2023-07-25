@@ -642,26 +642,30 @@ abstract class ApiClient {
   Future<HttpResponse> getStockHistory(
       {@Path() required int storageid, @Path() required int itemid});
 
-  //todo:
+  //todo: need to test when test api is working
   //get account user availability
-  @GET("/api/fe/userdetails/{id}/availability")
-  Future<HttpResponse> getAccountUserAvailability(@Path() String id);
+  @GET("/api/fe/myaccount/unavailability")
+  Future<HttpResponse> getAccountUserAvailability();
 
-  //todo:
+  //todo: need to test when test api is working
+  //todo: not sure if need to pass start or end date
   //delete account user availability
-  @DELETE("/api/fe/userdetails/{id}/availability")
-  Future<HttpResponse> deleteAccountUserAvailability(@Path() String id);
+  @DELETE("/api/fe/myaccount/unavailability")
+  Future<HttpResponse> deleteAccountUserAvailability(
 
-  //todo:
+      ///date in ISO format: yyyy-MM-dd
+      @Query("date") String date);
+
+  //todo: need to test when test api is working
   //create account user availability: startDate, endDate, startTime, endTime, isFullDay, comment
-  @POST("/api/fe/userdetails/{id}/availability")
+  @POST("/api/fe/myaccount/unavailability")
   @FormUrlEncoded()
   Future<HttpResponse> createAccountUserAvailability({
-    @Field() required String startDate,
-    @Field() String? endDate,
-    @Field() String? startTime,
-    @Field() String? endTime,
-    @Field() required bool isFullDay,
+    @Field("start_date") required String startDate,
+    @Field('finish_date') required String endDate,
+    @Field('full_day') required bool isFullDay,
+    @Field('start_time') String? startTime,
+    @Field('finish_time') String? endTime,
     @Field() String? comment,
   });
 
@@ -768,4 +772,8 @@ abstract class ApiClient {
     ///Indicate if the title is part of the full name
     @Field('showtitle') bool? showTitle,
   });
+
+  //GET languages
+  @GET("/api/fe/myaccount/language")
+  Future<HttpResponse> getLanguages();
 }

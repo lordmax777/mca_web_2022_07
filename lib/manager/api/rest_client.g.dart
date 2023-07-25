@@ -2684,7 +2684,7 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> getAccountUserAvailability(id) async {
+  Future<HttpResponse<dynamic>> getAccountUserAvailability() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -2697,7 +2697,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/userdetails/${id}/availability',
+              '/api/fe/myaccount/unavailability',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -2708,9 +2708,9 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<HttpResponse<dynamic>> deleteAccountUserAvailability(id) async {
+  Future<HttpResponse<dynamic>> deleteAccountUserAvailability(date) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'date': date};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =
@@ -2721,7 +2721,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/userdetails/${id}/availability',
+              '/api/fe/myaccount/unavailability',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -2734,10 +2734,10 @@ class _ApiClient implements ApiClient {
   @override
   Future<HttpResponse<dynamic>> createAccountUserAvailability({
     required startDate,
-    endDate,
+    required endDate,
+    required isFullDay,
     startTime,
     endTime,
-    required isFullDay,
     comment,
   }) async {
     const _extra = <String, dynamic>{};
@@ -2745,11 +2745,11 @@ class _ApiClient implements ApiClient {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = {
-      'startDate': startDate,
-      'endDate': endDate,
-      'startTime': startTime,
-      'endTime': endTime,
-      'isFullDay': isFullDay,
+      'start_date': startDate,
+      'finish_date': endDate,
+      'full_day': isFullDay,
+      'start_time': startTime,
+      'finish_time': endTime,
       'comment': comment,
     };
     _data.removeWhere((k, v) => v == null);
@@ -2762,7 +2762,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/userdetails/{id}/availability',
+              '/api/fe/myaccount/unavailability',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -2897,6 +2897,30 @@ class _ApiClient implements ApiClient {
             .compose(
               _dio.options,
               '/api/fe/company',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<dynamic>> getLanguages() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/fe/myaccount/language',
               queryParameters: queryParameters,
               data: _data,
             )

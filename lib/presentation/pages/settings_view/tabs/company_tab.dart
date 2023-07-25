@@ -46,7 +46,7 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
   final generalState = appStore.state.generalState;
   final double fieldWidth = 450;
   final currencies = [...appStore.state.generalState.lists.currencies];
-  final languages = [...appStore.state.generalState.lists.languages];
+  final languages = [...appStore.state.generalState.languages];
   late final timezones = getTimezones().keys.toList();
 
   @override

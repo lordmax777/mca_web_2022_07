@@ -228,6 +228,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case SaveCompanyDetailsAction:
         return action.fetch(store.state);
+      case GetLanguagesAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }
@@ -342,6 +344,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           appStore.dispatch(const GetChecklistTemplatesAction()) as Future,
           appStore.dispatch(const GetApprovalsAction()) as Future,
           appStore.dispatch(const GetChecklistsAction(page: 1)) as Future,
+          appStore.dispatch(const GetLanguagesAction()) as Future,
         ]);
         return true;
       });
@@ -1100,7 +1103,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       final res = await deps.apiClient.getUserDetails(action.userId.toString());
       return UserDataSource.fromJson(
         res.data,
-        languages: list.languages,
+        languages: state.generalState.languages,
         userTitles: list.userTitles,
         countries: list.countries,
         locations: list.locations,

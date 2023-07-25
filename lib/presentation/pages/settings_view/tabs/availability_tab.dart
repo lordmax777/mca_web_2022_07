@@ -17,9 +17,8 @@ class _AvailabilityTabState extends State<AvailabilityTab>
             AccountAvailabilityMd> {
   @override
   Future<List<AccountAvailabilityMd>?> fetch() async {
-    //todo:
     final res = await dispatch<List<AccountAvailabilityMd>>(
-        const GetAccountUserAvailabilityAction("todo:"));
+        const GetAccountUserAvailabilityAction());
     return mockedUserAccountAvailabilityList;
 
     if (res.isLeft) {
@@ -136,9 +135,9 @@ class _AvailabilityTabState extends State<AvailabilityTab>
     }
     final List<String> delFailed = [];
     for (final row in selected) {
-      final id = row.cells['action']!.value.id;
-      final res = await dispatch<bool>(
-          DeleteAccountUserAvailabilityAction(id.toString()));
+      final date = DateTime.parse(row.cells['action']!.value.startDate);
+      final res =
+          await dispatch<bool>(DeleteAccountUserAvailabilityAction(date));
       if (res.isRight) {
         delFailed.add(row.cells['startDate']!.value);
       }

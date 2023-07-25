@@ -34,5 +34,6 @@ GeneralState _updateGeneralState(
     checklistTemplates: action.checklistTemplates ?? state.checklistTemplates,
     approvals: action.approvals ?? state.approvals,
     checklists: action.checklists ?? state.checklists,
+    languages: action.languages ?? state.languages,
   );
 }

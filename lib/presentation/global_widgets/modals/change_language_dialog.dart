@@ -34,19 +34,18 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
     });
   }
 
-  final languages = [...appStore.state.generalState.lists.languages];
+  final languages = [...appStore.state.generalState.languages];
 
   @override
   Widget build(BuildContext context) {
+    logger(languages.length);
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text('Change language'),
           IconButton(
-            onPressed: () {
-              context.pop();
-            },
+            onPressed: context.pop,
             icon: const Icon(Icons.close, color: Colors.black),
           ),
         ],

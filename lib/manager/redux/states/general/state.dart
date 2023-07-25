@@ -73,6 +73,8 @@ class GeneralState extends Equatable {
     return locs;
   }
 
+  final List<LanguageMd> languages;
+
   const GeneralState({
     required this.formatMd,
     required this.users,
@@ -89,6 +91,7 @@ class GeneralState extends Equatable {
     required this.checklistTemplates,
     required this.approvals,
     required this.checklists,
+    required this.languages,
   });
 
   factory GeneralState.initial() {
@@ -115,6 +118,7 @@ class GeneralState extends Equatable {
         closedRequests: [],
       ),
       checklists: const ChecklistFullMd.init(),
+      languages: const [],
     );
   }
 
@@ -134,6 +138,7 @@ class GeneralState extends Equatable {
     List<ChecklistTemplateMd>? checklistTemplates,
     ApprovalMd? approvals,
     ChecklistFullMd? checklists,
+    List<LanguageMd>? languages,
   }) {
     return GeneralState(
       formatMd: formatMd ?? this.formatMd,
@@ -151,6 +156,7 @@ class GeneralState extends Equatable {
       checklistTemplates: checklistTemplates ?? this.checklistTemplates,
       approvals: approvals ?? this.approvals,
       checklists: checklists ?? this.checklists,
+      languages: languages ?? this.languages,
     );
   }
 
@@ -171,6 +177,7 @@ class GeneralState extends Equatable {
         checklistTemplates,
         approvals,
         checklists,
+        languages,
       ];
 }
 
@@ -191,6 +198,7 @@ class UpdateGeneralState {
   final List<ChecklistTemplateMd>? checklistTemplates;
   final ApprovalMd? approvals;
   final ChecklistFullMd? checklists;
+  final List<LanguageMd>? languages;
 
   const UpdateGeneralState({
     this.isReset = false,
@@ -209,5 +217,6 @@ class UpdateGeneralState {
     this.checklistTemplates,
     this.approvals,
     this.checklists,
+    this.languages,
   });
 }

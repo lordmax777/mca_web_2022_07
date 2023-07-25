@@ -2379,46 +2379,45 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
         )),
       ) as _i4.Future<_i2.HttpResponse<dynamic>>);
   @override
-  _i4.Future<_i2.HttpResponse<dynamic>> getAccountUserAvailability(
-          String? id) =>
+  _i4.Future<_i2.HttpResponse<dynamic>> getAccountUserAvailability() =>
       (super.noSuchMethod(
         Invocation.method(
           #getAccountUserAvailability,
-          [id],
+          [],
         ),
         returnValue: _i4.Future<_i2.HttpResponse<dynamic>>.value(
             _FakeHttpResponse_0<dynamic>(
           this,
           Invocation.method(
             #getAccountUserAvailability,
-            [id],
+            [],
           ),
         )),
       ) as _i4.Future<_i2.HttpResponse<dynamic>>);
   @override
   _i4.Future<_i2.HttpResponse<dynamic>> deleteAccountUserAvailability(
-          String? id) =>
+          String? date) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteAccountUserAvailability,
-          [id],
+          [date],
         ),
         returnValue: _i4.Future<_i2.HttpResponse<dynamic>>.value(
             _FakeHttpResponse_0<dynamic>(
           this,
           Invocation.method(
             #deleteAccountUserAvailability,
-            [id],
+            [date],
           ),
         )),
       ) as _i4.Future<_i2.HttpResponse<dynamic>>);
   @override
   _i4.Future<_i2.HttpResponse<dynamic>> createAccountUserAvailability({
     required String? startDate,
-    String? endDate,
+    required String? endDate,
+    required bool? isFullDay,
     String? startTime,
     String? endTime,
-    required bool? isFullDay,
     String? comment,
   }) =>
       (super.noSuchMethod(
@@ -2428,9 +2427,9 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
           {
             #startDate: startDate,
             #endDate: endDate,
+            #isFullDay: isFullDay,
             #startTime: startTime,
             #endTime: endTime,
-            #isFullDay: isFullDay,
             #comment: comment,
           },
         ),
@@ -2443,9 +2442,9 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
             {
               #startDate: startDate,
               #endDate: endDate,
+              #isFullDay: isFullDay,
               #startTime: startTime,
               #endTime: endTime,
-              #isFullDay: isFullDay,
               #comment: comment,
             },
           ),
@@ -2607,6 +2606,21 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
               #status: status,
               #showTitle: showTitle,
             },
+          ),
+        )),
+      ) as _i4.Future<_i2.HttpResponse<dynamic>>);
+  @override
+  _i4.Future<_i2.HttpResponse<dynamic>> getLanguages() => (super.noSuchMethod(
+        Invocation.method(
+          #getLanguages,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.HttpResponse<dynamic>>.value(
+            _FakeHttpResponse_0<dynamic>(
+          this,
+          Invocation.method(
+            #getLanguages,
+            [],
           ),
         )),
       ) as _i4.Future<_i2.HttpResponse<dynamic>>);

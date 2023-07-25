@@ -52,6 +52,7 @@ class _CreateNewUnavToWorkPopupState extends State<CreateNewUnavToWorkPopup>
           if (checked1)
             UserCardItem(
               title: "End Date",
+              isRequired: true,
               simpleText:
                   controller2.text.isEmpty ? "Select date" : controller2.text,
               onSimpleTextTapped: () {
@@ -138,14 +139,18 @@ class _CreateNewUnavToWorkPopupState extends State<CreateNewUnavToWorkPopup>
         TextButton(
           onPressed: () {
             if (!isFormValid) return;
+            if (controller1.text.isEmpty) {
+              return context.showError("Start date is required");
+            }
+            if (controller2.text.isEmpty && !checked1) {
+              return context.showError("End date is required");
+            }
             context.futureLoading(() async {
               final res = await dispatch<bool>(
                   CreateAccountUserAvailabilityAction(
                       startDate:
                           DateFormat("dd/MM/yyyy").parse(controller1.text),
-                      endDate: controller2.text.isEmpty
-                          ? null
-                          : DateFormat("dd/MM/yyyy").parse(controller2.text),
+                      endDate: DateFormat("dd/MM/yyyy").parse(controller2.text),
                       startTime: controller3.text.isEmpty
                           ? null
                           : TimeOfDay(

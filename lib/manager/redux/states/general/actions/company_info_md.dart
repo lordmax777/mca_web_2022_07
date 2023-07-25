@@ -8,15 +8,13 @@ final class GetCompanyInfoAction {
 
 final class GetAccountUserAvailabilityAction
     with ActionMixin<List<AccountAvailabilityMd>> {
-  final String id;
-
-  const GetAccountUserAvailabilityAction(this.id);
+  const GetAccountUserAvailabilityAction();
 
   @override
   fetch(AppState state) {
     return apiCall(() async {
       final res = await DependencyManager.instance.apiClient
-          .getAccountUserAvailability(id);
+          .getAccountUserAvailability();
       try {
         final data = res.data;
         return data
@@ -31,15 +29,15 @@ final class GetAccountUserAvailabilityAction
 }
 
 final class DeleteAccountUserAvailabilityAction with ActionMixin<bool> {
-  final String id;
+  final DateTime date;
 
-  const DeleteAccountUserAvailabilityAction(this.id);
+  const DeleteAccountUserAvailabilityAction(this.date);
 
   @override
   fetch(AppState state) {
     return apiCall(() async {
       final res = await DependencyManager.instance.apiClient
-          .deleteAccountUserAvailability(id);
+          .deleteAccountUserAvailability(date.toApiDateWithDash);
       return res.response.statusCode == 200;
     });
   }
@@ -71,7 +69,7 @@ final class CreateAccountUserAvailabilityAction with ActionMixin<bool> {
         isFullDay: isFullDay,
         comment: comment,
         startTime: startTime?.toApiTime,
-        endDate: endDate?.toApiDateWithDash,
+        endDate: endDate!.toApiDateWithDash,
         endTime: endTime?.toApiTime,
       );
       return res.response.statusCode == 200;

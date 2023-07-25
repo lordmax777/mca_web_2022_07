@@ -18,9 +18,10 @@ class UserGeneralTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, ListMd>(
-      converter: (store) => store.state.generalState.lists,
-      builder: (context, vm) {
+    return StoreConnector<AppState, GeneralState>(
+      converter: (store) => store.state.generalState,
+      builder: (context, state) {
+        final vm = state.lists;
         final titles = [...vm.userTitles];
         final maritalStatuses = [...vm.maritalStatuses];
         final countries = [...vm.countries];
@@ -42,7 +43,7 @@ class UserGeneralTab extends StatelessWidget {
             [...vm.groups].where((element) => element.active).toList();
         final locations =
             [...vm.locations].where((element) => element.active).toList();
-        final languages = [...vm.languages];
+        final languages = [...state.languages];
         final ethnics = [...vm.ethnics];
         final religions = [...vm.religions];
         return SingleChildScrollView(

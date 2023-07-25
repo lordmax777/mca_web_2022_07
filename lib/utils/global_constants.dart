@@ -14,12 +14,6 @@ class GlobalConstants {
     "prof": "Prof",
   };
 
-  static const Map<String, String> userDisplayLanguages = {
-    "en": "English",
-    "hu": "Hungarian",
-    "pt": "Portuguese",
-  };
-
   //Add your global constants here
   static const String debugusername = kDebugMode ? "13150519" : "";
   // "13150519";
