@@ -99,8 +99,8 @@ class PayrollDataSource with DataSourceMixin<PayrollDataSource> {
   factory PayrollDataSource.init({int? id}) {
     return PayrollDataSource(
       id: id,
-      contractEndDate: kDebugMode ? DateTime(2021, 08, 22) : null,
-      contractStartDate: kDebugMode ? DateTime(2021, 05, 22) : null,
+      contractEndDate: null,
+      contractStartDate: null,
       jobDescriptionController:
           TextEditingController(text: kDebugMode ? "Job Description" : null),
       holidaysCarriedOutController:
@@ -142,11 +142,10 @@ class PayrollDataSource with DataSourceMixin<PayrollDataSource> {
     if (jobTitle == null ||
         contractType == null ||
         contractStartDate == null ||
-        contractEndDate == null ||
         annualHolidayEntitlementStart == null ||
         holidayCalculationType == null) {
       context.showError(
-          "Please fill ${jobTitle == null ? "Job Title, " : ""}${contractType == null ? "Contract Type, " : ""}${contractStartDate == null ? "Contract Start Date, " : ""}${contractEndDate == null ? "Contract End Date, " : ""}${annualHolidayEntitlementStart == null ? "Annual Holiday Entitlement Start, " : ""}${holidayCalculationType == null ? "Holiday Calculation Type, " : ""}");
+          "Please fill ${jobTitle == null ? "Job Title, " : ""}${contractType == null ? "Contract Type, " : ""}${contractStartDate == null ? "Contract Start Date, " : ""}${annualHolidayEntitlementStart == null ? "Annual Holiday Entitlement Start, " : ""}${holidayCalculationType == null ? "Holiday Calculation Type, " : ""}");
       return false;
     }
     return true;

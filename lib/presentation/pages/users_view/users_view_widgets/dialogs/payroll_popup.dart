@@ -156,12 +156,12 @@ class _PayrollPopupState extends State<PayrollPopup> {
                           },
                         ),
                         UserCardItem(
-                          isRequired: true,
                           title: "End Date",
                           simpleText: data.contractEndDate?.toApiDateWithDash ??
                               "Select Date",
                           onSimpleTextTapped: () {
                             showDatePicker(
+                                    cancelText: "Clear",
                                     context: context,
                                     initialDate:
                                         data.contractEndDate ?? DateTime.now(),
@@ -170,8 +170,18 @@ class _PayrollPopupState extends State<PayrollPopup> {
                                 .then((value) {
                               if (value != null) {
                                 data = data.copyWith(contractEndDate: value);
-                                updateUI();
+                              } else {
+                                data = PayrollDataSource.init().copyWith(
+                                    id: data.id,
+                                    holidayCalculationType:
+                                        data.holidayCalculationType,
+                                    jobTitle: data.jobTitle,
+                                    annualHolidayEntitlementStart:
+                                        data.annualHolidayEntitlementStart,
+                                    contractType: data.contractType,
+                                    contractStartDate: data.contractStartDate);
                               }
+                              updateUI();
                             });
                           },
                         ),
