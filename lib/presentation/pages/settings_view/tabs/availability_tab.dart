@@ -19,7 +19,7 @@ class _AvailabilityTabState extends State<AvailabilityTab>
   Future<List<AccountAvailabilityMd>?> fetch() async {
     final res = await dispatch<List<AccountAvailabilityMd>>(
         const GetAccountUserAvailabilityAction());
-    return mockedUserAccountAvailabilityList;
+    // return mockedUserAccountAvailabilityList;
 
     if (res.isLeft) {
       return res.left;
@@ -68,13 +68,16 @@ class _AvailabilityTabState extends State<AvailabilityTab>
           field: 'action',
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
-            return rendererContext.actionMenuWidget(
-              onDelete: () {
-                onDelete(() async {
-                  return await deleteSelected(rendererContext.row);
-                }, showError: false);
-              },
-            );
+            return IconButton(
+                onPressed: () {
+                  onDelete(() async {
+                    return await deleteSelected(rendererContext.row);
+                  }, showError: false);
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ));
           },
         ),
       ];
@@ -84,8 +87,8 @@ class _AvailabilityTabState extends State<AvailabilityTab>
     return PlutoRow(cells: {
       'startDate': PlutoCell(value: model.startDate),
       'endDate': PlutoCell(value: model.endDate),
-      'startTime': PlutoCell(value: model.startTime),
-      'endTime': PlutoCell(value: model.endTime),
+      'startTime': PlutoCell(value: model.startTime ?? "-"),
+      'endTime': PlutoCell(value: model.endTime ?? "-"),
       'comment': PlutoCell(value: model.comment),
       'action': PlutoCell(value: model),
     });

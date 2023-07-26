@@ -12,7 +12,7 @@ call flutter clean
 call flutter pub get
 del pubspec.lock
 
-call flutter build web --release
+call flutter build web --release --web-renderer html
 
 REM rmdir /s /q website
 REM mkdir website

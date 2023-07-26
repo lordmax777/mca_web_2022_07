@@ -148,6 +148,7 @@ class _CreateNewUnavToWorkPopupState extends State<CreateNewUnavToWorkPopup>
             context.futureLoading(() async {
               final res = await dispatch<bool>(
                   CreateAccountUserAvailabilityAction(
+                      comment: controller5.text,
                       startDate:
                           DateFormat("dd/MM/yyyy").parse(controller1.text),
                       endDate: DateFormat("dd/MM/yyyy").parse(controller2.text),
