@@ -25,5 +25,5 @@ class GlobalConstants {
 
   static bool enableDebugCodes = kDebugMode;
 
-  static bool enableLoadingIndicator = kDebugMode;
+  static bool enableLoadingIndicator = true;
 }
