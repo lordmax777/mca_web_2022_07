@@ -234,14 +234,14 @@ class PersonalData extends Equatable {
         // email.isEmpty ||
         paymentMethod == null ||
         currency == null) {
-      context.showError("Please fill ${name.isEmpty ? "name, " : ""}"
-          // "${phone.isEmpty ? "phone, " : ""}${email.isEmpty ? "email, " : ""}"
-          "${paymentMethod == null ? "payment method, " : ""}${currency == null ? "currency, " : ""}");
+      context.showError(
+          "Please fill ${name.isEmpty ? "name, " : ""}${paymentMethod == null ? "payment method, " : ""}${currency == null ? "currency, " : ""}");
+      // "${phone.isEmpty ? "phone, " : ""}${email.isEmpty ? "email, " : ""}"
       return false;
     }
     return name.isNotEmpty &&
-        phone.isNotEmpty &&
-        email.isNotEmpty &&
+        // phone.isNotEmpty &&
+        // email.isNotEmpty &&
         paymentMethod != null &&
         currency != null;
   }

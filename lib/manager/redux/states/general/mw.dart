@@ -748,16 +748,18 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       }
       if (personal.email.isNotEmpty) {
         formData.fields.add(MapEntry('email', personal.email));
-      } else {
-        deps.navigation.showFail("Please enter email");
-        return -1;
       }
+      // else {
+      //   deps.navigation.showFail("Please enter email");
+      //   return -1;
+      // }
       if (personal.phone.isNotEmpty) {
         formData.fields.add(MapEntry('phone', personal.phone));
-      } else {
-        deps.navigation.showFail("Please enter phone");
-        return -1;
       }
+      // else {
+      //   deps.navigation.showFail("Please enter phone");
+      //   return -1;
+      // }
       formData.fields
           .add(MapEntry('payingDays', personal.paymentDays.toString()));
       formData.fields.add(MapEntry('active', time.active.toString()));

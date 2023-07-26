@@ -143,11 +143,12 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
           guestData: guestData.copyFromProperty(guestsSuccess.left));
       updateUI(() {});
       return;
-    } else if (guestsSuccess.isRight) {
-      if (showError) context.showError(guestsSuccess.right.message);
-    } else {
-      if (showError) context.showError("Unable to get guests");
     }
+    // else if (guestsSuccess.isRight) {
+    //   if (showError) context.showError(guestsSuccess.right.message);
+    // } else {
+    //   if (showError) context.showError("Unable to get guests");
+    // }
     shiftData = shiftData.copyWith(
         guestData: guestData.copyWith(
             max: 0, min: 0, bathrooms: 0, bedrooms: 0, notes: ""));

@@ -184,11 +184,12 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
           guestData: guestData.copyFromProperty(guestsSuccess.left));
       updateUI(() {});
       return;
-    } else if (guestsSuccess.isRight) {
-      context.showError(guestsSuccess.right.message);
-    } else {
-      context.showError("Unable to get guests");
     }
+    // else if (guestsSuccess.isRight) {
+    //   context.showError(guestsSuccess.right.message);
+    // } else {
+    //   context.showError("Unable to get guests");
+    // }
     shiftData = shiftData.copyWith(
         guestData: guestData.copyWith(
             max: 0, min: 0, bathrooms: 0, bedrooms: 0, notes: ""));
