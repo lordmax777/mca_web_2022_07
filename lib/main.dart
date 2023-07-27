@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/app.dart';
 import 'package:mca_dashboard/setup_domain.dart';
@@ -18,6 +19,10 @@ Future<void> main() async {
   setupDomain();
 
   EquatableConfig.stringify = true;
+  if (kDebugMode) {
+    runApp(const MCADashboardApp());
+    return;
+  }
   await SentryFlutter.init(
     (options) {
       options.dsn =

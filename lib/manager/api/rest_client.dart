@@ -763,7 +763,7 @@ abstract class ApiClient {
     @Field('undotime') int? undoTime,
 
     ///Default locale
-    @Deprecated("use [postLanguage] instead") @Field('locale') String? locale,
+    @Field('locale') String? locale,
 
     ///Indicate if the company is active or not
     @Field('status') bool? status,

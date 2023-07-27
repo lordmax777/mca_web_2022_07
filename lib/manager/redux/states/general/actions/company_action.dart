@@ -137,7 +137,7 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
   final bool? showTitle;
 
   const SaveCompanyDetailsAction({
-    @Deprecated('Use [ChangeLanguageAction] instead') this.locale,
+    this.locale,
     this.status,
     this.showTitle,
     this.companyName,
@@ -222,8 +222,8 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         locale: locale ?? companyInfo.locale,
         status: status ?? companyInfo.status,
         showTitle: showTitle ?? companyInfo.showTitle,
+        currencyId: currencyId ?? companyInfo.currency.id, //todo:
         lockingTime: lockingTime, //todo:
-        // currencyId: currencyId ?? companyInfo.currency.id,//todo:
       );
       await appStore.dispatch(const GetCompanyInfoAction());
       return res.response.statusCode == 200;

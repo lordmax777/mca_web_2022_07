@@ -213,19 +213,16 @@ class _ChecklistsViewState extends State<ChecklistsView>
               filterShift = row.value.first['Contains'];
               break;
             case "status":
-              logger(row.value.first.values.first);
-              final key = row.value.first.values.first;
+              final key = row.value.first.values.first.toLowerCase();
               if (row.value.first.values.first.length > 1) {
                 break;
               }
-              if (key == "T") {
+              if (key == "d") {
                 filterStatus = true;
               }
-              if (key == "F") {
+              if (key == "p") {
                 filterStatus = false;
               }
-              // filterStatus =
-              //     row.value.first['Contains']?.toLowerCase() == "done";
               break;
             case "users":
               filterUser = row.value.first['Contains'];

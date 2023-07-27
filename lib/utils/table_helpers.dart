@@ -358,16 +358,16 @@ class StatusColumnFilter implements PlutoFilterType {
           {required String? base,
           required String? search,
           required PlutoColumn? column}) {
-        final key = search![0];
-        if (key == "T") {
+        final key = search![0].toLowerCase();
+        if (key == "d") {
           return true;
         }
-        if (key == "F") {
+        if (key == "p") {
           return false;
         }
         return true;
       };
 
   @override
-  String get title => "T or F";
+  String get title => "D or P";
 }

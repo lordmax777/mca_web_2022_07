@@ -30,7 +30,7 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
         );
       }
       selected3 = DefaultMenuItem(
-        id: 0,
+        id: generalState.companyInfo.currency.id,
         title:
             "${generalState.companyInfo.currency.code} (${generalState.companyInfo.currency.sign})",
         additionalId: generalState.companyInfo.currency.code,
@@ -172,8 +172,7 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
         timezone: selected2!.additionalId,
         logo:
             file1?.bytes != null ? base64.encode(file1!.bytes!.toList()) : null,
-
-        // currencyId: selected3!.id,
+        currencyId: selected3!.id,
       ));
       if (res.isLeft) {
         context.showSuccess("Saved successfully");
