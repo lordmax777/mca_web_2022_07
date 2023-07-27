@@ -29,12 +29,15 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
           additionalId: loc.code,
         );
       }
-      selected3 = DefaultMenuItem(
-        id: generalState.companyInfo.currency.id,
-        title:
-            "${generalState.companyInfo.currency.code} (${generalState.companyInfo.currency.sign})",
-        additionalId: generalState.companyInfo.currency.code,
-      );
+      final CurrencyMd? currency = currencies.firstWhereOrNull(
+          (element) => element.code == generalState.companyInfo.currency.code);
+      if (currency != null) {
+        selected3 = DefaultMenuItem(
+          id: currency.id,
+          title: "${currency.code} (${currency.sign})",
+          additionalId: currency.code,
+        );
+      }
       selected2 = DefaultMenuItem(
         id: 0,
         title: generalState.companyInfo.timezone,

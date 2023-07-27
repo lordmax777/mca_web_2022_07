@@ -106,6 +106,8 @@ final class CompanyInfoMd extends Equatable {
   List<int> get weeks =>
       List<int>.generate(rotalength.toInt(), (index) => index + 1);
 
+  final int locktime;
+
   const CompanyInfoMd({
     required this.name,
     required this.domain,
@@ -148,6 +150,7 @@ final class CompanyInfoMd extends Equatable {
     required this.showTitle,
     required this.specialWord,
     required this.country,
+    required this.locktime,
   });
 
   @override
@@ -193,6 +196,7 @@ final class CompanyInfoMd extends Equatable {
         showTitle,
         specialWord,
         country,
+        locktime,
       ];
 
   factory CompanyInfoMd.fromJson(Map<String, dynamic> json) => CompanyInfoMd(
@@ -237,6 +241,7 @@ final class CompanyInfoMd extends Equatable {
         showTitle: json['show_title'] ?? false,
         specialWord: json['special_word'] ?? "property",
         country: json['country'] ?? '',
+        locktime: json['locktime'] ?? 0,
       );
 
   //init

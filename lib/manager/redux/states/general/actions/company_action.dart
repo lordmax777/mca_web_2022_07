@@ -135,7 +135,6 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
   final String? locale;
   final bool? status;
   final bool? showTitle;
-
   const SaveCompanyDetailsAction({
     this.locale,
     this.status,
@@ -222,8 +221,8 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         locale: locale ?? companyInfo.locale,
         status: status ?? companyInfo.status,
         showTitle: showTitle ?? companyInfo.showTitle,
-        currencyId: currencyId ?? companyInfo.currency.id, //todo:
-        lockingTime: lockingTime, //todo:
+        lockingTime: lockingTime ?? companyInfo.locktime,
+        currencyId: currencyId,
       );
       await appStore.dispatch(const GetCompanyInfoAction());
       return res.response.statusCode == 200;

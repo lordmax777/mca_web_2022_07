@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/presentation/global_widgets/spaced_column.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 
 class LoginStatusTab extends StatefulWidget {
@@ -20,7 +19,7 @@ class _LoginStatusTabState extends State<LoginStatusTab>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller1.text = generalState.companyInfo.maxAttempts.toString();
-      // controller2.text = generalState.companyInfo..toString();//todo: get locking time after failed login from api
+      controller2.text = generalState.companyInfo.locktime.toString();
       controller3.text = generalState.companyInfo.autoLogout.toString();
       checked1 = generalState.companyInfo.photoRequired;
       controller4.text = generalState.companyInfo.undoTime.toString();
@@ -144,14 +143,12 @@ class _LoginStatusTabState extends State<LoginStatusTab>
     if (!isFormValid) return;
     context.futureLoading(() async {
       final res = await dispatch<bool>(SaveCompanyDetailsAction(
-        maxAttempts: int.tryParse(controller1.text),
-        lockingTime: int.tryParse(controller2.text),
-        autoLogoutTime: int.tryParse(controller3.text),
-        isPhotoRequired: checked1,
-        undoTime: int.tryParse(controller4.text),
-        isStrictLocation:
-            checked2, //todo: check again when task is completed by backend
-      ));
+          maxAttempts: int.tryParse(controller1.text),
+          lockingTime: int.tryParse(controller2.text),
+          autoLogoutTime: int.tryParse(controller3.text),
+          isPhotoRequired: checked1,
+          undoTime: int.tryParse(controller4.text),
+          isStrictLocation: checked2));
       if (res.isLeft) {
         context.showSuccess("Saved successfully");
       } else if (res.isRight) {

@@ -642,13 +642,10 @@ abstract class ApiClient {
   Future<HttpResponse> getStockHistory(
       {@Path() required int storageid, @Path() required int itemid});
 
-  //todo: need to test when test api is working
   //get account user availability
   @GET("/api/fe/myaccount/unavailability")
   Future<HttpResponse> getAccountUserAvailability();
 
-  //todo: need to test when test api is working
-  //todo: not sure if need to pass start or end date
   //delete account user availability
   @DELETE("/api/fe/myaccount/unavailability")
   Future<HttpResponse> deleteAccountUserAvailability(
@@ -656,7 +653,6 @@ abstract class ApiClient {
       ///date in ISO format: yyyy-MM-dd
       @Query("date") String date);
 
-  //todo: need to test when test api is working
   //create account user availability: startDate, endDate, startTime, endTime, isFullDay, comment
   @POST("/api/fe/myaccount/unavailability")
   @FormUrlEncoded()

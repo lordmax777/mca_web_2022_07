@@ -214,7 +214,7 @@ final class LastTime {
 
   final String date;
 
-  DateTime get dateTime => DateTime.parse(date); //TODO:
+  DateTime get dateTime => DateTime.parse(date);
   final num timezoneType;
   final String timezone;
 
