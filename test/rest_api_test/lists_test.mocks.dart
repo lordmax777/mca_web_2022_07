@@ -2640,4 +2640,34 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
           ),
         )),
       ) as _i4.Future<_i2.HttpResponse<dynamic>>);
+  @override
+  _i4.Future<_i2.HttpResponse<dynamic>> changeStockMinLevel({
+    required int? storageid,
+    required int? itemid,
+    required int? minLevel,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #changeStockMinLevel,
+          [],
+          {
+            #storageid: storageid,
+            #itemid: itemid,
+            #minLevel: minLevel,
+          },
+        ),
+        returnValue: _i4.Future<_i2.HttpResponse<dynamic>>.value(
+            _FakeHttpResponse_0<dynamic>(
+          this,
+          Invocation.method(
+            #changeStockMinLevel,
+            [],
+            {
+              #storageid: storageid,
+              #itemid: itemid,
+              #minLevel: minLevel,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.HttpResponse<dynamic>>);
 }

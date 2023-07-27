@@ -108,3 +108,25 @@ final class GetStockHistoryAction {
     });
   }
 }
+
+//ChangeStockMinLevelAction: int warehouseId, int itemId, int minLevel
+final class ChangeStockMinLevelAction {
+  final int warehouseId;
+  final int itemId;
+  final int minLevel;
+
+  const ChangeStockMinLevelAction({
+    required this.warehouseId,
+    required this.itemId,
+    required this.minLevel,
+  });
+
+  Future<Either<bool, ErrorMd>> fetch(AppState state) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .changeStockMinLevel(
+              storageid: warehouseId, itemid: itemId, minLevel: minLevel);
+      return res.response.statusCode == 200;
+    });
+  }
+}

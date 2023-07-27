@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/app.dart';
-import 'package:mca_dashboard/setup_domain.dart';
+import 'package:mca_dashboard/utils/setup_domain/setup_domain.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'manager/manager.dart';
 

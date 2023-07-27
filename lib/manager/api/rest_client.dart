@@ -776,4 +776,13 @@ abstract class ApiClient {
   @POST("/api/fe/myaccount/language")
   @FormUrlEncoded()
   Future<HttpResponse> postLanguage(@Field('language') String language);
+
+  //POST change min level
+  @POST("/api/fe/stocklevel/{storageid}/{itemid}")
+  @FormUrlEncoded()
+  Future<HttpResponse> changeStockMinLevel({
+    @Path() required int storageid,
+    @Path() required int itemid,
+    @Field('minimum') required int minLevel,
+  });
 }

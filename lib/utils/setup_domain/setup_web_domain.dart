@@ -1,7 +1,7 @@
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'manager/manager.dart';
+import '../../manager/manager.dart';
 
 void setupDomain() {
   //1. find the base url

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/stocks_action.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
 
 class ChangeMinLevelPopup extends StatefulWidget {
@@ -76,9 +77,22 @@ class _ChangeMinLevelPopupState extends State<ChangeMinLevelPopup>
 
   void onSave() {
     if (!formKey.currentState!.validate()) return;
-
+    if (widget.stock.itemId == null || widget.stock.storageId == null) {
+      context.showError("Something went wrong");
+      return;
+    }
     context.futureLoading(() async {
-      //todo: save
+      final res = await dispatch<bool>(ChangeStockMinLevelAction(
+          warehouseId: widget.stock.storageId!,
+          itemId: widget.stock.itemId!,
+          minLevel: int.parse(controller1.text)));
+      if (res.isLeft) {
+        context.pop(true);
+      } else if (res.isRight) {
+        context.showError(res.right.message);
+      } else {
+        context.showError("Something went wrong");
+      }
     });
   }
 }
