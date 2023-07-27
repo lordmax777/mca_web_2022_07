@@ -45,11 +45,12 @@ dependencies:
   file_picker: ^5.3.2
   dropdown_button2: ^2.1.4
   bot_toast: ^4.0.4
+  easy_loading_button: ^0.3.2
 
   #Etc
   flutter_easylogger: ^2.3.3
   crypto: ^3.0.3
-  easy_loading_button: ^0.3.2
+  sentry_flutter: ^7.9.0
 
   #Google Maps
   google_maps_webservice:

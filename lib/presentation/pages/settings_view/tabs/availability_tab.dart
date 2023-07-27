@@ -142,11 +142,11 @@ class _AvailabilityTabState extends State<AvailabilityTab>
       final res =
           await dispatch<bool>(DeleteAccountUserAvailabilityAction(date));
       if (res.isRight) {
-        delFailed.add(row.cells['startDate']!.value);
+        delFailed.add("${row.cells['startDate']!.value}: ${res.right.message}");
       }
     }
     if (delFailed.isNotEmpty) {
-      context.showError("Failed to delete ${delFailed.join(", ")}");
+      context.showError(delFailed.join("\n"));
     }
     return delFailed.isEmpty;
   }

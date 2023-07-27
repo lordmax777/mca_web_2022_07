@@ -8,6 +8,7 @@ import 'package:get_ip_address/get_ip_address.dart' as getIp;
 import 'package:mca_dashboard/manager/redux/redux.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 logger(var str, {String? hint, bool json = false}) {
   if (GlobalConstants.enableLogger) {
@@ -43,18 +44,21 @@ Future<Either<T, ErrorMd>> apiCall<T>(Future<T> Function() callback) async {
   try {
     final T res = await callback();
     return Left(res);
-  } on DioError catch (e) {
+  } on DioError catch (e, stackTrace) {
+    await Sentry.captureException(e, stackTrace: stackTrace);
     Logger.e(e.toString(), tag: "Message in apiCall");
     return Right(ErrorMd(
         data: e.response?.data,
         code: e.response?.statusCode,
         message: e.response?.handleApiErrorMessage ?? "Unknown error"));
-  } on Exception catch (e) {
+  } on Exception catch (e, st) {
+    await Sentry.captureException(e, stackTrace: st);
     Logger.e(e.toString(), tag: "Message");
     Logger.e(e.runtimeType, tag: "Type");
     return const Right(
         ErrorMd(message: "Error occurred", code: null, data: null));
-  } catch (e) {
+  } catch (e, st) {
+    await Sentry.captureException(e, stackTrace: st);
     Logger.e(e.toString(), tag: "Message catch");
     Logger.e(e.runtimeType, tag: "Type catch");
     if (e is ErrorMd) {

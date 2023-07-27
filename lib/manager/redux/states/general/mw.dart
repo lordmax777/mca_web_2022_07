@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:either_dart/either.dart';
@@ -330,7 +331,13 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   Future<Either<bool, ErrorMd>> _getInitActions(
       AppState state, GetInitActions action) async {
     return DependencyManager.instance.navigation.futureLoading(() async {
-      await appStore.dispatch(const GetListsAction());
+      final Either<ListMd, ErrorMd> lists =
+          await appStore.dispatch(const GetListsAction());
+      if (lists.isRight) {
+        // deps.navigation.loginState.logout();
+        BotToast.showText(text: lists.right.message);
+        return Right(lists.right);
+      }
       return await apiCall(() async {
         await Future.wait([
           appStore.dispatch(const GetFormatsAction()) as Future,

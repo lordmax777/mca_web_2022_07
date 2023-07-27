@@ -916,6 +916,7 @@ final class ListMd extends Equatable {
       ];
 
   factory ListMd.fromJson(Map<String, dynamic> json) {
+    print(json);
     return ListMd(
         clients: json['clients'] == null
             ? []

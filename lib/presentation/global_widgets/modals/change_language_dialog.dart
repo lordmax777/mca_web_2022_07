@@ -18,7 +18,7 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
     super.initState();
     WidgetsBinding.instance.endOfFrame.then((value) {
       if (mounted) {
-        final locale = appStore.state.generalState.companyInfo.locale;
+        final locale = appStore.state.generalState.detailsMd.locale;
         final loc =
             languages.firstWhereOrNull((element) => element.code == locale);
         setState(() {
@@ -87,7 +87,6 @@ class _ChangeLanguagePopupState extends State<ChangeLanguagePopup>
             }
             context.futureLoading(() async {
               final res = await dispatch<bool>(
-                  // SaveCompanyDetailsAction(locale: selected1!.additionalId!)
                   ChangeLanguageAction(selected1!.additionalId!));
               if (res.isLeft && res.left) {
                 context.showSuccess('Language changed successfully',

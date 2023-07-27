@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '../manager.dart';
 
 class DefaultInterceptor {
@@ -48,12 +49,13 @@ class DefaultInterceptor {
       });
 
   Interceptor get loggingInterceptor =>
-      InterceptorsWrapper(onRequest: (RequestOptions options, handler) {
+      InterceptorsWrapper(onRequest: (RequestOptions options, handler) async {
         String headers = "";
         options.headers.forEach((key, value) {
           headers += "| $key: $value";
         });
         Logger.d("| [API_Request]: ${options.method} ${options.path}");
+
         if (options.queryParameters.isNotEmpty) {
           Logger.d("| [API_Request_Query]: ${options.queryParameters}");
         }
@@ -163,24 +165,24 @@ class DefaultInterceptor {
         },
       );
 
-  Interceptor get handleInvalidToken => InterceptorsWrapper(
-        onRequest: (options, handler) {
-          handler.next(options); //continue
-        },
-        onError: (e, handler) {
-          if (e.response?.statusCode == 400) {
-            if (e.response?.data is Map<String, dynamic>) {
-              if (e.response?.data?['error_description'].toString().contains(
-                      "Invalid grant_type parameter or parameter missing") ==
-                  true) {
-                //todo: logout
-                deps.navigation.loginState.logout();
-              }
-            }
-          }
-        },
-        onResponse: (e, handler) {
-          handler.next(e); //continue
-        },
-      );
+  // Interceptor get handleInvalidToken => InterceptorsWrapper(
+  //       onRequest: (options, handler) {
+  //         handler.next(options); //continue
+  //       },
+  //       onError: (e, handler) {
+  //         if (e.response?.statusCode == 400) {
+  //           if (e.response?.data is Map<String, dynamic>) {
+  //             if (e.response?.data?['error_description'].toString().contains(
+  //                     "Invalid grant_type parameter or parameter missing") ==
+  //                 true) {
+  //               // logout
+  //               deps.navigation.loginState.logout();
+  //             }
+  //           }
+  //         }
+  //       },
+  //       onResponse: (e, handler) {
+  //         handler.next(e); //continue
+  //       },
+  //     );
 }

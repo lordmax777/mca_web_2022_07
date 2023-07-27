@@ -35,11 +35,11 @@ class DioClient {
     };
 
     //Set the request interceptors
-    _dio.interceptors.add(defaultInterceptors.loggingInterceptor);
     _dio.interceptors.add(defaultInterceptors.duplicateRequestInterceptor);
     _dio.interceptors.add(defaultInterceptors.tokenRenewInterceptor);
     _dio.interceptors.add(defaultInterceptors.cancelInterceptor);
     _dio.interceptors.add(defaultInterceptors.defaultInterceptor(db));
+    _dio.interceptors.add(defaultInterceptors.loggingInterceptor);
 
     logger("API Client initialized", hint: "API Client");
   }

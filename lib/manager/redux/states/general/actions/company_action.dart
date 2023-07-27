@@ -241,6 +241,7 @@ class ChangeLanguageAction with ActionMixin<bool> {
     return apiCall(() async {
       final res =
           await DependencyManager.instance.apiClient.postLanguage(locale);
+      await appStore.dispatch(const GetDetailsAction());
       return res.response.statusCode == 200;
     });
   }
