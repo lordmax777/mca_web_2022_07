@@ -24,7 +24,7 @@ class _DebugViewState extends State<DebugView> {
             label("Test Button"),
             ElevatedButton(
               onPressed: () async {
-                dispatch(GetLanguagesAction());
+                dispatch(GetListsAction());
                 return;
                 for (var i in appStore.state.generalState.properties) {
                   await Future.wait([

@@ -81,7 +81,8 @@ class DefaultInterceptor {
             return;
           }
           try {
-            Logger.json(jsonEncode(response.data));
+            Logger.json(jsonEncode(response.data),
+                tag: "API_Response_${response.requestOptions.path}");
           } catch (e) {
             Logger.i(
                 "| [API_Response_${response.requestOptions.path}] [code ${response.statusCode}]: $data"); //:
