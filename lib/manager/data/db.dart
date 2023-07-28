@@ -18,7 +18,22 @@ const String clientSecretRealStr =
 const String googleSdkKey = "AIzaSyBD7ZbpM4T6JRYz2B-1NK3XEURGsCa9FWY";
 const String googleMapsApiKey = "AIzaSyAJppOsTzcnks6yfcR9WmJk-Cjqfw3zIww";
 
-class MCADb extends MCADbInterface {
+const String client = 'c';
+const String encryptionKey = 'ek';
+const String clientIdTest = 'cdt';
+const String clientIdReal = 'cdr';
+const String clientSecretTest = 'cst';
+const String clientSecretReal = 'csr';
+const String token = 't';
+const String accessToken = 'at';
+const String refreshToken = 'rt';
+const String isTestMode = 'itm';
+const String apiBaseUrl = 'abu';
+const String domain = 'dmn';
+const String etc = 'etc';
+const String geoIpifyApiKey = 'geoIpifyApiKey';
+
+class MCADb implements MCADbInterface {
   late final List<int> encryption;
 
   @override
@@ -89,10 +104,10 @@ class MCADb extends MCADbInterface {
 
   @override
   String getAccessToken() {
-    final Box box = Hive.box(this.token);
-    final String? token = box.get(accessToken, defaultValue: "");
-    logger("HIVE: getAccessToken: $token");
-    return token!;
+    final Box box = Hive.box(token);
+    final String? t = box.get(accessToken, defaultValue: "");
+    logger("HIVE: getAccessToken: $t");
+    return t!;
   }
 
   @override
@@ -111,10 +126,10 @@ class MCADb extends MCADbInterface {
 
   @override
   String getRefreshToken() {
-    final Box box = Hive.box(this.token);
-    final String? token = box.get(refreshToken, defaultValue: "");
-    logger("HIVE: getRefreshToken: $token");
-    return token!;
+    final Box box = Hive.box(token);
+    final String? t = box.get(refreshToken, defaultValue: "");
+    logger("HIVE: getRefreshToken: $t");
+    return t!;
   }
 
   @override
@@ -157,8 +172,8 @@ class MCADb extends MCADbInterface {
   @override
   String getDomain() {
     final Box box = Hive.box(token);
-    final String? domain = box.get(this.domain, defaultValue: domainDevStr);
-    return domain!;
+    final String? d = box.get(domain, defaultValue: domainDevStr);
+    return d!;
   }
 
   @override
@@ -170,23 +185,6 @@ class MCADb extends MCADbInterface {
 }
 
 abstract class MCADbInterface {
-  final String client = 'c';
-  final String encryptionKey = 'ek';
-  final String clientIdTest = 'cdt';
-  final String clientIdReal = 'cdr';
-  final String clientSecretTest = 'cst';
-  final String clientSecretReal = 'csr';
-
-  final String token = 't';
-  final String accessToken = 'at';
-  final String refreshToken = 'rt';
-  final String isTestMode = 'itm';
-  final String apiBaseUrl = 'abu';
-  final String domain = 'dmn';
-
-  final String etc = 'etc';
-  final String geoIpifyApiKey = 'geoIpifyApiKey';
-
   Future<void> initHive();
   String getClientId();
   String getClientSecret();
