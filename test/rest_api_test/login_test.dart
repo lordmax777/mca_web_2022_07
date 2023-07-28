@@ -13,11 +13,13 @@ import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:retrofit/dio.dart';
 
-@GenerateMocks([ApiClient])
+@GenerateMocks([ApiClient, MCADb])
 void main() {
   late ApiClient apiClient;
 
   setUp(() async {
+    final db = MCADb();
+    await db.initHive();
     final dioClient = DioClient();
     await dioClient.init();
     apiClient = ApiClient(dioClient.dio);
