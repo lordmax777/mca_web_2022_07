@@ -24,7 +24,7 @@ const String clientIdTest = 'cdt';
 const String clientIdReal = 'cdr';
 const String clientSecretTest = 'cst';
 const String clientSecretReal = 'csr';
-const String token = 't';
+const String tokenBox = 't';
 const String accessToken = 'at';
 const String refreshToken = 'rt';
 const String isTestMode = 'itm';
@@ -73,8 +73,8 @@ class MCADb implements MCADbInterface {
       await clientBox.put(clientSecretReal, clientSecretRealStr);
     }
     step++;
-    logger('[STEP: $step] - Running Open Box $token');
-    await Hive.openBox(token, encryptionCipher: HiveAesCipher(encryption));
+    logger('[STEP: $step] - Running Open Box $tokenBox');
+    await Hive.openBox(tokenBox, encryptionCipher: HiveAesCipher(encryption));
     step++;
   }
 
@@ -96,15 +96,15 @@ class MCADb implements MCADbInterface {
   }
 
   @override
-  Future<void> setAccessToken(String token) async {
-    final Box box = Hive.box(token);
-    await box.put(accessToken, token);
-    logger("HIVE: setAccessToken: $token");
+  Future<void> setAccessToken(String t) async {
+    final Box box = Hive.box(tokenBox);
+    await box.put(accessToken, t);
+    logger("HIVE: setAccessToken: $t");
   }
 
   @override
   String getAccessToken() {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     final String? t = box.get(accessToken, defaultValue: "");
     logger("HIVE: getAccessToken: $t");
     return t!;
@@ -112,21 +112,21 @@ class MCADb implements MCADbInterface {
 
   @override
   Future<void> deleteAccessToken() async {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     await box.delete(accessToken);
     logger("HIVE: deleteAccessToken");
   }
 
   @override
-  Future<void> setRefreshToken(String token) async {
-    final Box box = Hive.box(token);
-    await box.put(refreshToken, token);
-    logger("HIVE: setRefreshToken: $token");
+  Future<void> setRefreshToken(String t) async {
+    final Box box = Hive.box(tokenBox);
+    await box.put(refreshToken, t);
+    logger("HIVE: setRefreshToken: $t");
   }
 
   @override
   String getRefreshToken() {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     final String? t = box.get(refreshToken, defaultValue: "");
     logger("HIVE: getRefreshToken: $t");
     return t!;
@@ -134,14 +134,14 @@ class MCADb implements MCADbInterface {
 
   @override
   Future<void> deleteRefreshToken() async {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     await box.delete(refreshToken);
     logger("HIVE: deleteRefreshToken");
   }
 
   @override
   Future<void> setIsTestMode(bool isTest) async {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     await box.put(isTestMode, isTest.toString());
     await box.put(apiBaseUrl, isTest ? apiBaseUrlDevStr : apiBaseUrlProdStr);
     logger("HIVE: setIsTestMode: $isTest");
@@ -149,7 +149,7 @@ class MCADb implements MCADbInterface {
 
   @override
   bool getIsTestMode() {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     final String? isTest = box.get(isTestMode, defaultValue: "true");
     logger("HIVE: getIsTestMode: $isTest");
     return isTest == "true";
@@ -164,21 +164,21 @@ class MCADb implements MCADbInterface {
 
   @override
   String getApiBaseUrl() {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     final String? url = box.get(apiBaseUrl, defaultValue: apiBaseUrlDevStr);
     return url!;
   }
 
   @override
   String getDomain() {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     final String? d = box.get(domain, defaultValue: domainDevStr);
     return d!;
   }
 
   @override
   Future<void> setDomain(String domain) async {
-    final Box box = Hive.box(token);
+    final Box box = Hive.box(tokenBox);
     await box.put(domain, domain);
     logger("HIVE: setDomain: $domain");
   }
