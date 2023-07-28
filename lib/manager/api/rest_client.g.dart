@@ -2861,7 +2861,7 @@ class _ApiClient implements ApiClient {
       'autosignout': autoSignOutTime,
       'time_validity': timeValidity,
       'maxattempts': maxAttempts,
-      'colorSchemaId': colorSchemaId,
+      'colourSchemaId': colorSchemaId,
       'ahew': annualHolidayEntitlementWeeks,
       'hct': holidayCalculationType,
       'yearstart': yearStart,

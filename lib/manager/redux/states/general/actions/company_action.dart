@@ -221,10 +221,11 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         locale: locale ?? companyInfo.locale,
         status: status ?? companyInfo.status,
         showTitle: showTitle ?? companyInfo.showTitle,
-        lockingTime: lockingTime ?? companyInfo.locktime,
+        lockingTime: lockingTime,
         currencyId: currencyId,
       );
       await appStore.dispatch(const GetCompanyInfoAction());
+      DependencyManager.instance.appDep.restart.call();
       return res.response.statusCode == 200;
     });
   }

@@ -702,7 +702,7 @@ abstract class ApiClient {
 
     ///Number of attempts allowed to sign in to web interface. After this the account will be locked.
     @Field('maxattempts') int? maxAttempts,
-    @Field('colorSchemaId') int? colorSchemaId,
+    @Field('colourSchemaId') int? colorSchemaId,
     @Field('ahew') int? annualHolidayEntitlementWeeks,
 
     ///Holiday calculation type id
