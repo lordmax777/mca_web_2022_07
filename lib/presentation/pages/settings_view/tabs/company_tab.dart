@@ -44,6 +44,7 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
         additionalId: generalState.companyInfo.timezone,
       );
     });
+    controller2.text = generalState.companyInfo.specialWord;
   }
 
   final generalState = appStore.state.generalState;
@@ -87,6 +88,11 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
                   }
                   return null;
                 },
+              ),
+              DefaultTextField(
+                width: fieldWidth,
+                label: "Special Word",
+                controller: controller2,
               ),
               _buildCompanyLogo(),
               DefaultDropdown(
@@ -176,6 +182,7 @@ class _CompanyTabState extends State<CompanyTab> with FormsMixin<CompanyTab> {
         logo:
             file1?.bytes != null ? base64.encode(file1!.bytes!.toList()) : null,
         currencyId: selected3!.id,
+        specialWord: controller2.text.emptyOrNull,
       ));
       if (res.isLeft) {
         context.showSuccess("Saved successfully");

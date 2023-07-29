@@ -766,6 +766,9 @@ abstract class ApiClient {
 
     ///Indicate if the title is part of the full name
     @Field('showtitle') bool? showTitle,
+
+    ///Special word
+    @Field('specialword') String? specialWord,
   });
 
   //GET languages

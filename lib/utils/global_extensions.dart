@@ -499,6 +499,13 @@ extension StringHelpers on String {
       return null;
     }
   }
+
+  String? get emptyOrNull {
+    if (isEmpty) {
+      return null;
+    }
+    return this;
+  }
 }
 
 ///////////////////////

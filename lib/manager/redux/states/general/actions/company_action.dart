@@ -135,6 +135,8 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
   final String? locale;
   final bool? status;
   final bool? showTitle;
+  final String? specialWord;
+
   const SaveCompanyDetailsAction({
     this.locale,
     this.status,
@@ -172,6 +174,7 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
     this.isPhotoRequired,
     this.isStrictLocation,
     this.undoTime,
+    this.specialWord,
   });
 
   @override
@@ -223,9 +226,9 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         showTitle: showTitle ?? companyInfo.showTitle,
         lockingTime: lockingTime,
         currencyId: currencyId,
+        specialWord: specialWord,
       );
       await appStore.dispatch(const GetCompanyInfoAction());
-      DependencyManager.instance.appDep.restart.call();
       return res.response.statusCode == 200;
     });
   }
