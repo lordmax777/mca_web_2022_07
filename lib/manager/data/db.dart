@@ -177,10 +177,10 @@ class MCADb implements MCADbInterface {
   }
 
   @override
-  Future<void> setDomain(String domain) async {
+  Future<void> setDomain(String d) async {
     final Box box = Hive.box(tokenBox);
-    await box.put(domain, domain);
-    logger("HIVE: setDomain: $domain");
+    await box.put(domain, d);
+    logger("HIVE: setDomain: $d");
   }
 }
 
