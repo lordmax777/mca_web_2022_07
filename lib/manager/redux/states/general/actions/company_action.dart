@@ -135,6 +135,8 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
   final String? locale;
   final bool? status;
   final bool? showTitle;
+  final String? specialWord;
+
   const SaveCompanyDetailsAction({
     this.locale,
     this.status,
@@ -172,6 +174,7 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
     this.isPhotoRequired,
     this.isStrictLocation,
     this.undoTime,
+    this.specialWord,
   });
 
   @override
@@ -221,8 +224,9 @@ final class SaveCompanyDetailsAction with ActionMixin<bool> {
         locale: locale ?? companyInfo.locale,
         status: status ?? companyInfo.status,
         showTitle: showTitle ?? companyInfo.showTitle,
-        lockingTime: lockingTime ?? companyInfo.locktime,
+        lockingTime: lockingTime,
         currencyId: currencyId,
+        specialWord: specialWord,
       );
       await appStore.dispatch(const GetCompanyInfoAction());
       return res.response.statusCode == 200;

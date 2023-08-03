@@ -2842,6 +2842,7 @@ class _ApiClient implements ApiClient {
     locale,
     status,
     showTitle,
+    specialWord,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -2861,7 +2862,7 @@ class _ApiClient implements ApiClient {
       'autosignout': autoSignOutTime,
       'time_validity': timeValidity,
       'maxattempts': maxAttempts,
-      'colorSchemaId': colorSchemaId,
+      'colourSchemaId': colorSchemaId,
       'ahew': annualHolidayEntitlementWeeks,
       'hct': holidayCalculationType,
       'yearstart': yearStart,
@@ -2885,6 +2886,7 @@ class _ApiClient implements ApiClient {
       'locale': locale,
       'status': status,
       'showtitle': showTitle,
+      'specialword': specialWord,
     };
     _data.removeWhere((k, v) => v == null);
     final _result =

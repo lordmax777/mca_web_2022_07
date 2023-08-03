@@ -60,7 +60,7 @@ final List<Map<String, dynamic>> _destinations = [
   },
   {
     'route': MCANavigation.properties,
-    'title': 'Properties',
+    'title': 'specialWord',
     'icon': Icons.home_work,
   },
   {
@@ -119,11 +119,12 @@ class DefaultNavigationRail extends StatelessWidget {
           children: [
             for (final destination in _destinations)
               NavigationDrawerDestination(
-                selectedIcon: Icon(destination['icon'],
-                    color: Theme.of(context).colorScheme.onPrimary),
-                icon: Icon(destination['icon']),
-                label: label(destination['title'].toString()),
-              ),
+                  selectedIcon: Icon(destination['icon'],
+                      color: Theme.of(context).colorScheme.onPrimary),
+                  icon: Icon(destination['icon']),
+                  label: label(destination['title'].toString() == "specialWord"
+                      ? appStore.state.generalState.propertyName
+                      : destination['title'].toString())),
           ]),
     );
     return NavigationRail(
