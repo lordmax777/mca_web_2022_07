@@ -55,7 +55,7 @@ class MCADb implements MCADbInterface {
     //If the encryption key is not found, generate a new one and save it to the box
     if (encryptedKeyFromEtcBox == null) {
       encryption = Hive.generateSecureKey();
-      await etcBox.put(encryptionKey, encryptionKey);
+      await etcBox.put(encryptionKey, encryption);
     } else {
       //If the encryption key is found, use it
       encryption = encryptedKeyFromEtcBox;
