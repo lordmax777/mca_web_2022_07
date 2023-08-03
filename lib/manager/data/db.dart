@@ -18,19 +18,24 @@ const String clientSecretRealStr =
 const String googleSdkKey = "AIzaSyBD7ZbpM4T6JRYz2B-1NK3XEURGsCa9FWY";
 const String googleMapsApiKey = "AIzaSyAJppOsTzcnks6yfcR9WmJk-Cjqfw3zIww";
 
-const String client = 'c';
+///client box
+const String cBox = 'c';
 const String encryptionKey = 'ek';
-const String clientIdTest = 'cdt';
-const String clientIdReal = 'cdr';
-const String clientSecretTest = 'cst';
-const String clientSecretReal = 'csr';
-const String tokenBox = 't';
-const String accessToken = 'at';
-const String refreshToken = 'rt';
-const String isTestMode = 'itm';
-const String apiBaseUrl = 'abu';
-const String domain = 'dmn';
-const String etc = 'etc';
+const String clientIdTestKey = 'cdt';
+const String clientIdRealKey = 'cdr';
+const String clientSecretTestKey = 'cst';
+const String clientSecretRealKey = 'csr';
+
+///token box
+const String tBox = 't';
+const String accessTokenKey = 'at';
+const String refreshTokenKey = 'rt';
+const String isTestModeKey = 'itm';
+const String apiBaseUrlKey = 'abu';
+const String domainKey = 'dmn';
+
+///etc box
+const String eBox = 'etc';
 const String geoIpifyApiKey = 'geoIpifyApiKey';
 
 class MCADb implements MCADbInterface {
@@ -43,144 +48,145 @@ class MCADb implements MCADbInterface {
     logger('[STEP: $step] - Running initFlutter');
     await Hive.initFlutter();
     step++;
-    logger('[STEP: $step] - Running Open Box $etc');
-    final etcBox = await Hive.openBox(etc);
+    logger('[STEP: $step] - Running Open Box $eBox');
+    final etcBox = await Hive.openBox(eBox);
     //Finding the encryption key [encryptionKey] is used to encrypt and decrypt the box
-    final encKeyFromBox = etcBox.get(encryptionKey);
+    final encryptedKeyFromEtcBox = etcBox.get(encryptionKey);
     //If the encryption key is not found, generate a new one and save it to the box
-    if (encKeyFromBox == null) {
+    if (encryptedKeyFromEtcBox == null) {
       encryption = Hive.generateSecureKey();
       await etcBox.put(encryptionKey, encryptionKey);
     } else {
       //If the encryption key is found, use it
-      encryption = encKeyFromBox;
+      encryption = encryptedKeyFromEtcBox;
     }
 
     step++;
-    logger('[STEP: $step] - Running Open Box $client');
+    logger('[STEP: $step] - Running Open Box $cBox');
     final clientBox =
-        await Hive.openBox(client, encryptionCipher: HiveAesCipher(encryption));
-    if (clientBox.get(clientIdTest) == null) {
-      await clientBox.put(clientIdTest, clientIdTestStr);
+        await Hive.openBox(cBox, encryptionCipher: HiveAesCipher(encryption));
+    if (clientBox.get(clientIdTestKey) == null) {
+      await clientBox.put(clientIdTestKey, clientIdTestStr);
     }
-    if (clientBox.get(clientIdReal) == null) {
-      await clientBox.put(clientIdReal, clientIdRealStr);
+    if (clientBox.get(clientIdRealKey) == null) {
+      await clientBox.put(clientIdRealKey, clientIdRealStr);
     }
-    if (clientBox.get(clientSecretTest) == null) {
-      await clientBox.put(clientSecretTest, clientSecretTestStr);
+    if (clientBox.get(clientSecretTestKey) == null) {
+      await clientBox.put(clientSecretTestKey, clientSecretTestStr);
     }
-    if (clientBox.get(clientSecretReal) == null) {
-      await clientBox.put(clientSecretReal, clientSecretRealStr);
+    if (clientBox.get(clientSecretRealKey) == null) {
+      await clientBox.put(clientSecretRealKey, clientSecretRealStr);
     }
     step++;
-    logger('[STEP: $step] - Running Open Box $tokenBox');
-    await Hive.openBox(tokenBox, encryptionCipher: HiveAesCipher(encryption));
+    logger('[STEP: $step] - Running Open Box $tBox');
+    await Hive.openBox(tBox, encryptionCipher: HiveAesCipher(encryption));
     step++;
   }
 
   @override
   String getClientId() {
-    final Box box = Hive.box(client);
-    final String? id = box.get(getIsTestMode() ? clientIdTest : clientIdReal);
+    final Box box = Hive.box(cBox);
+    final String? id =
+        box.get(getIsTestMode() ? clientIdTestKey : clientIdRealKey);
     logger("HIVE: getClientId: $id");
     return id!;
   }
 
   @override
   String getClientSecret() {
-    final Box box = Hive.box(client);
+    final Box box = Hive.box(cBox);
     final String? secret =
-        box.get(getIsTestMode() ? clientSecretTest : clientSecretReal);
+        box.get(getIsTestMode() ? clientSecretTestKey : clientSecretRealKey);
     logger("HIVE: getClientSecret: $secret");
     return secret!;
   }
 
   @override
-  Future<void> setAccessToken(String t) async {
-    final Box box = Hive.box(tokenBox);
-    await box.put(accessToken, t);
-    logger("HIVE: setAccessToken: $t");
+  Future<void> setAccessToken(String token) async {
+    final Box box = Hive.box(tBox);
+    await box.put(accessTokenKey, token);
+    logger("HIVE: setAccessToken: $token");
   }
 
   @override
   String getAccessToken() {
-    final Box box = Hive.box(tokenBox);
-    final String? t = box.get(accessToken, defaultValue: "");
+    final Box box = Hive.box(tBox);
+    final String? t = box.get(accessTokenKey, defaultValue: "");
     logger("HIVE: getAccessToken: $t");
     return t!;
   }
 
   @override
   Future<void> deleteAccessToken() async {
-    final Box box = Hive.box(tokenBox);
-    await box.delete(accessToken);
+    final Box box = Hive.box(tBox);
+    await box.delete(accessTokenKey);
     logger("HIVE: deleteAccessToken");
   }
 
   @override
-  Future<void> setRefreshToken(String t) async {
-    final Box box = Hive.box(tokenBox);
-    await box.put(refreshToken, t);
-    logger("HIVE: setRefreshToken: $t");
+  Future<void> setRefreshToken(String token) async {
+    final Box box = Hive.box(tBox);
+    await box.put(refreshTokenKey, token);
+    logger("HIVE: setRefreshToken: $token");
   }
 
   @override
   String getRefreshToken() {
-    final Box box = Hive.box(tokenBox);
-    final String? t = box.get(refreshToken, defaultValue: "");
+    final Box box = Hive.box(tBox);
+    final String? t = box.get(refreshTokenKey, defaultValue: "");
     logger("HIVE: getRefreshToken: $t");
     return t!;
   }
 
   @override
   Future<void> deleteRefreshToken() async {
-    final Box box = Hive.box(tokenBox);
-    await box.delete(refreshToken);
+    final Box box = Hive.box(tBox);
+    await box.delete(refreshTokenKey);
     logger("HIVE: deleteRefreshToken");
   }
 
   @override
   Future<void> setIsTestMode(bool isTest) async {
-    final Box box = Hive.box(tokenBox);
-    await box.put(isTestMode, isTest.toString());
-    await box.put(apiBaseUrl, isTest ? apiBaseUrlDevStr : apiBaseUrlProdStr);
+    final Box box = Hive.box(tBox);
+    await box.put(isTestModeKey, isTest.toString());
+    await box.put(apiBaseUrlKey, isTest ? apiBaseUrlDevStr : apiBaseUrlProdStr);
     logger("HIVE: setIsTestMode: $isTest");
   }
 
   @override
   bool getIsTestMode() {
-    final Box box = Hive.box(tokenBox);
-    final String? isTest = box.get(isTestMode, defaultValue: "true");
+    final Box box = Hive.box(tBox);
+    final String? isTest = box.get(isTestModeKey, defaultValue: "true");
     logger("HIVE: getIsTestMode: $isTest");
     return isTest == "true";
   }
 
   @override
   Future<void> setGeoIpifyApiKey(String apiKey) async {
-    final Box box = Hive.box(etc);
+    final Box box = Hive.box(eBox);
     await box.put(geoIpifyApiKey, apiKey);
     logger("HIVE: setGeoIpifyApiKey: $apiKey");
   }
 
   @override
   String getApiBaseUrl() {
-    final Box box = Hive.box(tokenBox);
-    final String? url = box.get(apiBaseUrl, defaultValue: apiBaseUrlDevStr);
+    final Box box = Hive.box(tBox);
+    final String? url = box.get(apiBaseUrlKey, defaultValue: apiBaseUrlDevStr);
     return url!;
   }
 
   @override
   String getDomain() {
-    final Box box = Hive.box(tokenBox);
-    final String? d = box.get(domain, defaultValue: domainDevStr);
+    final Box box = Hive.box(tBox);
+    final String? d = box.get(domainKey, defaultValue: domainDevStr);
     return d!;
   }
 
   @override
-  Future<void> setDomain(String d) async {
-    final Box box = Hive.box(tokenBox);
-    await box.put(domain, d);
-    logger("HIVE: setDomain: $d");
+  Future<void> setDomain(String domain) async {
+    final Box box = Hive.box(tBox);
+    await box.put(domainKey, domain);
+    logger("HIVE: setDomain: $domain");
   }
 }
 
