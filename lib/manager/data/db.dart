@@ -96,10 +96,10 @@ class MCADb implements MCADbInterface {
   }
 
   @override
-  Future<void> setAccessToken(String token) async {
+  Future<void> setAccessToken(String t) async {
     final Box box = Hive.box(token);
-    await box.put(accessToken, token);
-    logger("HIVE: setAccessToken: $token");
+    await box.put(accessToken, t);
+    logger("HIVE: setAccessToken: $t");
   }
 
   @override
@@ -118,10 +118,10 @@ class MCADb implements MCADbInterface {
   }
 
   @override
-  Future<void> setRefreshToken(String token) async {
+  Future<void> setRefreshToken(String t) async {
     final Box box = Hive.box(token);
-    await box.put(refreshToken, token);
-    logger("HIVE: setRefreshToken: $token");
+    await box.put(refreshToken, t);
+    logger("HIVE: setRefreshToken: $t");
   }
 
   @override
@@ -177,10 +177,10 @@ class MCADb implements MCADbInterface {
   }
 
   @override
-  Future<void> setDomain(String domain) async {
+  Future<void> setDomain(String d) async {
     final Box box = Hive.box(token);
-    await box.put(domain, domain);
-    logger("HIVE: setDomain: $domain");
+    await box.put(domain, d);
+    logger("HIVE: setDomain: $d");
   }
 }
 
