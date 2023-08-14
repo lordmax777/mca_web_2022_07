@@ -81,6 +81,8 @@ class UserPopupMenuButton extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
+                        //todo: create a logout action and dispatch it
+                        //also reset them after logout
                         DependencyManager.instance.navigation.loginState
                             .logout();
                       },

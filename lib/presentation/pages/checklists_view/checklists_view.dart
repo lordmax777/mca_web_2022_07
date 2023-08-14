@@ -198,10 +198,6 @@ class _ChecklistsViewState extends State<ChecklistsView>
     String? filterUser;
 
     if (request.filterRows.isNotEmpty) {
-      final filter = FilterHelper.convertRowsToFilter(
-        request.filterRows,
-        stateManager!.refColumns,
-      );
       final rowsToMap = FilterHelper.convertRowsToMap(request.filterRows);
       try {
         for (final row in rowsToMap.entries) {
