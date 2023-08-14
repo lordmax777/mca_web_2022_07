@@ -5,19 +5,22 @@ import 'package:mca_dashboard/utils/utils.dart';
 
 final class ShiftCardDropdown extends Equatable {
   final Iterable<DefaultMenuItem> items;
-  final ValueChanged<DefaultMenuItem> onChanged;
+  final ValueChanged<DefaultMenuItem>? onChanged;
   final int? valueId;
+  final String? additionalValueId;
   final String? label;
 
   const ShiftCardDropdown({
     required this.items,
-    required this.onChanged,
+    this.onChanged,
     this.valueId,
+    this.additionalValueId,
     this.label,
   });
 
   @override
-  List<Object?> get props => [items, onChanged, valueId, label];
+  List<Object?> get props =>
+      [items, onChanged, valueId, label, additionalValueId];
 }
 
 final class ShiftCardItem extends Equatable {
@@ -29,6 +32,7 @@ final class ShiftCardItem extends Equatable {
   final Widget? customWidget;
   final int? maxLines;
   final ValueChanged<String>? onChanged;
+  final ShiftCardDropdown? dropdown;
 
   const ShiftCardItem({
     this.title,
@@ -39,11 +43,20 @@ final class ShiftCardItem extends Equatable {
     this.checked,
     this.simpleText,
     this.customWidget,
+    this.dropdown,
   });
 
   @override
-  List<Object?> get props =>
-      [title, simpleText, checked, customWidget, maxLines, onChanged];
+  List<Object?> get props => [
+        title,
+        simpleText,
+        checked,
+        customWidget,
+        dropdown,
+        maxLines,
+        onChanged,
+        dropdown
+      ];
 }
 
 class ShiftCard extends StatelessWidget {
@@ -177,6 +190,17 @@ class ShiftCard extends StatelessWidget {
         onChanged: item.onChecked!,
         activeIcon: Icons.check,
         inactiveIcon: Icons.close,
+      );
+    }
+    if (item.dropdown != null) {
+      return DefaultDropdown(
+        hasSearchBox: true,
+        width: width / 2.2,
+        label: item.title,
+        items: item.dropdown!.items.toList(),
+        onChanged: item.dropdown?.onChanged,
+        valueId: item.dropdown!.valueId,
+        valueAdditionalId: item.dropdown!.additionalValueId,
       );
     }
     return SizedBox(

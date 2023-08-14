@@ -36,7 +36,7 @@ final class AppTheme {
         thumbVisibility: MaterialStatePropertyAll(true),
         trackVisibility: MaterialStatePropertyAll(true),
         trackColor: MaterialStatePropertyAll(Colors.grey),
-        thumbColor: MaterialStatePropertyAll(Colors.black),
+        thumbColor: MaterialStatePropertyAll(Colors.blueGrey),
       ));
 
   ThemeData? _theme;

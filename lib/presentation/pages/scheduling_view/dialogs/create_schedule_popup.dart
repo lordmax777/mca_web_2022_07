@@ -401,14 +401,72 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                               }),
                           ShiftCardItem(
                               title: "Payment Terms",
+                              onChanged: (value) {
+                                final number = int.tryParse(value) ?? 0;
+                                personalData.paymentDays = number;
+                              },
                               simpleText: personalData.paymentDays.toString()),
                           ShiftCardItem(
                               title: "Currency",
+                              dropdown: ShiftCardDropdown(
+                                items: [
+                                  for (int i = 0;
+                                      i <
+                                          appStore.state.generalState.lists
+                                              .currencies.length;
+                                      i++)
+                                    DefaultMenuItem(
+                                        id: i,
+                                        title: appStore.state.generalState.lists
+                                            .currencies[i].code)
+                                ],
+                                valueId: personalData.currency != null
+                                    ? appStore
+                                        .state.generalState.lists.currencies
+                                        .indexOf(personalData.currency!)
+                                    : null,
+                                onChanged: (value) {
+                                  updateUI(() {
+                                    personalData.currency = appStore
+                                        .state
+                                        .generalState
+                                        .lists
+                                        .currencies[value.id];
+                                  });
+                                },
+                              ),
                               simpleText: personalData.currency != null
                                   ? "${personalData.currency!.code} (${personalData.currency!.sign})"
                                   : null),
                           ShiftCardItem(
                               title: "Payment Method",
+                              dropdown: ShiftCardDropdown(
+                                items: [
+                                  for (int i = 0;
+                                      i <
+                                          appStore.state.generalState.lists
+                                              .paymentMethods.length;
+                                      i++)
+                                    DefaultMenuItem(
+                                        id: i,
+                                        title: appStore.state.generalState.lists
+                                            .paymentMethods[i].name)
+                                ],
+                                valueId: personalData.paymentMethod != null
+                                    ? appStore
+                                        .state.generalState.lists.paymentMethods
+                                        .indexOf(personalData.paymentMethod!)
+                                    : null,
+                                onChanged: (value) {
+                                  updateUI(() {
+                                    personalData.paymentMethod = appStore
+                                        .state
+                                        .generalState
+                                        .lists
+                                        .paymentMethods[value.id];
+                                  });
+                                },
+                              ),
                               simpleText: personalData.paymentMethod?.name),
                           ShiftCardItem(
                               title: "Client Notes",
