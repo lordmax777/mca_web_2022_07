@@ -25,6 +25,11 @@ class _QuotesViewState extends State<QuotesView>
             columns: columns,
             onLoaded: onLoaded,
             focusNode: focusNode,
+            rowColorCallback: (p0) {
+              final bool isAccepted =
+                  p0.row.cells['status']?.value == "accepted";
+              return isAccepted ? Colors.green[50]! : Colors.grey[100]!;
+            },
             headerEnd: ElevatedButton.icon(
                 onPressed: () {
                   if (stateManager!.hasFocus) {

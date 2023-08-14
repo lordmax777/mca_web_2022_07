@@ -12,6 +12,7 @@ class DebugView extends StatefulWidget {
 }
 
 class _DebugViewState extends State<DebugView> {
+  final state = appStore.state.generalState;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,15 +25,7 @@ class _DebugViewState extends State<DebugView> {
             label("Test Button"),
             ElevatedButton(
               onPressed: () async {
-                dispatch(GetListsAction());
-                return;
-                for (var i in appStore.state.generalState.properties) {
-                  await Future.wait([
-                    appStore.dispatch(GetPropertyStaffAction(i.id)) as Future,
-                    appStore.dispatch(GetPropertyQualificationAction(i.id))
-                        as Future
-                  ]);
-                }
+                // print(state.companyInfo.);
               },
               child: const Text('Test Button'),
             ),

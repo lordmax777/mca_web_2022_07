@@ -17,12 +17,14 @@ class DefaultTable extends StatelessWidget {
   final Widget Function(PlutoGridStateManager)? customFooter;
   final void Function(int page, int pageSize)? fetch;
   final PlutoGridColumnFilterConfig? columnFilter;
+  final Color Function(PlutoRowColorContext)? rowColorCallback;
   const DefaultTable(
       {super.key,
       required this.onLoaded,
       required this.columns,
       required this.rows,
       this.onSelected,
+      this.rowColorCallback,
       this.columnFilter,
       this.customFooter,
       this.onChanged,
@@ -68,13 +70,14 @@ class DefaultTable extends StatelessWidget {
                   headerEnd: headerEnd);
             }
           : null,
-      rowColorCallback: (rowColorContext) {
-        if (rowColorContext.row.type.isGroup) {
-          return Colors.grey[50]!;
-        }
+      rowColorCallback: rowColorCallback ??
+          (rowColorContext) {
+            if (rowColorContext.row.type.isGroup) {
+              return Colors.grey[50]!;
+            }
 
-        return Colors.white;
-      },
+            return Colors.white;
+          },
       configuration: PlutoGridConfiguration(
         columnFilter: columnFilter ?? const PlutoGridColumnFilterConfig(),
         style: PlutoGridStyleConfig(

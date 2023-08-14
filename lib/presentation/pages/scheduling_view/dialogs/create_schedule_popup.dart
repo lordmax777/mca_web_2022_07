@@ -506,7 +506,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                   children: [
                     //Address Data
                     ShiftCard(
-                      title: "Address",
+                      title: shiftData.isQuote ? "Invoice Address" : "Address",
                       trailing: IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
