@@ -44,7 +44,7 @@ class _NewStorageItemPopupState extends State<NewStorageItemPopup>
                   UserCard(
                       width: 700,
                       title:
-                          "${widget.model != null ? "Edit" : "Add"} Qualification",
+                          "${widget.model != null ? "Edit" : "Add"} Storage Item",
                       items: [
                         UserCardItem(
                           title: "Item Name",
@@ -92,8 +92,8 @@ class _NewStorageItemPopupState extends State<NewStorageItemPopup>
           TextButton(
             onPressed: () async {
               if (!validateForm()) return;
-              if (selected1 == null || selected2 == null) {
-                context.showError("Please select warehouse and tax");
+              if (selected2 == null) {
+                context.showError("Please select tax");
                 return;
               }
               context.futureLoading(() async {

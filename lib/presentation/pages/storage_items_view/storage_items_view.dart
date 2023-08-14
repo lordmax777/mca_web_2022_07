@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
@@ -32,8 +33,9 @@ class _StorageItemsViewState extends State<StorageItemsView>
               final outgoingPrice = p0.row.cells["outgoingPrice"]!.value;
               final taxValue = p0.row.cells["tax"]!.value;
               final taxId = appStore.state.generalState.lists.taxes
-                  .firstWhere((element) => element.rate == taxValue)
-                  .id;
+                  .firstWhereOrNull((element) => element.rate == taxValue)
+                  ?.id;
+
               //show loading
               //update item
               //hide loading
@@ -42,7 +44,7 @@ class _StorageItemsViewState extends State<StorageItemsView>
               loading(() async {
                 final success = await dispatch<int>(PostStorageItemAction(
                   id: id,
-                  taxId: taxId,
+                  taxId: taxId ?? 0,
                   title: name,
                   price: incomingPrice,
                   outgoingPrice: outgoingPrice,
@@ -57,6 +59,12 @@ class _StorageItemsViewState extends State<StorageItemsView>
                   stateManager!.insertRows(p0.rowIdx, [p0.row]);
                   context.showError(success.right.message);
                   return;
+                } else {
+                  //error rollback changes
+                  stateManager!.removeRows([p0.row]);
+                  final String field = p0.column.field;
+                  p0.row.cells[field]!.value = p0.oldValue;
+                  stateManager!.insertRows(p0.rowIdx, [p0.row]);
                 }
               });
             },
@@ -138,10 +146,14 @@ class _StorageItemsViewState extends State<StorageItemsView>
         ),
         PlutoColumn(
           title: "Tax",
-          enableAutoEditing: true,
           field: "tax",
           width: 100,
-          enableEditingMode: false,
+          enableAutoEditing: true,
+          enableEditingMode: true,
+          renderer: (rendererContext) {
+            return rendererContext.defaultEditableCellWidget(
+                isSelectable: true);
+          },
           type: PlutoColumnType.select(appStore.state.generalState.lists.taxes
               .map((e) => e.rate)
               .toList()),

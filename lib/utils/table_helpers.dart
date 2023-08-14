@@ -97,20 +97,26 @@ extension WidgetHelper on PlutoColumnRendererContext {
     );
   }
 
-  Widget defaultEditableCellWidget() {
+  Widget defaultEditableCellWidget({bool isSelectable = false}) {
     return MouseRegion(
-      cursor: SystemMouseCursors.text,
+      cursor: isSelectable ? SystemMouseCursors.click : SystemMouseCursors.text,
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(4),
           ),
-          child: Text(
-            cell.value.toString(),
-            style: stateManager.style.cellTextStyle,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                cell.value.toString(),
+                style: stateManager.style.cellTextStyle,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (isSelectable) const Icon(Icons.arrow_drop_down, size: 15)
+            ],
           )),
     );
   }
