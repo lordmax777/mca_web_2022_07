@@ -847,8 +847,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       }
 
       //Timing
-      formData.fields
-          .add(MapEntry('workStartDate', time.start!.toApiDateWithSlash));
+      if (time.start != null) {
+        formData.fields
+            .add(MapEntry('workStartDate', time.start!.toApiDateWithSlash));
+      }
       if (time.altStartDate != null) {
         formData.fields.add(MapEntry(
             'altWorkStartDate', time.altStartDate!.toApiDateWithSlash));
@@ -857,22 +859,28 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         formData.fields
             .add(MapEntry('workRepeatId', time.repeat!.id.toString()));
       } else {
-        deps.navigation.showFail("Please select repeat");
-        return -1;
+        if (!action.isQuote) {
+          deps.navigation.showFail("Please select repeat");
+          return -1;
+        }
       }
       if (time.startTime != null) {
         formData.fields
             .add(MapEntry('workStartTime', time.startTime!.toApiTime));
       } else {
-        deps.navigation.showFail("Please select start time");
-        return -1;
+        if (!action.isQuote) {
+          deps.navigation.showFail("Please select start time");
+          return -1;
+        }
       }
       if (time.endTime != null) {
         formData.fields
             .add(MapEntry('workFinishTime', time.endTime!.toApiTime));
       } else {
-        deps.navigation.showFail("Please select end time");
-        return -1;
+        if (!action.isQuote) {
+          deps.navigation.showFail("Please select end time");
+          return -1;
+        }
       }
       //"1,2,3,4,5" - Monday to Friday (1-7) week1 = week1Str
       //"8,9,10,11,12" - Monday to Friday (8-14) week2 = week2Str

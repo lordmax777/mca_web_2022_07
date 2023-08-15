@@ -856,6 +856,7 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
             addressData: shiftData.addressData,
             timingData: timingData,
             teamData: teamData,
+            isQuote: isQuote,
             guestData: guestData,
             quoteData: shiftData.quoteData,
             productData: productData,

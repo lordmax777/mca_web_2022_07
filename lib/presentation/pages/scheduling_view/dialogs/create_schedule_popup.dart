@@ -80,7 +80,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
       if (!isCreate) {
         final quotes = await dispatch<List<QuoteMd>>(GetQuotesAction(
           id: quoteData.id,
-          date: timingData.start!,
+          date: timingData.start,
           locationId: addressData.locationId,
           shiftId: personalData.shiftId,
         ));
@@ -96,10 +96,8 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                   currencies: lists.currencies),
               addressData:
                   addressData.copyFromQuote(quote, countries: lists.countries),
-              workAddressData: isQuote
-                  ? addressData.copyFromQuote(quote,
-                      countries: lists.countries, isWorkAddress: true)
-                  : null,
+              workAddressData: addressData.copyFromQuote(quote,
+                  countries: lists.countries, isWorkAddress: true),
               timeData:
                   timingData.copyFromQuote(quote, repeats: lists.workRepeats));
 
@@ -200,7 +198,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
     final res = await _dependencies.navigation.showCustomDialog<TimeData?>(
         context: context,
         builder: (context) {
-          return TimingPopup(data: timingData);
+          return TimingPopup(data: timingData, isDateRequired: !isQuote);
         });
     if (res != null) {
       bool isSame = true;
@@ -506,7 +504,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                   children: [
                     //Address Data
                     ShiftCard(
-                      title: shiftData.isQuote ? "Invoice Address" : "Address",
+                      title: "Invoice Address",
                       trailing: IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -1045,6 +1043,39 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
     );
   }
 
+  Future<void> emailQuoteToClient(int quoteId) async {
+    //Success
+    bool sendEmail = false;
+    final bool exitWithEmail = await context.showDialog(
+        barrierDismissible: false,
+        AlertDialog(
+          title: const Text("Saved Successfully"),
+          content: StatefulBuilder(builder: (context, ss) {
+            return DefaultCheckbox(
+              value: sendEmail,
+              label: 'Email Quote to Client',
+              onChanged: (value) {
+                ss(() {
+                  sendEmail = value;
+                });
+              },
+            );
+          }),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  context.pop(sendEmail);
+                },
+                child: const Text("Ok"))
+          ],
+        ));
+    if (exitWithEmail) {
+      await context.futureLoading(() async {
+        await dispatch<bool>(SendQuoteEmailAction(quoteId));
+      });
+    }
+  }
+
   Future<void> onSave() async {
     productData.stateManager = productStateManager;
     final int? shiftId = appStore.state.generalState.lists.shifts
@@ -1062,8 +1093,10 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
     if (!addressData.isValid(context)) {
       return;
     }
-    if (!timingData.isValid(context)) {
-      return;
+    if (!isQuote) {
+      if (!timingData.isValid(context)) {
+        return;
+      }
     }
     // if (!productData.isValid(context)) {
     //   return;
@@ -1083,6 +1116,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
             teamData: teamData,
             guestData: guestData,
             quoteData: quoteData,
+            isQuote: isQuote,
             productData: productData,
             workAddressData: workAddressData));
         //Check response
@@ -1136,6 +1170,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
           final quoteId = await dispatch<int>(PostQuoteAction(
               personalData: personalData,
               addressData: addressData,
+              isQuote: isQuote,
               timingData: timingData,
               teamData: teamData,
               guestData: guestData,
@@ -1192,6 +1227,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
 
     Future<void> handleQuote() async {
       //Check if create
+
       if (isCreate) {
         //Create Quote
         final quoteId = await dispatch<int>(PostQuoteAction(
@@ -1202,20 +1238,23 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
             guestData: guestData,
             quoteData: quoteData,
             productData: productData,
+            isQuote: isQuote,
             workAddressData: workAddressData));
         //Check response
         if (quoteId.isLeft && !quoteId.left.isNegative) {
           //Success
+          await emailQuoteToClient(quoteId.left);
           context.pop(true);
         } else {
           //Fail
-          context.showError('Failed to create quote');
+          // context.showError('Failed to create quote');
           return;
         }
       } else {
         //Update quote using quoteData.id
         final quoteId = await dispatch<int>(PostQuoteAction(
             personalData: personalData,
+            isQuote: isQuote,
             addressData: addressData,
             timingData: timingData,
             teamData: teamData,
@@ -1225,6 +1264,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
             workAddressData: workAddressData));
         if (quoteId.isLeft && !quoteId.left.isNegative) {
           //Success
+          await emailQuoteToClient(quoteId.left);
           context.pop(true);
         } else {
           //Fail

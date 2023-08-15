@@ -9,7 +9,9 @@ import 'create_schedule_popup.dart';
 
 class TimingPopup extends StatefulWidget {
   final TimeData data;
-  const TimingPopup({super.key, required this.data});
+  final bool isDateRequired;
+  const TimingPopup(
+      {super.key, required this.data, this.isDateRequired = true});
 
   @override
   State<TimingPopup> createState() => _TimingPopupState();
@@ -20,6 +22,8 @@ class _TimingPopupState extends State<TimingPopup> {
   final _formKey = GlobalKey<FormState>();
 
   bool get isAllDay => data.isAllDay;
+
+  bool get isDateRequired => widget.isDateRequired;
 
   @override
   void initState() {
@@ -40,16 +44,18 @@ class _TimingPopupState extends State<TimingPopup> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                label('Start Date', isRequired: true),
+                label('Start Date', isRequired: isDateRequired),
                 DefaultTextField(
                     width: double.infinity,
                     enabled: false,
-                    validator: (p0) {
-                      if (data.start == null) {
-                        return 'Start date is required';
-                      }
-                      return null;
-                    },
+                    validator: !isDateRequired
+                        ? null
+                        : (p0) {
+                            if (data.start == null) {
+                              return 'Start date is required';
+                            }
+                            return null;
+                          },
                     onTap: () {
                       showDatePicker(
                         context: context,
@@ -101,15 +107,17 @@ class _TimingPopupState extends State<TimingPopup> {
                   },
                 ),
                 const SizedBox(height: 8),
-                label('Start Time', isRequired: true),
+                label('Start Time', isRequired: isDateRequired),
                 DefaultTextField(
                   width: double.infinity,
-                  validator: (p0) {
-                    if (data.startTime == null) {
-                      return 'Start time is required';
-                    }
-                    return null;
-                  },
+                  validator: !isDateRequired
+                      ? null
+                      : (p0) {
+                          if (data.startTime == null) {
+                            return 'Start time is required';
+                          }
+                          return null;
+                        },
                   enabled: false,
                   onTap: () {
                     showTimePicker(
@@ -126,15 +134,17 @@ class _TimingPopupState extends State<TimingPopup> {
                       text: data.startTime?.format(context) ?? ''),
                 ),
                 const SizedBox(height: 8),
-                label('End Time', isRequired: true),
+                label('End Time', isRequired: isDateRequired),
                 DefaultTextField(
                   width: double.infinity,
-                  validator: (p0) {
-                    if (data.endTime == null) {
-                      return 'End time is required';
-                    }
-                    return null;
-                  },
+                  validator: !isDateRequired
+                      ? null
+                      : (p0) {
+                          if (data.endTime == null) {
+                            return 'End time is required';
+                          }
+                          return null;
+                        },
                   enabled: false,
                   onTap: () {
                     showTimePicker(
@@ -151,7 +161,7 @@ class _TimingPopupState extends State<TimingPopup> {
                       text: data.endTime?.format(context)),
                 ),
                 const SizedBox(height: 8),
-                label('Repeats', isRequired: true),
+                label('Repeats', isRequired: isDateRequired),
                 DefaultDropdown(
                   valueId: data.repeat?.id,
                   width: double.infinity,
@@ -208,20 +218,22 @@ class _TimingPopupState extends State<TimingPopup> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: data.repeat == null
+            onPressed: isDateRequired && data.repeat == null
                 ? null
                 : () {
                     if (!_formKey.currentState!.validate()) return;
-                    if (data.showRepeatDays) {
-                      if (!data.week1.isAnyChecked) {
-                        context.showError(
-                            'Please select at least one day in week 1');
-                        return;
-                      }
-                      if (data.showWeek2 && !data.week2.isAnyChecked) {
-                        context.showError(
-                            'Please select at least one day in week 2');
-                        return;
+                    if (isDateRequired) {
+                      if (data.showRepeatDays) {
+                        if (!data.week1.isAnyChecked) {
+                          context.showError(
+                              'Please select at least one day in week 1');
+                          return;
+                        }
+                        if (data.showWeek2 && !data.week2.isAnyChecked) {
+                          context.showError(
+                              'Please select at least one day in week 2');
+                          return;
+                        }
                       }
                     }
                     context.pop(data);

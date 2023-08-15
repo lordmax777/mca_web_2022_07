@@ -9,6 +9,7 @@ final class PostQuoteAction {
   final GuestData guestData;
   final QuoteData quoteData;
   final ProductData productData;
+  final bool isQuote;
 
   const PostQuoteAction({
     required this.personalData,
@@ -19,5 +20,6 @@ final class PostQuoteAction {
     required this.guestData,
     required this.quoteData,
     required this.productData,
+    required this.isQuote,
   });
 }

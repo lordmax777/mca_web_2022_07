@@ -14,7 +14,7 @@ class ShiftData extends Equatable {
 
   final PersonalData personalData;
   final AddressData addressData;
-  final AddressData? workAddressData;
+  final AddressData workAddressData;
   final TimeData timeData;
   final TeamData teamData;
   final GuestData guestData;
@@ -68,7 +68,7 @@ class ShiftData extends Equatable {
       quoteData: quoteData ?? QuoteData(),
       productData: productData ?? ProductData(),
       teamData: teamData ?? TeamData(users: []),
-      workAddressData: workAddressData ?? (isQuote ? AddressData() : null),
+      workAddressData: workAddressData ?? AddressData(),
       timeData: timeData ?? TimeData.init(withAltStartDate: isQuote),
       isQuote: isQuote,
     );
@@ -569,7 +569,6 @@ class TimeData extends Equatable {
   //init
   factory TimeData.init({bool withAltStartDate = false}) {
     return TimeData(
-      start: DateTime.now(),
       week1: WeekDaysMd(),
       week2: WeekDaysMd(),
       showAltDate: withAltStartDate,

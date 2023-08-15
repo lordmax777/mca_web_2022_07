@@ -444,9 +444,12 @@ extension ContextHelper on BuildContext {
     _deps.navigation.showSuccess(message, onClose: onClose);
   }
 
-  Future<T?> showDialog<T>(Widget dialog) async {
-    return await _deps.navigation
-        .showCustomDialog<T>(context: this, builder: (context) => dialog);
+  Future<T?> showDialog<T>(Widget dialog,
+      {bool barrierDismissible = true}) async {
+    return await _deps.navigation.showCustomDialog<T>(
+        context: this,
+        builder: (context) => dialog,
+        barrierDismissible: barrierDismissible);
   }
 
   TextTheme get textTheme => Theme.of(this).textTheme;

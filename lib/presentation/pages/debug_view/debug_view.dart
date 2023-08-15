@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_switch.dart';
+import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/create_schedule_popup.dart';
 
 class DebugView extends StatefulWidget {
@@ -25,6 +26,30 @@ class _DebugViewState extends State<DebugView> {
             label("Test Button"),
             ElevatedButton(
               onPressed: () async {
+                bool sendEmail = false;
+                final bool exited = await context.showDialog(
+                    barrierDismissible: false,
+                    AlertDialog(
+                      title: const Text("Saved Successfully"),
+                      content: StatefulBuilder(builder: (context, ss) {
+                        return DefaultCheckbox(
+                          value: sendEmail,
+                          label: 'Email Quote to Client',
+                          onChanged: (value) {
+                            ss(() {
+                              sendEmail = value;
+                            });
+                          },
+                        );
+                      }),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              context.pop(sendEmail);
+                            },
+                            child: const Text("Ok"))
+                      ],
+                    ));
                 // print(state.companyInfo.);
               },
               child: const Text('Test Button'),
