@@ -71,6 +71,9 @@ class MCANavigation extends IMCANavigation {
   //Settings
   static const String settings = '/settings';
 
+  //Timesheet
+  static const String timesheet = '/timesheet';
+
   /// router
   late final router = GoRouter(
     debugLogDiagnostics: true,
@@ -237,6 +240,18 @@ class MCANavigation extends IMCANavigation {
                 return NoTransitionPage<void>(
                   key: state.pageKey,
                   child: const ChecklistsView(),
+                );
+              },
+            ),
+
+            //Timesheet
+            GoRoute(
+              path: timesheet,
+              name: timesheet.substring(1),
+              pageBuilder: (context, state) {
+                return NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: const TimesheetView(),
                 );
               },
             ),

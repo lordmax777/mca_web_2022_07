@@ -74,6 +74,11 @@ final List<Map<String, dynamic>> _destinations = [
     'icon': Icons.checklist,
   },
   {
+    'route': MCANavigation.timesheet,
+    'title': 'Timesheet',
+    'icon': Icons.timer,
+  },
+  {
     'route': MCANavigation.settings,
     'title': 'Settings',
     'icon': Icons.settings,

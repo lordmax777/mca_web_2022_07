@@ -15,3 +15,4 @@ export 'properties_view/properties_view.dart';
 export 'approvals_view/approvals_wrapper.dart';
 export 'checklists_view/checklists_view.dart';
 export 'settings_view/settings_view.dart';
+export 'timesheet_view/timesheet_view.dart';
