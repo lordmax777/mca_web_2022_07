@@ -12,6 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   #Core
   go_router: ^8.0.1
@@ -46,6 +48,7 @@ dependencies:
   dropdown_button2: ^2.1.4
   bot_toast: ^4.0.4
   easy_loading_button: ^0.3.2
+  month_year_picker: ^0.3.0+1
 
   #Etc
   flutter_easylogger: ^2.3.3

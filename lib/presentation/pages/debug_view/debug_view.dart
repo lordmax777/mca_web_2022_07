@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/get_timesheet_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_switch.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/create_schedule_popup.dart';
@@ -26,6 +27,9 @@ class _DebugViewState extends State<DebugView> {
             label("Test Button"),
             ElevatedButton(
               onPressed: () async {
+                final res = await dispatch(GetTimesheetAction(
+                    timestamp: DateTime.now().millisecondsSinceEpoch));
+                return;
                 bool sendEmail = false;
                 final bool exited = await context.showDialog(
                     barrierDismissible: false,

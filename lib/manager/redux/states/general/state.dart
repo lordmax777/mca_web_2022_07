@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
+import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 
 export 'mw.dart';
 export 'actions/login_action.dart';
@@ -44,6 +45,7 @@ export 'actions/user_pref_shift_action.dart';
 export 'actions/user_qualif_action.dart';
 export 'actions/user_status_action.dart';
 export 'actions/user_visa_action.dart';
+export 'actions/get_timesheet_action.dart';
 
 @immutable
 class GeneralState extends Equatable {
@@ -63,6 +65,7 @@ class GeneralState extends Equatable {
   final List<ChecklistTemplateMd> checklistTemplates;
   final ApprovalMd approvals;
   final ChecklistFullMd checklists;
+  final TimesheetMd timesheet;
 
   List<LocationMd> clientBasedFullLocations(int? clientId) {
     final clientLocs = lists.clientRelatedLocation(clientId);
@@ -92,6 +95,7 @@ class GeneralState extends Equatable {
     required this.approvals,
     required this.checklists,
     required this.languages,
+    required this.timesheet,
   });
 
   factory GeneralState.initial() {
@@ -119,6 +123,7 @@ class GeneralState extends Equatable {
       ),
       checklists: const ChecklistFullMd.init(),
       languages: const [],
+      timesheet: TimesheetMd.init(),
     );
   }
 
@@ -139,6 +144,7 @@ class GeneralState extends Equatable {
     ApprovalMd? approvals,
     ChecklistFullMd? checklists,
     List<LanguageMd>? languages,
+    TimesheetMd? timesheet,
   }) {
     return GeneralState(
       formatMd: formatMd ?? this.formatMd,
@@ -157,6 +163,7 @@ class GeneralState extends Equatable {
       approvals: approvals ?? this.approvals,
       checklists: checklists ?? this.checklists,
       languages: languages ?? this.languages,
+      timesheet: timesheet ?? this.timesheet,
     );
   }
 
@@ -178,6 +185,7 @@ class GeneralState extends Equatable {
         approvals,
         checklists,
         languages,
+        timesheet,
       ];
 }
 
@@ -199,6 +207,7 @@ class UpdateGeneralState {
   final ApprovalMd? approvals;
   final ChecklistFullMd? checklists;
   final List<LanguageMd>? languages;
+  final TimesheetMd? timesheet;
 
   const UpdateGeneralState({
     this.isReset = false,
@@ -218,5 +227,6 @@ class UpdateGeneralState {
     this.approvals,
     this.checklists,
     this.languages,
+    this.timesheet,
   });
 }

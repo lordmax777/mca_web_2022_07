@@ -22,6 +22,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:dio/dio.dart' as dio;
 
 import '../../../../presentation/pages/users_view/data/user_data_source.dart';
+import 'actions/get_timesheet_action.dart';
 import 'actions/stocks_action.dart';
 
 final class ErrorMd extends Equatable {
@@ -234,6 +235,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       case ChangeLanguageAction:
         return action.fetch(store.state);
       case ChangeStockMinLevelAction:
+        return action.fetch(store.state);
+      case GetTimesheetAction:
         return action.fetch(store.state);
       default:
         return next(action);

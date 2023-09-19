@@ -788,4 +788,13 @@ abstract class ApiClient {
     @Path() required int itemid,
     @Field('minimum') required int minLevel,
   });
+
+  //GET Timesheet
+  @GET("/api/fe/timesheet")
+  Future<HttpResponse> getTimesheet({
+    @Query('timestamp') required int timestamp,
+
+    ///-1 if all
+    @Query('user_id') required int userId,
+  });
 }

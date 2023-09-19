@@ -18,6 +18,8 @@ class DefaultTable extends StatelessWidget {
   final void Function(int page, int pageSize)? fetch;
   final PlutoGridColumnFilterConfig? columnFilter;
   final Color Function(PlutoRowColorContext)? rowColorCallback;
+  final Widget? headerStart;
+
   const DefaultTable(
       {super.key,
       required this.onLoaded,
@@ -30,6 +32,7 @@ class DefaultTable extends StatelessWidget {
       this.onChanged,
       this.mode = PlutoGridMode.selectWithOneTap,
       this.headerEnd,
+      this.headerStart,
       this.fetch,
       this.hasFooter = true,
       this.hasHeader = true,
@@ -66,6 +69,7 @@ class DefaultTable extends StatelessWidget {
           ? (stateManager) {
               return DefaultTableHeader(
                   stateManager: stateManager,
+                  headerStart: headerStart,
                   focusNode: focusNode,
                   headerEnd: headerEnd);
             }

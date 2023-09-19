@@ -1,5 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'manager/manager.dart';
 
 class MCADashboardApp extends StatefulWidget {
@@ -33,6 +35,10 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
       store: appStore,
       child: MaterialApp.router(
         routerConfig: router,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          MonthYearPickerLocalizations.delegate,
+        ],
         debugShowCheckedModeBanner: false,
         theme: _dependencyManager.appDep.appTheme.theme,
         title: 'MCA Dashboard',

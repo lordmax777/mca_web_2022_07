@@ -6,10 +6,15 @@ class DefaultTableHeader extends StatefulWidget {
   final PlutoGridStateManager stateManager;
   final FocusNode? focusNode;
   final Widget? headerEnd;
+  final Widget? headerStart;
 
   /// Pass focusNode in order to make the search field functional
   const DefaultTableHeader(
-      {super.key, required this.stateManager, this.focusNode, this.headerEnd});
+      {super.key,
+      required this.stateManager,
+      this.focusNode,
+      this.headerEnd,
+      this.headerStart});
 
   @override
   State<DefaultTableHeader> createState() => _DefaultTableHeaderState();
@@ -25,32 +30,34 @@ class _DefaultTableHeaderState extends State<DefaultTableHeader> {
       height: 60,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          mainAxisAlignment: focusNode != null
-              ? MainAxisAlignment.spaceBetween
-              : MainAxisAlignment.end,
-          children: [
-            // search field
-            if (focusNode != null)
-              DefaultTextField(
-                width: 240,
-                height: 40,
-                label: "Filter",
-                focusNode: focusNode,
-                onChanged: (value) {
-                  stateManager.setFilter((element) =>
-                      element.cells.values.any((cell) => cell.value
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase())) ==
-                      true);
-                },
-              ),
+        child: widget.headerStart != null
+            ? widget.headerStart
+            : Row(
+                mainAxisAlignment: focusNode != null
+                    ? MainAxisAlignment.spaceBetween
+                    : MainAxisAlignment.end,
+                children: [
+                  // search field
+                  if (focusNode != null)
+                    DefaultTextField(
+                      width: 240,
+                      height: 40,
+                      label: "Filter",
+                      focusNode: focusNode,
+                      onChanged: (value) {
+                        stateManager.setFilter((element) =>
+                            element.cells.values.any((cell) => cell.value
+                                .toString()
+                                .toLowerCase()
+                                .contains(value.toLowerCase())) ==
+                            true);
+                      },
+                    ),
 
-            //Menu button
-            if (widget.headerEnd != null) widget.headerEnd!,
-          ],
-        ),
+                  //Menu button
+                  if (widget.headerEnd != null) widget.headerEnd!,
+                ],
+              ),
       ),
     );
   }
