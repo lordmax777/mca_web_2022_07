@@ -21,10 +21,11 @@ class _TimesheetViewState extends State<TimesheetView> {
 
   List<PlutoColumn> columns = [
     PlutoColumn(
-      title: "id",
-      field: 'id',
+      title: "",
+      field: 'userId',
       type: PlutoColumnType.text(),
-      hide: true,
+      width: 0,
+      minWidth: 0,
     ),
     PlutoColumn(
       title: "Staff Name",
@@ -69,6 +70,7 @@ class _TimesheetViewState extends State<TimesheetView> {
   PlutoRow buildRow(Map<String, dynamic> model) {
     return PlutoRow(
       cells: {
+        "userId": PlutoCell(value: model['userId']),
         "staff_name": PlutoCell(value: model['fullname']),
         "schedule_hours": PlutoCell(value: model['schedule_hours']),
         "actual_hours": PlutoCell(value: model['actual_hours']),
@@ -155,6 +157,7 @@ class _TimesheetViewState extends State<TimesheetView> {
         model['days_off'] = daysOff;
         model['lates'] = lates;
         model['cleans'] = cleans;
+        model['userId'] = e['userId'];
 
         return buildRow(model);
       }).toList();
@@ -208,6 +211,17 @@ class _TimesheetViewState extends State<TimesheetView> {
         await loadData(stateManager!);
       },
       rows: stateManager == null ? [] : stateManager!.rows,
+      onSelected:  (p0) {
+        final col = p0.cell?.column.field;
+        switch(col){
+          case 'staff_name':
+            final userId = p0.cell?.row.cells['userId']?.value;
+            print(userId);
+            //navigate to staff detail
+          // context.showDialog();
+            break;
+        }
+      },
     );
   }
 }
