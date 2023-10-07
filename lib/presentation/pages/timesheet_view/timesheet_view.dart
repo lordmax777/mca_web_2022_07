@@ -5,6 +5,7 @@ import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/get_timesheet_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/presentation/pages/timesheet_view/user_timesheet_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class TimesheetView extends StatefulWidget {
@@ -17,7 +18,7 @@ class TimesheetView extends StatefulWidget {
 class _TimesheetViewState extends State<TimesheetView> {
   PlutoGridStateManager? stateManager;
 
-  ValueNotifier<DateTime> selectedDate = ValueNotifier(DateTime.now());
+  final ValueNotifier<DateTime> selectedDate = ValueNotifier(DateTime.now());
 
   List<PlutoColumn> columns = [
     PlutoColumn(
@@ -211,14 +212,17 @@ class _TimesheetViewState extends State<TimesheetView> {
         await loadData(stateManager!);
       },
       rows: stateManager == null ? [] : stateManager!.rows,
-      onSelected:  (p0) {
+      onSelected: (p0) {
         final col = p0.cell?.column.field;
-        switch(col){
+        switch (col) {
           case 'staff_name':
-            final userId = p0.cell?.row.cells['userId']?.value;
-            print(userId);
+            final String? userId = p0.cell?.row.cells['userId']?.value;
             //navigate to staff detail
-          // context.showDialog();
+            if (userId != null) {
+              context.showDialog(UserTimesheetPopup(userId: int.parse(userId)));
+            } else {
+              context.showError('Cannot find user');
+            }
             break;
         }
       },
