@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
-import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/get_timesheet_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/timesheet_view/user_timesheet_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -139,7 +137,7 @@ class _TimesheetViewState extends State<TimesheetView> {
         model['fullname'] = fullname;
         //loop through each date
         for (var date in dateKeys) {
-          for (var d in e['data'][date]) {
+          for (var d in e['data']?[date] ?? []) {
             final shiftId = d['shiftId'];
             scheduleHours += (d['originalAgreedHours'] ?? 0);
             actualHours += (d['actualWorkingHours'] ?? 0);
@@ -219,7 +217,10 @@ class _TimesheetViewState extends State<TimesheetView> {
             final String? userId = p0.cell?.row.cells['userId']?.value;
             //navigate to staff detail
             if (userId != null) {
-              context.showDialog(UserTimesheetPopup(userId: int.parse(userId)));
+              context.showDialog(UserTimesheetPopup(
+                userId: int.parse(userId),
+                initialTime: selectedDate.value,
+              ));
             } else {
               context.showError('Cannot find user');
             }

@@ -193,7 +193,7 @@ final class ApprovalModelMd extends Equatable {
   }
 
   final bool strictBreak;
-  final num minWorkTime;
+  final num? minWorkTime;
   final num? minPaidTime;
   final bool splitTime;
   final String? createdOn;
@@ -343,7 +343,7 @@ final class ApprovalModelMd extends Equatable {
         specialStartTime: json['specialStartTime']?['date'] as String?,
         specialFinishTime: json['specialFinishTime']?['date'] as String?,
         strictBreak: json['strictBreak'] as bool,
-        minWorkTime: json['minWorkTime'] as num,
+        minWorkTime: json['minWorkTime'] as num?,
         minPaidTime: json['minPaidTime'] as num?,
         splitTime: json['splitTime'] as bool,
         createdOn: json['createdOn']?['date'] as String?,

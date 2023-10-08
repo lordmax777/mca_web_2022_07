@@ -9,7 +9,8 @@ import '../../global_widgets/modals/custom_month_picker.dart';
 
 class UserTimesheetPopup extends StatefulWidget {
   final int userId;
-  const UserTimesheetPopup({super.key, required this.userId});
+  final DateTime? initialTime;
+  const UserTimesheetPopup({super.key, required this.userId, this.initialTime});
 
   @override
   State<UserTimesheetPopup> createState() => _UserTimesheetPopupState();
@@ -19,7 +20,8 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
   int get userId => widget.userId;
   PlutoGridStateManager? stateManager;
   TimesheetMd? timesheetData;
-  final ValueNotifier<DateTime> _selectedDate = ValueNotifier(DateTime.now());
+  late final ValueNotifier<DateTime> _selectedDate =
+      ValueNotifier(widget.initialTime ?? DateTime.now());
   DateTime get selectedDate => _selectedDate.value;
 
   List<PlutoColumn> columns = [
@@ -48,7 +50,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     PlutoColumn(
       title: "Actual Time",
       field: 'actual_time',
-      type: PlutoColumnType.text(),
+      type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         final val = rendererContext.cell.value;
         return rendererContext.defaultText(isSelectable: val != " - ");
@@ -151,7 +153,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         model['date'] = (d['date']?['date'] ?? "");
         model['shift'] = d['shiftName'];
         model['actual_time'] =
-            "${d['actualStartTime'] ?? ""} - ${d['actualFinishTime'] ?? ""}";
+            "${(DateTime.tryParse(d['actualStartTime']?['date'] ?? "")?.toApiTime) ?? ""} - ${(DateTime.tryParse(d['actualFinishTime']?['date'] ?? "")?.toApiTime) ?? ""}";
         model['agreed_time'] =
             "${d['agreedStartTime'] ?? ""} - ${d['agreedFinishTime'] ?? ""}";
         model['agreed_hours'] = d['totalAgreedHours'] ?? 0;

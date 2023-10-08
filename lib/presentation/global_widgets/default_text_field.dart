@@ -18,11 +18,13 @@ class DefaultTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final String? initialValue;
   final bool disabled;
+  final bool isTextCenter;
   const DefaultTextField(
       {super.key,
       this.onChanged,
       this.enabled = true,
       this.disabled = false,
+      this.isTextCenter = false,
       this.label,
       this.keyboardType = TextInputType.text,
       this.maxLines,
@@ -56,7 +58,6 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
       enabled: !widget.disabled,
       maxLines: widget.maxLines ?? 1,
       decoration: InputDecoration(
-          // labelText: widget.label,
           label: widget.label != null
               ? SpacedRow(
                   horizontalSpace: 4,
