@@ -117,15 +117,17 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
   }
 
   Future<void> loadData(PlutoGridStateManager sm) async {
-    final res = await context.futureLoading(() async => dispatch<TimesheetMd>(
-        GetTimesheetAction(
-            userId: userId,
-            timestamp: (DateTime(
-                        selectedDate.year,
-                        selectedDate.month +
-                            1)) //added 1, because month starts from 0
-                    .millisecondsSinceEpoch ~/
-                1000)));
+    final res = await context
+        .futureLoading(() async => dispatch<TimesheetMd>(GetTimesheetAction(
+            userId: 805, //userId,
+            timestamp: (1654023600
+                // DateTime(
+                //           selectedDate.year,
+                //           selectedDate.month +
+                //               1)) //added 1, because month starts from 0
+                //       .millisecondsSinceEpoch ~/
+                //   1000
+                ))));
 
     if (res.isLeft) {
       setState(() {
@@ -239,6 +241,11 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
           onLoaded: (p0) async {
             p0.stateManager.setPageSize(40);
             stateManager = p0.stateManager;
+            stateManager!.setRowGroup(
+                PlutoRowGroupByColumnDelegate(showCount: true, columns: [
+              // stateManager!.columns[0],
+              stateManager!.columns[1],
+            ]));
             await loadData(stateManager!);
           },
           rows: stateManager == null ? [] : stateManager!.rows,
