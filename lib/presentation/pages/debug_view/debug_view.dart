@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
+import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/get_timesheet_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_switch.dart';
@@ -27,34 +28,44 @@ class _DebugViewState extends State<DebugView> {
             label("Test Button"),
             ElevatedButton(
               onPressed: () async {
-                final res = await dispatch(GetTimesheetAction(
-                    timestamp: DateTime.now().millisecondsSinceEpoch));
-                return;
-                bool sendEmail = false;
-                final bool exited = await context.showDialog(
-                    barrierDismissible: false,
-                    AlertDialog(
-                      title: const Text("Saved Successfully"),
-                      content: StatefulBuilder(builder: (context, ss) {
-                        return DefaultCheckbox(
-                          value: sendEmail,
-                          label: 'Email Quote to Client',
-                          onChanged: (value) {
-                            ss(() {
-                              sendEmail = value;
-                            });
-                          },
-                        );
-                      }),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              context.pop(sendEmail);
-                            },
-                            child: const Text("Ok"))
-                      ],
-                    ));
-                // print(state.companyInfo.);
+                TimesheetMd timesheetData;
+                final res = await context.futureLoading(
+                  () async => dispatch<TimesheetMd>(
+                    const GetTimesheetAction(
+                      userId: 805, //userId,
+                      timestamp: (1654023600
+                          // DateTime(
+                          //           selectedDate.year,
+                          //           selectedDate.month +
+                          //               1)) //added 1, because month starts from 0
+                          //       .millisecondsSinceEpoch ~/
+                          //   1000
+                          ),
+                    ),
+                  ),
+                );
+                if (res.isLeft) {
+                  timesheetData = res.left;
+                }
+
+                final timesheet = res.left;
+                final data = timesheet.data;
+                final dates = timesheet.dates;
+                //get all values from data
+                final List dataValues =
+                    (data.values.toList().first['data'].values.toList() as List)
+                        .expand((element) => element)
+                        .toList();
+
+                //each dataValues.values.toList() is a List of Map
+
+                logger(dataValues.length);
+                // logger((dataValues.values.toList().first as List));
+
+                // logger(
+                //   dataValues,
+                //   json: true,
+                // );
               },
               child: const Text('Test Button'),
             ),

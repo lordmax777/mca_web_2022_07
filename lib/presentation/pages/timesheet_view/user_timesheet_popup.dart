@@ -138,40 +138,45 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       final data = timesheet.data;
       final dates = timesheet.dates;
       //get all values from data
-      final dataValues = data.values.toList();
+      final List dataValues =
+          (data.values.toList().first['data'].values.toList() as List)
+              .expand((element) => element)
+              .toList();
+
+      //each dataValues.values.toList() is a List of Map
 
       //data of each dataValues is single user data
-      final List<PlutoRow> rows =
-          dataValues.first['data'].values.map<PlutoRow>((e) {
-        final d = e.first;
-
+      final List<PlutoRow> rows = dataValues.map<PlutoRow>((d) {
         final model = <String, dynamic>{};
         num scheduleHours = 0;
         num actualHours = 0;
 
+        // final d = e.first;
+
         //loop through each date
-        scheduleHours += (d['originalAgreedHours'] ?? 0);
-        actualHours += (d['actualWorkingHours'] ?? 0);
-        model['date'] = (d['date']?['date'] ?? "");
-        model['shift'] = d['shiftName'];
+        scheduleHours = (d['originalAgreedHours'] ?? 0);
+        actualHours = (d['actualWorkingHours'] ?? 0);
         model['actual_time'] =
             "${(DateTime.tryParse(d['actualStartTime']?['date'] ?? "")?.toApiTime) ?? ""} - ${(DateTime.tryParse(d['actualFinishTime']?['date'] ?? "")?.toApiTime) ?? ""}";
         model['agreed_time'] =
             "${d['agreedStartTime'] ?? ""} - ${d['agreedFinishTime'] ?? ""}";
-        model['agreed_hours'] = d['totalAgreedHours'] ?? 0;
+        model['agreed_hours'] = (d['totalAgreedHours'] ?? 0) / 24;
         model['paid_hours'] = d[''] ?? 0; //todo:
         model['actual_hours'] = d['actualWorkingHours'] ?? 0;
         model['requests'] = "-"; //todo:
         model['comments'] =
             "${d['startComment'] ?? ""} ${d['finishComment'] ?? ""}";
-
         model['schedule_hours'] = scheduleHours;
         model['actual_hours'] = actualHours;
+        if (d['date']['date'] != null) {
+          model['date'] = d['date']['date'];
+        }
+        model['shift'] = d['shiftName'];
         model['id'] = d['id'];
 
         return buildRow(model);
       }).toList();
-      //set rows
+      // set rows
       setRows(sm, rows);
     }
   }

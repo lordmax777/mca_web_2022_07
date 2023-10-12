@@ -51,8 +51,7 @@ class UserPreferredShiftsTab extends StatelessWidget {
                   field: "dayId",
                   type: PlutoColumnType.number(),
                   formatter: (value) {
-                    return WeekDaysMd()
-                        .asMapIntString[value]
+                    return WeekDaysMd.asMapIntString[value]
                         .toString()
                         .toUpperCase();
                   },

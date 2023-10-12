@@ -29,7 +29,7 @@ class WeekDaysMd extends Equatable {
         7: sunday,
       };
 
-  Map<int, String> get asMapIntString => {
+  static Map<int, String> get asMapIntString => {
         1: 'monday',
         2: 'tuesday',
         3: 'wednesday',
