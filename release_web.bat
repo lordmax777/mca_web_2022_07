@@ -1,4 +1,4 @@
-@echo off
+`@echo off
 
 set year=%DATE:~10,4%
 set month=%DATE:~4,2%

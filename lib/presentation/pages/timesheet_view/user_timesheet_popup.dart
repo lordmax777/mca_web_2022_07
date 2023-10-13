@@ -53,25 +53,25 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         final val = rendererContext.cell.value;
-        return rendererContext.defaultText(isSelectable: val != " - ");
+        return rendererContext.defaultText(isSelectable: val != "-");
       },
     ),
     PlutoColumn(
       title: "Paid hours",
       field: 'paid_hours',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
       formatter: (value) => value > 0 ? "$value Hr(s)" : "",
     ),
     PlutoColumn(
       title: "Agreed Hours",
       field: 'agreed_hours',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
       formatter: (value) => value > 0 ? "$value Hr(s)" : "",
     ),
     PlutoColumn(
       title: "Actual Hours",
       field: 'actual_hours',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
       formatter: (value) => value > 0 ? "$value Hr(s)" : "",
     ),
     PlutoColumn(
@@ -119,15 +119,17 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
   Future<void> loadData(PlutoGridStateManager sm) async {
     final res = await context
         .futureLoading(() async => dispatch<TimesheetMd>(GetTimesheetAction(
-            userId: 805, //userId,
-            timestamp: (1654023600
-                // DateTime(
-                //           selectedDate.year,
-                //           selectedDate.month +
-                //               1)) //added 1, because month starts from 0
-                //       .millisecondsSinceEpoch ~/
-                //   1000
-                ))));
+              userId: 805,
+              // userId,
+              timestamp: 1654023600,
+              // DateTime(
+              //     selectedDate.year,
+              //     selectedDate.month +
+              //         1)) //added 1, because month starts from 0
+              // .millisecondsSinceEpoch ~/
+              // 1000
+              // )
+            )));
 
     if (res.isLeft) {
       setState(() {
@@ -148,31 +150,31 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       //data of each dataValues is single user data
       final List<PlutoRow> rows = dataValues.map<PlutoRow>((d) {
         final model = <String, dynamic>{};
-        num scheduleHours = 0;
-        num actualHours = 0;
-
-        // final d = e.first;
 
         //loop through each date
-        scheduleHours = (d['originalAgreedHours'] ?? 0);
-        actualHours = (d['actualWorkingHours'] ?? 0);
-        model['actual_time'] =
-            "${(DateTime.tryParse(d['actualStartTime']?['date'] ?? "")?.toApiTime) ?? ""} - ${(DateTime.tryParse(d['actualFinishTime']?['date'] ?? "")?.toApiTime) ?? ""}";
-        model['agreed_time'] =
-            "${d['agreedStartTime'] ?? ""} - ${d['agreedFinishTime'] ?? ""}";
-        model['agreed_hours'] = (d['totalAgreedHours'] ?? 0) / 24;
-        model['paid_hours'] = d[''] ?? 0; //todo:
-        model['actual_hours'] = d['actualWorkingHours'] ?? 0;
-        model['requests'] = "-"; //todo:
-        model['comments'] =
-            "${d['startComment'] ?? ""} ${d['finishComment'] ?? ""}";
-        model['schedule_hours'] = scheduleHours;
-        model['actual_hours'] = actualHours;
         if (d['date']['date'] != null) {
           model['date'] = d['date']['date'];
         }
         model['shift'] = d['shiftName'];
         model['id'] = d['id'];
+        if (d['originalAgreedHours'] != null) {
+          model['schedule_hours'] = d['originalAgreedHours'];
+        }
+        if (d['totalAgreedHours'] != null) {
+          model['agreed_hours'] = d['totalAgreedHours'] / 60;
+        }
+        if (d['actualWorkingHours'] != null) {
+          model['actual_hours'] = d['actualWorkingHours'] / 60;
+        }
+        model['comments'] =
+            "${d['startComment'] ?? ""} ${d['finishComment'] ?? ""}";
+        model['actual_time'] =
+            "${(DateTime.tryParse(d['actualStartTime']?['date'] ?? "")?.toApiTime) ?? ""}-${(DateTime.tryParse(d['actualFinishTime']?['date'] ?? "")?.toApiTime) ?? ""}";
+        model['agreed_time'] =
+            "${d['agreedStartTime'] ?? ""}-${d['agreedFinishTime'] ?? ""}";
+
+        model['paid_hours'] = d[''] ?? 0; //todo:
+        model['requests'] = "-"; //todo:
 
         return buildRow(model);
       }).toList();
