@@ -57,7 +57,6 @@ class UserPreferredShiftsTab extends StatelessWidget {
                   },
                 ),
                 PlutoColumn(
-                  textAlign: PlutoColumnTextAlign.center,
                   title: "Location",
                   field: "location",
                   type: PlutoColumnType.text(),
@@ -66,10 +65,13 @@ class UserPreferredShiftsTab extends StatelessWidget {
                   },
                 ),
                 PlutoColumn(
-                    textAlign: PlutoColumnTextAlign.center,
-                    title: "Shift",
-                    field: "shift",
-                    type: PlutoColumnType.text()),
+                  title: "Shift",
+                  field: "shift",
+                  type: PlutoColumnType.text(),
+                  renderer: (rendererContext) {
+                    return rendererContext.defaultText();
+                  },
+                ),
                 PlutoColumn(
                   width: 120,
                   textAlign: PlutoColumnTextAlign.center,

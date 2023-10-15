@@ -35,25 +35,26 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     PlutoColumn(
       title: "Date",
       field: 'date',
-      //format: Tue,1st september
+      enableRowChecked: true,
+      //format: Tue,1st September
       type: PlutoColumnType.date(format: 'EEE, d MMM'),
+      renderer: (rendererContext) {
+        return rendererContext.defaultText();
+      },
     ),
     PlutoColumn(
       title: "Shift",
       field: 'shift',
       minWidth: 300,
       type: PlutoColumnType.text(),
-      renderer: (rendererContext) {
-        return rendererContext.defaultText(isSelectable: false);
-      },
     ),
     PlutoColumn(
       title: "Actual Time",
       field: 'actual_time',
-      type: PlutoColumnType.time(),
+      type: PlutoColumnType.text(),
       renderer: (rendererContext) {
-        final val = rendererContext.cell.value;
-        return rendererContext.defaultText(isSelectable: val != "-");
+        return rendererContext.defaultText(
+            isSelectable: rendererContext.cell.value.toString().isNotEmpty);
       },
     ),
     PlutoColumn(
@@ -170,11 +171,14 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
             "${d['startComment'] ?? ""} ${d['finishComment'] ?? ""}";
         model['actual_time'] =
             "${(DateTime.tryParse(d['actualStartTime']?['date'] ?? "")?.toApiTime) ?? ""}-${(DateTime.tryParse(d['actualFinishTime']?['date'] ?? "")?.toApiTime) ?? ""}";
+        if (model['actual_time'] == "-") {
+          model['actual_time'] = "";
+        }
         model['agreed_time'] =
             "${d['agreedStartTime'] ?? ""}-${d['agreedFinishTime'] ?? ""}";
 
         model['paid_hours'] = d[''] ?? 0; //todo:
-        model['requests'] = "-"; //todo:
+        model['requests'] = ""; //todo:
 
         return buildRow(model);
       }).toList();
@@ -248,11 +252,10 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
           onLoaded: (p0) async {
             p0.stateManager.setPageSize(40);
             stateManager = p0.stateManager;
-            stateManager!.setRowGroup(
-                PlutoRowGroupByColumnDelegate(showCount: true, columns: [
-              // stateManager!.columns[0],
-              stateManager!.columns[1],
-            ]));
+            // stateManager!.setRowGroup(
+            //     PlutoRowGroupByColumnDelegate(showCount: true, columns: [
+            //   columns[1],
+            // ]));
             await loadData(stateManager!);
           },
           rows: stateManager == null ? [] : stateManager!.rows,
