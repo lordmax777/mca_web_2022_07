@@ -17,9 +17,9 @@ extension WidgetHelper on PlutoColumnRendererContext {
       bool isActive = true}) {
     final isS = isSelectable;
     final text = Text(
-        (title ?? (cell.value?.toString() ?? "-")).isEmpty
-            ? "-"
-            : title ?? (cell.value?.toString() ?? "-"),
+        (title ?? (cell.value?.toString() ?? "")).isEmpty
+            ? ""
+            : title ?? (cell.value?.toString() ?? ""),
         textAlign: mainAxisAlignment.toTextAlign,
         maxLines: 2,
         softWrap: true,

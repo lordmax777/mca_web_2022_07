@@ -19,6 +19,7 @@ class DefaultTable extends StatelessWidget {
   final PlutoGridColumnFilterConfig? columnFilter;
   final Color Function(PlutoRowColorContext)? rowColorCallback;
   final Widget? headerStart;
+  final List<PlutoColumnGroup>? columnsGroups;
 
   const DefaultTable(
       {super.key,
@@ -26,6 +27,7 @@ class DefaultTable extends StatelessWidget {
       required this.columns,
       required this.rows,
       this.onSelected,
+      this.columnsGroups,
       this.rowColorCallback,
       this.columnFilter,
       this.customFooter,
@@ -54,6 +56,7 @@ class DefaultTable extends StatelessWidget {
         // e.titleTextAlign = PlutoColumnTextAlign.center;
         return e;
       }).toList(),
+      columnGroups: columnsGroups,
       createFooter: hasFooter
           ? (stateManager) {
               if (customFooter != null) {

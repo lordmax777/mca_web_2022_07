@@ -24,7 +24,14 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       ValueNotifier(widget.initialTime ?? DateTime.now());
   DateTime get selectedDate => _selectedDate.value;
 
-  List<PlutoColumn> columns = [
+  final List<PlutoColumnGroup> columnGroups = [
+    PlutoColumnGroup(
+        title: "Actual time", fields: ['actual_start', 'actual_end']),
+    PlutoColumnGroup(
+        title: "Comment", fields: ['start_comment', 'end_comment']),
+  ];
+
+  final List<PlutoColumn> columns = [
     PlutoColumn(
       title: "",
       field: 'id',
@@ -49,12 +56,21 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       type: PlutoColumnType.text(),
     ),
     PlutoColumn(
-      title: "Actual Time",
-      field: 'actual_time',
-      type: PlutoColumnType.text(),
+      title: "Start",
+      field: "actual_start",
+      type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         return rendererContext.defaultText(
-            isSelectable: rendererContext.cell.value.toString().isNotEmpty);
+            isSelectable: rendererContext.cell.value != null);
+      },
+    ),
+    PlutoColumn(
+      title: "End",
+      field: "actual_end",
+      type: PlutoColumnType.time(),
+      renderer: (rendererContext) {
+        return rendererContext.defaultText(
+            isSelectable: rendererContext.cell.value != null);
       },
     ),
     PlutoColumn(
@@ -81,8 +97,13 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       type: PlutoColumnType.text(),
     ),
     PlutoColumn(
-      title: "Comments",
-      field: 'comments',
+      title: "Start",
+      field: 'start_comment',
+      type: PlutoColumnType.text(),
+    ),
+    PlutoColumn(
+      title: "End",
+      field: 'end_comment',
       type: PlutoColumnType.text(),
     ),
   ];
@@ -93,12 +114,14 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         'id': PlutoCell(value: model['id']),
         'date': PlutoCell(value: model['date']),
         'shift': PlutoCell(value: model['shift']),
-        'actual_time': PlutoCell(value: model['actual_time']),
+        'actual_start': PlutoCell(value: model['actual_start']),
+        'actual_end': PlutoCell(value: model['actual_end']),
         'paid_hours': PlutoCell(value: model['paid_hours']),
         'agreed_hours': PlutoCell(value: model['agreed_hours']),
         'actual_hours': PlutoCell(value: model['actual_hours']),
         'requests': PlutoCell(value: model['requests']),
-        'comments': PlutoCell(value: model['comments']),
+        'start_comment': PlutoCell(value: model['start_comment']),
+        'end_comment': PlutoCell(value: model['end_comment']),
       },
     );
   }
@@ -158,6 +181,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         }
         model['shift'] = d['shiftName'];
         model['id'] = d['id'];
+
         if (d['originalAgreedHours'] != null) {
           model['schedule_hours'] = d['originalAgreedHours'];
         }
@@ -167,13 +191,23 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         if (d['actualWorkingHours'] != null) {
           model['actual_hours'] = d['actualWorkingHours'] / 60;
         }
-        model['comments'] =
-            "${d['startComment'] ?? ""} ${d['finishComment'] ?? ""}";
-        model['actual_time'] =
-            "${(DateTime.tryParse(d['actualStartTime']?['date'] ?? "")?.toApiTime) ?? ""}-${(DateTime.tryParse(d['actualFinishTime']?['date'] ?? "")?.toApiTime) ?? ""}";
-        if (model['actual_time'] == "-") {
-          model['actual_time'] = "";
+
+        final startComment = d['startComment'] ?? "";
+        final finishComment = d['finishComment'] ?? "";
+        model['start_comment'] = startComment;
+        model['end_comment'] = finishComment;
+
+        final actualStartDt =
+            DateTime.tryParse(d['actualStartTime']?['date'] ?? "");
+        if (actualStartDt != null) {
+          model['actual_start'] = actualStartDt.toApiTime;
         }
+        final actualFinishDt =
+            DateTime.tryParse(d['actualFinishTime']?['date'] ?? "");
+        if (actualFinishDt != null) {
+          model['actual_end'] = actualFinishDt.toApiTime;
+        }
+
         model['agreed_time'] =
             "${d['agreedStartTime'] ?? ""}-${d['agreedFinishTime'] ?? ""}";
 
@@ -249,13 +283,15 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
               ),
             ],
           ),
+          columnsGroups: columnGroups,
           onLoaded: (p0) async {
             p0.stateManager.setPageSize(40);
             stateManager = p0.stateManager;
-            // stateManager!.setRowGroup(
-            //     PlutoRowGroupByColumnDelegate(showCount: true, columns: [
-            //   columns[1],
-            // ]));
+            stateManager!.setRowGroup(
+                PlutoRowGroupByColumnDelegate(showCount: true, columns: [
+              columns[1],
+              columns[2],
+            ]));
             await loadData(stateManager!);
           },
           rows: stateManager == null ? [] : stateManager!.rows,
