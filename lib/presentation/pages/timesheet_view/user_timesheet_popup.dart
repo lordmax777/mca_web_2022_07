@@ -242,18 +242,17 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
   }
 
   Future<void> loadData(PlutoGridStateManager sm) async {
-    final res = await context
-        .futureLoading(() async => dispatch<TimesheetMd>(GetTimesheetAction(
-              userId: 805,
-              // userId,
-              timestamp: 1654023600,
-              // DateTime(
-              //     selectedDate.year,
-              //     selectedDate.month +
-              //         1)) //added 1, because month starts from 0
-              // .millisecondsSinceEpoch ~/
-              // 1000
-              // )
+    final res = await context.futureLoading(() async => dispatch<TimesheetMd>(
+        GetTimesheetAction(
+            userId:
+                // 805,
+                userId,
+            timestamp:
+                // 1654023600,
+                DateTime(selectedDate.year, selectedDate.month + 1)
+                        .millisecondsSinceEpoch ~/
+                    1000
+            //added 1, because month starts from 0
             )));
 
     if (res.isLeft) {
@@ -394,7 +393,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         ],
       ),
       actions: [
-        ElevatedButton(onPressed: _onCheckAll, child: const Text("Check All")),
+        // ElevatedButton(onPressed: _onCheckAll, child: const Text("Check All")),
         ElevatedButton(onPressed: _onSubmit, child: const Text("Submit")),
       ],
       content: SizedBox(
