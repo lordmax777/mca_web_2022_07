@@ -20,6 +20,7 @@ class DefaultTable extends StatelessWidget {
   final Color Function(PlutoRowColorContext)? rowColorCallback;
   final Widget? headerStart;
   final List<PlutoColumnGroup>? columnsGroups;
+  final PlutoAutoSizeMode autoSizeMode;
 
   const DefaultTable(
       {super.key,
@@ -27,6 +28,7 @@ class DefaultTable extends StatelessWidget {
       required this.columns,
       required this.rows,
       this.onSelected,
+      this.autoSizeMode = PlutoAutoSizeMode.scale,
       this.columnsGroups,
       this.rowColorCallback,
       this.columnFilter,
@@ -93,8 +95,8 @@ class DefaultTable extends StatelessWidget {
           borderColor: Colors.grey[200]!,
           gridBorderColor: Colors.grey[300]!,
         ),
-        columnSize: const PlutoGridColumnSizeConfig(
-          autoSizeMode: PlutoAutoSizeMode.scale,
+        columnSize: PlutoGridColumnSizeConfig(
+          autoSizeMode: autoSizeMode,
         ),
       ),
       onLoaded: (event) {
