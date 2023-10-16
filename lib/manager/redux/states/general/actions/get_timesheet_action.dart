@@ -19,3 +19,28 @@ class GetTimesheetAction {
     });
   }
 }
+
+final class GetTimesheetPdfAction {
+  final int userId;
+  final int timestamp;
+
+  const GetTimesheetPdfAction({
+    required this.userId,
+    required this.timestamp,
+  });
+
+  Future<Either<String, ErrorMd>> fetch(AppState state) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .getTimesheetPdf(userId: userId, timestamp: timestamp);
+      try {
+        final data = res.data['pdf'];
+        return data;
+      } catch (e) {
+        Logger.e(e.toString(), tag: 'GetTimesheetPdfAction');
+        throw const ErrorMd(
+            message: 'Error while downloading pdf', data: null, code: null);
+      }
+    });
+  }
+}

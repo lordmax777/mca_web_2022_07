@@ -797,4 +797,9 @@ abstract class ApiClient {
     ///-1 if all
     @Query('user_id') required int userId,
   });
+
+  //get timesheet pdf
+  @GET("/api/fe/timesheetpdf/{userId}/{timestamp}")
+  Future<HttpResponse> getTimesheetPdf(
+      {@Path() required int userId, @Path() required int timestamp});
 }

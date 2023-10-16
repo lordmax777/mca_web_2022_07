@@ -117,7 +117,7 @@ class _ChecklistsViewState extends State<ChecklistsView>
       final success = await dispatch<String>(GetChecklistPdfAction(ids: ids));
       if (success.isLeft) {
         try {
-          base64Download(success.left);
+          base64Download(success.left, "checklist");
         } catch (e) {
           context.showError(e.toString());
         }

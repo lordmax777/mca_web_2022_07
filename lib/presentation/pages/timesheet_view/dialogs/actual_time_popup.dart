@@ -19,6 +19,7 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      title: const Text('Edit Punch Time'),
       actions: [
         ElevatedButton(onPressed: () {}, child: Text('Submit')),
       ],

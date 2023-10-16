@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:html' as html;
 
-void base64Download(String data) {
+void base64Download(String data, String name) {
   //this is a web only function
   //task is to download a file from a base64 string, PS: the file is pdf in this case
   final bytes = base64Decode(data);
@@ -10,7 +10,7 @@ void base64Download(String data) {
   final anchor = html.document.createElement('a') as html.AnchorElement
     ..href = url
     ..style.display = 'none'
-    ..download = 'checklist.pdf';
+    ..download = '$name.pdf';
   html.document.body!.children.add(anchor);
   anchor.click();
   html.document.body!.children.remove(anchor);

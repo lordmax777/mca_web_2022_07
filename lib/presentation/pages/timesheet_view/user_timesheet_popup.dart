@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/actual_time_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../global_widgets/modals/custom_month_picker.dart';
@@ -181,6 +182,13 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       field: 'end_comment',
       type: PlutoColumnType.text(),
     ),
+    PlutoColumn(
+      title: "model",
+      field: 'model',
+      type: PlutoColumnType.text(),
+      width: 0,
+      minWidth: 0,
+    ),
   ];
 
   PlutoRow buildRow(Map<String, dynamic> model) {
@@ -206,6 +214,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         'end_break': PlutoCell(value: model['end_break']),
         'break_deduction': PlutoCell(value: model['break_deduction']),
         'total_break_time': PlutoCell(value: model['total_break_time']),
+        'model': PlutoCell(value: model),
       },
     );
   }
@@ -260,8 +269,8 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         final model = <String, dynamic>{};
 
         //loop through each date
-        if (d['date']['date'] != null) {
-          model['date'] = d['date']['date'];
+        if (d['date'] != null) {
+          model['date'] = d['date'];
         }
         model['shift'] = d['shiftName'];
         model['id'] = d['id'];
@@ -304,24 +313,20 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         model['start_comment'] = startComment;
         model['end_comment'] = finishComment;
 
-        final actualStartDt =
-            DateTime.tryParse(d['actualStartTime']?['date'] ?? "");
+        final actualStartDt = DateTime.tryParse(d['actualStartTime'] ?? "");
         if (actualStartDt != null) {
           model['actual_start'] = actualStartDt.toApiTime;
         }
-        final actualFinishDt =
-            DateTime.tryParse(d['actualFinishTime']?['date'] ?? "");
+        final actualFinishDt = DateTime.tryParse(d['actualFinishTime'] ?? "");
         if (actualFinishDt != null) {
           model['actual_end'] = actualFinishDt.toApiTime;
         }
 
-        final lunchStartDt =
-            DateTime.tryParse(d['lunchStartTime']?['date'] ?? "");
+        final lunchStartDt = DateTime.tryParse(d['lunchStartTime'] ?? "");
         if (lunchStartDt != null) {
           model['start_lunch'] = lunchStartDt.toApiTime;
         }
-        final lunchFinishDt =
-            DateTime.tryParse(d['lunchFinishTime']?['date'] ?? "");
+        final lunchFinishDt = DateTime.tryParse(d['lunchFinishTime'] ?? "");
         if (lunchFinishDt != null) {
           model['end_lunch'] = lunchFinishDt.toApiTime;
         }
@@ -342,7 +347,23 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     stateManager?.toggleAllRowChecked(!isAllChecked);
   }
 
-  void _downloadPdf() {}
+  void _downloadPdf() async {
+    final success = await context.futureLoading(() async => dispatch<String>(
+        GetTimesheetPdfAction(
+            userId: userId,
+            timestamp: selectedDate.millisecondsSinceEpoch ~/ 1000)));
+    if (success.isLeft) {
+      try {
+        base64Download(success.left, "timesheet");
+      } catch (e) {
+        context.showError(e.toString());
+      }
+    } else if (success.isRight) {
+      context.showError(success.right.message);
+    } else {
+      context.showError("Error");
+    }
+  }
 
   bool get isAllChecked =>
       stateManager?.checkedRows.length == stateManager?.rows.length;
@@ -415,6 +436,17 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
             //   columns[1],
             // ]));
             await loadData(stateManager!);
+          },
+          onSelected: (p0) {
+            final field = p0.cell?.column.field;
+            final value = p0.cell?.value;
+            final model = p0.row?.cells['model']?.value;
+            switch (field) {
+              case "actual_start":
+                if (value == null && model != null) return;
+                context.showDialog(ActualTimePopup(model: model));
+                break;
+            }
           },
           rows: stateManager == null ? [] : stateManager!.rows,
         ),
