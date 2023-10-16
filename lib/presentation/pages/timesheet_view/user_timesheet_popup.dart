@@ -125,12 +125,20 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       field: 'start_break',
       // width: 120,
       type: PlutoColumnType.time(),
+      renderer: (rendererContext) {
+        return rendererContext.defaultText(
+            isSelectable: rendererContext.cell.value != null);
+      },
     ),
     PlutoColumn(
       title: "End",
       field: 'end_break',
       // width: 120,
       type: PlutoColumnType.time(),
+      renderer: (rendererContext) {
+        return rendererContext.defaultText(
+            isSelectable: rendererContext.cell.value != null);
+      },
     ),
     PlutoColumn(
       title: "Break deduction",
@@ -294,10 +302,16 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         if (overtime != null) {
           model['overtime'] = overtime;
         }
-        // final breaks = d['breaks'];
-        // if (breaks != null) {
-        //   model['breaks'] = breaks;
-        // } //todo: fix after imre fixes the api model
+
+        final breakStart =
+            DateTime.tryParse(d['breaks']?.first?['start'] ?? "");
+        final breakEnd = DateTime.tryParse(d['breaks']?.first?['finish'] ?? "");
+        if (breakStart != null) {
+          model['start_break'] = breakStart.toApiTime;
+        }
+        if (breakEnd != null) {
+          model['end_break'] = breakEnd.toApiTime;
+        }
 
         final breakDeduction = d['breakDeduction'];
         if (breakDeduction != null) {

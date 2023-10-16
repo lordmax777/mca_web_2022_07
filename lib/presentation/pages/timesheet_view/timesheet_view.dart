@@ -37,7 +37,7 @@ class _TimesheetViewState extends State<TimesheetView> {
     PlutoColumn(
       title: "Scheduled Hours",
       field: 'schedule_hours',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
     ),
     PlutoColumn(
       title: "Actual Hours",
@@ -150,9 +150,9 @@ class _TimesheetViewState extends State<TimesheetView> {
                 (shiftId != null ? 1 : 0); //if shift id is not null, calculate
           }
         }
-        model['schedule_hours'] = scheduleHours;
-        model['actual_hours'] = actualHours;
-        model['overtime'] = overtime;
+        model['schedule_hours'] = scheduleHours > 0 ? scheduleHours / 60 : 0;
+        model['actual_hours'] = actualHours > 0 ? actualHours / 60 : 0;
+        model['overtime'] = overtime > 0 ? overtime / 60 : 0;
         model['days_off'] = daysOff;
         model['lates'] = lates;
         model['cleans'] = cleans;
