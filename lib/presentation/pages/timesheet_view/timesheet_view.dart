@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/actual_time_popup.dart';
 import 'package:mca_dashboard/presentation/pages/timesheet_view/user_timesheet_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -17,6 +18,11 @@ class _TimesheetViewState extends State<TimesheetView> {
   PlutoGridStateManager? stateManager;
 
   final ValueNotifier<DateTime> selectedDate = ValueNotifier(DateTime.now());
+
+  int get timestamp =>
+      DateTime.utc(selectedDate.value.year, selectedDate.value.month)
+          .millisecondsSinceEpoch ~/
+      1000;
 
   List<PlutoColumn> columns = [
     PlutoColumn(
@@ -106,13 +112,8 @@ class _TimesheetViewState extends State<TimesheetView> {
 
   Future<void> loadData(PlutoGridStateManager sm) async {
     stateManager!.setShowLoading(true, level: PlutoGridLoadingLevel.grid);
-    final res = await dispatch<TimesheetMd>(GetTimesheetAction(
-        timestamp: (DateTime(
-                    selectedDate.value.year,
-                    selectedDate.value.month +
-                        1)) //added 1, because month starts from 0
-                .millisecondsSinceEpoch ~/
-            1000));
+    final res =
+        await dispatch<TimesheetMd>(GetTimesheetAction(timestamp: timestamp));
 
     stateManager!.setShowLoading(false);
     if (res.isLeft) {
@@ -207,10 +208,13 @@ class _TimesheetViewState extends State<TimesheetView> {
       ),
       onLoaded: (p0) async {
         stateManager = p0.stateManager;
+        stateManager!.sortAscending(columns[1]);
         await loadData(stateManager!);
       },
       rows: stateManager == null ? [] : stateManager!.rows,
       onSelected: (p0) {
+        // context.showDialog(ActualTimePopup(model: {}));
+        // return;
         final col = p0.cell?.column.field;
         switch (col) {
           case 'staff_name':

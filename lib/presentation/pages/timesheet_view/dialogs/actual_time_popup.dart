@@ -11,9 +11,12 @@ class ActualTimePopup extends StatefulWidget {
 class _ActualTimePopupState extends State<ActualTimePopup> {
   Map<String, dynamic> get model => widget.model;
 
+  String get fullName => model['firstName'] + ' ' + model['lastName'];
+
   @override
   void initState() {
     super.initState();
+    print(model);
   }
 
   @override

@@ -25,13 +25,20 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       ValueNotifier(widget.initialTime ?? DateTime.now());
   DateTime get selectedDate => _selectedDate.value;
 
+  int get timestamp =>
+      DateTime.utc(selectedDate.year, selectedDate.month)
+          .millisecondsSinceEpoch ~/
+      1000;
+
   final List<PlutoColumnGroup> columnGroups = [
+    PlutoColumnGroup(
+        title: "Agreed time", fields: ['agreed_start', 'agreed_end']),
     PlutoColumnGroup(
         title: "Actual time", fields: ['actual_start', 'actual_end']),
     PlutoColumnGroup(
-        title: "Comment", fields: ['start_comment', 'end_comment']),
-    PlutoColumnGroup(title: "Lunch time", fields: ['start_lunch', 'end_lunch']),
-    PlutoColumnGroup(title: "Breaks", fields: ['start_break', 'end_break']),
+        title: "Comment", fields: ['comment_start', 'comment_end']),
+    PlutoColumnGroup(title: "Lunch time", fields: ['lunch_start', 'lunch_end']),
+    // PlutoColumnGroup(title: "Breaks", fields: ['start_break', 'end_break']),
   ];
 
   final List<PlutoColumn> columns = [
@@ -45,6 +52,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     PlutoColumn(
       title: "Date",
       field: 'date',
+      frozen: PlutoColumnFrozen.start,
       enableRowChecked: true,
       width: 150,
       //format: Tue,1st September
@@ -56,13 +64,34 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     PlutoColumn(
       title: "Shift",
       field: 'shift',
+      frozen: PlutoColumnFrozen.start,
       width: 300,
       type: PlutoColumnType.text(),
     ),
     PlutoColumn(
       title: "Start",
+      field: "agreed_start",
+      width: 120,
+      type: PlutoColumnType.time(),
+      renderer: (rendererContext) {
+        return rendererContext.defaultText(
+            isSelectable: rendererContext.cell.value != null);
+      },
+    ),
+    PlutoColumn(
+      title: "End",
+      field: "agreed_end",
+      width: 120,
+      type: PlutoColumnType.time(),
+      renderer: (rendererContext) {
+        return rendererContext.defaultText(
+            isSelectable: rendererContext.cell.value != null);
+      },
+    ),
+    PlutoColumn(
+      title: "Start",
       field: "actual_start",
-      // width: 120,
+      width: 120,
       type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         return rendererContext.defaultText(
@@ -72,7 +101,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     PlutoColumn(
       title: "End",
       field: "actual_end",
-      // width: 120,
+      width: 120,
       type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         return rendererContext.defaultText(
@@ -81,8 +110,8 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     ),
     PlutoColumn(
       title: "Start",
-      field: "start_lunch",
-      // width: 120,
+      field: "lunch_start",
+      width: 120,
       type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         return rendererContext.defaultText(
@@ -91,14 +120,44 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     ),
     PlutoColumn(
       title: "End",
-      field: "end_lunch",
-      // width: 120,
+      field: "lunch_end",
+      width: 120,
       type: PlutoColumnType.time(),
       renderer: (rendererContext) {
         return rendererContext.defaultText(
             isSelectable: rendererContext.cell.value != null);
       },
     ),
+    // PlutoColumn(
+    //   title: "Start",
+    //   field: 'start_break',
+    //   width: 120,
+    //   type: PlutoColumnType.time(),
+    //   renderer: (rendererContext) {
+    //     return rendererContext.defaultText(
+    //         isSelectable: rendererContext.cell.value != null);
+    //   },
+    // ),
+    // PlutoColumn(
+    //   title: "End",
+    //   field: 'end_break',
+    //   width: 120,
+    //   type: PlutoColumnType.time(),
+    //   renderer: (rendererContext) {
+    //     return rendererContext.defaultText(
+    //         isSelectable: rendererContext.cell.value != null);
+    //   },
+    // ),
+    PlutoColumn(
+        title: "Breaks",
+        field: 'breaks',
+        width: 120,
+        type: PlutoColumnType.text(),
+        renderer: (rendererContext) {
+          final value = rendererContext.cell.value.length;
+          return rendererContext.defaultText(
+              isSelectable: value > 0, title: value > 0 ? "View $value" : "");
+        }),
     PlutoColumn(
       title: "Late",
       field: 'late',
@@ -119,26 +178,6 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       // width: 120,
       type: PlutoColumnType.number(format: "#.##"),
       formatter: (value) => value > 0 ? "$value min(s)" : "",
-    ),
-    PlutoColumn(
-      title: "Start",
-      field: 'start_break',
-      // width: 120,
-      type: PlutoColumnType.time(),
-      renderer: (rendererContext) {
-        return rendererContext.defaultText(
-            isSelectable: rendererContext.cell.value != null);
-      },
-    ),
-    PlutoColumn(
-      title: "End",
-      field: 'end_break',
-      // width: 120,
-      type: PlutoColumnType.time(),
-      renderer: (rendererContext) {
-        return rendererContext.defaultText(
-            isSelectable: rendererContext.cell.value != null);
-      },
     ),
     PlutoColumn(
       title: "Break deduction",
@@ -182,12 +221,12 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     ),
     PlutoColumn(
       title: "Start",
-      field: 'start_comment',
+      field: 'comment_start',
       type: PlutoColumnType.text(),
     ),
     PlutoColumn(
       title: "End",
-      field: 'end_comment',
+      field: 'comment_end',
       type: PlutoColumnType.text(),
     ),
     PlutoColumn(
@@ -205,6 +244,8 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         'id': PlutoCell(value: model['id']),
         'date': PlutoCell(value: model['date']),
         'shift': PlutoCell(value: model['shift']),
+        'agreed_start': PlutoCell(value: model['agreed_start']),
+        'agreed_end': PlutoCell(value: model['agreed_end']),
         'actual_start': PlutoCell(value: model['actual_start']),
         'actual_end': PlutoCell(value: model['actual_end']),
         'paid_hours': PlutoCell(value: model['paid_hours']),
@@ -213,13 +254,14 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         'late': PlutoCell(value: model['late']),
         'leave_early': PlutoCell(value: model['leave_early']),
         'requests': PlutoCell(value: model['requests']),
-        'start_comment': PlutoCell(value: model['start_comment']),
-        'end_comment': PlutoCell(value: model['end_comment']),
-        'start_lunch': PlutoCell(value: model['start_lunch']),
-        'end_lunch': PlutoCell(value: model['end_lunch']),
+        'comment_start': PlutoCell(value: model['comment_start']),
+        'comment_end': PlutoCell(value: model['comment_end']),
+        'lunch_start': PlutoCell(value: model['lunch_start']),
+        'lunch_end': PlutoCell(value: model['lunch_end']),
         'overtime': PlutoCell(value: model['overtime']),
-        'start_break': PlutoCell(value: model['start_break']),
-        'end_break': PlutoCell(value: model['end_break']),
+        // 'start_break': PlutoCell(value: model['start_break']),
+        // 'end_break': PlutoCell(value: model['end_break']),
+        'breaks': PlutoCell(value: model['breaks']),
         'break_deduction': PlutoCell(value: model['break_deduction']),
         'total_break_time': PlutoCell(value: model['total_break_time']),
         'model': PlutoCell(value: model),
@@ -242,17 +284,15 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
   }
 
   Future<void> loadData(PlutoGridStateManager sm) async {
-    final res = await context.futureLoading(() async => dispatch<TimesheetMd>(
-        GetTimesheetAction(
+    final res = await context
+        .futureLoading(() async => dispatch<TimesheetMd>(GetTimesheetAction(
             userId:
                 // 805,
                 userId,
             timestamp:
                 // 1654023600,
-                DateTime(selectedDate.year, selectedDate.month + 1)
-                        .millisecondsSinceEpoch ~/
-                    1000
-            //added 1, because month starts from 0
+                timestamp
+            // added 1, because month starts from 0
             )));
 
     if (res.isLeft) {
@@ -302,16 +342,6 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
           model['overtime'] = overtime;
         }
 
-        final breakStart =
-            DateTime.tryParse(d['breaks']?.first?['start'] ?? "");
-        final breakEnd = DateTime.tryParse(d['breaks']?.first?['finish'] ?? "");
-        if (breakStart != null) {
-          model['start_break'] = breakStart.toApiTime;
-        }
-        if (breakEnd != null) {
-          model['end_break'] = breakEnd.toApiTime;
-        }
-
         final breakDeduction = d['breakDeduction'];
         if (breakDeduction != null) {
           model['break_deduction'] = breakDeduction;
@@ -323,26 +353,38 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
 
         final startComment = d['startComment'] ?? "";
         final finishComment = d['finishComment'] ?? "";
-        model['start_comment'] = startComment;
-        model['end_comment'] = finishComment;
+        model['comment_start'] = startComment;
+        model['comment_end'] = finishComment;
 
-        final actualStartDt = DateTime.tryParse(d['actualStartTime'] ?? "");
-        if (actualStartDt != null) {
-          model['actual_start'] = actualStartDt.toApiTime;
-        }
-        final actualFinishDt = DateTime.tryParse(d['actualFinishTime'] ?? "");
-        if (actualFinishDt != null) {
-          model['actual_end'] = actualFinishDt.toApiTime;
-        }
+        final String? actualStartDt = d['actualStartTime'];
+        model['actual_start'] = actualStartDt?.toTimeOfDay?.toApiTime ?? "";
 
-        final lunchStartDt = DateTime.tryParse(d['lunchStartTime'] ?? "");
-        if (lunchStartDt != null) {
-          model['start_lunch'] = lunchStartDt.toApiTime;
-        }
-        final lunchFinishDt = DateTime.tryParse(d['lunchFinishTime'] ?? "");
-        if (lunchFinishDt != null) {
-          model['end_lunch'] = lunchFinishDt.toApiTime;
-        }
+        final String? actualFinishDt = d['actualFinishTime'];
+        model['actual_end'] = actualFinishDt?.toTimeOfDay?.toApiTime ?? "";
+
+        final String? agreedStartDt = d['agreedStartTime'];
+        model['agreed_start'] = agreedStartDt?.toTimeOfDay?.toApiTime ?? "";
+
+        final String? agreedFinishDt = d['agreedFinishTime'];
+        model['agreed_end'] = agreedFinishDt?.toTimeOfDay?.toApiTime ?? "";
+
+        final String? lunchStartDt = d['lunchStartTime'];
+        model['lunch_start'] = lunchStartDt?.toTimeOfDay?.toApiTime ?? "";
+
+        final String? lunchFinishDt = d['lunchFinishTime'];
+        model['lunch_end'] = lunchFinishDt?.toTimeOfDay?.toApiTime ?? "";
+
+        // final breakStart =
+        //     DateTime.tryParse(d['breaks']?.first?['start'] ?? "");
+        // final breakEnd = DateTime.tryParse(d['breaks']?.first?['finish'] ?? "");
+        // if (breakStart != null) {
+        //   model['start_break'] = breakStart.toApiTime;
+        // }
+        // if (breakEnd != null) {
+        //   model['end_break'] = breakEnd.toApiTime;
+        // }
+        final List breaks = d['breaks'] ?? [];
+        model['breaks'] = breaks;
 
         model['paid_hours'] = d[''] ?? 0; //todo:
         model['requests'] = ""; //todo:
@@ -364,7 +406,9 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
     final success = await context.futureLoading(() async => dispatch<String>(
         GetTimesheetPdfAction(
             userId: userId,
-            timestamp: selectedDate.millisecondsSinceEpoch ~/ 1000)));
+            timestamp: DateTime(selectedDate.year, selectedDate.month + 1)
+                    .millisecondsSinceEpoch ~/
+                1000)));
     if (success.isLeft) {
       try {
         base64Download(success.left, "timesheet");
@@ -458,6 +502,11 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
               case "actual_start":
                 if (value == null && model != null) return;
                 context.showDialog(ActualTimePopup(model: model));
+                break;
+              case "breaks":
+                if (value == null || value == 0) return;
+                TsData.fromJson(model);
+                // context.showDialog(BreaksViewPopup(model: model));
                 break;
             }
           },
