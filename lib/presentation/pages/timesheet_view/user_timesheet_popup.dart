@@ -404,11 +404,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
 
   void _downloadPdf() async {
     final success = await context.futureLoading(() async => dispatch<String>(
-        GetTimesheetPdfAction(
-            userId: userId,
-            timestamp: DateTime(selectedDate.year, selectedDate.month + 1)
-                    .millisecondsSinceEpoch ~/
-                1000)));
+        GetTimesheetPdfAction(userId: userId, timestamp: timestamp)));
     if (success.isLeft) {
       try {
         base64Download(success.left, "timesheet");
@@ -438,7 +434,8 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       ),
       actions: [
         // ElevatedButton(onPressed: _onCheckAll, child: const Text("Check All")),
-        ElevatedButton(onPressed: _onSubmit, child: const Text("Submit")),
+        ElevatedButton(
+            onPressed: _onSubmit, child: const Text("Check selected")),
       ],
       content: SizedBox(
         height: MediaQuery.of(context).size.height * 0.8,

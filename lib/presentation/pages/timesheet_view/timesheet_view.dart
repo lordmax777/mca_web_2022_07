@@ -41,31 +41,37 @@ class _TimesheetViewState extends State<TimesheetView> {
       },
     ),
     PlutoColumn(
+      enableFilterMenuItem: false,
       title: "Scheduled Hours",
       field: 'schedule_hours',
       type: PlutoColumnType.number(format: "#.##"),
     ),
     PlutoColumn(
+      enableFilterMenuItem: false,
       title: "Actual Hours",
       field: 'actual_hours',
       type: PlutoColumnType.number(),
     ),
     PlutoColumn(
+      enableFilterMenuItem: false,
       title: "Overtime",
       field: 'overtime',
       type: PlutoColumnType.number(),
     ),
     PlutoColumn(
+      enableFilterMenuItem: false,
       title: "Days off",
       field: 'days_off',
       type: PlutoColumnType.number(),
     ),
     PlutoColumn(
+      enableFilterMenuItem: false,
       title: "Lates",
       field: 'lates',
       type: PlutoColumnType.number(),
     ),
     PlutoColumn(
+      enableFilterMenuItem: false,
       title: "Cleans",
       field: 'cleans',
       type: PlutoColumnType.number(),
@@ -206,9 +212,13 @@ class _TimesheetViewState extends State<TimesheetView> {
           ),
         ],
       ),
+      columnFilter: PlutoGridColumnFilterConfig(filters: [
+        ...FilterHelper.defaultFilters,
+      ]),
       onLoaded: (p0) async {
+        p0.stateManager.setShowColumnFilter(true);
+        p0.stateManager.sortAscending(columns[1]);
         stateManager = p0.stateManager;
-        stateManager!.sortAscending(columns[1]);
         await loadData(stateManager!);
       },
       rows: stateManager == null ? [] : stateManager!.rows,
