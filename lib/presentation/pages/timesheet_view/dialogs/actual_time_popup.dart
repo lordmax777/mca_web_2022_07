@@ -155,6 +155,13 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
     }
   }
 
+  void setWorkTime() {
+    if (isWorkTime) {
+      comment = model.actualWorkingHours.toString();
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -163,6 +170,7 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
       setTime();
       setLocationId();
       setOriginalDate();
+      setWorkTime();
     });
   }
 
@@ -273,6 +281,7 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
               ShiftCardItem(
                 title: isWorkTime ? "Work Time (minutes)" : "Comment",
                 maxLines: isWorkTime ? 1 : 2,
+                simpleText: comment,
                 onChanged: (value) {
                   comment = value;
                 },

@@ -493,10 +493,12 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
             final m = TsData.fromJson(model);
             switch (field) {
               case "actual_hours":
-                if (m.actualStartTime == null && m.actualFinishTime == null) {
+                // if (m.actualStartTime == null && m.actualFinishTime == null) {
+                //   return;
+                // }
+                if (value == 0) {
                   return;
                 }
-
                 final success = await context
                     .showDialog(ActualTimePopup(model: m, type: field!));
                 if (success == "success") {

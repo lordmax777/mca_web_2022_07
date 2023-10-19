@@ -75,7 +75,7 @@ final class PostTimesheetAction {
           type: status.id,
           loc: locationId,
           comment: comment,
-          time: "${time.toApiTime}:00",
+          time: time.toApiTime,
           original: originalDate,
           date: date);
       return res.response.statusMessage;
