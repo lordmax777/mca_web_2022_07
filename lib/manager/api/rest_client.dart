@@ -802,4 +802,20 @@ abstract class ApiClient {
   @GET("/api/fe/timesheetpdf/{userId}/{timestamp}")
   Future<HttpResponse> getTimesheetPdf(
       {@Path() required int userId, @Path() required int timestamp});
+
+  //POST Timesheet (type:int,user:int,loc:int,shift:int,date:String,time:String,original:String,comment:String
+  @POST("/api/fe/timesheet")
+  @FormUrlEncoded()
+  Future<HttpResponse> postTimesheet({
+    @Field('type') required int type,
+    @Field('user') required int user,
+    @Field('loc') required int loc,
+    @Field('shift') required int shift,
+    @Field('date') required String date,
+    @Field('time') required String time,
+
+    ///null if create
+    @Field('original') String? original,
+    @Field('comment') String? comment,
+  });
 }

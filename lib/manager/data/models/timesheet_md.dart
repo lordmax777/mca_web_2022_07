@@ -339,7 +339,6 @@ final class TsData extends Equatable {
   //fromJson
   factory TsData.fromJson(Map<String, dynamic> json) {
     try {
-      print(json['breaks']);
       return TsData(
         id: json['id'] as int,
         userId: json['userId'] as String?,
@@ -379,9 +378,10 @@ final class TsData extends Equatable {
         leaveMore: json['leaveMore'] as num?,
         overtime: json['overtime'] as num?,
         agreedOvertime: json['agreedOvertime'] as num?,
-        holidays: json['holidays']
-            ?.map((e) => HolidayMd.fromJson(e as Map<String, dynamic>))
-            .toList(),
+        holidays: [],
+        // json['holidays']
+        //     ?.map((e) => HolidayMd.fromJson(e as Map<String, dynamic>))
+        //     .toList(),
         startComment: json['startComment'] as String?,
         finishComment: json['finishComment'] as String?,
         actualBreakClass: json['actualBreakClass'] as String?,
@@ -396,6 +396,59 @@ final class TsData extends Equatable {
       print(e.stackTrace);
       rethrow;
     }
+  }
+
+  //toJson
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "userId": userId,
+      "shiftId": shiftId,
+      "agreedStartLocationId": agreedStartLocationId,
+      "agreedFinishLocationId": agreedFinishLocationId,
+      "actualStartLocationId": actualStartLocationId,
+      "actualFinishLocationId": actualFinishLocationId,
+      "username": username,
+      "title": title,
+      "firstName": firstName,
+      "lastName": lastName,
+      "date": date,
+      "actualWorkingHours": actualWorkingHours,
+      "originalAgreedHours": originalAgreedHours,
+      "dayoff": dayoff,
+      "shiftName": shiftName,
+      "agreedStartTime": agreedStartTime,
+      "agreedFinishTime": agreedFinishTime,
+      "actualStartIpAddress": actualStartIpAddress,
+      "actualFinishIpAddress": actualFinishIpAddress,
+      "actualStartLatitude": actualStartLatitude,
+      "actualStartLongitude": actualStartLongitude,
+      "actualFinishLatitude": actualFinishLatitude,
+      "actualFinishLongitude": actualFinishLongitude,
+      "actualStartTime": actualStartTime,
+      "actualFinishTime": actualFinishTime,
+      "actualStartTimeClass": actualStartTimeClass,
+      "actualFinishTimeClass": actualFinishTimeClass,
+      "totalAgreedHours": totalAgreedHours,
+      "deductedWorkingHours": deductedWorkingHours,
+      "lateTotal": lateTotal,
+      "lateLess": lateLess,
+      "lateMore": lateMore,
+      "leaveTotal": leaveTotal,
+      "leaveLess": leaveLess,
+      "leaveMore": leaveMore,
+      "overtime": overtime,
+      "agreedOvertime": agreedOvertime,
+      "startComment": startComment,
+      "finishComment": finishComment,
+      "actualLunchClass": actualLunchClass,
+      "lunchStartTime": lunchStartTime,
+      "lunchFinishTime": lunchFinishTime,
+      "breaks": breaks,
+      "actualBreakClass": actualBreakClass,
+      "breakDeduction": breakDeduction,
+      "totalBreakTime": totalBreakTime,
+    };
   }
 }
 

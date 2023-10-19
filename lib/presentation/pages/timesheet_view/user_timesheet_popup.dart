@@ -72,21 +72,14 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       title: "Start",
       field: "agreed_start",
       width: 120,
+      enableEditingMode: true,
       type: PlutoColumnType.time(),
-      renderer: (rendererContext) {
-        return rendererContext.defaultText(
-            isSelectable: rendererContext.cell.value != null);
-      },
     ),
     PlutoColumn(
       title: "End",
       field: "agreed_end",
       width: 120,
       type: PlutoColumnType.time(),
-      renderer: (rendererContext) {
-        return rendererContext.defaultText(
-            isSelectable: rendererContext.cell.value != null);
-      },
     ),
     PlutoColumn(
       title: "Start",
@@ -208,12 +201,16 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
       formatter: (value) => value > 0 ? "$value Hr(s)" : "",
     ),
     PlutoColumn(
-      title: "Actual Hours",
-      field: 'actual_hours',
-      // width: 120,
-      type: PlutoColumnType.number(format: "#.##"),
-      formatter: (value) => value > 0 ? "$value Hr(s)" : "",
-    ),
+        title: "Actual Hours",
+        field: 'actual_hours',
+        // width: 120,
+        type: PlutoColumnType.number(format: "#.##"),
+        formatter: (value) => value > 0 ? "$value Hr(s)" : "",
+        renderer: (rendererContext) {
+          final value = rendererContext.cell.value ?? 0;
+          return rendererContext.defaultText(
+              isSelectable: value > 0, title: value > 0 ? "$value Hr(s)" : "");
+        }),
     PlutoColumn(
       title: "Requests",
       field: 'requests',
@@ -264,7 +261,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         'breaks': PlutoCell(value: model['breaks']),
         'break_deduction': PlutoCell(value: model['break_deduction']),
         'total_break_time': PlutoCell(value: model['total_break_time']),
-        'model': PlutoCell(value: model),
+        'model': PlutoCell(value: model['model']),
       },
     );
   }
@@ -385,6 +382,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
         // }
         final List breaks = d['breaks'] ?? [];
         model['breaks'] = breaks;
+        model['model'] = d;
 
         model['paid_hours'] = d[''] ?? 0; //todo:
         model['requests'] = ""; //todo:
@@ -497,8 +495,12 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
             final model = p0.row?.cells['model']?.value;
             switch (field) {
               case "actual_start":
+              case "actual_end":
+              case "lunch_start":
+              case "lunch_end":
                 if (value == null && model != null) return;
-                context.showDialog(ActualTimePopup(model: model));
+                context.showDialog(ActualTimePopup(
+                    model: TsData.fromJson(model), type: field!));
                 break;
               case "breaks":
                 if (value == null || value == 0) return;

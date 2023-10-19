@@ -240,6 +240,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case GetTimesheetPdfAction:
         return action.fetch(store.state);
+      case PostTimesheetAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }

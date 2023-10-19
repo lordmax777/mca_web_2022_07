@@ -65,16 +65,18 @@ class ShiftCard extends StatelessWidget {
   final List<ShiftCardItem> items;
   final ShiftCardDropdown? dropdown;
   final bool isExpanded;
+  final double width;
+  final bool isTrailingRight;
   const ShiftCard({
     Key? key,
     required this.title,
     required this.items,
     this.isExpanded = false,
+    this.isTrailingRight = true,
     this.trailing,
     this.dropdown,
+    this.width = 400,
   }) : super(key: key);
-
-  final double width = 400;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +120,7 @@ class ShiftCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               horizontalSpace: 6,
               children: [
+                if (trailing != null && !isTrailingRight) trailing!,
                 Text(
                   title,
                   style: Theme.of(context)
@@ -125,7 +128,7 @@ class ShiftCard extends StatelessWidget {
                       .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
-                if (trailing != null) trailing!,
+                if (trailing != null && isTrailingRight) trailing!,
               ],
             ),
           if (title != null)
