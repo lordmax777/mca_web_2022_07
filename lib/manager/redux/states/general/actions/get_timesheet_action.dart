@@ -75,9 +75,38 @@ final class PostTimesheetAction {
           type: status.id,
           loc: locationId,
           comment: comment,
-          time: time.toApiTime,
+          time: "${time.toApiTime}:00",
           original: originalDate,
           date: date);
+      return res.response.statusMessage;
+    });
+  }
+}
+
+final class PostTimesheetWorkTimeAction {
+  final int userId;
+  final int shiftId;
+  final int locationId;
+  final String date;
+  final String worktime;
+
+  const PostTimesheetWorkTimeAction({
+    required this.userId,
+    required this.shiftId,
+    required this.locationId,
+    required this.date,
+    required this.worktime,
+  });
+
+  Future<Either<String?, ErrorMd>> fetch(AppState state) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .postTimesheetWorkTime(
+              user: userId,
+              shift: shiftId,
+              loc: locationId,
+              worktime: worktime,
+              date: date);
       return res.response.statusMessage;
     });
   }

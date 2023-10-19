@@ -483,24 +483,45 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
           onLoaded: (p0) async {
             p0.stateManager.setPageSize(40);
             stateManager = p0.stateManager;
-            // stateManager!.setRowGroup(
-            //     PlutoRowGroupByColumnDelegate(showCount: true, columns: [
-            //   columns[1],
-            // ]));
             await loadData(stateManager!);
           },
-          onSelected: (p0) {
+          onSelected: (p0) async {
             final field = p0.cell?.column.field;
             final value = p0.cell?.value;
             final model = p0.row?.cells['model']?.value;
+            if (value == null && model != null) return;
+            final m = TsData.fromJson(model);
             switch (field) {
+              case "actual_hours":
+                if (m.actualStartTime == null && m.actualFinishTime == null) {
+                  return;
+                }
+
+                final success = await context
+                    .showDialog(ActualTimePopup(model: m, type: field!));
+                if (success == "success") {
+                  loadData(stateManager!);
+                } else if (success == "start_loc_not_found") {
+                  context.showError("Start location not found");
+                }
+                break;
               case "actual_start":
               case "actual_end":
               case "lunch_start":
               case "lunch_end":
-                if (value == null && model != null) return;
-                context.showDialog(ActualTimePopup(
-                    model: TsData.fromJson(model), type: field!));
+                if (m.actualFinishLocationId == null &&
+                    m.actualStartLocationId == null &&
+                    m.agreedFinishLocationId == null &&
+                    m.agreedStartLocationId == null) {
+                  return;
+                }
+                final success = await context
+                    .showDialog(ActualTimePopup(model: m, type: field!));
+                if (success == "success") {
+                  loadData(stateManager!);
+                } else if (success == "start_loc_not_found") {
+                  context.showError("Start location not found");
+                }
                 break;
               case "breaks":
                 if (value == null || value == 0) return;

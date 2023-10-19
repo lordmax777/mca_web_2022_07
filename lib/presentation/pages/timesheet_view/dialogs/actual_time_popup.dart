@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/shift_card.dart';
+import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../../../manager/data/models/timesheet_md.dart';
 
 class ActualTimePopup extends StatefulWidget {
   final TsData model;
-  //actual_start, actual_end, work_time, lunch_start, lunch_end
+  //actual_start, actual_end, actual_hours, lunch_start, lunch_end
   final String type;
   const ActualTimePopup({super.key, required this.model, required this.type});
 
@@ -19,6 +20,7 @@ class ActualTimePopup extends StatefulWidget {
 class _ActualTimePopupState extends State<ActualTimePopup> {
   TsData get model => widget.model;
   String get type => widget.type;
+  bool get isWorkTime => type == "actual_hours";
 
   String comment = "";
 
@@ -54,46 +56,54 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
 
   int? locationId;
   void setLocationId() {
-    String? key;
-    switch (type) {
-      case "actual_start":
-        key = "actualStartLocationId";
-        break;
-      case "actual_end":
-        key = "actualFinishLocationId";
-        break;
-      case "work_time":
-        key = "actualWorkingHours"; //in minutes
-        break;
-      case "lunch_start":
-        key = "lunchStartLocationId";
-        break;
-      case "lunch_end":
-        key = "lunchFinishLocationId";
-        break;
-      case "agreed_start":
-        key = "agreedStartLocationId";
-        break;
-      case "agreed_end":
-        key = "agreedFinishLocationId";
-        break;
-    }
+    String? locId;
+    // String? key;
+    // switch (type) {
+    //   case "actual_start":
+    //     key = "actualStartLocationId";
+    //     break;
+    //   case "actual_end":
+    //     key = "actualFinishLocationId";
+    //     break;
+    //   case "work_time":
+    //     key = "actualWorkingHours"; //in minutes
+    //     break;
+    //   case "lunch_start":
+    //     key = "lunchStartLocationId";
+    //     break;
+    //   case "lunch_end":
+    //     key = "lunchFinishLocationId";
+    //     break;
+    //   case "agreed_start":
+    //     key = "agreedStartLocationId";
+    //     break;
+    //   case "agreed_end":
+    //     key = "agreedFinishLocationId";
+    //     break;
+    // }
 
-    if (key != null) {
-      String? locId;
-      if (isNew) {
-        final isEnd = key.contains("Finish");
-        if (isEnd) {
-          key = key.replaceAll("Finish", "Start");
-        } else {
-          key = key.replaceAll("Start", "Finish");
-        }
+    // if (key != null) {
+    //   final isEnd = key.contains("Finish");
+    //   if (isEnd) {
+    //     key = key.replaceAll("Finish", "Start");
+    //   }
+    final entries = model.toJson().entries;
+    for (final e in entries) {
+      final k = e.key;
+      final v = e.value;
+      if (k.contains("Location") && v != null) {
+        locId = v as String?;
+        break;
       }
-      locId = model.toJson()[key] as String?;
-      locationId = int.tryParse(locId ?? "");
-      debugPrint('locationId: $locationId');
-      setState(() {});
     }
+    // locId = model.toJson()[key] as String?;
+    locationId = int.tryParse(locId ?? "");
+    debugPrint('locationId: $locationId');
+    if (locationId == null) {
+      context.pop("start_loc_not_found");
+    }
+    setState(() {});
+    // }
   }
 
   String? get shiftName => model.shiftName;
@@ -149,23 +159,29 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
   void initState() {
     super.initState();
     print(model.toJson());
-    setTime();
-    setLocationId();
-    setOriginalDate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setTime();
+      setLocationId();
+      setOriginalDate();
+    });
   }
 
   void _onSubmit() async {
-    if (time == null) {
-      context.showError('Please select time!');
-      return;
+    if (!isWorkTime) {
+      if (time == null) {
+        context.showError('Please select time!');
+        return;
+      }
     }
-    if (status == null) {
+    if (status == null && !isWorkTime) {
       context.showError('Cannot find status!');
       return;
     }
-    if (!isNew && time == null) {
-      context.showError('Please select time!');
-      return;
+    if (!isWorkTime) {
+      if (!isNew && time == null) {
+        context.showError('Please select time!');
+        return;
+      }
     }
     final int? shiftId = int.tryParse(model.shiftId ?? "");
     if (shiftId == null) {
@@ -181,8 +197,26 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
       context.showError('Cannot find user!');
       return;
     }
-    //todo: submit
+    if (isWorkTime) {
+      if (comment.isEmpty) {
+        context.showError('Please enter work time!');
+        return;
+      }
+      final int? worktime = int.tryParse(comment);
+      if (worktime == null) {
+        context.showError('Please enter valid work time!');
+        return;
+      }
+    }
     final res = await context.futureLoading(() async {
+      if (isWorkTime) {
+        return await dispatch<String?>(PostTimesheetWorkTimeAction(
+            userId: userId,
+            shiftId: shiftId,
+            locationId: locationId!,
+            date: model.date!,
+            worktime: comment));
+      }
       return await dispatch<String?>(PostTimesheetAction(
           userId: userId,
           shiftId: shiftId,
@@ -195,7 +229,9 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
     });
     if (res.isLeft) {
       context.showSuccess('Success!');
-// context.pop();
+      context.pop("success");
+    } else if (res.isRight) {
+      context.showError(res.right.message);
     } else {
       context.showError('Error!');
     }
@@ -207,7 +243,7 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
       content: SizedBox(
         width: context.width * .4,
         child: ShiftCard(
-            title: 'Edit Punch Time',
+            title: isWorkTime ? "Edit Work Time" : 'Edit Punch Time',
             width: context.width * .4,
             isExpanded: true,
             isTrailingRight: false,
@@ -219,22 +255,24 @@ class _ActualTimePopupState extends State<ActualTimePopup> {
               ShiftCardItem(title: "User", simpleText: fullName),
               ShiftCardItem(title: "Date", simpleText: date),
               ShiftCardItem(title: "Location/Property", simpleText: shiftName),
-              ShiftCardItem(title: "Status", simpleText: status?.name ?? "-"),
+              if (!isWorkTime)
+                ShiftCardItem(title: "Status", simpleText: status?.name ?? "-"),
+              if (!isWorkTime)
+                ShiftCardItem(
+                  title: "Time",
+                  simpleText: time?.toApiTime ?? "Select Time",
+                  onSimpleTextTapped: () async {
+                    final newTime = await showTimePicker(
+                        context: context, initialTime: time ?? TimeOfDay.now());
+                    if (newTime != null) {
+                      time = newTime;
+                      setState(() {});
+                    }
+                  },
+                ),
               ShiftCardItem(
-                title: "Time",
-                simpleText: time?.toApiTime ?? "Select Time",
-                onSimpleTextTapped: () async {
-                  final newTime = await showTimePicker(
-                      context: context, initialTime: time ?? TimeOfDay.now());
-                  if (newTime != null) {
-                    time = newTime;
-                    setState(() {});
-                  }
-                },
-              ),
-              ShiftCardItem(
-                title: "Comment",
-                maxLines: 2,
+                title: isWorkTime ? "Work Time (minutes)" : "Comment",
+                maxLines: isWorkTime ? 1 : 2,
                 onChanged: (value) {
                   comment = value;
                 },

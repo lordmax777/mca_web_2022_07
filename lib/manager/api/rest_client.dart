@@ -818,4 +818,14 @@ abstract class ApiClient {
     @Field('original') String? original,
     @Field('comment') String? comment,
   });
+
+  @POST("/api/fe/timesheet/worktime")
+  @FormUrlEncoded()
+  Future<HttpResponse> postTimesheetWorkTime({
+    @Field('user_id') required int user,
+    @Field('location_id') required int loc,
+    @Field('shift_id') required int shift,
+    @Field('date') required String date,
+    @Field('worktime') required String worktime,
+  });
 }
