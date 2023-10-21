@@ -7,6 +7,7 @@ import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/actual_t
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../global_widgets/modals/custom_month_picker.dart';
+import 'dialogs/breaks_popup.dart';
 
 class UserTimesheetPopup extends StatefulWidget {
   final int userId;
@@ -527,8 +528,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
                 break;
               case "breaks":
                 if (value == null || value == 0) return;
-                TsData.fromJson(model);
-                // context.showDialog(BreaksViewPopup(model: model));
+                context.showDialog(BreaksPopup(model: m));
                 break;
             }
           },
