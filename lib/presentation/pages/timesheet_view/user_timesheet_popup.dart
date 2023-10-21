@@ -452,10 +452,10 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
                   enabled: false,
                   onTap: () {
                     showCustomMonthPicker(context, initialTime: value)
-                        .then((v) {
+                        .then((v) async {
                       if (v != null) {
                         _selectedDate.value = v;
-                        loadData(stateManager!);
+                        await loadData(stateManager!);
                       }
                     });
                   },

@@ -169,6 +169,10 @@ class _TimesheetViewState extends State<TimesheetView> {
       }).toList();
       //set rows
       setRows(sm, rows);
+      final filterrows = sm.filterRows;
+      if (sm.hasFilter) {
+        stateManager!.setFilterWithFilterRows(filterrows);
+      }
     }
   }
 
