@@ -482,7 +482,7 @@ class _UserTimesheetPopupState extends State<UserTimesheetPopup> {
           ),
           columnsGroups: columnGroups,
           onLoaded: (p0) async {
-            p0.stateManager.setPageSize(40);
+            p0.stateManager.setPageSize(200);
             stateManager = p0.stateManager;
             await loadData(stateManager!);
           },
