@@ -4,7 +4,8 @@ import 'package:mca_dashboard/manager/data/models/timesheet_md.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/actual_time_popup.dart';
-import 'package:mca_dashboard/presentation/pages/timesheet_view/user_timesheet_popup.dart';
+import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/user_timesheet_popup.dart';
+import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/timesheet_sumary_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class TimesheetView extends StatefulWidget {
@@ -210,7 +211,8 @@ class _TimesheetViewState extends State<TimesheetView> {
                         borderRadius: BorderRadius.circular(16))),
                 label: const Text("Summary"),
                 icon: const Icon(Icons.list),
-                onPressed: () {},
+                onPressed: () =>
+                    context.showDialog(const TimesheetSummaryPopup()),
               ),
             ],
           ),

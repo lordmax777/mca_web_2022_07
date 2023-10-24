@@ -6,8 +6,8 @@ import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/actual_time_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-import '../../global_widgets/modals/custom_month_picker.dart';
-import 'dialogs/breaks_popup.dart';
+import '../../../global_widgets/modals/custom_month_picker.dart';
+import 'breaks_popup.dart';
 
 class UserTimesheetPopup extends StatefulWidget {
   final int userId;
