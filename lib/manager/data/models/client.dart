@@ -16,8 +16,14 @@ final class ClientMd extends Equatable {
   //         "startDate": "2023-10-12",
   //         "endDate": "2024-10-11",
   //         "creditLimit": null,
-  //         "invoices": 12834.6,
+  //         "invoices": 95232732.00000358,
   //         "payments": null,
+  //         "outstandingBalance": 95232732.00000358,
+  //         "checklists": null,
+  //         "quotes": 106,
+  //         "quotemessages": null,
+  //         "lastChecklist": "2023-10-16",
+  //         "daysSinceLastJob": 9,
   //         "address": {
   //             "line1": "hashob",
   //             "line2": "",
@@ -68,6 +74,13 @@ final class ClientMd extends Equatable {
       invoicePeriods.firstWhereOrNull(
           (element) => element.id == int.tryParse(invoicePeriodId ?? ""));
   final int? invoiceDay;
+  final num? outstandingBalance;
+  final int? quotes;
+  final String? lastChecklist;
+  DateTime? get lastChecklistDt => DateTime.tryParse(lastChecklist ?? "");
+  final int? daysSinceLastJob;
+  final int? checklists;
+  final int? quotemessages;
 
   const ClientMd({
     required this.id,
@@ -91,6 +104,12 @@ final class ClientMd extends Equatable {
     required this.payingDays,
     required this.invoicePeriodId,
     required this.invoiceDay,
+    required this.outstandingBalance,
+    required this.quotes,
+    required this.lastChecklist,
+    required this.daysSinceLastJob,
+    required this.checklists,
+    required this.quotemessages,
   });
 
   @override
@@ -116,6 +135,12 @@ final class ClientMd extends Equatable {
         payingDays,
         invoicePeriodId,
         invoiceDay,
+        outstandingBalance,
+        checklists,
+        quotes,
+        quotemessages,
+        daysSinceLastJob,
+        lastChecklist,
       ];
 
   //fromJson
@@ -144,6 +169,12 @@ final class ClientMd extends Equatable {
         payingDays: json['payingDays'] ?? 0,
         invoicePeriodId: json['invoicePeriodId'],
         invoiceDay: json['invoiceDay'],
+        checklists: json['checklists'],
+        quotemessages: json['quotemessages'],
+        quotes: json['quotes'],
+        lastChecklist: json['lastChecklist'],
+        daysSinceLastJob: json['daysSinceLastJob'],
+        outstandingBalance: json['outstandingBalance'],
       );
     } on TypeError catch (e) {
       print(e.stackTrace);

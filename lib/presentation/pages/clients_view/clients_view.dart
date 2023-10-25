@@ -20,7 +20,7 @@ class _ClientsViewState extends State<ClientsView>
   @override
   List<PlutoColumn> get columns => [
         PlutoColumn(
-            title: "Name",
+            title: "Name (Company)",
             field: "name",
             width: 200,
             minWidth: 200,
@@ -61,28 +61,37 @@ class _ClientsViewState extends State<ClientsView>
             field: "activeJobs",
             width: 80,
             minWidth: 80,
-            type: PlutoColumnType.text()),
+            type: PlutoColumnType.number()),
         //Quotes
         PlutoColumn(
             title: "Quotes",
             field: "quotes",
             width: 80,
             minWidth: 80,
-            type: PlutoColumnType.text()),
+            type: PlutoColumnType.number()),
         //Days since last job
         PlutoColumn(
             title: "Days since last job",
             field: "daysSinceLastJob",
             width: 80,
             minWidth: 80,
-            type: PlutoColumnType.text()),
+            titleTextAlign: PlutoColumnTextAlign.center,
+            titleSpan: const WidgetSpan(
+                child: Column(
+              children: [
+                Text("Days since",
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                Text("last job", style: TextStyle(fontWeight: FontWeight.w600)),
+              ],
+            )),
+            type: PlutoColumnType.number()),
         //Messages
         PlutoColumn(
             title: "Messages",
             field: "messages",
             width: 80,
             minWidth: 80,
-            type: PlutoColumnType.text()),
+            type: PlutoColumnType.number()),
         PlutoColumn(
           title: "Action",
           field: "action",
@@ -124,11 +133,11 @@ class _ClientsViewState extends State<ClientsView>
               "${model.name}${model.company != null ? " (${model.company})" : ""}"),
       "email": PlutoCell(value: model.email ?? ""),
       "phone": PlutoCell(value: model.phone ?? ""),
-      "invoices": PlutoCell(value: model.invoices ?? ""),
-      "activeJobs": PlutoCell(value: ""), //todo:
-      "quotes": PlutoCell(value: ""), //todo:
-      "daysSinceLastJob": PlutoCell(value: ""), //todo:
-      "messages": PlutoCell(value: ""), //todo:
+      "invoices": PlutoCell(value: model.invoices),
+      "activeJobs": PlutoCell(value: model.checklists),
+      "quotes": PlutoCell(value: model.quotes),
+      "daysSinceLastJob": PlutoCell(value: model.daysSinceLastJob),
+      "messages": PlutoCell(value: model.quotemessages),
       "action": PlutoCell(value: model),
     });
   }
