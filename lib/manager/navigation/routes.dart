@@ -74,6 +74,9 @@ class MCANavigation extends IMCANavigation {
   //Timesheet
   static const String timesheet = '/timesheet';
 
+  //Clients
+  static const String clients = '/clients';
+
   /// router
   late final router = GoRouter(
     debugLogDiagnostics: true,
@@ -267,8 +270,19 @@ class MCANavigation extends IMCANavigation {
                 );
               },
             ),
+            //Clients
+            GoRoute(
+              path: clients,
+              name: clients.substring(1),
+              pageBuilder: (context, state) {
+                return NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: ClientsView(),
+                );
+              },
+            ),
 
-            ///Debug only
+            //Debug only
             if (kDebugMode)
               GoRoute(
                 path: debug,

@@ -16,3 +16,4 @@ export 'approvals_view/approvals_wrapper.dart';
 export 'checklists_view/checklists_view.dart';
 export 'settings_view/settings_view.dart';
 export 'timesheet_view/timesheet_view.dart';
+export 'clients_view/clients_view.dart';

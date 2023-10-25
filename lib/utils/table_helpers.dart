@@ -187,12 +187,10 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
       }
     }
 
-    //todo:
-    //filter rows
-    // final filteredColumn = sm.filterRows;
-    // if (sm.hasFilter) {
-    //   print("has filter");
-    // }
+    final filterrows = stateManager!.filterRows;
+    if (stateManager!.hasFilter) {
+      stateManager!.setFilterWithFilterRows(filterrows);
+    }
     return sm;
   }
 

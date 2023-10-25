@@ -5,18 +5,18 @@ import 'package:mca_dashboard/manager/data/data.dart';
 final class ClientMd extends Equatable {
   //{
   //         "id": 2,
-  //         "name": "kashiba house owners",
+  //         "name": "kashiba house owners 1",
   //         "contact": null,
-  //         "company": null,
+  //         "company": "kashiba house owners",
   //         "active": true,
   //         "notes": "",
-  //         "email": null,
-  //         "phone": null,
+  //         "email": "dipen1005@gmail.com",
+  //         "phone": "07905204344",
   //         "fax": null,
-  //         "startDate": "2019-04-17",
-  //         "endDate": null,
-  //         "creditLimit": 1000,
-  //         "invoices": null,
+  //         "startDate": "2023-10-12",
+  //         "endDate": "2024-10-11",
+  //         "creditLimit": null,
+  //         "invoices": 12834.6,
   //         "payments": null,
   //         "address": {
   //             "line1": "hashob",
@@ -31,8 +31,10 @@ final class ClientMd extends Equatable {
   //         "VATcalc": true,
   //         "currencyId": "1",
   //         "paymentMethodId": "1",
-  //         "payingDays": 30
-  //     },
+  //         "payingDays": 30,
+  //         "invoicePeriodId": "2",
+  //         "invoiceDay": null
+  //     }
 
   final int id;
   final String name;
@@ -61,6 +63,11 @@ final class ClientMd extends Equatable {
       paymentMethods.firstWhereOrNull(
           (element) => element.id == int.tryParse(paymentMethodId ?? ""));
   final int payingDays;
+  final String? invoicePeriodId;
+  InvoicePeriod? getInvoicePeriod(List<InvoicePeriod> invoicePeriods) =>
+      invoicePeriods.firstWhereOrNull(
+          (element) => element.id == int.tryParse(invoicePeriodId ?? ""));
+  final int? invoiceDay;
 
   const ClientMd({
     required this.id,
@@ -82,6 +89,8 @@ final class ClientMd extends Equatable {
     required this.currencyId,
     required this.paymentMethodId,
     required this.payingDays,
+    required this.invoicePeriodId,
+    required this.invoiceDay,
   });
 
   @override
@@ -105,10 +114,14 @@ final class ClientMd extends Equatable {
         currencyId,
         paymentMethodId,
         payingDays,
+        invoicePeriodId,
+        invoiceDay,
       ];
 
   //fromJson
-  factory ClientMd.fromJson(Map<String, dynamic> json) => ClientMd(
+  factory ClientMd.fromJson(Map<String, dynamic> json) {
+    try {
+      return ClientMd(
         id: json['id'] as int,
         name: json['name'] ?? "",
         contact: json['contact'],
@@ -129,5 +142,12 @@ final class ClientMd extends Equatable {
         currencyId: json['currencyId'],
         paymentMethodId: json['paymentMethodId'],
         payingDays: json['payingDays'] ?? 0,
+        invoicePeriodId: json['invoicePeriodId'],
+        invoiceDay: json['invoiceDay'],
       );
+    } on TypeError catch (e) {
+      print(e.stackTrace);
+      rethrow;
+    }
+  }
 }

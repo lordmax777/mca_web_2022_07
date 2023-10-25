@@ -179,7 +179,7 @@ class ShiftCard extends StatelessWidget {
   ) {
     if (item.onChanged != null) {
       return DefaultTextField(
-        width: width / 2.2,
+        width: width / 1.5,
         height: (item.maxLines ?? 1) * 40,
         label: "Enter ${item.title}",
         onChanged: item.onChanged!,

@@ -83,13 +83,18 @@ final List<Map<String, dynamic>> _destinations = [
     'title': 'Settings',
     'icon': Icons.settings,
   },
+  {
+    'route': MCANavigation.clients,
+    'title': 'Clients',
+    'icon': Icons.people,
+  },
   if (kDebugMode)
     {
       'route': MCANavigation.debug,
       'title': 'Debug',
       'icon': Icons.bug_report,
     },
-];
+].reversed.toList();
 
 class DefaultNavigationRail extends StatelessWidget {
   DefaultNavigationRail({super.key});

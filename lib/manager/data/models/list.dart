@@ -825,6 +825,7 @@ final class ListMd extends Equatable {
   final List<UserTitleMd> userTitles;
   final List<StatusMd> statuses;
   final List<PayPeriodMd> payPeriods;
+  final List<InvoicePeriod> invoicePeriods;
 
   List<LocationShortMd> clientRelatedLocation(int? clientId) {
     final list = <LocationShortMd>[];
@@ -878,6 +879,7 @@ final class ListMd extends Equatable {
     required this.userTitles,
     required this.statuses,
     required this.payPeriods,
+    required this.invoicePeriods,
   });
 
   @override
@@ -913,6 +915,7 @@ final class ListMd extends Equatable {
         userTitles,
         statuses,
         payPeriods,
+        invoicePeriods,
       ];
 
   factory ListMd.fromJson(Map<String, dynamic> json) {
@@ -1006,7 +1009,8 @@ final class ListMd extends Equatable {
         workRepeats: json['work_repeats'] == null ? [] : (json['work_repeats'] as List<dynamic>).map((e) => WorkRepeatMd.fromJson(e as Map<String, dynamic>)).toList(),
         userTitles: GlobalConstants.userTitleTypes.entries.map((e) => UserTitleMd(code: e.key, name: e.value)).toList(),
         statuses: json['statuses'] == null ? [] : (json['statuses'] as List<dynamic>).map((e) => StatusMd.fromJson(e as Map<String, dynamic>)).toList(),
-        payPeriods: json['pay_periods'] == null ? [] : (json['pay_periods'] as List<dynamic>).map((e) => PayPeriodMd.fromJson(e as Map<String, dynamic>)).toList());
+        payPeriods: json['pay_periods'] == null ? [] : (json['pay_periods'] as List<dynamic>).map((e) => PayPeriodMd.fromJson(e as Map<String, dynamic>)).toList(),
+        invoicePeriods: json['invoice_periods'] == null ? [] : (json['invoice_periods'] as List<dynamic>).map((e) => InvoicePeriod.fromJson(e as Map<String, dynamic>)).toList());
   }
 
   //factory init
@@ -1043,6 +1047,7 @@ final class ListMd extends Equatable {
       userTitles: [],
       statuses: [],
       payPeriods: [],
+      invoicePeriods: [],
     );
   }
 }
@@ -1103,6 +1108,26 @@ final class PayPeriodMd {
   //from json
   factory PayPeriodMd.fromJson(Map<String, dynamic> json) {
     return PayPeriodMd(
+      id: json['id'] as int,
+      name: json['name'] ?? "",
+    );
+  }
+}
+
+final class InvoicePeriod {
+  // {
+  //           "id": 1,
+  //           "name": "Weekly"
+  //       },
+
+  final int id;
+  final String name;
+
+  const InvoicePeriod({required this.id, required this.name});
+
+  //from json
+  factory InvoicePeriod.fromJson(Map<String, dynamic> json) {
+    return InvoicePeriod(
       id: json['id'] as int,
       name: json['name'] ?? "",
     );
