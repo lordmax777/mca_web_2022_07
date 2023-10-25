@@ -51,31 +51,31 @@ class _TimesheetViewState extends State<TimesheetView> {
       enableFilterMenuItem: false,
       title: "Actual Hours",
       field: 'actual_hours',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
     ),
     PlutoColumn(
       enableFilterMenuItem: false,
       title: "Overtime",
       field: 'overtime',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
     ),
     PlutoColumn(
       enableFilterMenuItem: false,
       title: "Days off",
       field: 'days_off',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
     ),
     PlutoColumn(
       enableFilterMenuItem: false,
       title: "Lates",
       field: 'lates',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
     ),
     PlutoColumn(
       enableFilterMenuItem: false,
       title: "Cleans",
       field: 'cleans',
-      type: PlutoColumnType.number(),
+      type: PlutoColumnType.number(format: "#.##"),
     ),
   ];
 
