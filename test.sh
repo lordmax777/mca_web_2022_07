@@ -1,10 +1,10 @@
-flutter clean
-flutter pub get
+#flutter clean
+#flutter pub get
+#
+#flutter build web --release
 
-flutter build web --release
-
-cp -R build/web/* /website
+#cp -R build/web/* website/
 
 git add .
-git commit -m "update"
+git commit -m "update website"
 git push
