@@ -211,8 +211,8 @@ class _TimesheetViewState extends State<TimesheetView> {
                         borderRadius: BorderRadius.circular(16))),
                 label: const Text("Summary"),
                 icon: const Icon(Icons.list),
-                onPressed: () =>
-                    context.showDialog(const TimesheetSummaryPopup()),
+                onPressed: () => context.showDialog(
+                    TimesheetSummaryPopup(initialTime: selectedDate.value)),
               ),
             ],
           ),

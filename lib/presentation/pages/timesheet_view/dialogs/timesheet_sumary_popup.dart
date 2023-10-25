@@ -9,7 +9,8 @@ import 'package:mca_dashboard/presentation/pages/timesheet_view/dialogs/user_tim
 import 'package:pluto_grid/pluto_grid.dart';
 
 class TimesheetSummaryPopup extends StatefulWidget {
-  const TimesheetSummaryPopup({super.key});
+  final DateTime? initialTime;
+  const TimesheetSummaryPopup({super.key, this.initialTime});
 
   @override
   State<TimesheetSummaryPopup> createState() => _TimesheetSummaryPopupState();
@@ -18,7 +19,8 @@ class TimesheetSummaryPopup extends StatefulWidget {
 class _TimesheetSummaryPopupState extends State<TimesheetSummaryPopup> {
   PlutoGridStateManager? stateManager;
 
-  final ValueNotifier<DateTime> selectedDate = ValueNotifier(DateTime.now());
+  late final ValueNotifier<DateTime> selectedDate =
+      ValueNotifier(widget.initialTime ?? DateTime.now());
 
   int get timestamp =>
       DateTime.utc(selectedDate.value.year, selectedDate.value.month)
