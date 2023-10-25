@@ -18,10 +18,10 @@ Future<void> main() async {
   setupDomain();
 
   EquatableConfig.stringify = true;
-  if (kDebugMode) {
-    runApp(const MCADashboardApp());
-    return;
-  }
+  // if (kDebugMode) {
+  runApp(const MCADashboardApp());
+  return;
+  // }
   await SentryFlutter.init(
     (options) {
       options.dsn =
