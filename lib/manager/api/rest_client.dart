@@ -835,4 +835,7 @@ abstract class ApiClient {
     @Field('date') required String date,
     @Field('worktime') required String worktime,
   });
+
+  @DELETE("/api/fe/clients/{id}")
+  Future<HttpResponse> deleteClient(@Path("id") int id);
 }

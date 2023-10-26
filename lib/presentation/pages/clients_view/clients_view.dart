@@ -22,6 +22,7 @@ class _ClientsViewState extends State<ClientsView>
         PlutoColumn(
             title: "Name (Company)",
             field: "name",
+            enableRowChecked: true,
             width: 200,
             minWidth: 200,
             type: PlutoColumnType.text(),
@@ -104,8 +105,7 @@ class _ClientsViewState extends State<ClientsView>
             return rendererContext.actionMenuWidget(
               onDelete: () {
                 onDelete(() async {
-                  return true;
-                  // return await deleteSelected(rendererContext.row);
+                  return await deleteSelected(rendererContext.row);
                 }, showError: false);
               },
               onEdit: () => onEdit((p0) => ClientsEditDialog(client: p0),
@@ -152,13 +152,46 @@ class _ClientsViewState extends State<ClientsView>
           p0.stateManager.setShowColumnFilter(true);
           onLoaded(p0);
         },
-        headerEnd: ElevatedButton(
-            onPressed: () => onEdit(
-                (p0) => const ClientsEditDialog(client: null), null,
-                showSuccess: false),
-            child: const Text("Add Client")),
+        headerEnd: Row(
+          children: [
+            ElevatedButton(
+                onPressed: () =>
+                    onDelete(() => deleteSelected(null), showError: false),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text("Delete Selected")),
+            const SizedBox(width: 10),
+            ElevatedButton(
+                onPressed: () => onEdit(
+                    (p0) => const ClientsEditDialog(client: null), null,
+                    showSuccess: false),
+                child: const Text("Add Client")),
+          ],
+        ),
         columns: columns,
         rows: rows,
         columnsGroups: columnGroups);
+  }
+
+  Future<bool> deleteSelected(PlutoRow? singleRow) async {
+    final selected = [...stateManager!.checkedRows];
+    if (singleRow != null) {
+      selected.clear();
+      selected.add(singleRow);
+    }
+    if (selected.isEmpty) {
+      return false;
+    }
+    final List<String> delFailed = [];
+    for (final row in selected) {
+      final id = row.cells['action']!.value.id;
+      final res = await dispatch<bool>(DeleteClientAction(id));
+      if (res.isRight) {
+        delFailed.add(row.cells['name']!.value);
+      }
+    }
+    if (delFailed.isNotEmpty) {
+      context.showError("Failed to delete ${delFailed.join(", ")}");
+    }
+    return delFailed.isEmpty;
   }
 }

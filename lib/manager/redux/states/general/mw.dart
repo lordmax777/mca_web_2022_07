@@ -244,6 +244,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case PostTimesheetWorkTimeAction:
         return action.fetch(store.state);
+      case DeleteClientAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }
