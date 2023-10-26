@@ -282,6 +282,13 @@ abstract class ApiClient {
     @Field() required int paymentMethodId,
     @Field() required int payingDays,
     @Field() required bool active,
+    @Field() String? fax,
+    @Field() String? addressLine2,
+    @Field() String? addressCounty,
+    @Field() required int invoicePeriodId,
+    @Field() required int invoiceDay,
+    @Field() required bool combineInvoices,
+    @Field() required bool sendInvoices,
   });
 
   @POST("/api/fe/quotestatus/{id}")

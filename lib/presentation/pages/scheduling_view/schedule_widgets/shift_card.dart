@@ -33,6 +33,7 @@ final class ShiftCardItem extends Equatable {
   final int? maxLines;
   final ValueChanged<String>? onChanged;
   final ShiftCardDropdown? dropdown;
+  final bool isRequired;
 
   const ShiftCardItem({
     this.title,
@@ -44,6 +45,7 @@ final class ShiftCardItem extends Equatable {
     this.simpleText,
     this.customWidget,
     this.dropdown,
+    this.isRequired = false,
   });
 
   @override
@@ -55,7 +57,8 @@ final class ShiftCardItem extends Equatable {
         dropdown,
         maxLines,
         onChanged,
-        dropdown
+        dropdown,
+        isRequired
       ];
 }
 
@@ -160,9 +163,21 @@ class ShiftCard extends StatelessWidget {
       children: [
         SizedBox(
           width: labelWidth,
-          child: Text(
-            "${item.title}:",
-            style: Theme.of(context).textTheme.bodyLarge,
+          child: Row(
+            children: [
+              Text(
+                "${item.title}",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              if (item.isRequired)
+                Text(
+                  " *",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(color: Colors.red),
+                ),
+            ],
           ),
         ),
         _textField(

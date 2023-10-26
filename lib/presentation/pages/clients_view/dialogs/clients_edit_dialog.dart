@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/shift_card.dart';
 
 class ClientsEditDialog extends StatefulWidget {
@@ -108,6 +109,7 @@ class _ClientsEditDialogState extends State<ClientsEditDialog> {
                     width: context.width * 0.5,
                     items: [
                       ShiftCardItem(
+                          isRequired: true,
                           title: "Name",
                           simpleText: name,
                           onChanged: (value) {
@@ -140,177 +142,191 @@ class _ClientsEditDialogState extends State<ClientsEditDialog> {
                     ]),
                 const SizedBox(height: 20),
                 ShiftCard(
-                  title: "Payment Information",
+                  title: "Address",
                   width: context.width * 0.5,
                   items: [
                     ShiftCardItem(
-                      title: "Currency",
-                      dropdown: ShiftCardDropdown(
-                        additionalValueId: currency?.code,
-                        label: currency?.sign,
-                        onChanged: (value) {
-                          final index = lists.currencies
-                              .indexWhere((e) => e.code == value.additionalId);
-                          if (index != -1) {
-                            currency = lists.currencies[index];
-                            setState(() {});
-                          }
+                      title: "Search Address",
+                      customWidget: AddressAutocompleteWidget(
+                        width: context.width * 0.43,
+                        onSelected: (value) {
+                          print(value);
+                          address1 = value.line1;
+                          address2 = value.line2;
+                          city = value.city;
+                          county = value.county;
+                          country = value.country;
+                          postcode = value.postcode;
+                          setState(() {});
                         },
-                        items: [
-                          for (int i = 0; i < lists.currencies.length; i++)
-                            DefaultMenuItem(
-                                id: i,
-                                title:
-                                    "${lists.currencies[i].sign} - ${lists.currencies[i].code}",
-                                additionalId: lists.currencies[i].code),
-                        ],
                       ),
                     ),
                     ShiftCardItem(
-                        title: "Payment method",
+                        title: "Address Line 1",
+                        isRequired: true,
+                        simpleText: address1,
+                        onChanged: (value) {
+                          address1 = value;
+                        }),
+                    ShiftCardItem(
+                        title: "Address Line 2",
+                        simpleText: address2,
+                        onChanged: (value) {
+                          address2 = value;
+                        }),
+                    ShiftCardItem(
+                        title: "City",
+                        simpleText: city,
+                        isRequired: true,
+                        onChanged: (value) {
+                          city = value;
+                        }),
+                    ShiftCardItem(
+                        title: "County",
+                        simpleText: county,
+                        onChanged: (value) {
+                          county = value;
+                        }),
+                    ShiftCardItem(
+                        title: "Country",
+                        // isRequired: true,
                         dropdown: ShiftCardDropdown(
-                          valueId: paymentMethod?.id,
-                          label: paymentMethod?.name,
-                          items: lists.paymentMethods.map(
-                              (e) => DefaultMenuItem(id: e.id, title: e.name)),
+                          additionalValueId: country?.code,
+                          label: country?.name,
                           onChanged: (value) {
-                            final method = lists.paymentMethods
-                                .firstWhereOrNull(
-                                    (element) => element.id == value.id);
-                            paymentMethod = method;
-                            setState(() {});
+                            final index = lists.countries.indexWhere(
+                                (e) => e.code == value.additionalId);
+                            if (index != -1) {
+                              country = lists.countries[index];
+                              setState(() {});
+                            }
                           },
+                          items: [
+                            for (int i = 0; i < lists.countries.length; i++)
+                              DefaultMenuItem(
+                                  id: i,
+                                  title: lists.countries[i].name,
+                                  additionalId: lists.countries[i].code),
+                          ],
                         )),
                     ShiftCardItem(
-                        title: "Invoice Period",
-                        dropdown: ShiftCardDropdown(
-                          valueId: invoicePeriod?.id,
-                          label: invoicePeriod?.name,
-                          items: lists.invoicePeriods.map(
-                              (e) => DefaultMenuItem(id: e.id, title: e.name)),
-                          onChanged: (value) {
-                            final method = lists.invoicePeriods
-                                .firstWhereOrNull(
-                                    (element) => element.id == value.id);
-                            invoicePeriod = method;
-                            setState(() {});
-                          },
-                        )),
-                    ShiftCardItem(
-                      title: "Invoice Day",
-                      simpleText: invoiceDay,
-                      onChanged: (value) {
-                        invoiceDay = value;
-                      },
-                    ),
-                    ShiftCardItem(
-                      title: "Comment",
-                      simpleText: comment,
-                      maxLines: 2,
-                      onChanged: (value) {
-                        comment = value;
-                      },
-                    ),
-                    ShiftCardItem(
-                      title: "Active",
-                      checked: isActive,
-                      onChecked: (value) {
-                        isActive = value;
-                        setState(() {});
-                      },
-                    ),
-                    ShiftCardItem(
-                      title: "Combine Invoices",
-                      checked: isCombineInvoices,
-                      onChecked: (value) {
-                        isCombineInvoices = value;
-                        setState(() {});
-                      },
-                    ),
-                    ShiftCardItem(
-                      title: "Send Invoices",
-                      checked: isSendInvoices,
-                      onChecked: (value) {
-                        isSendInvoices = value;
-                        setState(() {});
-                      },
-                    ),
+                        title: "Postcode",
+                        isRequired: true,
+                        simpleText: postcode,
+                        onChanged: (value) {
+                          postcode = value;
+                        }),
                   ],
                 ),
               ],
             ),
             const SizedBox(width: 20),
             ShiftCard(
-              title: "Address",
+              title: "Payment Information",
               width: context.width * 0.4,
               items: [
                 ShiftCardItem(
-                  title: "Search Address",
-                  customWidget: AddressAutocompleteWidget(
-                    width: 350,
-                    onSelected: (value) {
-                      print(value);
-                      address1 = value.line1;
-                      address2 = value.line2;
-                      city = value.city;
-                      county = value.county;
-                      country = value.country;
-                      postcode = value.postcode;
-                      setState(() {});
+                  title: "Currency",
+                  isRequired: true,
+                  dropdown: ShiftCardDropdown(
+                    additionalValueId: currency?.code,
+                    label: currency?.sign,
+                    onChanged: (value) {
+                      final index = lists.currencies
+                          .indexWhere((e) => e.code == value.additionalId);
+                      if (index != -1) {
+                        currency = lists.currencies[index];
+                        setState(() {});
+                      }
                     },
+                    items: [
+                      for (int i = 0; i < lists.currencies.length; i++)
+                        DefaultMenuItem(
+                            id: i,
+                            title:
+                                "${lists.currencies[i].sign} - ${lists.currencies[i].code}",
+                            additionalId: lists.currencies[i].code),
+                    ],
                   ),
                 ),
                 ShiftCardItem(
-                    title: "Address Line 1",
-                    simpleText: address1,
-                    onChanged: (value) {
-                      address1 = value;
-                    }),
-                ShiftCardItem(
-                    title: "Address Line 2",
-                    simpleText: address2,
-                    onChanged: (value) {
-                      address2 = value;
-                    }),
-                ShiftCardItem(
-                    title: "City",
-                    simpleText: city,
-                    onChanged: (value) {
-                      city = value;
-                    }),
-                ShiftCardItem(
-                    title: "County",
-                    simpleText: county,
-                    onChanged: (value) {
-                      county = value;
-                    }),
-                ShiftCardItem(
-                    title: "Country",
+                    title: "Payment method",
+                    isRequired: true,
                     dropdown: ShiftCardDropdown(
-                      additionalValueId: country?.code,
-                      label: country?.name,
+                      valueId: paymentMethod?.id,
+                      label: paymentMethod?.name,
+                      items: lists.paymentMethods
+                          .map((e) => DefaultMenuItem(id: e.id, title: e.name)),
                       onChanged: (value) {
-                        final index = lists.countries
-                            .indexWhere((e) => e.code == value.additionalId);
-                        if (index != -1) {
-                          country = lists.countries[index];
-                          setState(() {});
-                        }
+                        final method = lists.paymentMethods.firstWhereOrNull(
+                            (element) => element.id == value.id);
+                        paymentMethod = method;
+                        setState(() {});
                       },
-                      items: [
-                        for (int i = 0; i < lists.countries.length; i++)
-                          DefaultMenuItem(
-                              id: i,
-                              title: lists.countries[i].name,
-                              additionalId: lists.countries[i].code),
-                      ],
                     )),
                 ShiftCardItem(
-                    title: "Postcode",
-                    simpleText: postcode,
-                    onChanged: (value) {
-                      postcode = value;
-                    }),
+                    title: "Invoice Period",
+                    isRequired: true,
+                    dropdown: ShiftCardDropdown(
+                      valueId: invoicePeriod?.id,
+                      label: invoicePeriod?.name,
+                      items: lists.invoicePeriods
+                          .map((e) => DefaultMenuItem(id: e.id, title: e.name)),
+                      onChanged: (value) {
+                        final method = lists.invoicePeriods.firstWhereOrNull(
+                            (element) => element.id == value.id);
+                        invoicePeriod = method;
+                        setState(() {});
+                      },
+                    )),
+                ShiftCardItem(
+                  title: "Invoice Day",
+                  isRequired: true,
+                  simpleText: invoiceDay,
+                  onChanged: (value) {
+                    invoiceDay = value;
+                  },
+                ),
+                ShiftCardItem(
+                  title: "Paying Days",
+                  isRequired: true,
+                  simpleText: paymentDue,
+                  onChanged: (value) {
+                    paymentDue = value;
+                  },
+                ),
+                ShiftCardItem(
+                  title: "Comment",
+                  simpleText: comment,
+                  maxLines: 2,
+                  onChanged: (value) {
+                    comment = value;
+                  },
+                ),
+                ShiftCardItem(
+                  title: "Active",
+                  checked: isActive,
+                  onChecked: (value) {
+                    isActive = value;
+                    setState(() {});
+                  },
+                ),
+                ShiftCardItem(
+                  title: "Combine Invoices",
+                  checked: isCombineInvoices,
+                  onChecked: (value) {
+                    isCombineInvoices = value;
+                    setState(() {});
+                  },
+                ),
+                ShiftCardItem(
+                  title: "Send Invoices",
+                  checked: isSendInvoices,
+                  onChecked: (value) {
+                    isSendInvoices = value;
+                    setState(() {});
+                  },
+                ),
               ],
             ),
           ],
@@ -325,10 +341,104 @@ class _ClientsEditDialogState extends State<ClientsEditDialog> {
               },
               child: Text("Cancel")),
           //Submit
-          ElevatedButton(onPressed: onSubmit, child: Text("Submit")),
+          ElevatedButton(
+              onPressed: () => onSubmit(saveAsNew: true),
+              child: const Text("Save as new")),
+          ElevatedButton(onPressed: onSubmit, child: const Text("Submit")),
         ],
         title: Text("${isNew ? "Add" : "Edit"} Client"));
   }
 
-  void onSubmit() {}
+  void onSubmit({bool saveAsNew = false}) async {
+    if (name.isEmpty) {
+      context.showError("Name is required");
+      return;
+    }
+    if (address1.isEmpty) {
+      context.showError("Address is required");
+      return;
+    }
+    if (city.isEmpty) {
+      context.showError("City is required");
+      return;
+    }
+    if (country == null) {
+      context.showError("Country is required");
+      return;
+    }
+    if (postcode.isEmpty) {
+      context.showError("Postcode is required");
+      return;
+    }
+    if (currency == null) {
+      context.showError("Currency is required");
+      return;
+    }
+    if (paymentMethod == null) {
+      context.showError("Payment method is required");
+      return;
+    }
+    if (paymentDue.isEmpty) {
+      context.showError("Payment due is required");
+      return;
+    }
+    if (invoicePeriod == null) {
+      context.showError("Invoice period is required");
+      return;
+    }
+    if (invoiceDay.isEmpty) {
+      context.showError("Invoice day is required");
+      return;
+    }
+    if (int.tryParse(invoiceDay) == null) {
+      context.showError("Invoice day must be a number");
+      return;
+    }
+    if (int.tryParse(paymentDue) == null) {
+      context.showError("Payment due must be a number");
+      return;
+    }
+    if (int.tryParse(paymentDue)! < 0) {
+      context.showError("Payment due must be a positive number");
+      return;
+    }
+    if (int.tryParse(invoiceDay)! < 0) {
+      context.showError("Invoice day must be a positive number");
+      return;
+    }
+
+    final res = await context.futureLoading(() async {
+      return await dispatch<int>(PostClientAction(
+        PersonalData(
+          clientId: saveAsNew ? null : client?.id,
+          name: name,
+          phone: phone,
+          email: email,
+          fax: fax,
+          invoicePeriodId: invoicePeriod!.id,
+          invoiceDay: int.parse(invoiceDay),
+          paymentDays: int.parse(paymentDue),
+          sendInvoices: isSendInvoices,
+          combineInvoices: isCombineInvoices,
+          companyName: company,
+          currency: currency!,
+          notes: comment,
+          paymentMethod: paymentMethod!,
+        ),
+        addressData: AddressData(
+          line1: address1,
+          line2: address2,
+          city: city,
+          county: county,
+          country: country!,
+          postcode: postcode,
+        ),
+      ));
+    });
+    if (res.isRight) {
+      context.showError(res.right.message);
+      return;
+    }
+    context.pop(res.isLeft);
+  }
 }

@@ -728,7 +728,12 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           addressLine1: addressData.line1,
           addressPostcode: addressData.postcode,
           addressCountry: addressData.country!.code,
-          addressCity: addressData.city);
+          addressCity: addressData.city,
+          combineInvoices: data.combineInvoices,
+          invoiceDay: data.invoiceDay,
+          sendInvoices: data.sendInvoices,
+          invoicePeriodId: data.invoicePeriodId,
+          fax: data.fax);
 
       await Future.wait([
         appStore.dispatch(const GetListsAction()) as Future,

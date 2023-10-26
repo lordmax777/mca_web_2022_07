@@ -152,7 +152,11 @@ class _ClientsViewState extends State<ClientsView>
           p0.stateManager.setShowColumnFilter(true);
           onLoaded(p0);
         },
-        hasHeader: false,
+        headerEnd: ElevatedButton(
+            onPressed: () => onEdit(
+                (p0) => const ClientsEditDialog(client: null), null,
+                showSuccess: false),
+            child: const Text("Add Client")),
         columns: columns,
         rows: rows,
         columnsGroups: columnGroups);

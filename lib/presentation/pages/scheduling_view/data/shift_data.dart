@@ -113,6 +113,11 @@ class PersonalData extends Equatable {
   CurrencyMd? currency;
   String notes;
   int? shiftId;
+  int invoicePeriodId;
+  int invoiceDay;
+  bool combineInvoices;
+  bool sendInvoices;
+  String? fax;
 
   PersonalData({
     this.name = "",
@@ -125,6 +130,11 @@ class PersonalData extends Equatable {
     this.currency,
     this.notes = "",
     this.shiftId,
+    this.invoiceDay = 0,
+    this.invoicePeriodId = 0,
+    this.combineInvoices = false,
+    this.sendInvoices = false,
+    this.fax,
   });
 
   @override
@@ -139,6 +149,11 @@ class PersonalData extends Equatable {
         currency,
         notes,
         shiftId,
+        invoiceDay,
+        invoicePeriodId,
+        combineInvoices,
+        sendInvoices,
+        fax,
       ];
 
   //copyWith
@@ -153,6 +168,11 @@ class PersonalData extends Equatable {
     CurrencyMd? currency,
     String? notes,
     int? shiftId,
+    int? invoiceDay,
+    int? invoicePeriodId,
+    bool? combineInvoices,
+    bool? sendInvoices,
+    String? fax,
   }) {
     return PersonalData(
       name: name ?? this.name,
@@ -165,6 +185,11 @@ class PersonalData extends Equatable {
       currency: currency ?? this.currency,
       notes: notes ?? this.notes,
       shiftId: shiftId ?? this.shiftId,
+      invoiceDay: invoiceDay ?? this.invoiceDay,
+      invoicePeriodId: invoicePeriodId ?? this.invoicePeriodId,
+      combineInvoices: combineInvoices ?? this.combineInvoices,
+      sendInvoices: sendInvoices ?? this.sendInvoices,
+      fax: fax ?? this.fax,
     );
   }
 
@@ -185,6 +210,11 @@ class PersonalData extends Equatable {
       currency: client.getCurrencyMd(currencies),
       notes: client.notes,
       shiftId: shiftId,
+      invoicePeriodId: int.tryParse(client.invoicePeriodId ?? "") ?? 0,
+      invoiceDay: client.invoiceDay ?? 0,
+      sendInvoices: false,
+      combineInvoices: false,
+      fax: client.fax ?? "",
     );
   }
 
@@ -195,17 +225,21 @@ class PersonalData extends Equatable {
     required List<PaymentMethodMd> paymentMethods,
   }) {
     return PersonalData(
-      paymentDays: quote.payingDays,
-      paymentMethod: quote.paymentMethodMd(paymentMethods),
-      currency: quote.currencyMd(currencies),
-      name: quote.name,
-      phone: quote.phone,
-      email: quote.email,
-      notes: quote.notes,
-      clientId: quote.clientId,
-      companyName: quote.company,
-      shiftId: shiftId,
-    );
+        paymentDays: quote.payingDays,
+        paymentMethod: quote.paymentMethodMd(paymentMethods),
+        currency: quote.currencyMd(currencies),
+        name: quote.name,
+        phone: quote.phone,
+        email: quote.email,
+        notes: quote.notes,
+        clientId: quote.clientId,
+        companyName: quote.company,
+        shiftId: shiftId,
+        invoicePeriodId: 0,
+        invoiceDay: 0,
+        sendInvoices: false,
+        combineInvoices: false,
+        fax: quote.fax);
   }
 
   PersonalData copyFromProperty(
@@ -215,7 +249,8 @@ class PersonalData extends Equatable {
     required List<CurrencyMd> currencies,
     required List<PaymentMethodMd> paymentMethods,
   }) {
-    PersonalData data = PersonalData(shiftId: pr.id);
+    PersonalData data =
+        PersonalData(shiftId: pr.id, invoiceDay: 0, invoicePeriodId: 0);
     final shift = shifts.firstWhereOrNull((element) => element.id == pr.id);
     if (shift != null) {
       final client = shift.getClientMd(clients);

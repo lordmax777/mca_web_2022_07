@@ -1221,6 +1221,13 @@ class _ApiClient implements ApiClient {
     required paymentMethodId,
     required payingDays,
     required active,
+    fax,
+    addressLine2,
+    addressCounty,
+    required invoicePeriodId,
+    required invoiceDay,
+    required combineInvoices,
+    required sendInvoices,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1240,6 +1247,13 @@ class _ApiClient implements ApiClient {
       'paymentMethodId': paymentMethodId,
       'payingDays': payingDays,
       'active': active,
+      'fax': fax,
+      'addressLine2': addressLine2,
+      'addressCounty': addressCounty,
+      'invoicePeriodId': invoicePeriodId,
+      'invoiceDay': invoiceDay,
+      'combineInvoices': combineInvoices,
+      'sendInvoices': sendInvoices,
     };
     _data.removeWhere((k, v) => v == null);
     final _result =
