@@ -59,7 +59,7 @@ class _NewChecklistTemplatePopupState extends State<NewChecklistTemplatePopup>
                       controller: data.name,
                     ),
                     UserCardItem(
-                      title: "Title",
+                      title: "Title for PDF report",
                       isRequired: true,
                       controller: data.title,
                     ),
@@ -222,7 +222,7 @@ class _NewChecklistTemplatePopupState extends State<NewChecklistTemplatePopup>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: const [
                         Icon(Icons.add_circle_outline),
-                        Text("Add Room", style: TextStyle(fontSize: 16)),
+                        Text("Add Section", style: TextStyle(fontSize: 16)),
                       ],
                     ),
                   ),
