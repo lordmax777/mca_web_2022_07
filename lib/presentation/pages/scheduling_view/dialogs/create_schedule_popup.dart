@@ -88,12 +88,15 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
           final quote = quotes.left.first;
 
           final lists = appStore.state.generalState.lists;
+          final clients = appStore.state.generalState.clients;
 
           shiftData = shiftData.copyWith(
               quoteData: quoteData.copyFromQuote(quote),
               personalData: personalData.copyFromQuote(quote,
                   paymentMethods: lists.paymentMethods,
-                  currencies: lists.currencies),
+                  currencies: lists.currencies,
+                  invoicePeriods: lists.invoicePeriods,
+                  clients: clients),
               addressData:
                   addressData.copyFromQuote(quote, countries: lists.countries),
               workAddressData: addressData.copyFromQuote(quote,
@@ -339,6 +342,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                   children: [
                     //Personal Data
                     ShiftCard(
+                        width: context.width * .4,
                         dropdown: ShiftCardDropdown(
                             label: "Clients",
                             items: clients.map((e) => DefaultMenuItem(
@@ -485,15 +489,18 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
 
                     //Quote Data
                     if (isQuote)
-                      ShiftCard(title: "Quote", items: [
-                        ShiftCardItem(
-                            title: "Quote Comment",
-                            maxLines: 3,
-                            simpleText: quoteData.quoteComment,
-                            onChanged: (value) {
-                              quoteData.quoteComment = value;
-                            })
-                      ]),
+                      ShiftCard(
+                          width: context.width * .4,
+                          title: "Quote",
+                          items: [
+                            ShiftCardItem(
+                                title: "Quote Comment",
+                                maxLines: 3,
+                                simpleText: quoteData.quoteComment,
+                                onChanged: (value) {
+                                  quoteData.quoteComment = value;
+                                })
+                          ]),
                   ],
                 ),
 
@@ -504,6 +511,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                   children: [
                     //Address Data
                     ShiftCard(
+                      width: context.width * .4,
                       title: "Invoice Address",
                       trailing: IconButton(
                           padding: EdgeInsets.zero,
@@ -573,6 +581,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                     //Work Address Data
                     if (workAddressData != null)
                       ShiftCard(
+                        width: context.width * .4,
                         title: "Work Address",
                         trailing: IconButton(
                             padding: EdgeInsets.zero,
@@ -653,6 +662,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                   children: [
                     //Timing Data
                     ShiftCard(
+                      width: context.width * .4,
                       title: "Timing",
                       trailing: IconButton(
                           padding: EdgeInsets.zero,
@@ -703,6 +713,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
 
                     //Guests Data
                     ShiftCard(
+                      width: context.width * .4,
                       title: "Guests",
                       items: [
                         ShiftCardItem(
@@ -823,6 +834,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
 
                 //Team and Guest
                 ShiftCard(
+                  width: context.width * .4,
                   title: "Team",
                   trailing: IconButton(
                       padding: EdgeInsets.zero,
@@ -867,6 +879,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
 
                 //Products data
                 ShiftCard(
+                  width: context.width * .4,
                   isExpanded: true,
                   title: "Products and services",
                   trailing: SpacedRow(

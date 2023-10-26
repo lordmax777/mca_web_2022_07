@@ -62,6 +62,7 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
       builder: (context, vm) {
         final currencies = [...vm.currencies];
         final paymentMethods = [...vm.paymentMethods];
+        final invoicePeriods = [...vm.invoicePeriods];
         return AlertDialog(
           title: const Text('Add Address'),
           scrollable: true,
@@ -128,7 +129,7 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                     },
                     width: double.infinity),
                 const SizedBox(height: 8),
-                label("Payment terms", isRequired: true),
+                label("Paying days", isRequired: true),
                 DefaultTextField(
                     controller: TextEditingController(
                         text: data.paymentDays.toString()),
@@ -191,6 +192,57 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                   },
                   valueId: data.paymentMethod?.id,
                 ),
+                const SizedBox(height: 8),
+                label("Invoice Period", isRequired: true),
+                DefaultDropdown(
+                  width: double.infinity,
+                  items: [
+                    for (final item in invoicePeriods)
+                      DefaultMenuItem(id: item.id, title: item.name),
+                  ],
+                  onChanged: (value) {
+                    final invoicePeriod = invoicePeriods
+                        .firstWhereOrNull((element) => element.id == value.id);
+                    if (invoicePeriod != null) {
+                      data.invoicePeriod = invoicePeriod;
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }
+                  },
+                  valueId: data.invoicePeriod?.id,
+                ),
+                const SizedBox(height: 8),
+                label("Invoice Day"),
+                DefaultTextField(
+                    controller:
+                        TextEditingController(text: data.invoiceDay.toString()),
+                    onChanged: (value) {
+                      data.invoiceDay = int.tryParse(value) ?? 0;
+                    },
+                    width: double.infinity),
+                const SizedBox(height: 8),
+                label("Combine Invoices"),
+                DefaultSwitch(
+                    value: data.combineInvoices,
+                    onChanged: (value) {
+                      data.combineInvoices = value;
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }),
+                const SizedBox(height: 8),
+                label("Send Invoices"),
+                DefaultSwitch(
+                    value: data.sendInvoices,
+                    onChanged: (value) {
+                      data.sendInvoices = value;
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }),
+                const SizedBox(height: 8),
+                label('Address Search', isRequired: true),
                 const SizedBox(height: 8),
                 label("Notes"),
                 DefaultTextField(
@@ -372,6 +424,14 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                   context.showError('Please select payment method');
                   return;
                 }
+                if (data.invoicePeriod == null) {
+                  context.showError('Please select invoice period');
+                  return;
+                }
+                if (addressData.country == null) {
+                  context.showError('Please select country');
+                  return;
+                }
                 if (deliverDifferentLocation) {
                   addressData.phoneNumber = data.phone;
                   addressData.email = data.email;
@@ -394,7 +454,8 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                       addressData = res;
                       data = data.copyFromClient(newClient,
                           currencies: currencies,
-                          paymentMethods: paymentMethods);
+                          paymentMethods: paymentMethods,
+                          invoicePeriods: invoicePeriods);
                       context.pop({"personal": data, "address": addressData});
                     }
                   } else {
@@ -405,7 +466,9 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                       await createClient(currencies, paymentMethods);
                   if (newClient != null) {
                     data = data.copyFromClient(newClient,
-                        currencies: currencies, paymentMethods: paymentMethods);
+                        currencies: currencies,
+                        paymentMethods: paymentMethods,
+                        invoicePeriods: invoicePeriods);
                     context.pop({"personal": data});
                   }
                 }

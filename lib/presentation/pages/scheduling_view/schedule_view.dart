@@ -599,7 +599,9 @@ class _TableState extends State<_Table> {
                               clients: appState.generalState.clients,
                               currencies:
                                   appState.generalState.lists.currencies,
-                              shifts: appState.generalState.lists.shifts)
+                              shifts: appState.generalState.lists.shifts,
+                              invoicePeriods:
+                                  appState.generalState.lists.invoicePeriods)
                           : null,
                       addressData: property != null
                           ? AddressData().copyFromProperty(property,
@@ -766,7 +768,8 @@ class _TableState extends State<_Table> {
             .copyWith(shiftId: property?.id)
             .copyFromClient(client,
                 currencies: generalState.lists.currencies,
-                paymentMethods: generalState.lists.paymentMethods),
+                paymentMethods: generalState.lists.paymentMethods,
+                invoicePeriods: generalState.lists.invoicePeriods),
       );
     }
 

@@ -734,7 +734,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           combineInvoices: data.combineInvoices,
           invoiceDay: data.invoiceDay,
           sendInvoices: data.sendInvoices,
-          invoicePeriodId: data.invoicePeriodId,
+          invoicePeriodId: data.invoicePeriod!.id,
           fax: data.fax);
 
       await Future.wait([

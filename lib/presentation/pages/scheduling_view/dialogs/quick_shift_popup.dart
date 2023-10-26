@@ -285,8 +285,9 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
                                           .copyWith(shiftId: value.id)
                                           .copyFromClient(client,
                                               currencies: vm.currencies,
-                                              paymentMethods:
-                                                  vm.paymentMethods),
+                                              paymentMethods: vm.paymentMethods,
+                                              invoicePeriods:
+                                                  vm.invoicePeriods),
                                     );
                                   }
                                   if (location != null) {

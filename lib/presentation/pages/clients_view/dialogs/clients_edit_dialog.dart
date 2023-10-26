@@ -415,7 +415,7 @@ class _ClientsEditDialogState extends State<ClientsEditDialog> {
           phone: phone,
           email: email,
           fax: fax,
-          invoicePeriodId: invoicePeriod!.id,
+          invoicePeriod: invoicePeriod,
           invoiceDay: int.parse(invoiceDay),
           paymentDays: int.parse(paymentDue),
           sendInvoices: isSendInvoices,

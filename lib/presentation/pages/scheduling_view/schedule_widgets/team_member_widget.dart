@@ -74,7 +74,7 @@ class _TeamMemberWidgetState extends State<TeamMemberWidget> {
         controller: TextEditingController(
             text: widget.specialRate?.toStringAsFixed(2) ?? ""),
         keyboardType: TextInputType.number,
-        width: 120,
+        width: 140,
         height: 40,
         onChanged: (value) {
           widget.onSpecialRateChanged(double.parse(value));

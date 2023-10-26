@@ -113,7 +113,7 @@ class PersonalData extends Equatable {
   CurrencyMd? currency;
   String notes;
   int? shiftId;
-  int invoicePeriodId;
+  InvoicePeriod? invoicePeriod;
   int invoiceDay;
   bool combineInvoices;
   bool sendInvoices;
@@ -131,7 +131,7 @@ class PersonalData extends Equatable {
     this.notes = "",
     this.shiftId,
     this.invoiceDay = 0,
-    this.invoicePeriodId = 0,
+    this.invoicePeriod,
     this.combineInvoices = false,
     this.sendInvoices = false,
     this.fax,
@@ -150,7 +150,7 @@ class PersonalData extends Equatable {
         notes,
         shiftId,
         invoiceDay,
-        invoicePeriodId,
+        invoicePeriod,
         combineInvoices,
         sendInvoices,
         fax,
@@ -169,7 +169,7 @@ class PersonalData extends Equatable {
     String? notes,
     int? shiftId,
     int? invoiceDay,
-    int? invoicePeriodId,
+    InvoicePeriod? invoicePeriod,
     bool? combineInvoices,
     bool? sendInvoices,
     String? fax,
@@ -186,7 +186,7 @@ class PersonalData extends Equatable {
       notes: notes ?? this.notes,
       shiftId: shiftId ?? this.shiftId,
       invoiceDay: invoiceDay ?? this.invoiceDay,
-      invoicePeriodId: invoicePeriodId ?? this.invoicePeriodId,
+      invoicePeriod: invoicePeriod ?? this.invoicePeriod,
       combineInvoices: combineInvoices ?? this.combineInvoices,
       sendInvoices: sendInvoices ?? this.sendInvoices,
       fax: fax ?? this.fax,
@@ -198,6 +198,7 @@ class PersonalData extends Equatable {
     ClientMd client, {
     required List<CurrencyMd> currencies,
     required List<PaymentMethodMd> paymentMethods,
+    required List<InvoicePeriod> invoicePeriods,
   }) {
     return PersonalData(
       name: client.name,
@@ -210,7 +211,7 @@ class PersonalData extends Equatable {
       currency: client.getCurrencyMd(currencies),
       notes: client.notes,
       shiftId: shiftId,
-      invoicePeriodId: int.tryParse(client.invoicePeriodId ?? "") ?? 0,
+      invoicePeriod: client.getInvoicePeriod(invoicePeriods),
       invoiceDay: client.invoiceDay ?? 0,
       sendInvoices: false,
       combineInvoices: false,
@@ -223,6 +224,8 @@ class PersonalData extends Equatable {
     QuoteMd quote, {
     required List<CurrencyMd> currencies,
     required List<PaymentMethodMd> paymentMethods,
+    required List<ClientMd> clients,
+    required List<InvoicePeriod> invoicePeriods,
   }) {
     return PersonalData(
         paymentDays: quote.payingDays,
@@ -235,7 +238,8 @@ class PersonalData extends Equatable {
         clientId: quote.clientId,
         companyName: quote.company,
         shiftId: shiftId,
-        invoicePeriodId: 0,
+        invoicePeriod:
+            quote.clientMd(clients)?.getInvoicePeriod(invoicePeriods),
         invoiceDay: 0,
         sendInvoices: false,
         combineInvoices: false,
@@ -248,15 +252,17 @@ class PersonalData extends Equatable {
     required List<ClientMd> clients,
     required List<CurrencyMd> currencies,
     required List<PaymentMethodMd> paymentMethods,
+    required List<InvoicePeriod> invoicePeriods,
   }) {
-    PersonalData data =
-        PersonalData(shiftId: pr.id, invoiceDay: 0, invoicePeriodId: 0);
+    PersonalData data = PersonalData(shiftId: pr.id, invoiceDay: 0);
     final shift = shifts.firstWhereOrNull((element) => element.id == pr.id);
     if (shift != null) {
       final client = shift.getClientMd(clients);
       if (client != null) {
         data = data.copyFromClient(client,
-            currencies: currencies, paymentMethods: paymentMethods);
+            currencies: currencies,
+            paymentMethods: paymentMethods,
+            invoicePeriods: invoicePeriods);
       }
     }
     return data;
@@ -268,10 +274,10 @@ class PersonalData extends Equatable {
         // phone.isEmpty ||
         // email.isEmpty ||
         paymentMethod == null ||
-        currency == null) {
+        currency == null ||
+        invoicePeriod == null) {
       context.showError(
-          "Please fill ${name.isEmpty ? "name, " : ""}${paymentMethod == null ? "payment method, " : ""}${currency == null ? "currency, " : ""}");
-      // "${phone.isEmpty ? "phone, " : ""}${email.isEmpty ? "email, " : ""}"
+          "Please fill ${name.isEmpty ? "name, " : ""}${paymentMethod == null ? "payment method, " : ""}${currency == null ? "currency, " : ""}${invoicePeriod == null ? "invoice period, " : ""}}");
       return false;
     }
     return name.isNotEmpty &&
