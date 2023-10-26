@@ -499,7 +499,7 @@ class MCANavigation extends IMCANavigation {
                 Icons.error_outline,
                 color: Colors.red,
               ),
-              title: const Text('Error'),
+              // title: const Text('Error'),
               actions: [
                 ElevatedButton(
                   onPressed: () {

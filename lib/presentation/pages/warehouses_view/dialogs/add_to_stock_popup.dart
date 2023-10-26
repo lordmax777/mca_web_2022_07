@@ -61,7 +61,7 @@ class _AddToStockPopupState extends State<AddToStockPopup>
               simpleText: widget.stock.current?.toString(),
             ),
             UserCardItem(
-              title: "Amount to ${widget.isAdd ? "add" : "remove"}",
+              title: "Quantity to ${widget.isAdd ? "add" : "remove"}",
               controller: controller1,
               isRequired: true,
               keyboardType: TextInputType.number,

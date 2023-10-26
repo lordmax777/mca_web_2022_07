@@ -652,9 +652,9 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       AppState state, PostStorageItemAction action) async {
     return await apiCall(() async {
       final res = await deps.apiClient.postStorageItem(
-        active: true,
-        service: false,
         id: action.id ?? 0,
+        active: true,
+        service: action.isService,
         name: action.title,
         taxId: action.taxId,
         outgoingPrice: action.outgoingPrice?.toString(),

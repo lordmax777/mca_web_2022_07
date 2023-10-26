@@ -10,6 +10,7 @@ final class PostStorageItemAction {
   final int taxId;
   final int? id;
   final double? outgoingPrice;
+  final bool isService;
 
   final bool fetchLists;
 
@@ -18,6 +19,7 @@ final class PostStorageItemAction {
     required this.title,
     required this.price,
     this.outgoingPrice,
+    this.isService = false,
     this.fetchLists = true,
     required this.taxId,
   });

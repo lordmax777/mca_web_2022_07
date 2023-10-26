@@ -16,17 +16,21 @@ class _NewStorageItemPopupState extends State<NewStorageItemPopup>
     with FormsMixin<NewStorageItemPopup> {
   @override
   void initState() {
-    if (widget.model != null) {
-      controller1.text = widget.model!.name;
-      controller2.text = widget.model!.incomingPrice.toString();
-      controller3.text = widget.model!.outgoingPrice.toString();
-      final tax = appStore.state.generalState.lists.taxes
-          .firstWhereOrNull((element) => element.id == widget.model!.taxId);
-      if (tax != null) {
-        selected2 = DefaultMenuItem(id: tax.id, title: tax.rate.toString());
-      }
-    }
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.model != null) {
+        controller1.text = widget.model!.name;
+        controller2.text = widget.model!.incomingPrice.toString();
+        controller3.text = widget.model!.outgoingPrice.toString();
+        final tax = appStore.state.generalState.lists.taxes
+            .firstWhereOrNull((element) => element.id == widget.model!.taxId);
+        if (tax != null) {
+          selected2 = DefaultMenuItem(id: tax.id, title: tax.rate.toString());
+        }
+        checked1 = widget.model!.service;
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -78,6 +82,14 @@ class _NewStorageItemPopupState extends State<NewStorageItemPopup>
                                 setState(() {});
                               },
                             )),
+                        UserCardItem(
+                          checked: checked1,
+                          title: "Service",
+                          onChecked: (value) {
+                            checked1 = value;
+                            setState(() {});
+                          },
+                        )
                       ])
                 ],
               ),
@@ -96,13 +108,24 @@ class _NewStorageItemPopupState extends State<NewStorageItemPopup>
                 context.showError("Please select tax");
                 return;
               }
+              final price = double.tryParse(controller2.text);
+              final outgoingPrice = double.tryParse(controller3.text);
+              if (price == null) {
+                context.showError("Please enter valid price");
+                return;
+              }
+              if (outgoingPrice == null) {
+                context.showError("Please enter valid outgoing price");
+                return;
+              }
               context.futureLoading(() async {
                 final success = await dispatch<int>(PostStorageItemAction(
                   id: widget.model?.id,
                   taxId: selected2!.id,
                   title: controller1.text,
-                  price: double.parse(controller2.text),
-                  outgoingPrice: double.parse(controller3.text),
+                  price: price,
+                  outgoingPrice: outgoingPrice,
+                  isService: checked1,
                 ));
                 if (success.isRight) {
                   context.showError(success.right.message);
