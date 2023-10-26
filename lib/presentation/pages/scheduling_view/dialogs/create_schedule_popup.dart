@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
@@ -471,6 +472,55 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                               ),
                               simpleText: personalData.paymentMethod?.name),
                           ShiftCardItem(
+                              title: "Invoice Period",
+                              isRequired: true,
+                              dropdown: ShiftCardDropdown(
+                                items: [
+                                  for (final item in vm.lists.invoicePeriods)
+                                    DefaultMenuItem(
+                                        id: item.id, title: item.name),
+                                ],
+                                onChanged: (value) {
+                                  final invoicePeriod = vm.lists.invoicePeriods
+                                      .firstWhereOrNull(
+                                          (element) => element.id == value.id);
+                                  if (invoicePeriod != null) {
+                                    personalData.invoicePeriod = invoicePeriod;
+                                    if (mounted) {
+                                      setState(() {});
+                                    }
+                                  }
+                                },
+                                valueId: personalData.invoicePeriod?.id,
+                              )),
+                          ShiftCardItem(
+                            title: 'Invoice Day',
+                            simpleText: personalData.invoiceDay.toString(),
+                            onChanged: (value) {
+                              final number = int.tryParse(value);
+                              if (number == null) {
+                                return;
+                              }
+                              personalData.invoiceDay = number;
+                            },
+                          ),
+                          ShiftCardItem(
+                            title: "Combine Invoices",
+                            checked: personalData.combineInvoices,
+                            onChecked: (value) {
+                              personalData.combineInvoices = value;
+                              updateUI(() {});
+                            },
+                          ),
+                          ShiftCardItem(
+                            title: "Send Invoices",
+                            checked: personalData.sendInvoices,
+                            onChecked: (value) {
+                              personalData.sendInvoices = value;
+                              updateUI(() {});
+                            },
+                          ),
+                          ShiftCardItem(
                               title: "Client Notes",
                               maxLines: 3,
                               simpleText: personalData.notes,
@@ -667,38 +717,177 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                       trailing: IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          onPressed: onEditTiming,
+                          onPressed: null,
                           tooltip: "Edit Timing",
                           color: context.colorScheme.primary,
                           icon: const Icon(Icons.edit_calendar_rounded)),
                       items: [
                         ShiftCardItem(
                           title: "Start Date",
-                          simpleText: timingData.start?.companyFormatDateTime(),
+                          simpleText:
+                              timingData.start?.companyFormatDateTime() ??
+                                  "Select Date",
+                          onSimpleTextTapped: () {
+                            showDatePicker(
+                              context: context,
+                              firstDate:
+                                  kDebugMode ? DateTime(2020) : DateTime.now(),
+                              initialDate: timingData.start ?? DateTime.now(),
+                              lastDate: DateTime(2030),
+                            ).then((value) async {
+                              if (value != null) {
+                                bool isSame = true;
+                                //if res.start is different than timeData.start, then await fetchUnavailableUsers
+                                if (value != timingData.start) {
+                                  isSame = false;
+                                }
+                                timingData.start = value;
+
+                                if (!isSame) {
+                                  await fetchUnavailableUsers();
+                                }
+                                updateUI(() {});
+                              }
+                            });
+                          },
                         ),
                         if (timingData.showAltDate)
                           ShiftCardItem(
                             title: "Alt Start Date",
                             simpleText: timingData.altStartDate
-                                ?.companyFormatDateTime(),
+                                    ?.companyFormatDateTime() ??
+                                "Select Date",
+                            onSimpleTextTapped: () {
+                              showDatePicker(
+                                      context: context,
+                                      firstDate: DateTime.now(),
+                                      initialDate: timingData.altStartDate ??
+                                          DateTime.now(),
+                                      lastDate: DateTime(2030),
+                                      cancelText: "Clear and Close")
+                                  .then((value) {
+                                timingData.altStartDate = value;
+                                updateUI(() {});
+                              });
+                            },
                           ),
                         ShiftCardItem(
-                            title: "Start Time",
-                            simpleText: timingData.startTime?.format(context)),
+                          title: "All Day",
+                          checked: timingData.isAllDay,
+                          onChecked: (value) {
+                            if (value == true) {
+                              timingData.startTime =
+                                  const TimeOfDay(hour: 0, minute: 0);
+                              timingData.endTime =
+                                  const TimeOfDay(hour: 23, minute: 59);
+                            } else {
+                              timingData.startTime = null;
+                              timingData.endTime = null;
+                            }
+                            updateUI(() {});
+                          },
+                        ),
                         ShiftCardItem(
-                            title: "End Time",
-                            simpleText: timingData.endTime?.format(context)),
+                          title: "Start Time",
+                          simpleText: timingData.startTime?.format(context) ??
+                              "Select Time",
+                          onSimpleTextTapped: () {
+                            showTimePicker(
+                              context: context,
+                              initialTime:
+                                  timingData.startTime ?? TimeOfDay.now(),
+                            ).then((value) {
+                              timingData.startTime = value;
+                              updateUI(() {});
+                            });
+                          },
+                        ),
+                        ShiftCardItem(
+                          title: "End Time",
+                          simpleText: timingData.endTime?.format(context) ??
+                              "Select Time",
+                          onSimpleTextTapped: () {
+                            showTimePicker(
+                              context: context,
+                              initialTime:
+                                  timingData.endTime ?? TimeOfDay.now(),
+                            ).then((value) {
+                              timingData.endTime = value;
+                              updateUI(() {});
+                            });
+                          },
+                        ),
                         ShiftCardItem(
                             title: "Repeat",
-                            simpleText: timingData.repeat?.name),
+                            simpleText:
+                                timingData.repeat?.name ?? "Select Repeat",
+                            dropdown: ShiftCardDropdown(
+                              valueId: timingData.repeat?.id,
+                              items: [
+                                for (var item in vm.lists.workRepeats)
+                                  DefaultMenuItem(
+                                    id: item.id,
+                                    title: item.name,
+                                    subtitle: "${item.days} day(s)",
+                                  ),
+                              ],
+                              onChanged: (value) {
+                                timingData.repeat = vm.lists.workRepeats
+                                    .firstWhereOrNull((e) => e.id == value.id);
+                                updateUI(() {});
+                              },
+                            )),
                         if (timingData.showRepeatDays)
                           ShiftCardItem(
-                              title: "Week 1",
-                              simpleText: timingData.week1.toString()),
-                        if (timingData.showWeek2)
-                          ShiftCardItem(
-                              title: "Week 2",
-                              simpleText: timingData.week2.toString()),
+                              customWidget: SpacedRow(
+                            horizontalSpace: 40,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  label('Week 1', isRequired: true),
+                                  for (var item
+                                      in timingData.week1.asMap.entries)
+                                    DefaultCheckbox(
+                                      label: item.key,
+                                      value: item.value,
+                                      onChanged: (value) {
+                                        timingData.week1
+                                            .updateValueByKey(item.key);
+                                        setState(() {});
+                                      },
+                                    ),
+                                ],
+                              ),
+                              if (timingData.showWeek2)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    label('Week 2', isRequired: true),
+                                    if (timingData.showWeek2)
+                                      for (var item
+                                          in timingData.week2.asMap.entries)
+                                        DefaultCheckbox(
+                                          label: item.key,
+                                          value: item.value,
+                                          onChanged: (value) {
+                                            timingData.week2
+                                                .updateValueByKey(item.key);
+                                            setState(() {});
+                                          },
+                                        ),
+                                  ],
+                                )
+                            ],
+                          )),
+                        // if (timingData.showRepeatDays)
+                        //   ShiftCardItem(
+                        //       title: "Week 1",
+                        //       simpleText: timingData.week1.toString()),
+                        // if (timingData.showWeek2)
+                        //   ShiftCardItem(
+                        //       title: "Week 2",
+                        //       simpleText: timingData.week2.toString()),
                         ShiftCardItem(
                           title: "Active",
                           checked: timingData.active,
