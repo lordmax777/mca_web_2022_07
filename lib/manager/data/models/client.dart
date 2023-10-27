@@ -81,6 +81,8 @@ final class ClientMd extends Equatable {
   final int? daysSinceLastJob;
   final int? checklists;
   final int? quotemessages;
+  final bool combineInvoices;
+  final bool sendInvoices;
 
   const ClientMd({
     required this.id,
@@ -110,6 +112,8 @@ final class ClientMd extends Equatable {
     required this.daysSinceLastJob,
     required this.checklists,
     required this.quotemessages,
+    required this.combineInvoices,
+    required this.sendInvoices,
   });
 
   @override
@@ -141,6 +145,8 @@ final class ClientMd extends Equatable {
         quotemessages,
         daysSinceLastJob,
         lastChecklist,
+        sendInvoices,
+        combineInvoices,
       ];
 
   //fromJson
@@ -175,6 +181,8 @@ final class ClientMd extends Equatable {
         lastChecklist: json['lastChecklist'],
         daysSinceLastJob: json['daysSinceLastJob'],
         outstandingBalance: json['outstandingBalance'],
+        combineInvoices: json['combineInvoices'] ?? false,
+        sendInvoices: json['sendInvoices'] ?? false,
       );
     } on TypeError catch (e) {
       print(e.stackTrace);

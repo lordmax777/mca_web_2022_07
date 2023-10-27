@@ -90,6 +90,8 @@ class _ClientsEditDialogState extends State<ClientsEditDialog> {
     invoicePeriod = c.getInvoicePeriod(lists.invoicePeriods);
     invoiceDay = c.invoiceDay?.toString() ?? "";
     isActive = c.active;
+    isCombineInvoices = c.combineInvoices;
+    isSendInvoices = c.sendInvoices;
 
     setState(() {});
   }
