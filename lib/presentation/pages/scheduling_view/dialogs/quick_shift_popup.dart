@@ -353,7 +353,13 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
                                           name:
                                               "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.fullname}",
                                           specialRate: e.specialPrice,
-                                          specialStartTime: e.specialTime,
+                                          specialStartTime: e.specialStartTime,
+                                          onSpecialFinishTimeChanged: (time) {
+                                            e.specialFinishTime = time;
+                                            updateUI(() {});
+                                          },
+                                          specialFinishTime:
+                                              e.specialFinishTime,
                                           onDeleted: () {
                                             teamData.users.remove(e);
                                             updateUI(() {});
@@ -362,7 +368,7 @@ class _QuickShiftPopupState extends State<QuickShiftPopup> {
                                             e.specialPrice = rate;
                                           },
                                           onSpecialStartTimeChanged: (time) {
-                                            e.specialTime = time;
+                                            e.specialStartTime = time;
                                             updateUI(() {});
                                           },
                                         ),

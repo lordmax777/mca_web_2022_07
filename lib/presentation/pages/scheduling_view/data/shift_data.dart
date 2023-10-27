@@ -213,8 +213,8 @@ class PersonalData extends Equatable {
       shiftId: shiftId,
       invoicePeriod: client.getInvoicePeriod(invoicePeriods),
       invoiceDay: client.invoiceDay ?? 0,
-      sendInvoices: false,
-      combineInvoices: false,
+      sendInvoices: client.sendInvoices,
+      combineInvoices: client.combineInvoices,
       fax: client.fax ?? "",
     );
   }

@@ -913,12 +913,14 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         ///"user_id": 1,
         ///"special_rate": 0.5,
         ///"special_start_time": "09:00",
+        ///"special_finish_time": "09:00",
         /// ]
         final teamList = team.users
             .map((e) => {
                   "user_id": e.id,
                   "special_rate": e.specialPrice,
-                  "special_start_time": e.specialTime?.toApiTime,
+                  "special_start_time": e.specialStartTime?.toApiTime,
+                  "special_finish_time": e.specialFinishTime?.toApiTime,
                 }..removeWhere((key, value) => value == null))
             .toList();
 

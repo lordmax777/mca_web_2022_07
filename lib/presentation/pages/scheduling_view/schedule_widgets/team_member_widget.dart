@@ -5,18 +5,22 @@ import 'package:mca_dashboard/utils/utils.dart';
 class TeamMemberWidget extends StatefulWidget {
   final String name;
   final TimeOfDay? specialStartTime;
+  final TimeOfDay? specialFinishTime;
   final double? specialRate;
   final ValueChanged<double> onSpecialRateChanged;
   final ValueChanged<TimeOfDay?> onSpecialStartTimeChanged;
+  final ValueChanged<TimeOfDay?> onSpecialFinishTimeChanged;
   final VoidCallback? onDeleted;
   const TeamMemberWidget({
     super.key,
     required this.name,
     required this.onDeleted,
     this.specialStartTime,
+    this.specialFinishTime,
     this.specialRate,
     required this.onSpecialRateChanged,
     required this.onSpecialStartTimeChanged,
+    required this.onSpecialFinishTimeChanged,
   });
 
   @override
@@ -48,24 +52,53 @@ class _TeamMemberWidgetState extends State<TeamMemberWidget> {
               )),
           //Special Start Time
           const SizedBox(width: 8),
-          TextButton(
-              onPressed: () async {
-                final res = await showTimePicker(
-                    context: context,
-                    initialTime: widget.specialStartTime ?? TimeOfDay.now());
-                if (res != null) {
-                  widget.onSpecialStartTimeChanged(res);
-                  if (mounted) {
-                    setState(() {});
-                  }
-                }
-              },
-              style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 12)),
-              child: Text(
-                  widget.specialStartTime?.format(context) ??
-                      "Special\nStart Time",
-                  textAlign: TextAlign.center)),
+          Column(
+            children: [
+              const Text("Special Start Time"),
+              TextButton(
+                  onPressed: () async {
+                    final res = await showTimePicker(
+                        context: context,
+                        initialTime:
+                            widget.specialStartTime ?? TimeOfDay.now());
+                    if (res != null) {
+                      widget.onSpecialStartTimeChanged(res);
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 12)),
+                  child: Text(
+                      widget.specialStartTime?.format(context) ?? "Select",
+                      textAlign: TextAlign.center)),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Column(
+            children: [
+              const Text("Special Finish Time"),
+              TextButton(
+                  onPressed: () async {
+                    final res = await showTimePicker(
+                        context: context,
+                        initialTime:
+                            widget.specialFinishTime ?? TimeOfDay.now());
+                    if (res != null) {
+                      widget.onSpecialFinishTimeChanged(res);
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 12)),
+                  child: Text(
+                      widget.specialFinishTime?.format(context) ?? "Select",
+                      textAlign: TextAlign.center)),
+            ],
+          ),
         ],
       ),
       //Special Price

@@ -71,7 +71,8 @@ final class UserMd extends Equatable {
 
   bool get isAllResource => id == -1;
 
-  TimeOfDay? specialTime;
+  TimeOfDay? specialStartTime;
+  TimeOfDay? specialFinishTime;
 
   double? specialPrice;
 
@@ -134,7 +135,8 @@ final class UserMd extends Equatable {
     bool? locationAdmin,
     String? fullname,
     double? specialPrice,
-    TimeOfDay? specialTime,
+    TimeOfDay? specialStartTime,
+    TimeOfDay? specialFinishTime,
   }) {
     return UserMd(
       id: id ?? this.id,
@@ -148,7 +150,8 @@ final class UserMd extends Equatable {
       locationAdmin: locationAdmin ?? this.locationAdmin,
       fullname: fullname ?? this.fullname,
       specialPrice: specialPrice ?? this.specialPrice,
-      specialTime: specialTime ?? this.specialTime,
+      specialStartTime: specialStartTime ?? this.specialStartTime,
+      specialFinishTime: specialFinishTime ?? this.specialFinishTime,
     );
   }
 
@@ -163,7 +166,8 @@ final class UserMd extends Equatable {
     required this.locationId,
     required this.lastName,
     required this.fullname,
-    this.specialTime,
+    this.specialStartTime,
+    this.specialFinishTime,
     this.specialPrice,
   });
 
@@ -200,8 +204,9 @@ final class UserMd extends Equatable {
         lastName,
         fullname,
         locationId,
-        specialTime,
         specialPrice,
+        specialStartTime,
+        specialFinishTime,
       ];
 }
 

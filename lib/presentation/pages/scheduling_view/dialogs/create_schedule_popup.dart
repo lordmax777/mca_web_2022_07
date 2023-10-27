@@ -127,7 +127,8 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                 ?.copyWith();
             if (userMd != null) {
               userMd.specialPrice = user.specialRate?.toDouble();
-              userMd.specialTime = user.specialStartTimeDt;
+              userMd.specialStartTime = user.specialStartTimeDt;
+              userMd.specialFinishTime = user.specialFinishTimeDt;
               teamData.users.add(userMd);
             }
           }
@@ -1055,7 +1056,8 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                 name:
                                     "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.fullname}",
                                 specialRate: e.specialPrice,
-                                specialStartTime: e.specialTime,
+                                specialStartTime: e.specialStartTime,
+                                specialFinishTime: e.specialFinishTime,
                                 onDeleted: () {
                                   teamData.users.remove(e);
                                   updateUI(() {});
@@ -1064,7 +1066,11 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                   e.specialPrice = rate;
                                 },
                                 onSpecialStartTimeChanged: (time) {
-                                  e.specialTime = time;
+                                  e.specialStartTime = time;
+                                  updateUI(() {});
+                                },
+                                onSpecialFinishTimeChanged: (time) {
+                                  e.specialFinishTime = time;
                                   updateUI(() {});
                                 },
                               ),
