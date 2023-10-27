@@ -372,7 +372,11 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                 }
                                 personalData.clientId = value.id;
                                 shiftData = shiftData.copyWith(
-                                  addressData: AddressData(),
+                                  addressData: client != null
+                                      ? AddressData().copyFromAddress(
+                                          client.address,
+                                          countries: vm.lists.countries)
+                                      : null,
                                   workAddressData:
                                       !shiftData.isQuote ? null : AddressData(),
                                 );
@@ -566,48 +570,52 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                       trailing: IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          onPressed: () => onAddAddress(isEditOnly: isQuote),
+                          onPressed: isQuote
+                              ? () => onAddAddress(isEditOnly: isQuote)
+                              : null,
                           tooltip: "${isQuote ? "Edit" : "Add"} Address",
                           color: context.colorScheme.primary,
                           icon: Icon(isQuote
                               ? Icons.edit_location_alt_rounded
                               : Icons.add_location_alt_rounded)),
-                      dropdown: personalData.clientId == null
-                          ? null
-                          : ShiftCardDropdown(
-                              label: "Locations",
-                              items: locations.map((e) => DefaultMenuItem(
-                                    id: e.id,
-                                    title: e.name,
-                                    subtitle: e.address.toAddressStr(),
-                                  )),
-                              valueId: addressData.locationId,
-                              onChanged: (value) {
-                                updateUI(() {
-                                  final location = vm.locations
-                                      .firstWhereOrNull(
-                                          (element) => element.id == value.id);
-                                  if (location != null) {
-                                    addressData.line1 = location.address.line1;
-                                    addressData.line2 = location.address.line2;
-                                    addressData.city = location.address.city;
-                                    addressData.county =
-                                        location.address.county;
-                                    addressData.country = location.address
-                                        .getCountryMd(vm.lists.countries);
-                                    addressData.postcode =
-                                        location.address.postcode;
-                                    addressData.email = location.email;
-                                    addressData.phoneNumber =
-                                        location.phone.mobile;
-                                    addressData.longitude =
-                                        location.address.longitude?.toDouble();
-                                    addressData.latitude =
-                                        location.address.latitude?.toDouble();
-                                  }
-                                  addressData.locationId = value.id;
-                                });
-                              }),
+                      dropdown: null,
+                      // personalData.clientId == null
+                      //     ? null
+                      //     :
+                      // ShiftCardDropdown(
+                      //         label: "Locations",
+                      //         items: locations.map((e) => DefaultMenuItem(
+                      //               id: e.id,
+                      //               title: e.name,
+                      //               subtitle: e.address.toAddressStr(),
+                      //             )),
+                      //         valueId: addressData.locationId,
+                      //         onChanged: (value) {
+                      //           updateUI(() {
+                      //             final location = vm.locations
+                      //                 .firstWhereOrNull(
+                      //                     (element) => element.id == value.id);
+                      //             if (location != null) {
+                      //               addressData.line1 = location.address.line1;
+                      //               addressData.line2 = location.address.line2;
+                      //               addressData.city = location.address.city;
+                      //               addressData.county =
+                      //                   location.address.county;
+                      //               addressData.country = location.address
+                      //                   .getCountryMd(vm.lists.countries);
+                      //               addressData.postcode =
+                      //                   location.address.postcode;
+                      //               addressData.email = location.email;
+                      //               addressData.phoneNumber =
+                      //                   location.phone.mobile;
+                      //               addressData.longitude =
+                      //                   location.address.longitude?.toDouble();
+                      //               addressData.latitude =
+                      //                   location.address.latitude?.toDouble();
+                      //             }
+                      //             addressData.locationId = value.id;
+                      //           });
+                      //         }),
                       items: [
                         ShiftCardItem(
                             title: "Address Line 1",
