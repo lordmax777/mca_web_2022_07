@@ -63,7 +63,7 @@ class _PropertiesViewState extends State<PropertiesView>
           ),
           ElevatedButton(
             onPressed: () => onEdit((p0) => NewPropertyPopup(model: p0), null),
-            child: const Text("Create Property"),
+            child: Text("Create ${appStore.state.generalState.propertyName}"),
           ),
         ],
       ),
@@ -82,7 +82,7 @@ class _PropertiesViewState extends State<PropertiesView>
   @override
   List<PlutoColumn> get columns => [
         PlutoColumn(
-          title: "Property Name",
+          title: "${appStore.state.generalState.propertyName} Name",
           field: "name",
           enableRowChecked: true,
           type: PlutoColumnType.text(),
@@ -166,11 +166,11 @@ class _PropertiesViewState extends State<PropertiesView>
       final id = row.cells['action']!.value.id;
       final res = await dispatch<bool>(DeletePropertyAction(id));
       if (res.isRight) {
-        delFailed.add(row.cells['name']!.value);
+        delFailed.add(row.cells['name']!.value + " (${res.right.message})");
       }
     }
     if (delFailed.isNotEmpty) {
-      context.showError("Failed to delete ${delFailed.join(", ")}");
+      context.showError("Failed to delete\n${delFailed.join("\n")}");
     }
     return delFailed.isEmpty;
   }

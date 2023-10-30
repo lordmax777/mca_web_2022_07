@@ -30,14 +30,16 @@ class _WarehousesViewState extends State<WarehousesView>
               if (stateManager!.hasFocus) {
                 stateManager?.gridFocusNode.removeListener(handleFocus);
               }
+              final warehouse = p0.row!.cells["action"]!.value;
               switch (p0.cell?.column.field) {
                 case "linkedProperties":
-                  final warehouse = p0.row!.cells["action"]!.value;
                   if (warehouse is WarehouseMd) {
                     context.showDialog(
                         WarehousePropertiesPopup(warehouse: warehouse));
                   }
                   break;
+                case "inventory":
+                  onCheckInventory(warehouse);
               }
               logger(p0.cell?.value);
             },
@@ -75,6 +77,7 @@ class _WarehousesViewState extends State<WarehousesView>
         "contactName": PlutoCell(value: model.contactName),
         "contactEmail": PlutoCell(value: model.contactEmail),
         "linkedProperties": PlutoCell(value: model.properties.length),
+        "inventory": PlutoCell(value: model),
         "action": PlutoCell(value: model),
       },
     );
@@ -119,6 +122,15 @@ class _WarehousesViewState extends State<WarehousesView>
           },
         ),
         PlutoColumn(
+          title: "Inventory",
+          field: "inventory",
+          width: 40,
+          type: PlutoColumnType.number(format: "#,###"),
+          renderer: (rendererContext) {
+            return const Icon(Icons.inventory);
+          },
+        ),
+        PlutoColumn(
           title: "Action",
           field: "action",
           type: PlutoColumnType.text(),
@@ -126,6 +138,8 @@ class _WarehousesViewState extends State<WarehousesView>
           textAlign: PlutoColumnTextAlign.center,
           width: 60,
           renderer: (rendererContext) {
+            final deleteable = rendererContext.cell.value.deleteable;
+
             return PopupMenuButton(
               offset: const Offset(0, 40),
               padding: const EdgeInsets.all(0),
@@ -140,16 +154,17 @@ class _WarehousesViewState extends State<WarehousesView>
                     ],
                   ),
                 ),
-                PopupMenuItem(
-                  value: 2,
-                  child: SpacedRow(
-                    horizontalSpace: 10,
-                    children: const [
-                      Icon(Icons.delete),
-                      Text("Delete"),
-                    ],
+                if (deleteable)
+                  PopupMenuItem(
+                    value: 2,
+                    child: SpacedRow(
+                      horizontalSpace: 10,
+                      children: const [
+                        Icon(Icons.delete),
+                        Text("Delete"),
+                      ],
+                    ),
                   ),
-                ),
                 PopupMenuItem(
                   value: 3,
                   child: SpacedRow(
@@ -207,11 +222,11 @@ class _WarehousesViewState extends State<WarehousesView>
       final id = row.cells['action']!.value.id;
       final res = await dispatch<bool>(DeleteWarehouseAction(id));
       if (res.isRight) {
-        delFailed.add(row.cells['name']!.value);
+        delFailed.add(row.cells['name']!.value + " (${res.right.message})");
       }
     }
     if (delFailed.isNotEmpty) {
-      context.showError("Failed to delete ${delFailed.join(", ")}");
+      context.showError("Failed to delete\n${delFailed.join("\n")}");
     }
     return delFailed.isEmpty;
   }

@@ -426,9 +426,8 @@ abstract class ApiClient {
     @Field() required bool expire,
   });
 
-  @DELETE("/api/fe/qualifications")
-  Future<HttpResponse> deleteQualification(
-      @Query("qualificationid") int qualificationid);
+  @DELETE("/api/fe/qualifications/{id}")
+  Future<HttpResponse> deleteQualification(@Path("id") int qualificationid);
 
   @POST("/api/fe/warehouses/{id}")
   @FormUrlEncoded()

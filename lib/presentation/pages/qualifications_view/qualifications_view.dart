@@ -101,12 +101,15 @@ class _QualificationsViewState extends State<QualificationsView>
           textAlign: PlutoColumnTextAlign.center,
           width: 60,
           renderer: (rendererContext) {
+            final deletable = rendererContext.cell.value.deleteable;
             return rendererContext.actionMenuWidget(
-              onDelete: () {
-                onDelete(() async {
-                  return await deleteSelected(rendererContext.row);
-                }, showError: false);
-              },
+              onDelete: !deletable
+                  ? null
+                  : () {
+                      onDelete(() async {
+                        return await deleteSelected(rendererContext.row);
+                      }, showError: false);
+                    },
               onEdit: () => onEdit((p0) => NewQualificationPopup(model: p0),
                   rendererContext.cell.value),
             );
@@ -137,11 +140,11 @@ class _QualificationsViewState extends State<QualificationsView>
       final id = row.cells['action']!.value.id;
       final res = await dispatch<bool>(DeleteQualificationAction(id));
       if (res.isRight) {
-        delFailed.add(row.cells['name']!.value);
+        delFailed.add(row.cells['name']!.value + " (${res.right.message})");
       }
     }
     if (delFailed.isNotEmpty) {
-      context.showError("Failed to delete ${delFailed.join(", ")}");
+      context.showError("Failed to delete\n${delFailed.join("\n")}");
     }
     return delFailed.isEmpty;
   }

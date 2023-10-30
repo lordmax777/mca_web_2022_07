@@ -21,7 +21,7 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
   late PersonalData data;
   late AddressData addressData;
   final _formKey = GlobalKey<FormState>();
-  bool deliverDifferentLocation = false;
+  bool deliverDifferentLocation = true;
   String? currentIpAddress;
 
   @override
@@ -241,8 +241,6 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                         setState(() {});
                       }
                     }),
-                const SizedBox(height: 8),
-                label('Address Search', isRequired: true),
                 const SizedBox(height: 8),
                 label("Notes"),
                 DefaultTextField(

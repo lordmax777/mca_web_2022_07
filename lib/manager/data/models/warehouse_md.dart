@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-
 final class WarehouseMd extends Equatable {
   //{
   //             "id": 113,
@@ -25,6 +24,7 @@ final class WarehouseMd extends Equatable {
   final String contactEmail;
   final bool sendReport;
   final List<WarehousePropertyMd> properties;
+  final bool deleteable;
 
   const WarehouseMd({
     required this.id,
@@ -34,6 +34,7 @@ final class WarehouseMd extends Equatable {
     required this.contactEmail,
     required this.sendReport,
     required this.properties,
+    required this.deleteable,
   });
 
   @override
@@ -45,6 +46,7 @@ final class WarehouseMd extends Equatable {
         contactEmail,
         sendReport,
         properties,
+        deleteable,
       ];
 
 //from json
@@ -60,6 +62,7 @@ final class WarehouseMd extends Equatable {
           ? []
           : List<WarehousePropertyMd>.from(
               json["properties"].map((x) => WarehousePropertyMd.fromJson(x))),
+      deleteable: json['deleteable'] ?? false,
     );
   }
 }

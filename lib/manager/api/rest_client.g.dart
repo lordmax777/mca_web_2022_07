@@ -1716,9 +1716,7 @@ class _ApiClient implements ApiClient {
   @override
   Future<HttpResponse<dynamic>> deleteQualification(qualificationid) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'qualificationid': qualificationid
-    };
+    final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =
@@ -1729,7 +1727,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/api/fe/qualifications',
+              '/api/fe/qualifications/${qualificationid}',
               queryParameters: queryParameters,
               data: _data,
             )

@@ -199,17 +199,19 @@ final class GroupMd extends Equatable {
   final int id;
   final String name;
   final bool active;
+  final bool deleteable;
 
-  const GroupMd({required this.id, required this.name, required this.active});
+  const GroupMd({required this.id, required this.name, required this.active, required this.deleteable});
 
   @override
-  List<Object?> get props => [id, name, active];
+  List<Object?> get props => [id, name, active, deleteable];
 
   factory GroupMd.fromJson(Map<String, dynamic> json) {
     return GroupMd(
       id: json['id'] as int,
       name: json['name'] ?? "",
       active: json['active'] ?? false,
+      deleteable: json['deleteable'] ?? false,
     );
   }
 }
@@ -255,18 +257,20 @@ final class JobTitleMd extends Equatable {
   final int id;
   final String name;
   final bool active;
+  final bool deleteable;
 
   const JobTitleMd(
-      {required this.id, required this.name, required this.active});
+      {required this.id, required this.name, required this.active, required this.deleteable});
 
   @override
-  List<Object?> get props => [id, name, active];
+  List<Object?> get props => [id, name, active, deleteable];
 
   factory JobTitleMd.fromJson(Map<String, dynamic> json) {
     return JobTitleMd(
       id: json['id'] as int,
       name: json['name'] ?? "",
       active: json['active'] ?? false,
+      deleteable: json['deleteable'] ?? false,
     );
   }
 }
@@ -363,16 +367,17 @@ final class QualificationMd extends Equatable {
   final String comments;
   final bool expire;
   final bool levels;
+  final bool deleteable;
 
   const QualificationMd(
       {required this.id,
       required this.title,
       required this.comments,
       required this.expire,
-      required this.levels});
+      required this.levels, required this.deleteable});
 
   @override
-  List<Object?> get props => [id, title, comments, expire, levels];
+  List<Object?> get props => [id, title, comments, expire, levels,  deleteable];
 
   factory QualificationMd.fromJson(Map<String, dynamic> json) {
     return QualificationMd(
@@ -381,6 +386,7 @@ final class QualificationMd extends Equatable {
       comments: json['comments'] ?? "",
       expire: json['expire'] ?? false,
       levels: json['levels'] ?? "",
+      deleteable: json['deleteable'] ?? false,
     );
   }
 }

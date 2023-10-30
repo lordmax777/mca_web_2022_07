@@ -8,7 +8,6 @@ import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/transfe
 import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/view_stock_history_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-
 class WarehouseInventoryPopup extends StatefulWidget {
   const WarehouseInventoryPopup({super.key, required this.model});
 
@@ -64,6 +63,18 @@ class _WarehouseInventoryPopupState extends State<WarehouseInventoryPopup>
           title: "Current Stock",
           field: "currentStock",
           type: PlutoColumnType.number(),
+          renderer: (rendererContext) {
+            final model = rendererContext.row.cells['action']!.value as StockMd;
+            final current = rendererContext.cell.value as int;
+            final min = model.minimum ?? 0;
+            final bool isLow = current < min;
+            return Text(
+              "$current (Min $min)",
+              style: TextStyle(
+                color: isLow ? Colors.red : Colors.black,
+              ),
+            );
+          },
         ),
         PlutoColumn(
           title: "Last Updated",

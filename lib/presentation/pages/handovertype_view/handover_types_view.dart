@@ -121,11 +121,11 @@ class _HandoverTypesViewState extends State<HandoverTypesView>
       final id = row.cells['action']!.value.id;
       final res = await dispatch<bool>(DeleteHandoverTypeAction(id));
       if (res.isRight) {
-        delFailed.add(row.cells['name']!.value);
+        delFailed.add(row.cells['name']!.value + " (${res.right.message})");
       }
     }
     if (delFailed.isNotEmpty) {
-      context.showError("Failed to delete ${delFailed.join(", ")}");
+      context.showError("Failed to delete\n${delFailed.join("\n")}");
     }
     return delFailed.isEmpty;
   }

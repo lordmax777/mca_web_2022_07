@@ -18,6 +18,7 @@ extension ApiResponseExtension on Response {
   String? get handleApiErrorMessage {
     try {
       final data = this.data is String ? jsonDecode(this.data) : this.data;
+      final code = statusCode;
       if (data is Map && data.containsKey("error_description")) {
         return data["error_description"];
       } else if (data is Map && data.containsKey("errors")) {

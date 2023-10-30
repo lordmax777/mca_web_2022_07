@@ -310,7 +310,7 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                   isRequired: !checked2,
                                 ),
                                 UserCardItem(
-                                  title: "Radius",
+                                  title: "Radius(meters)",
                                   controller: controller14,
                                   isRequired: !checked2,
                                 ),

@@ -265,11 +265,11 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
       final id = row.cells['action']!.value.id;
       final res = await dispatch<bool>(DeletePropertyStaffAction(data.id!, id));
       if (res.isRight) {
-        delFailed.add(row.cells['name']!.value);
+        delFailed.add(row.cells['name']!.value + " (${res.right.message})");
       }
     }
     if (delFailed.isNotEmpty) {
-      context.showError("Failed to delete ${delFailed.join(", ")}");
+      context.showError("Failed to delete\n${delFailed.join("\n")}");
     }
     return delFailed.isEmpty;
   }

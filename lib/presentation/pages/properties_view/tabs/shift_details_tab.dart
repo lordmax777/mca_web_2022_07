@@ -40,7 +40,8 @@ class ShiftDetailsTab extends StatelessWidget {
                       title: "Shift Details",
                       items: [
                         UserCardItem(
-                          title: "Property name",
+                          title:
+                              "${appStore.state.generalState.propertyName} name",
                           isRequired: true,
                           controller: data.propertyName,
                         ),

@@ -147,19 +147,27 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
           width: 20,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
+            final deletable = rendererContext.cell.value.deleteable;
+
             return rendererContext.actionMenuWidget(
               onEdit: () {
                 onEdit((p0) => NewDepPopup(jobTitle: p0),
                     rendererContext.row.cells["action"]!.value);
               },
-              onDelete: () {
-                final id = rendererContext.row.cells["action"]!.value.id;
-                onDelete(() async {
-                  final success =
-                      await dispatch<bool>(DeleteJobTitleAction(id));
-                  return success.isLeft && success.left;
-                });
-              },
+              onDelete: !deletable
+                  ? null
+                  : () {
+                      final id = rendererContext.row.cells["action"]!.value.id;
+                      onDelete(() async {
+                        final success =
+                            await dispatch<bool>(DeleteJobTitleAction(id));
+                        if (success.isRight) {
+                          context.showError(
+                              "Failed to delete\n${success.right.message}");
+                        }
+                        return success.isLeft && success.left;
+                      }, showError: false);
+                    },
             );
           },
         ),
@@ -183,18 +191,26 @@ class _DepsAndGroupsWrapperState extends State<DepsAndGroupsWrapper>
           width: 20,
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
+            final deletable = rendererContext.cell.value.deleteable;
             return rendererContext.actionMenuWidget(
               onEdit: () {
                 onEdit1((p0) => NewGroupPopup(model: p0),
                     rendererContext.row.cells["action"]!.value);
               },
-              onDelete: () {
-                final id = rendererContext.row.cells["action"]!.value.id;
-                onDelete1(() async {
-                  final success = await dispatch<bool>(DeleteGroupAction(id));
-                  return success.isLeft && success.left;
-                });
-              },
+              onDelete: !deletable
+                  ? null
+                  : () {
+                      final id = rendererContext.row.cells["action"]!.value.id;
+                      onDelete1(() async {
+                        final success =
+                            await dispatch<bool>(DeleteGroupAction(id));
+                        if (success.isRight) {
+                          context.showError(
+                              "Failed to delete\n${success.right.message}");
+                        }
+                        return success.isLeft && success.left;
+                      }, showError: false);
+                    },
             );
           },
         ),
