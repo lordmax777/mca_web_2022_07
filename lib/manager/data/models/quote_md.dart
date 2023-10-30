@@ -133,6 +133,7 @@ final class QuoteMd extends Equatable {
   final String? workStartTime;
   TimeOfDay? get workStartTimeDt {
     if (workStartTime == null) return null;
+    if (workStartTime!.isEmpty) return null;
     final List<String> time = workStartTime!.split(':');
     return TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1]));
   }
@@ -140,6 +141,7 @@ final class QuoteMd extends Equatable {
   final String? workFinishTime;
   TimeOfDay? get workFinishTimeDt {
     if (workFinishTime == null) return null;
+    if (workFinishTime!.isEmpty) return null;
     final List<String> time = workFinishTime!.split(':');
     return TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1]));
   }
