@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
@@ -77,6 +78,15 @@ class GeneralState extends Equatable {
   }
 
   final List<LanguageMd> languages;
+
+  PaymentMethodMd? get defaultPaymentMethod {
+    return lists.paymentMethods.firstWhereOrNull(
+        (element) => element.id == companyInfo.paymentMethodId);
+  }
+
+  CurrencyMd get defaultCurrency {
+    return companyInfo.currency;
+  }
 
   const GeneralState({
     required this.formatMd,

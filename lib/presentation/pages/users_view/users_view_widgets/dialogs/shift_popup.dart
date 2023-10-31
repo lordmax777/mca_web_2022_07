@@ -42,6 +42,13 @@ class _ShiftPopupState extends State<ShiftPopup> with FormsMixin<ShiftPopup> {
       ),
       content: StoreConnector<AppState, GeneralState>(
         converter: (store) => store.state.generalState,
+        onInit: (store) {
+          final weeks = store.state.generalState.companyInfo.weeks;
+          if (weeks.length == 1) {
+            selected1 =
+                DefaultMenuItem(id: weeks.first, title: weeks.first.toString());
+          }
+        },
         builder: (context, vm) {
           final weeks = vm.companyInfo.weeks;
           final shifts =
@@ -54,24 +61,25 @@ class _ShiftPopupState extends State<ShiftPopup> with FormsMixin<ShiftPopup> {
               verticalSpace: 32.0,
               children: [
                 UserCard(title: "", items: [
-                  UserCardItem(
-                    title: "Week",
-                    isRequired: true,
-                    dropdown: UserCardDropdown(
-                        valueId: selected1?.id,
-                        items: [
-                          for (var week in weeks)
-                            DefaultMenuItem(
-                              id: week,
-                              title: week.toString(),
-                            )
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selected1 = value;
-                          });
-                        }),
-                  ),
+                  if (weeks.length > 1)
+                    UserCardItem(
+                      title: "Week",
+                      isRequired: true,
+                      dropdown: UserCardDropdown(
+                          valueId: selected1?.id,
+                          items: [
+                            for (var week in weeks)
+                              DefaultMenuItem(
+                                id: week,
+                                title: week.toString(),
+                              )
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              selected1 = value;
+                            });
+                          }),
+                    ),
                   UserCardItem(
                     title: "Day",
                     isRequired: true,

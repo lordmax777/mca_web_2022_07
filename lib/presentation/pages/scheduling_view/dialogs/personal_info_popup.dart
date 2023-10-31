@@ -22,6 +22,7 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
   late AddressData addressData;
   final _formKey = GlobalKey<FormState>();
   bool deliverDifferentLocation = true;
+  bool createLocationWarehouse = true;
   String? currentIpAddress;
 
   @override
@@ -34,6 +35,8 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
           name: kDebugMode ? "shohi" : "",
           companyName: kDebugMode ? "boqivoycorp" : "",
           paymentDays: kDebugMode ? 22 : 0,
+          paymentMethod: appStore.state.generalState.defaultPaymentMethod,
+          currency: appStore.state.generalState.defaultCurrency,
         );
     addressData = AddressData(
       city: kDebugMode ? "Tashkent" : "",
@@ -64,7 +67,7 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
         final paymentMethods = [...vm.paymentMethods];
         final invoicePeriods = [...vm.invoicePeriods];
         return AlertDialog(
-          title: const Text('Add Address'),
+          title: const Text('Add New Client'),
           scrollable: true,
           content: Form(
             key: _formKey,
@@ -170,7 +173,8 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                       }
                     }
                   },
-                  valueId: data.currency?.id,
+                  valueId: data.currency?.id ??
+                      appStore.state.generalState.defaultCurrency.id,
                 ),
                 const SizedBox(height: 8),
                 label("Payment Method", isRequired: true),
@@ -190,7 +194,8 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                       }
                     }
                   },
-                  valueId: data.paymentMethod?.id,
+                  valueId: data.paymentMethod?.id ??
+                      appStore.state.generalState.defaultPaymentMethod?.id,
                 ),
                 const SizedBox(height: 8),
                 label("Invoice Period", isRequired: true),
@@ -353,6 +358,16 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                         setState(() {});
                       }
                     }),
+                const SizedBox(height: 8),
+                label('Create Warehouse at this location'),
+                DefaultSwitch(
+                    value: createLocationWarehouse,
+                    onChanged: (value) {
+                      createLocationWarehouse = value;
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }),
                 if (!deliverDifferentLocation) ...[
                   const SizedBox(height: 8),
                   label("Fixed IP Address"),
@@ -448,12 +463,16 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                       //success
                       //find new client
                       //assign to data
+                      //create warehouse
                       //close dialog using context.pop(data);
                       addressData = res;
                       data = data.copyFromClient(newClient,
                           currencies: currencies,
                           paymentMethods: paymentMethods,
                           invoicePeriods: invoicePeriods);
+                      if (createLocationWarehouse) {
+                        await _createWarehouse();
+                      }
                       context.pop({"personal": data, "address": addressData});
                     }
                   } else {
@@ -467,7 +486,10 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
                         currencies: currencies,
                         paymentMethods: paymentMethods,
                         invoicePeriods: invoicePeriods);
-                    context.pop({"personal": data});
+                    if (createLocationWarehouse) {
+                      await _createWarehouse();
+                    }
+                    context.pop({"personal": data, "address": addressData});
                   }
                 }
               },
@@ -477,6 +499,14 @@ class _PersonalInfoPopupState extends State<PersonalInfoPopup> {
         );
       },
     );
+  }
+
+  Future<void> _createWarehouse() async {
+    await dispatch(PostWarehouseAction(
+      name: addressData.line1,
+      contactName: data.name,
+      contactEmail: data.email,
+    ));
   }
 
   Future<ClientMd?> createClient(

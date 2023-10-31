@@ -387,14 +387,16 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                           ShiftCardItem(
                               title: "Name",
                               simpleText: personalData.name,
-                              onChanged: isQuote
-                                  ? (value) {
-                                      personalData.name = value;
-                                    }
-                                  : null),
+                              onChanged: (value) {
+                                personalData.name = value;
+                              }),
                           ShiftCardItem(
-                              title: "Company",
-                              simpleText: personalData.companyName),
+                            title: "Company",
+                            simpleText: personalData.companyName,
+                            onChanged: (value) {
+                              personalData.companyName = value;
+                            },
+                          ),
                           ShiftCardItem(
                               title: "Email",
                               simpleText: personalData.email,
@@ -408,7 +410,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                 personalData.phone = value;
                               }),
                           ShiftCardItem(
-                              title: "Payment Terms",
+                              title: "Payment terms\n(number of days)",
                               onChanged: (value) {
                                 final number = int.tryParse(value) ?? 0;
                                 personalData.paymentDays = number;
@@ -460,11 +462,9 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                         title: appStore.state.generalState.lists
                                             .paymentMethods[i].name)
                                 ],
-                                valueId: personalData.paymentMethod != null
-                                    ? appStore
-                                        .state.generalState.lists.paymentMethods
-                                        .indexOf(personalData.paymentMethod!)
-                                    : null,
+                                valueId: personalData.paymentMethod?.id ??
+                                    appStore.state.generalState
+                                        .defaultPaymentMethod?.id,
                                 onChanged: (value) {
                                   updateUI(() {
                                     personalData.paymentMethod = appStore
@@ -533,7 +533,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                 personalData.notes = value;
                               }),
                         ],
-                        title: "Personal Info",
+                        title: "Client Information",
                         trailing: IconButton(
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
@@ -642,14 +642,34 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                       ShiftCard(
                         width: context.width * .4,
                         title: "Work Address",
-                        trailing: IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () => onAddAddress(
-                                isWorkAddress: true, isEditOnly: true),
-                            tooltip: "Edit Address",
-                            color: context.colorScheme.primary,
-                            icon: const Icon(Icons.edit_location_alt_rounded)),
+                        // trailing: IconButton(
+                        //     padding: EdgeInsets.zero,
+                        //     constraints: const BoxConstraints(),
+                        //     onPressed: () => onAddAddress(
+                        //         isWorkAddress: true, isEditOnly: true),
+                        //     tooltip: "Edit Address",
+                        //     color: context.colorScheme.primary,
+                        //     icon: const Icon(Icons.edit_location_alt_rounded)),
+                        trailing: TextButton.icon(
+                          onPressed: () {
+                            workAddressData!.name = addressData.name;
+                            workAddressData!.line1 = addressData.line1;
+                            workAddressData!.line2 = addressData.line2;
+                            workAddressData!.city = addressData.city;
+                            workAddressData!.county = addressData.county;
+                            workAddressData!.country = addressData.country;
+                            workAddressData!.postcode = addressData.postcode;
+                            workAddressData!.email = addressData.email;
+                            workAddressData!.phoneNumber =
+                                addressData.phoneNumber;
+                            workAddressData!.longitude = addressData.longitude;
+                            workAddressData!.latitude = addressData.latitude;
+                            updateUI(() {});
+                          },
+                          label: const Text("Work address same as"),
+                          icon: const Icon(Icons.copy_rounded),
+                        ),
+
                         dropdown: personalData.clientId == null
                             ? null
                             : ShiftCardDropdown(
@@ -694,20 +714,60 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                         items: [
                           ShiftCardItem(
                               title: "Address Line 1",
+                              onChanged: (value) {
+                                workAddressData!.line1 = value;
+                              },
                               simpleText: workAddressData!.line1),
                           ShiftCardItem(
                               title: "Address Line 2",
+                              onChanged: (value) {
+                                workAddressData!.line2 = value;
+                              },
                               simpleText: workAddressData!.line2),
                           ShiftCardItem(
-                              title: "City", simpleText: workAddressData!.city),
+                              onChanged: (value) {
+                                workAddressData!.city = value;
+                              },
+                              title: "City",
+                              simpleText: workAddressData!.city),
                           ShiftCardItem(
                               title: "County",
+                              onChanged: (value) {
+                                workAddressData!.county = value;
+                              },
                               simpleText: workAddressData!.county),
                           ShiftCardItem(
-                              title: "Country",
-                              simpleText: workAddressData!.country?.name),
+                            title: "Country",
+                            simpleText: workAddressData!.country?.name,
+                            dropdown: ShiftCardDropdown(
+                              items: [
+                                for (int i = 0;
+                                    i <
+                                        appStore.state.generalState.lists
+                                            .countries.length;
+                                    i++)
+                                  DefaultMenuItem(
+                                      id: i,
+                                      title: appStore.state.generalState.lists
+                                          .countries[i].name)
+                              ],
+                              valueId: workAddressData!.country != null
+                                  ? appStore.state.generalState.lists.countries
+                                      .indexOf(workAddressData!.country!)
+                                  : null,
+                              onChanged: (value) {
+                                updateUI(() {
+                                  workAddressData!.country = appStore.state
+                                      .generalState.lists.countries[value.id];
+                                });
+                              },
+                            ),
+                          ),
                           ShiftCardItem(
                               title: "Postcode",
+                              onChanged: (value) {
+                                workAddressData!.postcode = value;
+                              },
                               simpleText: workAddressData!.postcode),
                         ],
                       ),

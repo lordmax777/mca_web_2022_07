@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
+import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
 import 'package:mca_dashboard/utils/global_extensions.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -62,7 +63,10 @@ class ShiftData extends Equatable {
   }) {
     return ShiftData(
       isCreate: isCreate,
-      personalData: personalData ?? PersonalData(),
+      personalData: personalData ??
+          PersonalData(
+            paymentMethod: appStore.state.generalState.defaultPaymentMethod,
+          ),
       addressData: addressData ?? AddressData(),
       guestData: guestData ?? GuestData(),
       quoteData: quoteData ?? QuoteData(),
