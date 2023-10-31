@@ -143,7 +143,7 @@ class ShiftDetailsData with DataSourceMixin<ShiftDetailsData> {
         clientId == null ||
         warehouseId == null) {
       context.showError(
-          "Please fill the required fields: ${propertyName.text.isEmpty ? "Property Name, " : ""} ${locationId == null ? "Location, " : ""}${startTime == null ? "Start Time, " : ""}${endTime == null ? "End Time, " : ""}${!weekDays.isAnyChecked ? "Days, " : ""}${checklistTemplateId == null ? "Checklist Template, " : ""}${clientId == null ? "Client, " : ""}${warehouseId == null ? "Warehouse, " : ""}");
+          "Please fill the required fields: ${propertyName.text.isEmpty ? "${appStore.state.generalState.propertyName} Name, " : ""} ${locationId == null ? "Location, " : ""}${startTime == null ? "Start Time, " : ""}${endTime == null ? "End Time, " : ""}${!weekDays.isAnyChecked ? "Days, " : ""}${checklistTemplateId == null ? "Checklist Template, " : ""}${clientId == null ? "Client, " : ""}${warehouseId == null ? "Warehouse, " : ""}");
       return false;
     }
     return true;

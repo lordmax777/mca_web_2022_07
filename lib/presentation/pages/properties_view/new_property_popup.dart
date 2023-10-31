@@ -108,7 +108,8 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
               titleSpacing: 0.0,
-              title: Text('${isCreate ? "New" : "Update"} Property'),
+              title: Text(
+                  '${isCreate ? "New" : "Update"} ${appStore.state.generalState.propertyName}'),
               bottom: isCreate
                   ? null
                   : TabBar(

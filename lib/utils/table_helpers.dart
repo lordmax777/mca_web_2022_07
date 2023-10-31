@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
@@ -58,10 +59,41 @@ extension WidgetHelper on PlutoColumnRendererContext {
   Widget defaultTooltipWidget({String? title}) {
     return Tooltip(
       message: cell.value.toString().isEmpty ? "---" : cell.value.toString(),
-      child: defaultText(
-          title: title ?? "Read Comment",
-          isSelectable: true,
-          mainAxisAlignment: MainAxisAlignment.start),
+      child: GestureDetector(
+        onTap: () {
+          if (cell.value.toString().isNotEmpty) {
+            BotToast.showCustomLoading(
+              allowClick: false,
+              clickClose: true,
+              duration: null,
+              toastBuilder: (cancelFunc) {
+                return Dialog(
+                    child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        cell.value.toString(),
+                        style: stateManager.style.cellTextStyle,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: cancelFunc,
+                        child: const Text("Close"),
+                      )
+                    ],
+                  ),
+                ));
+              },
+            );
+          }
+        },
+        child: defaultText(
+            title: title ?? "Read Comment",
+            isSelectable: true,
+            mainAxisAlignment: MainAxisAlignment.start),
+      ),
     );
   }
 
