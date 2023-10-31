@@ -166,18 +166,27 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
             TabChild(
                 tabName: "Shifts",
                 child: DefaultTable(
+                    columnFilter: const PlutoGridColumnFilterConfig(filters: [
+                      ...FilterHelper.defaultFilters,
+                    ]),
                     onLoaded: onShiftsLoaded,
                     columns: shiftsColumns,
                     rows: [])),
             TabChild(
                 tabName: "Invoices",
                 child: DefaultTable(
+                    columnFilter: const PlutoGridColumnFilterConfig(filters: [
+                      ...FilterHelper.defaultFilters,
+                    ]),
                     onLoaded: onInvoicesLoaded,
                     columns: invoicesColumns,
                     rows: [])),
             TabChild(
                 tabName: "Quotes",
                 child: DefaultTable(
+                    columnFilter: const PlutoGridColumnFilterConfig(filters: [
+                      ...FilterHelper.defaultFilters,
+                    ]),
                     onLoaded: onQuotesLoaded,
                     columns: quotesColumns,
                     rowColorCallback: (p0) {
@@ -189,6 +198,9 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
             TabChild(
                 tabName: "Expenses",
                 child: DefaultTable(
+                    columnFilter: const PlutoGridColumnFilterConfig(filters: [
+                      ...FilterHelper.defaultFilters,
+                    ]),
                     onLoaded: onExpensesLoaded,
                     columns: expensesColumns,
                     rows: [])),
@@ -200,6 +212,7 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
 
   void onShiftsLoaded(PlutoGridOnLoadedEvent event) {
     shiftsManager = event.stateManager;
+    shiftsManager!.setShowColumnFilter(true);
     shiftsManager!.appendRows(shifts
         .map((e) => PlutoRow(cells: {
               "name": PlutoCell(value: e.name),
@@ -210,6 +223,7 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
 
   void onInvoicesLoaded(PlutoGridOnLoadedEvent event) {
     invoicesManager = event.stateManager;
+    invoicesManager!.setShowColumnFilter(true);
     invoicesManager!.appendRows(invoices
         .map((e) => PlutoRow(cells: {
               "date": PlutoCell(value: e.date),
@@ -223,6 +237,7 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
 
   void onQuotesLoaded(PlutoGridOnLoadedEvent event) {
     quotesManager = event.stateManager;
+    quotesManager!.setShowColumnFilter(true);
     PlutoRow buildRow(model) {
       String name = model.name;
       String contact = "-";
@@ -258,6 +273,7 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
 
   void onExpensesLoaded(PlutoGridOnLoadedEvent event) {
     expensesManager = event.stateManager;
+    expensesManager!.setShowColumnFilter(true);
     expensesManager!.appendRows(expenses
         .map((e) => PlutoRow(cells: {
               "category": PlutoCell(value: e.category),
