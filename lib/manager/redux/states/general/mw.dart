@@ -367,6 +367,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           appStore.dispatch(const GetApprovalsAction()) as Future,
           appStore.dispatch(const GetChecklistsAction(page: 1)) as Future,
           appStore.dispatch(const GetLanguagesAction()) as Future,
+          appStore.dispatch(const GetQuotesAction()) as Future,
         ]);
         return true;
       });

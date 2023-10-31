@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
+import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/client_details_dialog.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_dialog.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -26,7 +27,8 @@ class _ClientsViewState extends State<ClientsView>
             width: 200,
             minWidth: 200,
             type: PlutoColumnType.text(),
-            renderer: (rendererContext) => rendererContext.defaultText()),
+            renderer: (rendererContext) =>
+                rendererContext.defaultText(isSelectable: true)),
         PlutoColumn(
             width: 170,
             minWidth: 170,
@@ -145,31 +147,45 @@ class _ClientsViewState extends State<ClientsView>
   @override
   Widget build(BuildContext context) {
     return DefaultTable(
-        columnFilter: const PlutoGridColumnFilterConfig(filters: [
-          ...FilterHelper.defaultFilters,
-        ]),
-        onLoaded: (p0) {
-          p0.stateManager.setShowColumnFilter(true);
-          onLoaded(p0);
-        },
-        headerEnd: Row(
-          children: [
-            ElevatedButton(
-                onPressed: () =>
-                    onDelete(() => deleteSelected(null), showError: false),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text("Delete Selected")),
-            const SizedBox(width: 10),
-            ElevatedButton(
-                onPressed: () => onEdit(
-                    (p0) => const ClientsEditDialog(client: null), null,
-                    showSuccess: false),
-                child: const Text("Add Client")),
-          ],
-        ),
-        columns: columns,
-        rows: rows,
-        columnsGroups: columnGroups);
+      columnFilter: const PlutoGridColumnFilterConfig(filters: [
+        ...FilterHelper.defaultFilters,
+      ]),
+      onLoaded: (p0) {
+        p0.stateManager.setShowColumnFilter(true);
+        onLoaded(p0);
+      },
+      headerEnd: Row(
+        children: [
+          ElevatedButton(
+              onPressed: () =>
+                  onDelete(() => deleteSelected(null), showError: false),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text("Delete Selected")),
+          const SizedBox(width: 10),
+          ElevatedButton(
+              onPressed: () => onEdit(
+                  (p0) => const ClientsEditDialog(client: null), null,
+                  showSuccess: false),
+              child: const Text("Add Client")),
+        ],
+      ),
+      columns: columns,
+      rows: rows,
+      columnsGroups: columnGroups,
+      onSelected: (p0) {
+        final colName = p0.cell?.column.field;
+        final model = p0.row!.cells['action']!.value as ClientMd;
+        switch (colName) {
+          case "name":
+            //show client details
+            context.showDialog(ClientDetailsDialog(client: model));
+            break;
+
+          default:
+            break;
+        }
+      },
+    );
   }
 
   Future<bool> deleteSelected(PlutoRow? singleRow) async {
