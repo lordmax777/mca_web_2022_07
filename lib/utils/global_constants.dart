@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class GlobalConstants {
   //Create a singleton
@@ -37,4 +38,5 @@ class GlobalConstants {
       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'));
   static TextInputFormatter limitLengthFormatter(int length) =>
       LengthLimitingTextInputFormatter(length);
+  static DateFormat defaultDateFormat = DateFormat("d MMM yyyy");
 }

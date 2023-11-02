@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/elements/default_form.dart';
+import 'package:mca_dashboard/presentation/form/elements/form_checkbox.dart';
+import 'package:mca_dashboard/presentation/form/elements/form_date_picker.dart';
 import 'package:mca_dashboard/presentation/form/elements/form_dropdown.dart';
 import 'package:mca_dashboard/presentation/form/elements/form_input.dart';
 import 'package:mca_dashboard/presentation/form/elements/form_with_label.dart';
 import 'package:mca_dashboard/presentation/form/elements/save_button.dart';
+import 'package:mca_dashboard/presentation/form/models/checkbox_model.dart';
+import 'package:mca_dashboard/presentation/form/models/date_picker_model.dart';
 import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
 import 'package:mca_dashboard/presentation/form/models/dropdown_model.dart';
 import 'package:mca_dashboard/presentation/form/models/form_model.dart';
@@ -85,11 +90,32 @@ class ShiftDetailsTab2 extends StatelessWidget {
                             DpItem(id: "male", title: "Male"),
                             DpItem(id: "female", title: "Female"),
                           ]))),
-                  ElevatedButton(
-                      onPressed: () {
-                        formVm.formKey.currentState?.saveAndValidate();
-                      },
-                      child: const Text("Save")),
+                  FormWithLabel(
+                      labelVm: const LabelModel(text: "Date of Birth"),
+                      formBuilderField: FormDatePicker(
+                          vm: DatePickerModel(
+                              name: "birthdate",
+                              hintText: "Select Date of Birth",
+                              initialValue: DateTime(2023, 12, 12),
+                              type: InputType.time,
+                              validators: [
+                            FormBuilderValidators.required(),
+                          ]))),
+                  FormCheckbox(
+                      vm: CheckboxModel(
+                          name: 'days',
+                          validator: FormBuilderValidators.required(),
+                          items: [
+                        const DpItem(id: "monday", title: "Monday"),
+                        // DpItem(id: "monday1", title: "Monday"),
+                      ])),
+                  SaveButton(
+                    vm: formVm,
+                    autoValidate: false,
+                    onSave: (value) {
+                      print(value);
+                    },
+                  ),
                   SaveButton(
                     vm: formVm,
                     onSave: (value) {
