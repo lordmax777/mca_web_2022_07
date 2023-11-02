@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class GlobalConstants {
   //Create a singleton
@@ -26,4 +27,14 @@ class GlobalConstants {
   static bool enableDebugCodes = kDebugMode;
 
   static bool enableLoadingIndicator = true;
+
+  static TextInputFormatter numberAndTextOnlyFormatter =
+      FilteringTextInputFormatter(RegExp(r'^[a-zA-Z0-9]+$'),
+          allow: true, replacementString: '');
+  static TextInputFormatter numbersOnlyFormatter =
+      FilteringTextInputFormatter.digitsOnly;
+  static TextInputFormatter numbersAndDecimalOnlyFormatter =
+      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'));
+  static TextInputFormatter limitLengthFormatter(int length) =>
+      LengthLimitingTextInputFormatter(length);
 }

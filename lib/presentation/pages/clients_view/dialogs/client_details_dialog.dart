@@ -72,15 +72,15 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
   ];
 
   final List<PlutoColumn> quotesColumns = [
-    PlutoColumn(
-      title: "Name",
-      field: "name",
-      type: PlutoColumnType.text(),
-      textAlign: PlutoColumnTextAlign.center,
-      renderer: (rendererContext) {
-        return rendererContext.defaultText();
-      },
-    ),
+    // PlutoColumn(
+    //   title: "Name",
+    //   field: "name",
+    //   type: PlutoColumnType.text(),
+    //   textAlign: PlutoColumnTextAlign.center,
+    //   renderer: (rendererContext) {
+    //     return rendererContext.defaultText();
+    //   },
+    // ),
     PlutoColumn(
       title: "Contact",
       field: "contact",
@@ -255,7 +255,7 @@ class _ClientDetailsDialogState extends State<ClientDetailsDialog> {
       return PlutoRow(
         cells: {
           "id": PlutoCell(value: model.id),
-          "name": PlutoCell(value: name),
+          // "name": PlutoCell(value: name),
           "contact": PlutoCell(value: contact),
           "status": PlutoCell(value: status),
           "value": PlutoCell(value: value),

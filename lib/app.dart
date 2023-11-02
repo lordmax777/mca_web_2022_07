@@ -31,6 +31,7 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
   Widget build(BuildContext context) {
     print("rebuild app");
     final router = _dependencyManager.navigation.router;
+    final appTheme = _dependencyManager.appDep.appTheme.theme;
     return StoreProvider<AppState>(
       store: appStore,
       child: MaterialApp.router(
@@ -40,7 +41,29 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
           MonthYearPickerLocalizations.delegate,
         ],
         debugShowCheckedModeBanner: false,
-        theme: _dependencyManager.appDep.appTheme.theme,
+        theme: appTheme.copyWith(
+          inputDecorationTheme: InputDecorationTheme(
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade400)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: appTheme.colorScheme.primary)),
+            errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: appTheme.colorScheme.error)),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: appTheme.colorScheme.error),
+            ),
+            hintStyle: const TextStyle(color: Colors.grey),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade400)),
+            helperStyle: const TextStyle(color: Colors.grey),
+          ),
+        ),
         title: 'MCA Dashboard',
         builder: (context, child) => botToastBuilder(
             context,

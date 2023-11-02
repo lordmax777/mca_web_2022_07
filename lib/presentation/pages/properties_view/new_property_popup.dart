@@ -6,6 +6,7 @@ import 'package:mca_dashboard/presentation/pages/properties_view/new_property_st
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/capacity_tab.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/qualification_requirements_tab.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/shift_details_tab.dart';
+import 'package:mca_dashboard/presentation/pages/properties_view/tabs/shift_details_tab_2.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/staff_requirements_tab.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -123,7 +124,7 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
               physics: const NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: [
-                ShiftDetailsTab(
+                ShiftDetailsTab2(
                   data: data,
                   onChanged: (value) {
                     data = value;
