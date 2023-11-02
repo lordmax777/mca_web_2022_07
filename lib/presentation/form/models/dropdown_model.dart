@@ -10,6 +10,7 @@ class DropdownModel {
   final String? helperText;
   final bool enabled;
   final bool hasSearchBox;
+  final String? Function(String?)? validator;
 
   const DropdownModel({
     required this.name,
@@ -20,5 +21,6 @@ class DropdownModel {
     this.helperText,
     this.enabled = true,
     this.hasSearchBox = false,
+    this.validator,
   });
 }

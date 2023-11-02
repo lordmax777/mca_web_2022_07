@@ -1,12 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_input.dart';
 import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
 import 'package:mca_dashboard/presentation/form/models/dropdown_model.dart';
-import 'package:mca_dashboard/presentation/form/models/input_model.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 
 import '../../global_widgets/widgets.dart';
@@ -18,19 +16,23 @@ class FormDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilderField<DpItem>(
+    return FormBuilderField<String>(
       name: vm.name,
-      builder: (FormFieldState<DpItem> item) {
-        return DefaultDropdown2(vm: vm);
+      validator: vm.validator,
+      enabled: vm.enabled,
+      initialValue: vm.initialValue,
+      builder: (FormFieldState<String> state) {
+        return DefaultDropdown2(state: state, vm: vm);
       },
     );
   }
 }
 
 class DefaultDropdown2 extends StatefulWidget {
+  final FormFieldState<String> state;
   final DropdownModel vm;
 
-  const DefaultDropdown2({super.key, required this.vm});
+  const DefaultDropdown2({super.key, required this.state, required this.vm});
 
   @override
   State<DefaultDropdown2> createState() => _DefaultDropdown2State();
@@ -40,6 +42,11 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
   final TextEditingController searchController = TextEditingController();
 
   DropdownModel get vm => widget.vm;
+  FormFieldState<String> get state => widget.state;
+  String? get errorText => state.errorText;
+
+  DpItem? get selectedItem =>
+      vm.items.firstWhereOrNull((element) => element.id == state.value);
 
   @override
   void dispose() {
@@ -78,6 +85,24 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
                 },
               )
             : null,
+        customButton: InputDecorator(
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              errorText: errorText,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (selectedItem != null)
+                  Text(selectedItem!.title,
+                      style: const TextStyle(color: Colors.black))
+                else
+                  Text(vm.hintText ?? "",
+                      style: const TextStyle(color: Colors.grey)),
+                const Icon(Icons.keyboard_arrow_down_rounded,
+                    color: Colors.grey),
+              ],
+            )),
         dropdownStyleData: DropdownStyleData(
           offset: const Offset(0, -10),
           elevation: 10,
@@ -87,16 +112,6 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
             border: Border.all(color: Colors.grey[400]!),
           ),
         ),
-        buttonStyleData: ButtonStyleData(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.grey.shade400)),
-        ),
-        hint: vm.hintText == null
-            ? null
-            : Text(vm.hintText!,
-                style: const TextStyle(
-                    color: Colors.grey, fontWeight: FontWeight.w400)),
         menuItemStyleData: MenuItemStyleData(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           selectedMenuItemBuilder: (context, child) {

@@ -63,6 +63,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                           vm: DropdownModel(
                               name: "gender",
                               hintText: "Select gender",
+                              validator: FormBuilderValidators.required(),
                               // initialValue: "male",
                               onChanged: (value) {},
                               hasSearchBox: true,
@@ -70,6 +71,25 @@ class ShiftDetailsTab2 extends StatelessWidget {
                             DpItem(id: "male", title: "Male"),
                             DpItem(id: "female", title: "Female"),
                           ]))),
+                  FormWithLabel(
+                      labelVm: const LabelModel(text: "Gender"),
+                      formBuilderField: FormDropdown(
+                          vm: DropdownModel(
+                              name: "gender1",
+                              hintText: "Select gender",
+                              validator: FormBuilderValidators.required(),
+                              initialValue: "male",
+                              onChanged: (value) {},
+                              hasSearchBox: true,
+                              items: [
+                            DpItem(id: "male", title: "Male"),
+                            DpItem(id: "female", title: "Female"),
+                          ]))),
+                  ElevatedButton(
+                      onPressed: () {
+                        formVm.formKey.currentState?.saveAndValidate();
+                      },
+                      child: const Text("Save")),
                   SaveButton(
                     vm: formVm,
                     onSave: (value) {
