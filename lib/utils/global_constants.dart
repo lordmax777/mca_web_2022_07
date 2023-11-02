@@ -38,5 +38,5 @@ class GlobalConstants {
       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'));
   static TextInputFormatter limitLengthFormatter(int length) =>
       LengthLimitingTextInputFormatter(length);
-  static DateFormat defaultDateFormat = DateFormat("d MMM yyyy");
+  static DateFormat defaultDateFormat = DateFormat("yyyy-MM-dd");
 }

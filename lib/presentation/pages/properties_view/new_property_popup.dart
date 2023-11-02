@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/presentation/form/elements/save_button.dart';
 import 'package:mca_dashboard/presentation/form/models/form_model.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/data/shift_details.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/new_property_qualification_popup.dart';
@@ -128,7 +129,16 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
               controller: _tabController,
               children: [
                 ShiftDetailsTab2(
+                  customRates: data.customRates.length,
                   formVm: shiftDetailsFormVm,
+                  onRemoveCustomRate: (value) {
+                    data.customRates.removeAt(value);
+                    updateUI();
+                  },
+                  onAddCustomRate: () {
+                    data.customRates.add(CustomRate.init());
+                    updateUI();
+                  },
                 ),
                 StaffRequirementsTab(
                     onLoaded: onLoaded,
@@ -186,9 +196,8 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
           ? [
               ElevatedButton(
                 onPressed: () {
-                  shiftDetailsFormVm.formKey.currentState?.saveAndValidate();
-                  print(shiftDetailsFormVm.formKey.currentState?.value);
-                  // context.pop();
+                  shiftDetailsFormVm.saveAndValidate();
+                  print(shiftDetailsFormVm.value);
                 },
                 child: const Text('Cancel'),
               ),

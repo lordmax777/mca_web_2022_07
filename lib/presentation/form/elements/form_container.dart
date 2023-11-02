@@ -9,10 +9,12 @@ class FormContainer extends StatefulWidget {
   final String? additionalText;
   final double? width;
   final String? title;
+  final Widget? trailing;
   const FormContainer(
       {super.key,
       required this.left,
       this.right,
+      this.trailing,
       this.title,
       this.width,
       this.hidden = const [],
@@ -29,6 +31,7 @@ class _FormContainerState extends State<FormContainer> {
   String? get additionalText => widget.additionalText;
   double? get width => widget.width;
   String? get title => widget.title;
+  Widget? get trailing => widget.trailing;
 
   bool showHidden = false;
 
@@ -53,9 +56,15 @@ class _FormContainerState extends State<FormContainer> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (title != null)
-              Text(
-                title!,
-                style: context.textTheme.titleLarge,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title!,
+                    style: context.textTheme.titleLarge,
+                  ),
+                  if (trailing != null) trailing!,
+                ],
               ),
             if (title != null) Divider(color: Colors.grey.shade300),
             getRow(),
@@ -71,7 +80,13 @@ class _FormContainerState extends State<FormContainer> {
                     : Icons.keyboard_arrow_down),
               ),
             if (showHidden) const SizedBox(height: 8),
-            if (showHidden) ...hidden,
+            if (showHidden)
+              SpacedColumn(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                verticalSpace: 8,
+                children: hidden,
+              )
           ]),
     );
   }
@@ -79,7 +94,7 @@ class _FormContainerState extends State<FormContainer> {
   Widget getRow() {
     if (right == null) {
       return SpacedColumn(
-        verticalSpace: 6,
+        verticalSpace: 8,
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: left,

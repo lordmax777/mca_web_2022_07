@@ -18,12 +18,14 @@ class FormInput extends StatelessWidget {
       validator: FormBuilderValidators.compose(vm.validators),
       inputFormatters: vm.inputFormatters,
       enabled: vm.enabled,
+      cursorHeight: 20,
       mouseCursor: vm.enabled ? null : SystemMouseCursors.forbidden,
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.never,
         helperText: vm.helperText,
         hintText: vm.hintText,
         filled: !vm.enabled,
+        helperMaxLines: 2,
         fillColor: !vm.enabled ? Colors.grey.shade200 : null,
       ),
     );

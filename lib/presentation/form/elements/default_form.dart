@@ -5,15 +5,21 @@ import 'package:mca_dashboard/presentation/form/models/form_model.dart';
 class DefaultForm extends StatelessWidget {
   final FormModel vm;
   final Widget child;
-  const DefaultForm({super.key, required this.vm, required this.child});
+  final bool clearValueOnUnregister;
+  const DefaultForm(
+      {super.key,
+      required this.vm,
+      required this.child,
+      this.clearValueOnUnregister = false});
 
   @override
   Widget build(BuildContext context) {
     return FormBuilder(
+      clearValueOnUnregister: clearValueOnUnregister,
       key: vm.formKey,
       onChanged: () {
-        vm.isValidFormNotifier.value =
-            vm.formKey.currentState?.isValid ?? false;
+        // vm.formKey.currentState?.save();
+        vm.isValidFormNotifier.value = vm.isValid;
       },
       child: child,
     );

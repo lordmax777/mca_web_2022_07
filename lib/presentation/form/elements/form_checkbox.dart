@@ -21,6 +21,7 @@ class FormCheckbox extends StatelessWidget {
           .map((e) => FormBuilderFieldOption(value: e.id, child: Text(e.title)))
           .toList(),
       orientation: vm.orientation ?? OptionsOrientation.wrap,
+      wrapSpacing: 10.0,
       decoration: InputDecoration(
         // enabledBorder: vm.items.length == 1 ? InputBorder.none : null,
         floatingLabelBehavior: FloatingLabelBehavior.never,

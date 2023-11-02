@@ -27,10 +27,19 @@ class FormDatePicker extends StatelessWidget {
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.never,
         helperText: vm.helperText,
-        hintText: vm.hintText,
+        hintText: getHint(),
         filled: !vm.enabled,
         fillColor: !vm.enabled ? Colors.grey.shade200 : null,
       ),
     );
+  }
+
+  String? getHint() {
+    if (vm.hintText != null) return vm.hintText;
+    if (vm.type == InputType.date) return DateTime.now().toApiDateWithDash;
+    if (vm.type == InputType.time) {
+      return DateFormat('HH:mm').format(DateTime.now());
+    }
+    return null;
   }
 }

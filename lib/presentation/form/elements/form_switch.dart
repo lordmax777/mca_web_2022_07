@@ -16,7 +16,7 @@ class FormSwitch extends StatelessWidget {
       initialValue: vm.initialValue,
       title: Text(vm.title, style: context.textTheme.titleMedium),
       onChanged: vm.onChanged,
-
+      decoration: InputDecoration(helperText: vm.helperText, helperMaxLines: 2),
       inactiveThumbColor: Colors.grey[200],
       inactiveTrackColor: Colors.grey[400],
     );
