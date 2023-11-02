@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/presentation/form/models/form_model.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/data/shift_details.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/new_property_qualification_popup.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/new_property_staff_popup.dart';
@@ -96,12 +97,13 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
     });
   }
 
+  final shiftDetailsFormVm = FormModel();
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       surfaceTintColor: Colors.white,
       contentPadding: const EdgeInsets.all(8),
-      // insetPadding: const EdgeInsets.all(0),
       content: SizedBox(
         width: context.width,
         child: Scaffold(
@@ -126,11 +128,7 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
               controller: _tabController,
               children: [
                 ShiftDetailsTab2(
-                  data: data,
-                  onChanged: (value) {
-                    data = value;
-                    updateUI();
-                  },
+                  formVm: shiftDetailsFormVm,
                 ),
                 StaffRequirementsTab(
                     onLoaded: onLoaded,
@@ -188,7 +186,9 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
           ? [
               ElevatedButton(
                 onPressed: () {
-                  context.pop();
+                  shiftDetailsFormVm.formKey.currentState?.saveAndValidate();
+                  print(shiftDetailsFormVm.formKey.currentState?.value);
+                  // context.pop();
                 },
                 child: const Text('Cancel'),
               ),

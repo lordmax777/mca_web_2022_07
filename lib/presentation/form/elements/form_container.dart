@@ -59,16 +59,18 @@ class _FormContainerState extends State<FormContainer> {
               ),
             if (title != null) Divider(color: Colors.grey.shade300),
             getRow(),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              // style: ButtonStyle(
-              //     padding: MaterialStateProperty.all(EdgeInsets.zero)),
-              onPressed: toggleHidden,
-              label: Text(additionalText ?? "Show More"),
-              icon: Icon(showHidden
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down),
-            ),
+            if (hidden.isNotEmpty) const SizedBox(height: 8),
+            if (hidden.isNotEmpty)
+              OutlinedButton.icon(
+                // style: ButtonStyle(
+                //     padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                onPressed: toggleHidden,
+                label: Text(additionalText ?? "Show More"),
+                icon: Icon(showHidden
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down),
+              ),
+            if (showHidden) const SizedBox(height: 8),
             if (showHidden) ...hidden,
           ]),
     );

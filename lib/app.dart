@@ -48,7 +48,8 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
                 borderSide: BorderSide(color: Colors.grey.shade400)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: appTheme.colorScheme.primary)),
+                borderSide: BorderSide(
+                    color: appTheme.colorScheme.primary, width: 1.5)),
             errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: appTheme.colorScheme.error)),

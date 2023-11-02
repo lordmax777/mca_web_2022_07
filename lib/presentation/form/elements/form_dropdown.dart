@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
@@ -90,19 +89,40 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
               border: InputBorder.none,
               errorText: errorText,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (selectedItem != null)
-                  Text(selectedItem!.title,
-                      style: const TextStyle(color: Colors.black))
-                else
-                  Text(vm.hintText ?? "",
-                      style: const TextStyle(color: Colors.grey)),
-                const Icon(Icons.keyboard_arrow_down_rounded,
-                    color: Colors.grey),
-              ],
-            )),
+            child: LayoutBuilder(builder: (context, constraints) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (selectedItem != null)
+                    SizedBox(
+                      width: constraints.maxWidth - 48,
+                      child: RichText(
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: selectedItem!.title,
+                                  style: const TextStyle(color: Colors.black)),
+                              if (selectedItem!.subtitle != null)
+                                if (selectedItem!.subtitle != null)
+                                  TextSpan(
+                                      text: " / ${selectedItem!.subtitle}",
+                                      style:
+                                          const TextStyle(color: Colors.grey)),
+                            ],
+                          )),
+                    )
+                  else
+                    Text(vm.hintText ?? "",
+                        // (vm.items.isNotEmpty ? vm.items.first.title : ""),
+                        style: TextStyle(color: Colors.grey.shade500)),
+                  const Icon(Icons.keyboard_arrow_down_rounded,
+                      color: Colors.grey),
+                ],
+              );
+            })),
         dropdownStyleData: DropdownStyleData(
           offset: const Offset(0, -10),
           elevation: 10,
@@ -124,38 +144,34 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
           },
         ),
         underline: const SizedBox(),
-        selectedItemBuilder: (context) {
-          return vm.items
-              .map((e) => Align(
-                    alignment: Alignment.centerLeft,
-                    child: RichText(
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        softWrap: true,
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text:
-                                  "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.title}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith()),
-                          // if (e.subtitle != null)
-                          //   TextSpan(
-                          //       text: " / ${e.subtitle}",
-                          //       style: const TextStyle(color: Colors.grey)),
-                        ])),
-                  ))
-              .toList();
-        },
+        // selectedItemBuilder: (context) {
+        //   return vm.items
+        //       .map((e) => Align(
+        //             alignment: Alignment.centerLeft,
+        //             child: RichText(
+        //                 overflow: TextOverflow.ellipsis,
+        //                 maxLines: 2,
+        //                 softWrap: true,
+        //                 text: TextSpan(children: [
+        //                   TextSpan(
+        //                       text:
+        //                           "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.title}",
+        //                       style: Theme.of(context)
+        //                           .textTheme
+        //                           .bodyLarge!
+        //                           .copyWith()),
+        //                   if (e.subtitle != null)
+        //                     TextSpan(
+        //                         text: " / ${e.subtitle}",
+        //                         style: const TextStyle(color: Colors.grey)),
+        //                 ])),
+        //           ))
+        //       .toList();
+        // },
         items: getItems(),
-        onChanged: vm.onChanged == null
-            ? null
-            : (value) {
-                if (value != null) {
-                  vm.onChanged?.call(value.id);
-                }
-              });
+        onChanged: (value) {
+          state.didChange(value?.id);
+        });
   }
 
   List<DropdownMenuItem<DpItem>> getItems() {
@@ -171,11 +187,11 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             ),
-            // if (e.subtitle != null)
-            //   Text(e.subtitle!,
-            //       style: const TextStyle(fontSize: 14, color: Colors.grey),
-            //       softWrap: false,
-            //       overflow: TextOverflow.ellipsis),
+            if (e.subtitle != null)
+              Text(e.subtitle!,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis),
           ],
         ),
       );

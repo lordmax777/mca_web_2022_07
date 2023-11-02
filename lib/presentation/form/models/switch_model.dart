@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
 
-class DropdownModel {
+class SwitchModel {
   final String name;
-  final List<DpItem> items;
-  final String? initialValue;
+  final ValueChanged<bool?>? onChanged;
+  final bool initialValue;
   final String? hintText;
   final String? helperText;
   final bool enabled;
-  final bool hasSearchBox;
-  final String? Function(String?)? validator;
+  final String? Function(bool?)? validator;
+  final String title;
 
-  const DropdownModel({
+  const SwitchModel({
     required this.name,
-    required this.items,
-    this.initialValue,
+    this.initialValue = false,
+    this.onChanged,
+    required this.title,
     this.hintText,
     this.helperText,
     this.enabled = true,
-    this.hasSearchBox = false,
     this.validator,
   });
 }
