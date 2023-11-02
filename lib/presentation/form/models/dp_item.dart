@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class DpItem<T> extends Equatable {
-  final T id;
+class DpItem extends Equatable {
+  final String id;
   final String title;
 
   const DpItem({required this.id, required this.title});

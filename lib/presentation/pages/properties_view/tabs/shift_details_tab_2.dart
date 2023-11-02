@@ -4,13 +4,15 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/elements/default_form.dart';
+import 'package:mca_dashboard/presentation/form/elements/form_dropdown.dart';
 import 'package:mca_dashboard/presentation/form/elements/form_input.dart';
 import 'package:mca_dashboard/presentation/form/elements/form_with_label.dart';
 import 'package:mca_dashboard/presentation/form/elements/save_button.dart';
+import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
+import 'package:mca_dashboard/presentation/form/models/dropdown_model.dart';
 import 'package:mca_dashboard/presentation/form/models/form_model.dart';
 import 'package:mca_dashboard/presentation/form/models/input_model.dart';
 import 'package:mca_dashboard/presentation/form/models/label_model.dart';
-import 'package:mca_dashboard/presentation/form/models/save_button_model.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/data/shift_details.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/create_schedule_popup.dart';
@@ -50,10 +52,23 @@ class ShiftDetailsTab2 extends StatelessWidget {
                       labelVm: const LabelModel(text: "Name"),
                       formBuilderField: FormInput(
                           vm: InputModel(
-                              name: "name",
+                              name: "username",
                               hintText: "Enter Name",
                               validators: [
                             FormBuilderValidators.required(),
+                          ]))),
+                  FormWithLabel(
+                      labelVm: const LabelModel(text: "Gender"),
+                      formBuilderField: FormDropdown(
+                          vm: DropdownModel(
+                              name: "gender",
+                              hintText: "Select gender",
+                              // initialValue: "male",
+                              onChanged: (value) {},
+                              hasSearchBox: true,
+                              items: [
+                            DpItem(id: "male", title: "Male"),
+                            DpItem(id: "female", title: "Female"),
                           ]))),
                   SaveButton(
                     vm: formVm,
