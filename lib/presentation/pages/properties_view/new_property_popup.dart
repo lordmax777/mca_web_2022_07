@@ -101,8 +101,9 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
     return AlertDialog(
       surfaceTintColor: Colors.white,
       contentPadding: const EdgeInsets.all(8),
+      // insetPadding: const EdgeInsets.all(0),
       content: SizedBox(
-        width: MediaQuery.of(context).size.width,
+        width: context.width,
         child: Scaffold(
             appBar: AppBar(
               toolbarHeight: 60,

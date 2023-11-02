@@ -57,7 +57,8 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
               borderSide: BorderSide(color: appTheme.colorScheme.error),
             ),
             hintStyle: const TextStyle(color: Colors.grey),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: Colors.grey.shade400)),
