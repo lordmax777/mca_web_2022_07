@@ -301,6 +301,11 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
     if (!shiftDetailsFormVm.isValid) return;
 
     context.futureLoading(() async {
+      final unavDays = shiftDetailsFormVm.value['days'] ?? [];
+      WeekDaysMd days = WeekDaysMd();
+      days = days.fromListString(days.asListString
+        ..removeWhere((element) => unavDays.contains(element)));
+
       final success = await dispatch<int?>(PostPropertyAction(
         id: saveAsNew ? null : widget.model?.id,
         title: shiftDetailsFormVm.value['shiftName'],
@@ -322,7 +327,7 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
         fpFinishBreak: shiftDetailsFormVm.value['fpFinishBreak'],
         minWorkTime: shiftDetailsFormVm.value['minWorkTime'],
         minPaidTime: shiftDetailsFormVm.value['minPaidTime'],
-        days: WeekDaysMd.fromDayNameToList(shiftDetailsFormVm.value['days']),
+        days: days,
       ));
       if (success.isLeft && success.left != null) {
         final List<String> failedRates = [];

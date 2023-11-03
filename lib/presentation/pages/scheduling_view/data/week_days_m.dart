@@ -295,4 +295,35 @@ class WeekDaysMd extends Equatable {
     if (sunday) list.add('sunday');
     return list;
   }
+
+  //from list string
+  WeekDaysMd fromListString(List<String> list) {
+    final weekDays = WeekDaysMd();
+    for (String name in list) {
+      switch (name) {
+        case 'monday':
+          weekDays.monday = true;
+          break;
+        case 'tuesday':
+          weekDays.tuesday = true;
+          break;
+        case 'wednesday':
+          weekDays.wednesday = true;
+          break;
+        case 'thursday':
+          weekDays.thursday = true;
+          break;
+        case 'friday':
+          weekDays.friday = true;
+          break;
+        case 'saturday':
+          weekDays.saturday = true;
+          break;
+        case 'sunday':
+          weekDays.sunday = true;
+          break;
+      }
+    }
+    return weekDays;
+  }
 }

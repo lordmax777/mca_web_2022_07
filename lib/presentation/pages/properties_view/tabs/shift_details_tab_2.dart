@@ -124,15 +124,18 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         )),
                       ),
                       FormWithLabel(
-                          labelVm:
-                              const LabelModel(text: "Days", isRequired: true),
+                          labelVm: const LabelModel(
+                              text: "Unavailable days", isRequired: true),
                           formBuilderField: FormCheckbox(
                             vm: CheckboxModel(
                                 name: "days",
                                 onChanged: print,
                                 //at least 1 day is required
-                                validator: FormBuilderValidators.required(
-                                    errorText: "At least 1 day is required"),
+                                validator: FormBuilderValidators.maxLength(6,
+                                    errorText:
+                                        "At least 1 day must be available"),
+                                helperText:
+                                    "Select the days when the shift is unavailable",
                                 items: WeekDaysMd()
                                     .asMap
                                     .entries
