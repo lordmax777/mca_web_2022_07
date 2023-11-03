@@ -837,4 +837,8 @@ abstract class ApiClient {
 
   @DELETE("/api/fe/clients/{id}")
   Future<HttpResponse> deleteClient(@Path("id") int id);
+
+  //get timesheet pdf
+  @GET("/api/fe/jobtemplates/{id}")
+  Future<HttpResponse> getJobTemplates({@Path() required int id});
 }
