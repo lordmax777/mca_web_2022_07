@@ -1581,32 +1581,35 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   Future<Either<int?, ErrorMd>> _postPropertyAction(
       AppState state, PostPropertyAction action) async {
     return await apiCall(() async {
-      final data = action.model;
+      final data = action;
       final res = await deps.apiClient.postPropertie(
         id: data.id ?? 0,
-        title: data.propertyName.text,
+        title: data.title,
         active: data.active,
-        locationId: data.locationId!,
-        clientId: data.clientId ?? 0,
-        templateId: data.checklistTemplateId ?? 0,
-        storageId: data.warehouseId ?? 0,
-        checklist: data.checklistTemplateId != null,
-        dayMon: data.weekDays.monday,
-        dayTue: data.weekDays.tuesday,
-        dayWed: data.weekDays.wednesday,
-        dayThu: data.weekDays.thursday,
-        dayFri: data.weekDays.friday,
-        daySat: data.weekDays.saturday,
-        daySun: data.weekDays.sunday,
-        finishTime: data.endTime!.toApiTime,
-        startTime: data.startTime!.toApiTime,
-        strictBreak: data.strictBreakTime,
-        startBreak: data.breakStartTime?.toApiTime,
-        finishBreak: data.breakEndTime?.toApiTime,
-        fpStartTime: data.mobileStartTime?.toApiTime,
-        fpFinishTime: data.mobileEndTime?.toApiTime,
-        fpFinishBreak: data.mobileBreakEndTime?.toApiTime,
-        fpStartBreak: data.mobileBreakStartTime?.toApiTime,
+        locationId: data.locationId,
+        clientId: data.clientId,
+        templateId: data.templateId,
+        storageId: data.storageId,
+        checklist: data.checklist,
+        dayMon: data.days.monday,
+        dayTue: data.days.tuesday,
+        dayWed: data.days.wednesday,
+        dayThu: data.days.thursday,
+        dayFri: data.days.friday,
+        daySat: data.days.saturday,
+        daySun: data.days.sunday,
+        startTime: data.startTime.toApiTime,
+        finishTime: data.finishTime.toApiTime,
+        strictBreak: data.strictBreak,
+        startBreak: data.startBreak?.toApiTime,
+        finishBreak: data.finishBreak?.toApiTime,
+        fpStartTime: data.fpStartTime?.toApiTime,
+        fpFinishTime: data.fpFinishTime?.toApiTime,
+        fpFinishBreak: data.fpFinishBreak?.toApiTime,
+        fpStartBreak: data.fpStartBreak?.toApiTime,
+        minPaidTime: data.minPaidTime,
+        minWorkTime: data.minWorkTime,
+        splitTime: data.splitTime,
       );
       return res.data is! num ? null : res.data;
     });
@@ -1637,18 +1640,18 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
   }
 
   //PostPropertySpecialRatesAction
-  Future<Either<bool, ErrorMd>> _postPropertySpecialRatesAction(
+  Future<Either<int, ErrorMd>> _postPropertySpecialRatesAction(
       AppState state, PostPropertySpecialRatesAction action) async {
     return await apiCall(() async {
       final res = await deps.apiClient.postPropertySpecialRate(
-        shiftId: action.shiftId,
-        minPaidTime: int.parse(action.rate.minPaidTime.text),
-        name: action.rate.name.text,
-        minWorkTime: int.parse(action.rate.minWorkTime.text),
-        rate: double.parse(action.rate.rate.text),
-        splitTime: action.rate.splitTime,
+        shiftId: action.shiftId ?? 0,
+        minPaidTime: action.minPaidTime,
+        name: action.name,
+        minWorkTime: action.minWorkTime,
+        rate: action.rate,
+        splitTime: action.splitTime,
       );
-      return res.response.statusCode == 200;
+      return res.response.data is num ? res.response.data : null;
     });
   }
 

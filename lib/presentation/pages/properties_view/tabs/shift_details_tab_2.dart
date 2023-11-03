@@ -24,22 +24,23 @@ import '../../../global_widgets/widgets.dart';
 
 class ShiftDetailsTab2 extends StatelessWidget {
   final FormModel formVm;
-  final int customRates;
+  final List<SpecialRateMd> specialRates;
   final VoidCallback onAddCustomRate;
   final ValueChanged<int> onRemoveCustomRate;
-
-  const ShiftDetailsTab2(
-      {super.key,
-      required this.formVm,
-      this.customRates = 0,
-      required this.onAddCustomRate,
-      required this.onRemoveCustomRate});
+  final ValueChanged<int> onSaveCustomRate;
+  final bool isCreate;
+  const ShiftDetailsTab2({
+    super.key,
+    required this.formVm,
+    required this.isCreate,
+    required this.specialRates,
+    required this.onAddCustomRate,
+    required this.onRemoveCustomRate,
+    required this.onSaveCustomRate,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bool strictBreakTime =
-        formVm.formKey.currentState?.getRawValue("strictBreakTime") ?? false;
-
     return StoreConnector<AppState, GeneralState>(
         converter: (store) => store.state.generalState,
         builder: (context, vm) {
@@ -196,7 +197,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                             validators: [
                               FormBuilderValidators.required(),
                             ],
-                            name: "endTime",
+                            name: "finishTime",
                             type: InputType.time,
                           ),
                         ),
@@ -207,7 +208,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         labelVm: LabelModel(text: "Break start time"),
                         formBuilderField: FormDatePicker(
                           vm: DatePickerModel(
-                            name: "breakStartTime",
+                            name: "startBreak",
                             type: InputType.time,
                           ),
                         ),
@@ -216,7 +217,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         labelVm: LabelModel(text: "Break end time"),
                         formBuilderField: FormDatePicker(
                           vm: DatePickerModel(
-                            name: "breakEndTime",
+                            name: "finishBreak",
                             type: InputType.time,
                           ),
                         ),
@@ -227,7 +228,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         labelVm: LabelModel(text: "Mobile start time"),
                         formBuilderField: FormDatePicker(
                           vm: DatePickerModel(
-                            name: "mobileStartTime",
+                            name: "fpStartTime",
                             type: InputType.time,
                           ),
                         ),
@@ -236,7 +237,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         labelVm: LabelModel(text: "Mobile end time"),
                         formBuilderField: FormDatePicker(
                           vm: DatePickerModel(
-                            name: "mobileEndTime",
+                            name: "fpFinishTime",
                             type: InputType.time,
                           ),
                         ),
@@ -245,7 +246,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         labelVm: LabelModel(text: "Mobile break start time"),
                         formBuilderField: FormDatePicker(
                           vm: DatePickerModel(
-                            name: "mobileBreakStartTime",
+                            name: "fpStartBreak",
                             type: InputType.time,
                           ),
                         ),
@@ -254,7 +255,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
                         labelVm: LabelModel(text: "Mobile break end time"),
                         formBuilderField: FormDatePicker(
                           vm: DatePickerModel(
-                            name: "mobileBreakEndTime",
+                            name: "fpFinishBreak",
                             type: InputType.time,
                           ),
                         ),
@@ -267,20 +268,30 @@ class ShiftDetailsTab2 extends StatelessWidget {
                                   name: "minWorkTime",
                                   hintText: "60",
                                   helperText: "minutes",
+                                  validators: [
+                                    FormBuilderValidators.numeric(),
+                                  ],
+                                  valueTransformer: (value) =>
+                                      int.tryParse(value ?? ""),
                                   inputFormatters: [
-                                GlobalConstants.numbersOnlyFormatter,
-                              ]))),
+                                    GlobalConstants.numbersOnlyFormatter,
+                                  ]))),
                       FormWithLabel(
                           labelVm: const LabelModel(text: 'Minimum paid time'),
                           formBuilderField: FormInput(
                               vm: InputModel(
                                   name: "minPaidTime",
                                   hintText: "120",
+                                  validators: [
+                                    FormBuilderValidators.numeric(),
+                                  ],
+                                  valueTransformer: (value) =>
+                                      int.tryParse(value ?? ""),
                                   helperText:
                                       "Here can specify how much time will be paid, even signed in less or more time.(minutes)",
                                   inputFormatters: [
-                                GlobalConstants.numbersOnlyFormatter,
-                              ]))),
+                                    GlobalConstants.numbersOnlyFormatter,
+                                  ]))),
                       const FormWithLabel(
                           labelVm: LabelModel(text: " "),
                           formBuilderField: FormSwitch(
@@ -293,114 +304,159 @@ class ShiftDetailsTab2 extends StatelessWidget {
                           labelVm: LabelModel(text: " "),
                           formBuilderField: FormSwitch(
                               vm: SwitchModel(
-                                  name: "strictBreakTime",
+                                  name: "strictBreak",
                                   title: "Strict break time"))),
                     ],
                   ),
-                  SizedBox(
-                    width: customRates == 0 ? 200 : context.width,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SpacedRow(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        horizontalSpace: 16.0,
-                        children: [
-                          for (int i = 0; i < customRates; i++)
-                            FormContainer(
-                              trailing: IconButton(
-                                  color: Colors.red,
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () => onRemoveCustomRate(i)),
-                              title: "Special Rate ${i + 1}",
-                              width: formContainerWidth * 0.6,
-                              left: [
-                                FormWithLabel(
-                                  labelVm: const LabelModel(
-                                      text: "Special rate name",
-                                      isRequired: true),
-                                  formBuilderField: FormInput(
-                                    vm: InputModel(
-                                      validators: [
-                                        FormBuilderValidators.required(),
-                                      ],
-                                      hintText: "Night shift",
-                                      name: "specialRateName$i",
-                                    ),
-                                  ),
-                                ),
-                                FormWithLabel(
-                                    labelVm: const LabelModel(
-                                        text: "Rate", isRequired: true),
-                                    formBuilderField: FormInput(
-                                        vm: InputModel(
-                                            name: "specialRateRate$i",
-                                            hintText: "60",
-                                            validators: [
-                                          FormBuilderValidators.required(),
-                                        ],
-                                            inputFormatters: [
-                                          GlobalConstants
-                                              .numbersAndDecimalOnlyFormatter,
-                                        ]))),
-                                FormWithLabel(
-                                    labelVm: const LabelModel(
-                                        text: 'Minimum working time',
-                                        isRequired: true),
-                                    formBuilderField: FormInput(
-                                        vm: InputModel(
-                                            validators: [
-                                              FormBuilderValidators.required(),
-                                            ],
-                                            name: "specialRateMinWorkTime$i",
-                                            hintText: "60",
-                                            helperText: "minutes",
-                                            inputFormatters: [
-                                              GlobalConstants
-                                                  .numbersOnlyFormatter,
-                                            ]))),
-                                FormWithLabel(
-                                    labelVm: const LabelModel(
-                                        text: 'Minimum paid time',
-                                        isRequired: true),
-                                    formBuilderField: FormInput(
-                                        vm: InputModel(
-                                            validators: [
-                                              FormBuilderValidators.required(),
-                                            ],
-                                            name: "specialRateMinPaidTime$i",
-                                            hintText: "120",
-                                            helperText: "minutes",
-                                            inputFormatters: [
-                                              GlobalConstants
-                                                  .numbersOnlyFormatter,
-                                            ]))),
-                                FormSwitch(
-                                    vm: SwitchModel(
-                                        name: "specialRateSplitTime$i",
-                                        title: "Split time")),
-                              ],
-                            ),
-                          MaterialButton(
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(color: Colors.grey[400]!),
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                            onPressed: onAddCustomRate,
-                            height: customRates > 0 ? 510 : 360,
-                            minWidth: 200,
-                            child: SpacedColumn(
-                              verticalSpace: 8.0,
-                              children: const [
-                                Icon(Icons.add_circle_outline),
-                                Text("Add Special Rate",
-                                    style: TextStyle(fontSize: 16)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  //todo:
+                  // SizedBox(
+                  //   width: specialRates.isEmpty ? 200 : context.width,
+                  //   child: SingleChildScrollView(
+                  //     scrollDirection: Axis.horizontal,
+                  //     child: SpacedRow(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       horizontalSpace: 16.0,
+                  //       children: [
+                  //         for (int i = 0; i < specialRates.length; i++)
+                  //           FormContainer(
+                  //             trailing: TextButton.icon(
+                  //                 label: const Text("Delete"),
+                  //                 style: TextButton.styleFrom(
+                  //                     foregroundColor: Colors.red),
+                  //                 icon: const Icon(Icons.delete),
+                  //                 onPressed: () => onRemoveCustomRate(i)),
+                  //             titleWidget: isCreate
+                  //                 ? const SizedBox()
+                  //                 : specialRates[i].id != 0
+                  //                     ? const SizedBox()
+                  //                     : TextButton.icon(
+                  //                         label: const Text("Save"),
+                  //                         icon: const Icon(Icons.save),
+                  //                         onPressed: () => onSaveCustomRate(i),
+                  //                       ),
+                  //             width: formContainerWidth * 0.6,
+                  //             left: [
+                  //               Visibility(
+                  //                 visible: false,
+                  //                 maintainState: true,
+                  //                 child: FormWithLabel(
+                  //                   labelVm: const LabelModel(text: ""),
+                  //                   formBuilderField: FormInput(
+                  //                     vm: InputModel(
+                  //                       initialValue:
+                  //                           specialRates[i].id.toString(),
+                  //                       name: "specialRateId$i",
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //               FormWithLabel(
+                  //                 labelVm: LabelModel(
+                  //                     text: "Special rate name $i",
+                  //                     isRequired: true),
+                  //                 formBuilderField: FormInput(
+                  //                   vm: InputModel(
+                  //                     initialValue: specialRates[i].name,
+                  //                     validators: [
+                  //                       FormBuilderValidators.required(),
+                  //                     ],
+                  //                     hintText: "Night shift",
+                  //                     name: "specialRateName$i",
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //               FormWithLabel(
+                  //                   labelVm: const LabelModel(
+                  //                       text: "Rate", isRequired: true),
+                  //                   formBuilderField: FormInput(
+                  //                       vm: InputModel(
+                  //                           initialValue: specialRates[i]
+                  //                               .rate
+                  //                               ?.toString(),
+                  //                           name: "specialRateRate$i",
+                  //                           hintText: "60",
+                  //                           valueTransformer: (value) =>
+                  //                               double.tryParse(value ?? ""),
+                  //                           validators: [
+                  //                         FormBuilderValidators.required(),
+                  //                         FormBuilderValidators.numeric(),
+                  //                       ],
+                  //                           inputFormatters: [
+                  //                         GlobalConstants
+                  //                             .numbersAndDecimalOnlyFormatter,
+                  //                       ]))),
+                  //               FormWithLabel(
+                  //                   labelVm: const LabelModel(
+                  //                       text: 'Minimum working time',
+                  //                       isRequired: true),
+                  //                   formBuilderField: FormInput(
+                  //                       vm: InputModel(
+                  //                           initialValue: specialRates[i]
+                  //                               .minWorkTime
+                  //                               ?.toString(),
+                  //                           valueTransformer: (value) =>
+                  //                               int.tryParse(value ?? ""),
+                  //                           validators: [
+                  //                             FormBuilderValidators.required(),
+                  //                             FormBuilderValidators.numeric(),
+                  //                           ],
+                  //                           name: "specialRateMinWorkTime$i",
+                  //                           hintText: "60",
+                  //                           helperText: "minutes",
+                  //                           inputFormatters: [
+                  //                             GlobalConstants
+                  //                                 .numbersOnlyFormatter,
+                  //                           ]))),
+                  //               FormWithLabel(
+                  //                   labelVm: const LabelModel(
+                  //                       text: 'Minimum paid time',
+                  //                       isRequired: true),
+                  //                   formBuilderField: FormInput(
+                  //                       vm: InputModel(
+                  //                           initialValue: specialRates[i]
+                  //                               .paidTime
+                  //                               ?.toString(),
+                  //                           valueTransformer: (value) =>
+                  //                               int.tryParse(value ?? ""),
+                  //                           validators: [
+                  //                             FormBuilderValidators.required(),
+                  //                             FormBuilderValidators.numeric(),
+                  //                           ],
+                  //                           name: "specialRateMinPaidTime$i",
+                  //                           hintText: "120",
+                  //                           helperText: "minutes",
+                  //                           inputFormatters: [
+                  //                             GlobalConstants
+                  //                                 .numbersOnlyFormatter,
+                  //                           ]))),
+                  //               FormSwitch(
+                  //                   vm: SwitchModel(
+                  //                       initialValue: specialRates[i].splitTime,
+                  //                       name: "specialRateSplitTime$i",
+                  //                       title: "Split time")),
+                  //             ],
+                  //           ),
+                  //         MaterialButton(
+                  //           shape: RoundedRectangleBorder(
+                  //             side: BorderSide(color: Colors.grey[400]!),
+                  //             borderRadius: BorderRadius.circular(32),
+                  //           ),
+                  //           onPressed: onAddCustomRate,
+                  //           height: specialRates.isEmpty ? 510 : 360,
+                  //           minWidth: 200,
+                  //           child: SpacedColumn(
+                  //             verticalSpace: 8.0,
+                  //             children: const [
+                  //               Icon(Icons.add_circle_outline),
+                  //               Text("Add Special Rate",
+                  //                   style: TextStyle(fontSize: 16)),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

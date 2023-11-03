@@ -23,4 +23,8 @@ class FormModel {
       formKey.currentState?.saveAndValidate(
           autoScrollWhenFocusOnInvalid: autoScrollWhenFocusOnInvalid,
           focusOnInvalid: focusOnInvalid);
+
+  void invalidateField(String name, String message) =>
+      formKey.currentState?.fields[name]
+          ?.invalidate(message, shouldFocus: false);
 }

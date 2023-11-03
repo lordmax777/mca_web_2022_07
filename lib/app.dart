@@ -43,29 +43,29 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
         debugShowCheckedModeBanner: false,
         theme: appTheme.copyWith(
           inputDecorationTheme: InputDecorationTheme(
-            enabledBorder: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey.shade400)),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: appTheme.colorScheme.primary, width: 1.5)),
+              errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: appTheme.colorScheme.error)),
+              focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey.shade400)),
-            focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                    color: appTheme.colorScheme.primary, width: 1.5)),
-            errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: appTheme.colorScheme.error)),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: appTheme.colorScheme.error),
-            ),
-            hintStyle: TextStyle(
-                color: Colors.grey.shade400, fontWeight: FontWeight.w400),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey.shade400)),
-            helperStyle: const TextStyle(color: Colors.grey),
-          ),
+                borderSide: BorderSide(color: appTheme.colorScheme.error),
+              ),
+              hintStyle: TextStyle(
+                  color: Colors.grey.shade400, fontWeight: FontWeight.w400),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey.shade400)),
+              helperStyle: const TextStyle(color: Colors.grey),
+              errorMaxLines: 3),
         ),
         title: 'MCA Dashboard',
         builder: (context, child) => botToastBuilder(

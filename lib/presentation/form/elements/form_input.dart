@@ -18,6 +18,7 @@ class FormInput extends StatelessWidget {
       validator: FormBuilderValidators.compose(vm.validators),
       inputFormatters: vm.inputFormatters,
       enabled: vm.enabled,
+      valueTransformer: vm.valueTransformer,
       cursorHeight: 20,
       mouseCursor: vm.enabled ? null : SystemMouseCursors.forbidden,
       decoration: InputDecoration(

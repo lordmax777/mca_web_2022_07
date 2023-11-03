@@ -10,6 +10,8 @@ class FormContainer extends StatefulWidget {
   final double? width;
   final String? title;
   final Widget? trailing;
+  final Widget? titleWidget;
+
   const FormContainer(
       {super.key,
       required this.left,
@@ -17,6 +19,7 @@ class FormContainer extends StatefulWidget {
       this.trailing,
       this.title,
       this.width,
+      this.titleWidget,
       this.hidden = const [],
       this.additionalText});
 
@@ -32,6 +35,7 @@ class _FormContainerState extends State<FormContainer> {
   double? get width => widget.width;
   String? get title => widget.title;
   Widget? get trailing => widget.trailing;
+  Widget? get titleWidget => widget.titleWidget;
 
   bool showHidden = false;
 
@@ -55,17 +59,18 @@ class _FormContainerState extends State<FormContainer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (title != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (titleWidget != null) titleWidget!,
+                if (title != null)
                   Text(
                     title!,
                     style: context.textTheme.titleLarge,
                   ),
-                  if (trailing != null) trailing!,
-                ],
-              ),
+                if (trailing != null) trailing!,
+              ],
+            ),
             if (title != null) Divider(color: Colors.grey.shade300),
             getRow(),
             if (hidden.isNotEmpty) const SizedBox(height: 8),
@@ -80,13 +85,16 @@ class _FormContainerState extends State<FormContainer> {
                     : Icons.keyboard_arrow_down),
               ),
             if (showHidden) const SizedBox(height: 8),
-            if (showHidden)
-              SpacedColumn(
+            Visibility(
+              maintainState: true,
+              visible: showHidden,
+              child: SpacedColumn(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 verticalSpace: 8,
                 children: hidden,
-              )
+              ),
+            )
           ]),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class InputModel {
   ///This will form the key in the form value Map
@@ -12,10 +13,13 @@ class InputModel {
   final bool enabled;
   final String? hintText;
   final String? helperText;
+  final ValueTransformer<String?>? valueTransformer;
+
   const InputModel({
     required this.name,
     this.initialValue,
     this.onChanged,
+    this.valueTransformer,
     this.helperText,
     this.enabled = true,
     this.maxLines,

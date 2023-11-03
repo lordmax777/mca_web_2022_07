@@ -1,4 +1,5 @@
 import 'package:mca_dashboard/presentation/pages/properties_view/data/shift_details.dart';
+import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
 
 class GetPropertiesAction {
   const GetPropertiesAction();
@@ -10,8 +11,51 @@ final class DeletePropertyAction {
 }
 
 final class PostPropertyAction {
-  final ShiftDetailsData model;
-  const PostPropertyAction(this.model);
+  final int? id;
+  final String title;
+  final int locationId;
+  final int clientId;
+  final int storageId;
+  final int templateId;
+  final DateTime startTime;
+  final DateTime finishTime;
+  final DateTime? startBreak;
+  final DateTime? finishBreak;
+  final DateTime? fpStartTime;
+  final DateTime? fpFinishTime;
+  final DateTime? fpStartBreak;
+  final DateTime? fpFinishBreak;
+  final bool strictBreak;
+  final int? minWorkTime;
+  final int? minPaidTime;
+  final bool? splitTime;
+  final bool checklist;
+  final WeekDaysMd days;
+  final bool active;
+
+  const PostPropertyAction({
+    this.id,
+    required this.title,
+    required this.locationId,
+    required this.active,
+    required this.clientId,
+    required this.storageId,
+    required this.templateId,
+    required this.startTime,
+    required this.finishTime,
+    this.startBreak,
+    this.finishBreak,
+    this.fpStartTime,
+    this.fpFinishTime,
+    this.fpStartBreak,
+    this.fpFinishBreak,
+    required this.strictBreak,
+    this.minWorkTime,
+    this.minPaidTime,
+    this.splitTime,
+    required this.checklist,
+    required this.days,
+  });
 }
 
 final class GetPropertySpecialRatesAction {
@@ -22,9 +66,18 @@ final class GetPropertySpecialRatesAction {
 
 final class PostPropertySpecialRatesAction {
   final int? shiftId;
-  final CustomRate rate;
+  final int minPaidTime;
+  final double rate;
+  final int minWorkTime;
+  final String name;
+  final bool splitTime;
 
-  const PostPropertySpecialRatesAction(this.shiftId, this.rate);
+  const PostPropertySpecialRatesAction(this.shiftId,
+      {required this.minPaidTime,
+      required this.rate,
+      required this.minWorkTime,
+      required this.name,
+      required this.splitTime});
 }
 
 final class DeletePropertySpecialRateAction {

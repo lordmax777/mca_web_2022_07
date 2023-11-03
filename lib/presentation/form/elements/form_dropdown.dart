@@ -104,7 +104,9 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
                             children: [
                               TextSpan(
                                   text: selectedItem!.title,
-                                  style: const TextStyle(color: Colors.black)),
+                                  style: TextStyle(
+                                      color: context.colorScheme.onSurface,
+                                      fontSize: 16)),
                               if (selectedItem!.subtitle != null)
                                 if (selectedItem!.subtitle != null)
                                   TextSpan(
@@ -144,30 +146,6 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
           },
         ),
         underline: const SizedBox(),
-        // selectedItemBuilder: (context) {
-        //   return vm.items
-        //       .map((e) => Align(
-        //             alignment: Alignment.centerLeft,
-        //             child: RichText(
-        //                 overflow: TextOverflow.ellipsis,
-        //                 maxLines: 2,
-        //                 softWrap: true,
-        //                 text: TextSpan(children: [
-        //                   TextSpan(
-        //                       text:
-        //                           "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.title}",
-        //                       style: Theme.of(context)
-        //                           .textTheme
-        //                           .bodyLarge!
-        //                           .copyWith()),
-        //                   if (e.subtitle != null)
-        //                     TextSpan(
-        //                         text: " / ${e.subtitle}",
-        //                         style: const TextStyle(color: Colors.grey)),
-        //                 ])),
-        //           ))
-        //       .toList();
-        // },
         items: getItems(),
         onChanged: (value) {
           state.didChange(value?.id);

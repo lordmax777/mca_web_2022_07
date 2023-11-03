@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/elements/save_button.dart';
@@ -10,6 +12,7 @@ import 'package:mca_dashboard/presentation/pages/properties_view/tabs/qualificat
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/shift_details_tab.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/shift_details_tab_2.dart';
 import 'package:mca_dashboard/presentation/pages/properties_view/tabs/staff_requirements_tab.dart';
+import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class NewPropertyPopup extends StatefulWidget {
@@ -26,8 +29,6 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
         SingleTickerProviderStateMixin,
         TableFocusNodeMixin<NewPropertyPopup, PropertyStaffMd,
             PropertyQualificationMd> {
-  final _dependencies = DependencyManager.instance;
-
   late ShiftDetailsData data;
 
   bool get isCreate => data.isCreate;
@@ -67,12 +68,42 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
       (_) async {
         if (mounted) {
           if (!isCreate) {
+            final model = widget.model!;
+            shiftDetailsFormVm.formKey.currentState?.patchValue({
+              "shiftName": model.title,
+              "locationId": model.locationId?.toString(),
+              "clientId": model.clientId?.toString(),
+              "storageId": model.warehouseId?.toString(),
+              "days": (model.days is List
+                      ? WeekDaysMd.fromList(model.days)
+                      : model.days is Map
+                          ? WeekDaysMd.fromMap(model.days)
+                          : WeekDaysMd())
+                  .asListString,
+              "templateId": model.checklistTemplateId?.toString(),
+              "active": model.active,
+              "checklist": model.checklist,
+              "startTime": model.startTime?.timeToDateTime,
+              "finishTime": model.finishTime?.timeToDateTime,
+              "startBreak": model.startBreak?.timeToDateTime,
+              "finishBreak": model.finishBreak?.timeToDateTime,
+              "strictBreak": model.strictBreak,
+              "fpStartTime": model.fpStartTime?.timeToDateTime,
+              "fpFinishTime": model.fpFinishTime?.timeToDateTime,
+              "fpStartBreak": model.fpStartBreak?.timeToDateTime,
+              "fpFinishBreak": model.fpFinishBreak?.timeToDateTime,
+              "minWorkTime": model.minWorkTime?.toString(),
+              "minPaidTime": model.minPaidTime?.toString(),
+              "splitTime": model.splitTime,
+            });
             initFetch();
           }
         }
       },
     );
   }
+
+  final List<SpecialRateMd> specialRates = [];
 
   void initFetch() {
     context.futureLoading(() async {
@@ -81,20 +112,27 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
       final result1 =
           await dispatch<PropertyDetailMd>(GetPropertyDetailsAction(data.id!));
       if (result.isLeft) {
-        for (final rate in result.left) {
-          data.customRates.add(CustomRate.from(rate));
+        specialRates.addAll(result.left);
+        for (int i = 0; i < result.left.length; i++) {
+          final rate = result.left[i];
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            // shiftDetailsFormVm.formKey.currentState?.patchValue({
+            //   "specialRateId$i": rate.id.toString(),
+            //   "specialRateName$i": rate.name,
+            //   "specialRateRate$i": rate.rate.toString(),
+            //   "specialRateMinWorkTime$i": rate.minWorkTime.toString(),
+            //   "specialRateMinPaidTime$i": rate.paidTime.toString(),
+            //   "specialRateSplitTime$i": rate.splitTime,
+            // });
+          });
         }
-        updateUI();
       } else {
         context.showError(result.right.message);
       }
       if (result1.isLeft) {
         propertyDetail = result1.left;
-        updateUI();
       }
-      // else {
-      // context.showError(result1.right.message);
-      // }
+      updateUI();
     });
   }
 
@@ -129,14 +167,58 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
               controller: _tabController,
               children: [
                 ShiftDetailsTab2(
-                  customRates: data.customRates.length,
+                  specialRates: specialRates,
+                  isCreate: isCreate,
                   formVm: shiftDetailsFormVm,
-                  onRemoveCustomRate: (value) {
-                    data.customRates.removeAt(value);
-                    updateUI();
+                  onSaveCustomRate: (i) async {
+                    shiftDetailsFormVm.saveAndValidate();
+                    if (!shiftDetailsFormVm.isValid) return;
+                    final name = shiftDetailsFormVm.value["specialRateName$i"];
+                    final rate = shiftDetailsFormVm.value["specialRateRate$i"];
+                    final minWorkTime =
+                        shiftDetailsFormVm.value["specialRateMinWorkTime$i"];
+                    final minPaidTime =
+                        shiftDetailsFormVm.value["specialRateMinPaidTime$i"];
+                    final splitTime =
+                        shiftDetailsFormVm.value["specialRateSplitTime$i"];
+                    final result = await dispatch<int>(
+                        PostPropertySpecialRatesAction(data.id,
+                            name: name,
+                            splitTime: splitTime,
+                            minWorkTime: minWorkTime,
+                            minPaidTime: minPaidTime,
+                            rate: rate));
+                    if (result.isRight) {
+                      context.showError(result.right.message);
+                    } else if (result.isLeft) {
+                      specialRates[i] = SpecialRateMd(
+                          id: result.left, name: name, splitTime: splitTime);
+                      context.showSuccess("Saved");
+                      updateUI();
+                    }
+                  },
+                  onRemoveCustomRate: (id) {
+                    shiftDetailsFormVm.save();
+                    final foundId = specialRates[id].id;
+                    if (data.id != null && foundId != 0) {
+                      context.futureLoading(() async {
+                        final success = await dispatch<bool>(
+                            DeletePropertySpecialRateAction(data.id!, foundId));
+                        if (success.isRight) {
+                          context.showError(success.right.message);
+                        } else {
+                          specialRates.removeAt(id);
+                          updateUI();
+                        }
+                      });
+                    } else {
+                      specialRates.removeAt(id);
+                      updateUI();
+                    }
                   },
                   onAddCustomRate: () {
-                    data.customRates.add(CustomRate.init());
+                    specialRates.add(
+                        const SpecialRateMd(id: 0, name: "", splitTime: false));
                     updateUI();
                   },
                 ),
@@ -202,43 +284,119 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  if (!data.isValid(context)) return;
-                  context.futureLoading(() async {
-                    final success =
-                        await dispatch<int?>(PostPropertyAction(data));
-                    if (success.isLeft && success.left != null) {
-                      final List<String> failedRates = [];
-
-                      for (final rate in data.customRates) {
-                        final result = await dispatch<bool>(
-                            PostPropertySpecialRatesAction(
-                                success.left!, rate));
-                        if (result.isRight) {
-                          failedRates.add(rate.name.text);
-                        }
-                      }
-                      if (failedRates.isNotEmpty) {
-                        context.showError(
-                            'Failed to save rates: ${failedRates.join(', ')}',
-                            onClose: () {
-                          context.pop(true);
-                        });
-                      } else {
-                        context.pop(true);
-                      }
-                    } else if (success.isRight) {
-                      context.showError(success.right.message);
-                    } else {
-                      context.showError('Something went wrong');
-                    }
-                  });
-                },
+                onPressed: () => onSave(true),
+                child: const Text('Save As New'),
+              ),
+              ElevatedButton(
+                onPressed: onSave,
                 child: const Text('Save'),
               ),
             ]
           : null,
     );
+  }
+
+  void onSave([bool saveAsNew = false]) async {
+    shiftDetailsFormVm.saveAndValidate();
+    if (!shiftDetailsFormVm.isValid) return;
+
+    context.futureLoading(() async {
+      final success = await dispatch<int?>(PostPropertyAction(
+        id: saveAsNew ? null : widget.model?.id,
+        title: shiftDetailsFormVm.value['shiftName'],
+        locationId: int.parse(shiftDetailsFormVm.value['locationId']),
+        clientId: int.parse(shiftDetailsFormVm.value['clientId']),
+        storageId: int.parse(shiftDetailsFormVm.value['storageId']),
+        templateId: int.parse(shiftDetailsFormVm.value['templateId']),
+        active: shiftDetailsFormVm.value['active'],
+        checklist: shiftDetailsFormVm.value['checklist'],
+        startTime: shiftDetailsFormVm.value['startTime'],
+        finishTime: shiftDetailsFormVm.value['finishTime'],
+        startBreak: shiftDetailsFormVm.value['startBreak'],
+        finishBreak: shiftDetailsFormVm.value['finishBreak'],
+        strictBreak: shiftDetailsFormVm.value['strictBreak'],
+        fpStartTime: shiftDetailsFormVm.value['fpStartTime'],
+        splitTime: shiftDetailsFormVm.value['splitTime'],
+        fpFinishTime: shiftDetailsFormVm.value['fpFinishTime'],
+        fpStartBreak: shiftDetailsFormVm.value['fpStartBreak'],
+        fpFinishBreak: shiftDetailsFormVm.value['fpFinishBreak'],
+        minWorkTime: shiftDetailsFormVm.value['minWorkTime'],
+        minPaidTime: shiftDetailsFormVm.value['minPaidTime'],
+        days: WeekDaysMd.fromDayNameToList(shiftDetailsFormVm.value['days']),
+      ));
+      if (success.isLeft && success.left != null) {
+        final List<String> failedRates = [];
+        if (isCreate) {
+          final fieldNameKeys = shiftDetailsFormVm.value.keys
+              .where((element) => element.startsWith('specialRateName'))
+              .toList();
+          final fieldRateKeys = shiftDetailsFormVm.value.keys
+              .where((element) => element.startsWith('specialRateRate'))
+              .toList();
+          final fieldMinWorkTimeKeys = shiftDetailsFormVm.value.keys
+              .where((element) => element.startsWith('specialRateMinWorkTime'))
+              .toList();
+          final fieldMinPaidTimeKeys = shiftDetailsFormVm.value.keys
+              .where((element) => element.startsWith('specialRateMinPaidTime'))
+              .toList();
+          final fieldSplitTimeKeys = shiftDetailsFormVm.value.keys
+              .where((element) => element.startsWith('specialRateSplitTime'))
+              .toList();
+          final fieldIdKeys = shiftDetailsFormVm.value.keys
+              .where((element) => element.startsWith('specialRateId'))
+              .toList();
+
+          for (int i = 0; i < fieldMinPaidTimeKeys.length; i++) {
+            final name = shiftDetailsFormVm.value[fieldNameKeys[i]];
+            final rate = shiftDetailsFormVm.value[fieldRateKeys[i]];
+            final minWorkTime =
+                shiftDetailsFormVm.value[fieldMinWorkTimeKeys[i]];
+            final minPaidTime =
+                shiftDetailsFormVm.value[fieldMinPaidTimeKeys[i]];
+            final splitTime = shiftDetailsFormVm.value[fieldSplitTimeKeys[i]];
+            final id = shiftDetailsFormVm.value[fieldIdKeys[i]];
+            final result = await dispatch<int>(PostPropertySpecialRatesAction(
+                success.left!,
+                name: name,
+                splitTime: splitTime,
+                minWorkTime: minWorkTime,
+                minPaidTime: minPaidTime,
+                rate: rate));
+            if (result.isRight) {
+              failedRates.add(name);
+            }
+          }
+        }
+
+        if (failedRates.isNotEmpty) {
+          context.showError('Failed to save rates: ${failedRates.join(', ')}',
+              onClose: () {
+            context.pop(true);
+          });
+        } else {
+          context.pop(true);
+        }
+      } else if (success.isRight) {
+        try {
+          final data = jsonDecode(success.right.data) as Map;
+          if (data.containsKey("errors")) {
+            print(data["errors"]);
+            if (data["errors"] is Map) {
+              for (final error in data["errors"].entries) {
+                shiftDetailsFormVm.invalidateField(
+                    error.key, error.value.join(", "));
+              }
+            } else {
+              context.showError(data["errors"].join(", "));
+            }
+          }
+        } catch (e) {
+          context.showError(success.right.message);
+        }
+      } else {
+        context.showError('Something went wrong');
+      }
+    });
   }
 
   @override

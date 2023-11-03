@@ -504,6 +504,17 @@ extension StringHelpers on String {
     }
   }
 
+  DateTime? get timeToDateTime {
+    //convert 11:00 to DatTime
+    try {
+      final time = split(':');
+      return DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day, int.parse(time[0]), int.parse(time[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
   String? get emptyOrNull {
     if (isEmpty) {
       return null;

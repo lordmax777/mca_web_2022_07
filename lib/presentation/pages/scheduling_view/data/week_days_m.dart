@@ -146,6 +146,36 @@ class WeekDaysMd extends Equatable {
     return weekDays;
   }
 
+  factory WeekDaysMd.fromDayNameToList(List<String> names) {
+    final weekDays = WeekDaysMd();
+    for (String name in names) {
+      switch (name) {
+        case 'monday':
+          weekDays.monday = true;
+          break;
+        case 'tuesday':
+          weekDays.tuesday = true;
+          break;
+        case 'wednesday':
+          weekDays.wednesday = true;
+          break;
+        case 'thursday':
+          weekDays.thursday = true;
+          break;
+        case 'friday':
+          weekDays.friday = true;
+          break;
+        case 'saturday':
+          weekDays.saturday = true;
+          break;
+        case 'sunday':
+          weekDays.sunday = true;
+          break;
+      }
+    }
+    return weekDays;
+  }
+
   factory WeekDaysMd.fromQuoteWorkDays(List<int> days,
       {bool isFortnightly = false}) {
     if (days.isEmpty) return WeekDaysMd();
@@ -252,5 +282,17 @@ class WeekDaysMd extends Equatable {
     }
 
     return weekDays;
+  }
+
+  List<String> get asListString {
+    final List<String> list = [];
+    if (monday) list.add('monday');
+    if (tuesday) list.add('tuesday');
+    if (wednesday) list.add('wednesday');
+    if (thursday) list.add('thursday');
+    if (friday) list.add('friday');
+    if (saturday) list.add('saturday');
+    if (sunday) list.add('sunday');
+    return list;
   }
 }
