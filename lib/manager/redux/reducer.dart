@@ -36,5 +36,6 @@ GeneralState _updateGeneralState(
     checklists: action.checklists ?? state.checklists,
     languages: action.languages ?? state.languages,
     timesheet: action.timesheet ?? state.timesheet,
+    jobTemplates: action.jobTemplates ?? state.jobTemplates,
   );
 }

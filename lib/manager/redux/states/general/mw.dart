@@ -15,6 +15,7 @@ import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_act
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/jobtemplate_action.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/post_shift_release_action.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:retrofit/retrofit.dart';
@@ -246,6 +247,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case DeleteClientAction:
         return action.fetch(store.state);
+      case GetJobTemplatesAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }
@@ -367,6 +370,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           appStore.dispatch(const GetApprovalsAction()) as Future,
           appStore.dispatch(const GetChecklistsAction(page: 1)) as Future,
           appStore.dispatch(const GetLanguagesAction()) as Future,
+          appStore.dispatch(const GetJobTemplatesAction()) as Future,
         ]);
         return true;
       });

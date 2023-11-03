@@ -88,6 +88,8 @@ class GeneralState extends Equatable {
     return companyInfo.currency;
   }
 
+  final List<JobTemplateMd> jobTemplates;
+
   const GeneralState({
     required this.formatMd,
     required this.users,
@@ -106,6 +108,7 @@ class GeneralState extends Equatable {
     required this.checklists,
     required this.languages,
     required this.timesheet,
+    required this.jobTemplates,
   });
 
   factory GeneralState.initial() {
@@ -134,6 +137,7 @@ class GeneralState extends Equatable {
       checklists: const ChecklistFullMd.init(),
       languages: const [],
       timesheet: TimesheetMd.init(),
+      jobTemplates: const [],
     );
   }
 
@@ -155,6 +159,7 @@ class GeneralState extends Equatable {
     ChecklistFullMd? checklists,
     List<LanguageMd>? languages,
     TimesheetMd? timesheet,
+    List<JobTemplateMd>? jobTemplates,
   }) {
     return GeneralState(
       formatMd: formatMd ?? this.formatMd,
@@ -174,6 +179,7 @@ class GeneralState extends Equatable {
       checklists: checklists ?? this.checklists,
       languages: languages ?? this.languages,
       timesheet: timesheet ?? this.timesheet,
+      jobTemplates: jobTemplates ?? this.jobTemplates,
     );
   }
 
@@ -196,6 +202,7 @@ class GeneralState extends Equatable {
         checklists,
         languages,
         timesheet,
+        jobTemplates,
       ];
 }
 
@@ -218,6 +225,7 @@ class UpdateGeneralState {
   final ChecklistFullMd? checklists;
   final List<LanguageMd>? languages;
   final TimesheetMd? timesheet;
+  final List<JobTemplateMd>? jobTemplates;
 
   const UpdateGeneralState({
     this.isReset = false,
@@ -238,5 +246,6 @@ class UpdateGeneralState {
     this.checklists,
     this.languages,
     this.timesheet,
+    this.jobTemplates,
   });
 }
