@@ -20,6 +20,7 @@ class FormDropdown extends StatelessWidget {
       validator: vm.validator,
       enabled: vm.enabled,
       initialValue: vm.initialValue,
+      onChanged: vm.onChanged,
       builder: (FormFieldState<String> state) {
         return DefaultDropdown2(state: state, vm: vm);
       },

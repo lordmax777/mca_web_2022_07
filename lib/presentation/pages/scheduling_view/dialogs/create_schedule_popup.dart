@@ -2,6 +2,11 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/presentation/form/elements/form_dropdown.dart';
+import 'package:mca_dashboard/presentation/form/elements/form_with_label.dart';
+import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
+import 'package:mca_dashboard/presentation/form/models/dropdown_model.dart';
+import 'package:mca_dashboard/presentation/form/models/label_model.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/address_popup.dart';
@@ -330,6 +335,7 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
               return a.service ? -1 : 1;
             }
           });
+        final jobTemplates = [...vm.jobTemplates];
         return SizedBox(
           width: double.infinity,
           child: SingleChildScrollView(
@@ -1163,6 +1169,44 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                         width: 300,
                         label:
                             'Selected Products: 0', //todo: productData.items.length
+                      ),
+                      const SizedBox(width: 16),
+                      SizedBox(
+                        width: 300,
+                        child: FormWithLabel(
+                          labelVm: const LabelModel(text: "Product Packages"),
+                          formBuilderField: FormDropdown(
+                            vm: DropdownModel(
+                              name: "productPackage",
+                              items: jobTemplates
+                                  .map((e) => DpItem(
+                                        id: e.id.toString(),
+                                        title: e.name.toString(),
+                                        subtitle: e.client(vm.clients)?.name,
+                                      ))
+                                  .toList(),
+                              hintText: "Select product package",
+                              onChanged: (p0) {
+                                final int? templateId = int.tryParse(p0 ?? "");
+                                if (templateId != null) {
+                                  final template =
+                                      jobTemplates.firstWhereOrNull((element) =>
+                                          element.id == templateId);
+                                  if (template != null) {
+                                    //remove all items before adding
+                                    productStateManager.removeAllRows();
+                                    //add all items
+                                    for (var item in template.items) {
+                                      onAddProduct(storageItems
+                                          .firstWhereOrNull((element) =>
+                                              element.id == item.id));
+                                    }
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 16),
                       IconButton(
