@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/manager/redux/states/general/actions/jobtemplate_action.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
@@ -22,13 +23,30 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
 
   final List<PlutoColumn> columns = [
     PlutoColumn(
-        enableAutoEditing: true,
-        enableEditingMode: true,
-        title: "Item name",
-        field: 'itemName',
-        type: PlutoColumnType.select(appStore.state.generalState.storageItems
-            .map((e) => e.name)
-            .toList())),
+      enableAutoEditing: false,
+      title: "Item name",
+      field: 'itemName',
+      type: PlutoColumnType.text(),
+      cellPadding: EdgeInsets.zero,
+      renderer: (rendererContext) {
+        return FormDropdown(
+            vm: DropdownModel(
+                name: "itemName",
+                hasSearchBox: true,
+                initialValue:
+                    rendererContext.row.cells["itemId"]?.value?.toString(),
+                onChanged: (id) {
+                  //update name
+                  rendererContext.stateManager
+                      .changeCellValue(rendererContext.cell, id);
+                  //update id
+                  rendererContext.row.cells["itemId"]?.value = id;
+                },
+                items: appStore.state.generalState.storageItems
+                    .map((e) => DpItem(id: e.id.toString(), title: e.name))
+                    .toList()));
+      },
+    ),
     PlutoColumn(
         enableAutoEditing: true,
         enableEditingMode: true,
@@ -50,14 +68,37 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
     PlutoColumn(
       enableEditingMode: false,
       title: "Save",
+      width: 80,
+      minWidth: 80,
       field: "save",
       type: PlutoColumnType.text(),
       renderer: (rendererContext) {
         final status =
             rendererContext.row.cells["status"]!.value as TableRowStatus;
         return IconButton(
-            onPressed: status == TableRowStatus.saved ? null : () {},
+            color: Colors.green,
+            onPressed: status == TableRowStatus.saved
+                ? null
+                : () {
+                    print(rendererContext.row.cells['itemId']?.value);
+                  },
             icon: const Icon(Icons.save));
+      },
+    ),
+    PlutoColumn(
+      enableEditingMode: false,
+      title: "Delete",
+      field: "delete",
+      width: 80,
+      minWidth: 80,
+      type: PlutoColumnType.text(),
+      renderer: (rendererContext) {
+        final status =
+            rendererContext.row.cells["status"]!.value as TableRowStatus;
+        return IconButton(
+            color: Colors.red,
+            onPressed: status == TableRowStatus.saved ? null : () {},
+            icon: const Icon(Icons.delete));
       },
     ),
     PlutoColumn(
@@ -70,9 +111,48 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
   final ValueNotifier<PlutoGridStateManager?> _sm = ValueNotifier(null);
   PlutoGridStateManager? get sm => _sm.value;
 
-  void onSave() {
+  void onSave() async {
     mainFormKey.saveAndValidate();
     if (!mainFormKey.isValid) return;
+    final rows = sm?.rows ?? [];
+    final data = mainFormKey.formKey.currentState!.value;
+    final name = data["name"] as String;
+    final active = data["active"] as bool;
+    final clientId = int.tryParse(data["client_id"] ?? '');
+    final comment = data["comment"] as String?;
+    final items = rows.map<JobTemplateItemMd>((e) {
+      final itemId = e.cells["itemId"]!.value as String;
+      final price = e.cells["price"]!.value as num;
+      final qty = e.cells["qty"]!.value as num;
+      final comment = e.cells["comment"]?.value as String?;
+      // final combine = e.cells["combine"]!.value as bool;
+      return JobTemplateItemMd(
+          id: 0,
+          itemId: int.parse(itemId),
+          price: price,
+          quantity: qty,
+          comment: comment,
+          combine: false);
+    }).toList();
+    try {
+      final res = await context.futureLoading(() async {
+        return await dispatch<int?>(SaveJobTemplateAction(
+            id: model?.id,
+            name: name,
+            active: active,
+            clientId: clientId,
+            comment: comment,
+            items: items));
+      });
+      if (res.isRight) {
+        context.showError(res.right.message);
+      } else {
+        //success
+      }
+      logger(res, hint: "SaveJobTemplateAction success");
+    } catch (e) {
+      logger(e.toString(), hint: "SaveJobTemplateAction fail");
+    }
   }
 
   void onAddItem(
@@ -81,7 +161,12 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       buildItemRow(
           item ??
               const JobTemplateItemMd(
-                  id: 0, quantity: 0, price: 0, comment: "", combine: false),
+                  id: -1,
+                  itemId: 0,
+                  quantity: 0,
+                  price: 0,
+                  comment: "",
+                  combine: false),
           status: status)
     ]);
   }
@@ -89,13 +174,15 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
   PlutoRow buildItemRow(JobTemplateItemMd item,
       {TableRowStatus status = TableRowStatus.idle}) {
     return PlutoRow(cells: {
+      "itemId": PlutoCell(value: item.itemId),
       "itemName": PlutoCell(
           value:
               item.item(appStore.state.generalState.storageItems)?.name ?? ""),
       "price": PlutoCell(value: item.price),
       "qty": PlutoCell(value: item.quantity),
       "comment": PlutoCell(value: item.comment),
-      "save": PlutoCell(value: item),
+      "save": PlutoCell(value: ""),
+      "delete": PlutoCell(value: ""),
       "status": PlutoCell(value: status),
     });
   }

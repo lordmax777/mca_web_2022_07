@@ -841,4 +841,9 @@ abstract class ApiClient {
   // get job templates
   @GET("/api/fe/jobtemplates/{id}")
   Future<HttpResponse> getJobTemplates(@Path("id") int id);
+
+  //delete job template item
+  @DELETE("/api/fe/jobtemplateitems/{id}/{item_id}")
+  Future<HttpResponse> deleteJobTemplateItem(
+      @Path("id") int id, @Path("item_id") int itemId);
 }

@@ -22,9 +22,9 @@ class JobTemplateMd extends Equatable {
   //         }
   final int id;
   final String name;
-  final String comment;
+  final String? comment;
   final bool active;
-  final int clientId;
+  final int? clientId;
   ClientMd? client(List<ClientMd> clients) =>
       clients.firstWhereOrNull((element) => element.id == clientId);
   final List<JobTemplateItemMd> items;
@@ -32,9 +32,9 @@ class JobTemplateMd extends Equatable {
   const JobTemplateMd({
     required this.id,
     required this.name,
-    required this.comment,
+    this.comment,
     required this.active,
-    required this.clientId,
+    this.clientId,
     required this.items,
   });
 
@@ -92,21 +92,26 @@ class JobTemplateMd extends Equatable {
 
 class JobTemplateItemMd extends Equatable {
   final int id;
+  final int itemId;
   final num quantity;
   final num price;
-  final String comment;
+  final String? comment;
   final bool combine;
 
   final JobTemplateMd? template;
 
   StorageItemMd? item(List<StorageItemMd> items) =>
-      items.firstWhereOrNull((element) => element.id == id);
+      items.firstWhereOrNull((element) => element.id == itemId);
 
   const JobTemplateItemMd({
+    ///Id of the item in the job template
     required this.id,
+
+    ///Id of the item in the storage
+    required this.itemId,
     required this.quantity,
     required this.price,
-    required this.comment,
+    this.comment,
     required this.combine,
     this.template,
   });
@@ -119,9 +124,10 @@ class JobTemplateItemMd extends Equatable {
       [JobTemplateMd? template]) {
     return JobTemplateItemMd(
       id: json['id'],
+      itemId: json['item_id'],
       quantity: json['quantity'],
       price: json['price'],
-      comment: json['comment'] ?? '',
+      comment: json['comment'],
       combine: json['combine'],
       template: template,
     );

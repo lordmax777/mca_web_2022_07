@@ -68,8 +68,9 @@ class _PackagesViewState extends State<PackagesView>
       "packageName": PlutoCell(value: model.template?.name),
       "client": PlutoCell(
           value: model.template
-              ?.client(appStore.state.generalState.clients)
-              ?.name),
+                  ?.client(appStore.state.generalState.clients)
+                  ?.name ??
+              ''),
       "itemName": PlutoCell(value: item?.name),
       "price": PlutoCell(value: model.price),
       "quantity": PlutoCell(value: model.quantity),
