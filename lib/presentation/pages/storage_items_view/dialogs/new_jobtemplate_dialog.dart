@@ -21,9 +21,15 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
 
   final mainFormKey = FormModel();
 
-  final List<PlutoColumn> columns = [
+  late final List<PlutoColumn> columns = <PlutoColumn>[
     PlutoColumn(
-      enableAutoEditing: false,
+        title: "ItemId",
+        field: 'itemId',
+        type: PlutoColumnType.text(),
+        width: 0,
+        minWidth: 0),
+    PlutoColumn(
+      enableEditingMode: false,
       title: "Item name",
       field: 'itemName',
       type: PlutoColumnType.text(),
@@ -51,6 +57,8 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         enableAutoEditing: true,
         enableEditingMode: true,
         title: "Price",
+        width: 100,
+        minWidth: 100,
         field: 'price',
         type: PlutoColumnType.number()),
     PlutoColumn(
@@ -58,33 +66,56 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         enableEditingMode: true,
         title: "Quantity",
         field: "qty",
+        width: 100,
+        minWidth: 100,
         type: PlutoColumnType.number()),
+    PlutoColumn(
+        title: "Combine",
+        field: "combine",
+        enableEditingMode: false,
+        width: 120,
+        minWidth: 120,
+        cellPadding: EdgeInsets.zero,
+        type: PlutoColumnType.text(),
+        renderer: (rendererContext) {
+          return FormDropdown(
+              vm: DropdownModel(
+                  name: "combine",
+                  initialValue: rendererContext.cell.value?.toString(),
+                  onChanged: (id) {
+                    //update combine
+                    rendererContext.stateManager
+                        .changeCellValue(rendererContext.cell, id);
+                    //update id
+                    // rendererContext.row.cells["itemId"]?.value = id;
+                  },
+                  items: const [
+                DpItem(id: "yes", title: "Yes"),
+                DpItem(id: "no", title: "No")
+              ]));
+        }),
     PlutoColumn(
         enableAutoEditing: true,
         enableEditingMode: true,
         title: "Comment",
         field: "comment",
         type: PlutoColumnType.text()),
-    PlutoColumn(
-      enableEditingMode: false,
-      title: "Save",
-      width: 80,
-      minWidth: 80,
-      field: "save",
-      type: PlutoColumnType.text(),
-      renderer: (rendererContext) {
-        final status =
-            rendererContext.row.cells["status"]!.value as TableRowStatus;
-        return IconButton(
-            color: Colors.green,
-            onPressed: status == TableRowStatus.saved
-                ? null
-                : () {
-                    print(rendererContext.row.cells['itemId']?.value);
-                  },
-            icon: const Icon(Icons.save));
-      },
-    ),
+    // PlutoColumn(
+    //   enableEditingMode: false,
+    //   title: "Save",
+    //   width: 80,
+    //   minWidth: 80,
+    //   field: "save",
+    //   type: PlutoColumnType.text(),
+    //   renderer: (rendererContext) {
+    //     return IconButton(
+    //         color: Colors.green,
+    //         onPressed: () {
+    //           print(rendererContext.row.cells['itemId']?.value);
+    //         },
+    //         icon: const Icon(Icons.save));
+    //   },
+    // ),
     PlutoColumn(
       enableEditingMode: false,
       title: "Delete",
@@ -93,23 +124,37 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       minWidth: 80,
       type: PlutoColumnType.text(),
       renderer: (rendererContext) {
-        final status =
-            rendererContext.row.cells["status"]!.value as TableRowStatus;
         return IconButton(
             color: Colors.red,
-            onPressed: status == TableRowStatus.saved ? null : () {},
+            onPressed: () => onDeleteItem(rendererContext.row),
             icon: const Icon(Icons.delete));
       },
     ),
-    PlutoColumn(
-        title: "Status",
-        field: "status",
-        width: 0,
-        minWidth: 0,
-        type: PlutoColumnType.text()),
   ];
   final ValueNotifier<PlutoGridStateManager?> _sm = ValueNotifier(null);
   PlutoGridStateManager? get sm => _sm.value;
+
+  void onDeleteItem(PlutoRow row) async {
+    final id = row.cells["id"]?.value;
+    print(id);
+    if (id == "-1") {
+      print("delete from grid");
+      sm?.removeRows([row]);
+    } else {
+      print("delete from db"); //delete from db
+      final res = await context.futureLoading(() async {
+        print(model!.id);
+        return await dispatch(
+            DeleteJobTemplateItemAction(model!.id, int.parse(id)));
+      });
+      if (res.isRight) {
+        context.showError(res.right.message);
+      } else {
+        sm?.removeRows([row]);
+        context.showSuccess("Item deleted");
+      }
+    }
+  }
 
   void onSave() async {
     mainFormKey.saveAndValidate();
@@ -125,14 +170,14 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       final price = e.cells["price"]!.value as num;
       final qty = e.cells["qty"]!.value as num;
       final comment = e.cells["comment"]?.value as String?;
-      // final combine = e.cells["combine"]!.value as bool;
+      final combine = (e.cells["combine"]!.value as String?) == "yes";
       return JobTemplateItemMd(
           id: 0,
           itemId: int.parse(itemId),
           price: price,
           quantity: qty,
           comment: comment,
-          combine: false);
+          combine: combine);
     }).toList();
     try {
       final res = await context.futureLoading(() async {
@@ -155,35 +200,32 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
     }
   }
 
-  void onAddItem(
-      [JobTemplateItemMd? item, TableRowStatus status = TableRowStatus.idle]) {
+  void onAddItem([JobTemplateItemMd? item]) {
     sm?.insertRows(0, [
-      buildItemRow(
-          item ??
-              const JobTemplateItemMd(
-                  id: -1,
-                  itemId: 0,
-                  quantity: 0,
-                  price: 0,
-                  comment: "",
-                  combine: false),
-          status: status)
+      buildItemRow(item ??
+          const JobTemplateItemMd(
+              id: -1,
+              itemId: -1,
+              quantity: 0,
+              price: 0,
+              comment: "",
+              combine: false))
     ]);
   }
 
-  PlutoRow buildItemRow(JobTemplateItemMd item,
-      {TableRowStatus status = TableRowStatus.idle}) {
+  PlutoRow buildItemRow(JobTemplateItemMd item) {
     return PlutoRow(cells: {
-      "itemId": PlutoCell(value: item.itemId),
+      "id": PlutoCell(value: item.id.toString()),
+      "itemId": PlutoCell(value: item.itemId.toString()),
       "itemName": PlutoCell(
           value:
               item.item(appStore.state.generalState.storageItems)?.name ?? ""),
       "price": PlutoCell(value: item.price),
       "qty": PlutoCell(value: item.quantity),
+      "combine": PlutoCell(value: item.combine ? "yes" : "no"),
       "comment": PlutoCell(value: item.comment),
-      "save": PlutoCell(value: ""),
+      // "save": PlutoCell(value: ""),
       "delete": PlutoCell(value: ""),
-      "status": PlutoCell(value: status),
     });
   }
 
@@ -278,7 +320,7 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
                                 mainFormKey.formKey.currentState
                                     ?.patchValue(model!.toJson());
                                 for (var item in model!.items) {
-                                  onAddItem(item, TableRowStatus.saved);
+                                  onAddItem(item);
                                 }
                               }
                             },

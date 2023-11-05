@@ -75,3 +75,18 @@ class SaveJobTemplateAction {
     });
   }
 }
+
+class DeleteJobTemplateItemAction {
+  final int templateId;
+  final int itemId;
+
+  const DeleteJobTemplateItemAction(this.templateId, this.itemId);
+
+  Future<Either<bool, ErrorMd>> fetch(AppState state) async {
+    return await apiCall(() async {
+      final res = await DependencyManager.instance.apiClient
+          .deleteJobTemplateItem(templateId, itemId);
+      return res.response.statusCode == 200;
+    });
+  }
+}

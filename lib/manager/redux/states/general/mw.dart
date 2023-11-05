@@ -251,6 +251,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case SaveJobTemplateAction:
         return action.fetch(store.state);
+      case DeleteJobTemplateItemAction:
+        return action.fetch(store.state);
       default:
         return next(action);
     }
