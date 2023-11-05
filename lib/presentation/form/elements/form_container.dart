@@ -71,7 +71,8 @@ class _FormContainerState extends State<FormContainer> {
                 if (trailing != null) trailing!,
               ],
             ),
-            if (title != null) Divider(color: Colors.grey.shade300),
+            if (title != null || titleWidget != null || trailing != null)
+              Divider(color: Colors.grey.shade300),
             getRow(),
             if (hidden.isNotEmpty) const SizedBox(height: 8),
             if (hidden.isNotEmpty)

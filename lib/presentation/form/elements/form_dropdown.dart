@@ -118,11 +118,13 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
                           )),
                     )
                   else
-                    Text(vm.hintText ?? "",
-                        // (vm.items.isNotEmpty ? vm.items.first.title : ""),
-                        style: TextStyle(color: Colors.grey.shade500)),
-                  const Icon(Icons.keyboard_arrow_down_rounded,
-                      color: Colors.grey),
+                    Text(
+                        vm.hintText ??
+                            (vm.items.isNotEmpty ? vm.items.first.title : ""),
+                        style: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontWeight: FontWeight.w100)),
+                  const Icon(Icons.keyboard_arrow_down_rounded),
                 ],
               );
             })),

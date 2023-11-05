@@ -43,14 +43,17 @@ class JobTemplateMd extends Equatable {
 
   //fromJson
   factory JobTemplateMd.fromJson(Map<String, dynamic> json) {
-    return JobTemplateMd(
+    final jobtemplate = JobTemplateMd(
       id: json['id'],
       name: json['name'],
       comment: json['comment'] ?? '',
       active: json['active'],
       clientId: json['client_id'],
-      items: (json['items'] as List)
-          .map((e) => JobTemplateItemMd.fromJson(e))
+      items: [],
+    );
+    return jobtemplate.copyWith(
+      items: (json['items'] as List<dynamic>)
+          .map((e) => JobTemplateItemMd.fromJson(e, jobtemplate))
           .toList(),
     );
   }
@@ -62,9 +65,28 @@ class JobTemplateMd extends Equatable {
       'name': name,
       'comment': comment,
       'active': active,
-      'client_id': clientId,
+      'client_id': clientId.toString(),
       'items': items.map((e) => e.toJson()).toList(),
     };
+  }
+
+  //copyWith
+  JobTemplateMd copyWith({
+    int? id,
+    String? name,
+    String? comment,
+    bool? active,
+    int? clientId,
+    List<JobTemplateItemMd>? items,
+  }) {
+    return JobTemplateMd(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      comment: comment ?? this.comment,
+      active: active ?? this.active,
+      clientId: clientId ?? this.clientId,
+      items: items ?? this.items,
+    );
   }
 }
 
@@ -75,25 +97,33 @@ class JobTemplateItemMd extends Equatable {
   final String comment;
   final bool combine;
 
+  final JobTemplateMd? template;
+
+  StorageItemMd? item(List<StorageItemMd> items) =>
+      items.firstWhereOrNull((element) => element.id == id);
+
   const JobTemplateItemMd({
     required this.id,
     required this.quantity,
     required this.price,
     required this.comment,
     required this.combine,
+    this.template,
   });
 
   @override
   List<Object?> get props => [id, quantity, price, comment, combine];
 
   //fromJson
-  factory JobTemplateItemMd.fromJson(Map<String, dynamic> json) {
+  factory JobTemplateItemMd.fromJson(Map<String, dynamic> json,
+      [JobTemplateMd? template]) {
     return JobTemplateItemMd(
       id: json['id'],
       quantity: json['quantity'],
       price: json['price'],
       comment: json['comment'] ?? '',
       combine: json['combine'],
+      template: template,
     );
   }
 
@@ -105,6 +135,7 @@ class JobTemplateItemMd extends Equatable {
       'price': price,
       'comment': comment,
       'combine': combine,
+      'template': template?.toJson() ?? '',
     };
   }
 }

@@ -182,7 +182,7 @@ class MCANavigation extends IMCANavigation {
               pageBuilder: (context, state) {
                 return NoTransitionPage<void>(
                   key: state.pageKey,
-                  child: const StorageItemsView(),
+                  child: const StorageItemsWrapper(),
                 );
               },
             ),
@@ -589,6 +589,7 @@ class MCALoginState extends ChangeNotifier {
 
   Future<void> logout() async {
     //clear all data
+    print("Clearing all data");
     await dispatch<void>(const GetClearDataAction());
     _isLoggedIn = false;
     notifyListeners();

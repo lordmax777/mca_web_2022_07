@@ -116,3 +116,5 @@ class DefaultTable extends StatelessWidget {
     );
   }
 }
+
+enum TableRowStatus { idle, saved }

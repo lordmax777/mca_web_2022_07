@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
-import 'package:mca_dashboard/presentation/pages/storage_items_view/new_stock_item_popup.dart';
+import 'package:mca_dashboard/presentation/pages/storage_items_view/dialogs/new_stock_item_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class StorageItemsView extends StatefulWidget {

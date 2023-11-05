@@ -26,6 +26,9 @@ final class StorageItemMd extends Equatable {
   bool auto;
   int quantity;
 
+  JobTemplateMd? jobTemplate(List<JobTemplateMd> jobTemplates) => jobTemplates
+      .firstWhereOrNull((element) => element.items.any((e) => e.id == id));
+
   StorageItemMd({
     required this.id,
     required this.name,

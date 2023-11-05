@@ -17,3 +17,4 @@ export 'checklists_view/checklists_view.dart';
 export 'settings_view/settings_view.dart';
 export 'timesheet_view/timesheet_view.dart';
 export 'clients_view/clients_view.dart';
+export 'storage_items_view/storage_items_wrapper.dart';

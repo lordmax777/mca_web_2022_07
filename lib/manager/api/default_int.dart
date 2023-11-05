@@ -128,6 +128,12 @@ class DefaultInterceptor {
                     return handler.resolve(
                         await deps.dioClient.dio.fetch(e.requestOptions));
                   }
+                } else if (e.response?.data?['error_description']
+                        .toString()
+                        .contains("The access token provided is invalid") ==
+                    true) {
+                  // logout
+                  deps.navigation.loginState.logout();
                 }
               }
             }
