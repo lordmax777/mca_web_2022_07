@@ -164,7 +164,8 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.title}",
+              // "${GlobalConstants.enableDebugCodes ? "[${e.id}] - " : ""}${e.title}",
+              e.title,
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             ),

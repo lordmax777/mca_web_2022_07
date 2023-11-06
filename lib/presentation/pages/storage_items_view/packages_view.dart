@@ -89,7 +89,10 @@ class _PackagesViewState extends State<PackagesView>
   }
 
   void onAddNewPackage([JobTemplateMd? template]) {
-    context.showDialog(NewJobTemplatePopup(model: template));
+    context.showDialog(NewJobTemplatePopup(
+      model: template,
+      onRefresh: fetch,
+    ));
   }
 
   @override

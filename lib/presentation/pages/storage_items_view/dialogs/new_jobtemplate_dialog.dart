@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/manager/redux/states/general/actions/jobtemplate_action.dart';
@@ -9,7 +10,8 @@ import 'package:pluto_grid/pluto_grid.dart';
 
 class NewJobTemplatePopup extends StatefulWidget {
   final JobTemplateMd? model;
-  const NewJobTemplatePopup({super.key, this.model});
+  final void Function() onRefresh;
+  const NewJobTemplatePopup({super.key, this.model, required this.onRefresh});
 
   @override
   State<NewJobTemplatePopup> createState() => _NewJobTemplatePopupState();
@@ -18,16 +20,11 @@ class NewJobTemplatePopup extends StatefulWidget {
 class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
   JobTemplateMd? get model => widget.model;
   bool get isNew => model == null;
+  void Function() get onRefresh => widget.onRefresh;
 
   final mainFormKey = FormModel();
 
   late final List<PlutoColumn> columns = <PlutoColumn>[
-    PlutoColumn(
-        title: "ItemId",
-        field: 'itemId',
-        type: PlutoColumnType.text(),
-        width: 0,
-        minWidth: 0),
     PlutoColumn(
       enableEditingMode: false,
       title: "Item name",
@@ -35,12 +32,16 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       type: PlutoColumnType.text(),
       cellPadding: EdgeInsets.zero,
       renderer: (rendererContext) {
+        final hash = rendererContext.row.hashCode;
         return FormDropdown(
             vm: DropdownModel(
-                name: "itemName",
+                name: "itemName$hash",
                 hasSearchBox: true,
-                initialValue:
-                    rendererContext.row.cells["itemId"]?.value?.toString(),
+                initialValue: rendererContext.row.cells["itemId"]?.value
+                            ?.toString() ==
+                        "-1"
+                    ? null
+                    : rendererContext.row.cells["itemId"]?.value?.toString(),
                 onChanged: (id) {
                   //update name
                   rendererContext.stateManager
@@ -59,12 +60,14 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         title: "Price",
         width: 100,
         minWidth: 100,
+        cellPadding: EdgeInsets.zero,
         field: 'price',
         type: PlutoColumnType.number()),
     PlutoColumn(
         enableAutoEditing: true,
         enableEditingMode: true,
         title: "Quantity",
+        cellPadding: EdgeInsets.zero,
         field: "qty",
         width: 100,
         minWidth: 100,
@@ -78,16 +81,17 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         cellPadding: EdgeInsets.zero,
         type: PlutoColumnType.text(),
         renderer: (rendererContext) {
+          final hash = rendererContext.row.hashCode;
           return FormDropdown(
               vm: DropdownModel(
-                  name: "combine",
+                  name: "combine$hash",
                   initialValue: rendererContext.cell.value?.toString(),
                   onChanged: (id) {
                     //update combine
                     rendererContext.stateManager
                         .changeCellValue(rendererContext.cell, id);
                     //update id
-                    // rendererContext.row.cells["itemId"]?.value = id;
+                    rendererContext.row.cells["combine"]?.value = id;
                   },
                   items: const [
                 DpItem(id: "yes", title: "Yes"),
@@ -95,11 +99,27 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
               ]));
         }),
     PlutoColumn(
-        enableAutoEditing: true,
-        enableEditingMode: true,
-        title: "Comment",
-        field: "comment",
-        type: PlutoColumnType.text()),
+      enableEditingMode: true,
+      enableAutoEditing: true,
+      title: "Comment",
+      field: "comment",
+      cellPadding: EdgeInsets.zero,
+      type: PlutoColumnType.text(),
+      // renderer: (rendererContext) {
+      //   final comment = rendererContext.cell.value?.toString();
+      //   final hash = rendererContext.row.hashCode;
+      //   return FormInput(
+      //       vm: InputModel(
+      //     name: "comment$hash",
+      //     initialValue: comment,
+      //     onChanged: (value) {
+      //       rendererContext.stateManager
+      //           .changeCellValue(rendererContext.cell, value);
+      //       rendererContext.row.cells["comment"]?.value = value;
+      //     },
+      //   ));
+      // },
+    ),
     // PlutoColumn(
     //   enableEditingMode: false,
     //   title: "Save",
@@ -120,8 +140,8 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       enableEditingMode: false,
       title: "Delete",
       field: "delete",
-      width: 80,
-      minWidth: 80,
+      width: 60,
+      minWidth: 60,
       type: PlutoColumnType.text(),
       renderer: (rendererContext) {
         return IconButton(
@@ -141,17 +161,24 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       print("delete from grid");
       sm?.removeRows([row]);
     } else {
-      print("delete from db"); //delete from db
-      final res = await context.futureLoading(() async {
-        print(model!.id);
-        return await dispatch(
-            DeleteJobTemplateItemAction(model!.id, int.parse(id)));
-      });
-      if (res.isRight) {
-        context.showError(res.right.message);
-      } else {
-        sm?.removeRows([row]);
-        context.showSuccess("Item deleted");
+      try {
+        print("delete from db"); //delete from db
+        final res = await context.futureLoading(() async {
+          return await dispatch(
+              DeleteJobTemplateItemAction(model!.id, int.parse(id)));
+        });
+        if (res.isRight) {
+          context.showError(res.right.message);
+        } else if (res.isLeft) {
+          sm?.removeRows([row]);
+          context.showSuccess("Item deleted");
+          onRefresh();
+        } else {
+          context.showError("Something went wrong");
+        }
+      } catch (e) {
+        context.showError("Something went wrong");
+        logger(e.toString(), hint: "DeleteJobTemplateItemAction fail");
       }
     }
   }
@@ -159,6 +186,7 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
   void onSave() async {
     mainFormKey.saveAndValidate();
     if (!mainFormKey.isValid) return;
+
     final rows = sm?.rows ?? [];
     final data = mainFormKey.formKey.currentState!.value;
     final name = data["name"] as String;
@@ -170,6 +198,7 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       final price = e.cells["price"]!.value as num;
       final qty = e.cells["qty"]!.value as num;
       final comment = e.cells["comment"]?.value as String?;
+      logger(comment, hint: 'comment');
       final combine = (e.cells["combine"]!.value as String?) == "yes";
       return JobTemplateItemMd(
           id: 0,
@@ -193,6 +222,8 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         context.showError(res.right.message);
       } else {
         //success
+        context.showSuccess("Package saved");
+        onRefresh();
       }
       logger(res, hint: "SaveJobTemplateAction success");
     } catch (e) {
@@ -201,16 +232,10 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
   }
 
   void onAddItem([JobTemplateItemMd? item]) {
-    sm?.insertRows(0, [
-      buildItemRow(item ??
-          const JobTemplateItemMd(
-              id: -1,
-              itemId: -1,
-              quantity: 0,
-              price: 0,
-              comment: "",
-              combine: false))
-    ]);
+    final newItem = buildItemRow(item ??
+        const JobTemplateItemMd(
+            id: -1, itemId: -1, quantity: 0, price: 0, combine: false));
+    sm?.insertRows(0, [newItem]);
   }
 
   PlutoRow buildItemRow(JobTemplateItemMd item) {
@@ -223,8 +248,7 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       "price": PlutoCell(value: item.price),
       "qty": PlutoCell(value: item.quantity),
       "combine": PlutoCell(value: item.combine ? "yes" : "no"),
-      "comment": PlutoCell(value: item.comment),
-      // "save": PlutoCell(value: ""),
+      "comment": PlutoCell(value: item.comment ?? ""),
       "delete": PlutoCell(value: ""),
     });
   }
@@ -237,7 +261,7 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         ElevatedButton(onPressed: onSave, child: const Text("Save")),
       ],
       contentPadding: EdgeInsets.zero,
-      title: Text("${isNew ? "Add" : "Update"} Job Template"),
+      title: Text("${isNew ? "Add" : "Update"} Package"),
       content: StoreConnector<AppState, ListMd>(
         converter: (store) => store.state.generalState.lists,
         builder: (context, vm) {
@@ -256,7 +280,7 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
                         left: [
                           FormWithLabel(
                             labelVm: const LabelModel(
-                                text: "Template Name", isRequired: true),
+                                text: "Package Name", isRequired: true),
                             formBuilderField: FormInput(
                                 vm: InputModel(
                                     name: "name",

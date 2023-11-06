@@ -432,7 +432,7 @@ class MCANavigation extends IMCANavigation {
                 Icons.check_circle_outline,
                 color: Colors.green,
               ),
-              title: const Text('Success'),
+              // title: const Text('Success'),
               actions: [
                 ElevatedButton(
                   onPressed: () {
