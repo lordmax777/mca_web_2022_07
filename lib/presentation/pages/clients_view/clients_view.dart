@@ -5,6 +5,8 @@ import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/client_det
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_dialog.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
+import 'dialogs/clients_edit_2_dialog.dart';
+
 class ClientsView extends StatefulWidget {
   const ClientsView({super.key});
 
@@ -110,7 +112,7 @@ class _ClientsViewState extends State<ClientsView>
                   return await deleteSelected(rendererContext.row);
                 }, showError: false);
               },
-              onEdit: () => onEdit((p0) => ClientsEditDialog(client: p0),
+              onEdit: () => onEdit((p0) => ClientsEdit2Dialog(client: p0),
                   rendererContext.cell.value),
             );
           },
@@ -164,7 +166,7 @@ class _ClientsViewState extends State<ClientsView>
           const SizedBox(width: 10),
           ElevatedButton(
               onPressed: () => onEdit(
-                  (p0) => const ClientsEditDialog(client: null), null,
+                  (p0) => const ClientsEdit2Dialog(client: null), null,
                   showSuccess: false),
               child: const Text("Add Client")),
         ],

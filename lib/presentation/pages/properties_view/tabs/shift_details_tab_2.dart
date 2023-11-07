@@ -1,26 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/presentation/form/elements/default_form.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_checkbox.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_container.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_date_picker.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_dropdown.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_input.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_switch.dart';
-import 'package:mca_dashboard/presentation/form/elements/form_with_label.dart';
-import 'package:mca_dashboard/presentation/form/models/checkbox_model.dart';
-import 'package:mca_dashboard/presentation/form/models/date_picker_model.dart';
-import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
-import 'package:mca_dashboard/presentation/form/models/dropdown_model.dart';
-import 'package:mca_dashboard/presentation/form/models/form_model.dart';
-import 'package:mca_dashboard/presentation/form/models/input_model.dart';
-import 'package:mca_dashboard/presentation/form/models/label_model.dart';
-import 'package:mca_dashboard/presentation/form/models/switch_model.dart';
+import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
-
-import '../../../global_widgets/widgets.dart';
 
 class ShiftDetailsTab2 extends StatelessWidget {
   final FormModel formVm;
@@ -55,11 +36,7 @@ class ShiftDetailsTab2 extends StatelessWidget {
             child: DefaultForm(
               clearValueOnUnregister: true,
               vm: formVm,
-              child: Wrap(
-                alignment: WrapAlignment.start,
-                runAlignment: WrapAlignment.start,
-                spacing: 32,
-                runSpacing: 16.0,
+              child: FormWrap(
                 children: [
                   FormContainer(
                     width: formContainerWidth,

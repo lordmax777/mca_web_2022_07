@@ -726,7 +726,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       final data = action.data;
       final addressData = action.addressData;
       final res = await deps.apiClient.postClient(data.clientId ?? 0,
-          active: true,
+          active: data.active,
           name: data.name,
           company: data.companyName,
           email: data.email,
@@ -742,6 +742,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           combineInvoices: data.combineInvoices,
           invoiceDay: data.invoiceDay,
           sendInvoices: data.sendInvoices,
+          addressCounty: addressData.county,
+          addressLine2: addressData.line2,
           invoicePeriodId: data.invoicePeriod!.id,
           fax: data.fax);
 

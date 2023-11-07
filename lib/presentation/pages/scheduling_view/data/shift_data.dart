@@ -122,10 +122,12 @@ class PersonalData extends Equatable {
   bool combineInvoices;
   bool sendInvoices;
   String? fax;
+  bool active;
 
   PersonalData({
     this.name = "",
     this.clientId,
+    this.active = true,
     this.companyName = "",
     this.phone = "",
     this.email = "",
@@ -158,6 +160,7 @@ class PersonalData extends Equatable {
         combineInvoices,
         sendInvoices,
         fax,
+        active,
       ];
 
   //copyWith
@@ -177,6 +180,7 @@ class PersonalData extends Equatable {
     bool? combineInvoices,
     bool? sendInvoices,
     String? fax,
+    bool? active,
   }) {
     return PersonalData(
       name: name ?? this.name,
@@ -194,6 +198,7 @@ class PersonalData extends Equatable {
       combineInvoices: combineInvoices ?? this.combineInvoices,
       sendInvoices: sendInvoices ?? this.sendInvoices,
       fax: fax ?? this.fax,
+      active: active ?? this.active,
     );
   }
 
@@ -220,6 +225,7 @@ class PersonalData extends Equatable {
       sendInvoices: client.sendInvoices,
       combineInvoices: client.combineInvoices,
       fax: client.fax ?? "",
+      active: client.active,
     );
   }
 
