@@ -62,7 +62,7 @@ class _QuotesViewState extends State<QuotesView>
   PlutoRow buildRow(model) {
     String name = model.name;
     String contact = "-";
-    final String status = model.quoteStatus ? "accepted" : "pending";
+    final String status = model.quoteStatus ? "accepted" : model.processStatus;
     double value = model.quoteValue.toDouble();
     if (model.company.isNotEmpty) {
       name += " (${model.company})";
@@ -83,6 +83,7 @@ class _QuotesViewState extends State<QuotesView>
         "last_sent": PlutoCell(value: model.lastSent ?? "Never"),
         "created_on": PlutoCell(value: model.createdOn),
         "valid_until": PlutoCell(value: model.validUntil),
+        // "processStatus": PlutoCell(value: model.processStatus),
         "action": PlutoCell(value: ""),
       },
     );
@@ -116,7 +117,7 @@ class _QuotesViewState extends State<QuotesView>
           },
         ),
         PlutoColumn(
-          width: 100,
+          // width: 100,
           title: "Status",
           field: "status",
           type: PlutoColumnType.text(),
@@ -253,6 +254,10 @@ class _QuotesViewState extends State<QuotesView>
             );
           },
         ),
+        // PlutoColumn(
+        //     title: "Process Status",
+        //     field: "processStatus",
+        //     type: PlutoColumnType.text())
       ];
 
   @override

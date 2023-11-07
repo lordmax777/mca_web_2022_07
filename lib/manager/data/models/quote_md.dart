@@ -210,6 +210,8 @@ final class QuoteMd extends Equatable {
       lastSent == null ? null : DateTime.parse(lastSent!);
   final List<QuoteMessageMd> messages;
 
+  final String processStatus;
+
   const QuoteMd({
     required this.addressLine1,
     required this.addressLine2,
@@ -261,6 +263,7 @@ final class QuoteMd extends Equatable {
     required this.items,
     required this.lastSent,
     required this.messages,
+    required this.processStatus,
   });
 
   @override
@@ -302,7 +305,20 @@ final class QuoteMd extends Equatable {
         updatedBy,
         items,
         lastSent,
-        messages
+        messages,
+        addressCity,
+        addressCounty,
+        addressCountry,
+        addressPostcode,
+        addressLine1,
+        addressLine2,
+        workAddressCity,
+        workAddressCounty,
+        workAddressCountry,
+        workAddressPostcode,
+        workAddressLine1,
+        workAddressLine2,
+        processStatus,
       ];
 
   //from json
@@ -376,6 +392,7 @@ final class QuoteMd extends Equatable {
       workAddressPostcode: json["work_address_postcode"],
       workAddressLine1: json["work_address_line1"],
       workAddressLine2: json["work_address_line2"],
+      processStatus: json["process_status"],
     );
   }
 }
