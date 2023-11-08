@@ -20,14 +20,16 @@ class FormInput extends StatelessWidget {
       enabled: vm.enabled,
       valueTransformer: vm.valueTransformer,
       cursorHeight: 20,
+      readOnly: vm.readOnly ?? false,
       mouseCursor: vm.enabled ? null : SystemMouseCursors.forbidden,
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.never,
         helperText: vm.helperText,
         hintText: vm.hintText,
-        filled: !vm.enabled,
+        filled: !vm.enabled || vm.readOnly == true,
         helperMaxLines: 2,
-        fillColor: !vm.enabled ? Colors.grey.shade200 : null,
+        fillColor:
+            !vm.enabled || vm.readOnly == true ? Colors.grey.shade200 : null,
       ),
     );
   }

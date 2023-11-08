@@ -6,6 +6,7 @@ import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/shift_card.dart';
 
+///Once saved, returns the id of the client
 class ClientsEdit2Dialog extends StatefulWidget {
   final ClientMd? client;
   const ClientsEdit2Dialog({super.key, this.client});

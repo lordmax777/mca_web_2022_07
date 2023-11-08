@@ -11,6 +11,7 @@ class InputModel {
   final List<FormFieldValidator<String>> validators;
   final List<TextInputFormatter> inputFormatters;
   final bool enabled;
+  final bool? readOnly;
   final String? hintText;
   final String? helperText;
   final ValueTransformer<String?>? valueTransformer;
@@ -22,6 +23,7 @@ class InputModel {
     this.valueTransformer,
     this.helperText,
     this.enabled = true,
+    this.readOnly,
     this.maxLines,
     this.hintText,
     this.validators = const [],

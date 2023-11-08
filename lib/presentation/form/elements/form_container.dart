@@ -106,6 +106,7 @@ class _FormContainerState extends State<FormContainer> {
         verticalSpace: 8,
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: left,
       );
     } else {
