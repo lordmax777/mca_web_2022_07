@@ -30,34 +30,33 @@ class _DefaultTableHeaderState extends State<DefaultTableHeader> {
       height: 60,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: widget.headerStart != null
-            ? widget.headerStart
-            : Row(
-                mainAxisAlignment: focusNode != null
-                    ? MainAxisAlignment.spaceBetween
-                    : MainAxisAlignment.end,
-                children: [
-                  // search field
-                  if (focusNode != null)
-                    DefaultTextField(
-                      width: 240,
-                      height: 40,
-                      label: "Filter",
-                      focusNode: focusNode,
-                      onChanged: (value) {
-                        stateManager.setFilter((element) =>
-                            element.cells.values.any((cell) => cell.value
-                                .toString()
-                                .toLowerCase()
-                                .contains(value.toLowerCase())) ==
-                            true);
-                      },
-                    ),
+        child: widget.headerStart ??
+            Row(
+              mainAxisAlignment: focusNode != null
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.end,
+              children: [
+                // search field
+                if (focusNode != null)
+                  DefaultTextField(
+                    width: 240,
+                    height: 40,
+                    label: "Filter",
+                    focusNode: focusNode,
+                    onChanged: (value) {
+                      stateManager.setFilter((element) =>
+                          element.cells.values.any((cell) => cell.value
+                              .toString()
+                              .toLowerCase()
+                              .contains(value.toLowerCase())) ==
+                          true);
+                    },
+                  ),
 
-                  //Menu button
-                  if (widget.headerEnd != null) widget.headerEnd!,
-                ],
-              ),
+                //Menu button
+                if (widget.headerEnd != null) widget.headerEnd!,
+              ],
+            ),
       ),
     );
   }

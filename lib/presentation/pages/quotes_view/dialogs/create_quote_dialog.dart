@@ -38,12 +38,94 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   PropertyMd? get propertyResource => widget.propertyResource;
   DateTime? get selectedDate => widget.selectedDate;
   AllocationMd? get allocation => widget.allocation;
-
   bool get isCreate => allocation == null;
 
   final List<UserMd> unavailableUsers = [];
-
   String? currentIpAddress;
+
+  late final List<PlutoColumn> productTableColumns = [
+    PlutoColumn(
+      title: "id",
+      type: PlutoColumnType.text(),
+      field: "id",
+      hide: true,
+    ),
+    PlutoColumn(title: "Title", type: PlutoColumnType.text(), field: "title"),
+    PlutoColumn(
+      title: "Customer's price",
+      type: PlutoColumnType.currency(
+          symbol: appStore.state.generalState.companyInfo.currency.sign),
+      field: "price",
+      enableAutoEditing: true,
+      enableEditingMode: true,
+      footerRenderer: (context) {
+        final double total = context.stateManager.rows
+            .where((element) => element.checked ?? false)
+            .map((e) =>
+                (e.cells["price"]?.value ?? 0) *
+                (e.cells["quantity"]?.value ?? 0))
+            .fold(0, (a, b) {
+          return a + b;
+        });
+
+        return Tooltip(
+          message: total.getPriceMap(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              total.getPriceMap(),
+              maxLines: 2,
+              textAlign: TextAlign.end,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      },
+    ),
+    PlutoColumn(
+      title: "Quantity",
+      type: PlutoColumnType.number(),
+      field: "quantity",
+      enableAutoEditing: true,
+      enableEditingMode: true,
+    ),
+    //included in service checkbox
+    PlutoColumn(
+      width: 80,
+      title: "Included in service (All)",
+      type: PlutoColumnType.text(),
+      enableRowChecked: true,
+      enableSorting: false,
+      enableFilterMenuItem: false,
+      enableAutoEditing: false,
+      enableEditingMode: false,
+      field: "auto",
+    ),
+    PlutoColumn(
+      width: 40,
+      title: "",
+      field: "deleteBtn",
+      enableAutoEditing: false,
+      enableEditingMode: false,
+      type: PlutoColumnType.text(),
+      renderer: (rendererContext) {
+        return Center(
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            color: Theme.of(context).colorScheme.error,
+            constraints: const BoxConstraints(),
+            onPressed: () {
+              rendererContext.stateManager.removeRows([rendererContext.row]);
+            },
+            icon: const Icon(Icons.delete),
+          ),
+        );
+      },
+    )
+  ];
+  PlutoGridStateManager? productSm;
 
   void updateUI(VoidCallback? callback) {
     if (mounted) {
@@ -98,6 +180,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const String timingRepeatId = "timingRepeatId";
   static const String timingWeek1 = "timingWeek1";
   static const String timingWeek2 = "timingWeek2";
+  static const String productSelect = "productSelect";
+  static const String packageSelect = "packageSelect";
 
   static const DpItem noneItem = DpItem(id: "-1", title: "None");
 
@@ -448,6 +532,99 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     );
   }
 
+  Widget productTable(
+      {required List<StorageItemMd> storageItems,
+      required List<JobTemplateMd> packages}) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SizedBox(
+          width: double.infinity,
+          height: context.height * .7,
+          child: DefaultTable(
+              headerStart: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Products and Services",
+                      style: context.textTheme.headlineMedium!
+                          .copyWith(color: Colors.black)),
+                  SizedBox(
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          //Product select
+                          SizedBox(
+                            width: 400,
+                            height: 50,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const FormLabel(
+                                    vm: LabelModel(text: "Product")),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 300,
+                                  height: 50,
+                                  child: FormDropdown(
+                                      vm: DropdownModel(
+                                          name: productSelect,
+                                          hasSearchBox: true,
+                                          hintText:
+                                              "Search for product or service",
+                                          items: storageItems
+                                              .map((e) => DpItem(
+                                                  id: e.id.toString(),
+                                                  title: e.name,
+                                                  subtitle: e.service
+                                                      ? "Service"
+                                                      : null))
+                                              .toList())),
+                                ),
+                              ],
+                            ),
+                          ),
+                          //Package select
+                          SizedBox(
+                            width: 400,
+                            height: 50,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const FormLabel(
+                                    vm: LabelModel(text: "Package")),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 300,
+                                  height: 50,
+                                  child: FormDropdown(
+                                      vm: DropdownModel(
+                                          name: packageSelect,
+                                          hasSearchBox: true,
+                                          hintText: "Search for package",
+                                          items: packages
+                                              .map((e) => DpItem(
+                                                  id: e.id.toString(),
+                                                  title: e.name,
+                                                  subtitle:
+                                                      "${e.items.length} items"))
+                                              .toList())),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                  ),
+                ],
+              ),
+              onLoaded: (p0) {
+                productSm = p0.stateManager;
+              },
+              columns: productTableColumns,
+              rows: [])),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, GeneralState>(
@@ -478,6 +655,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               return a.service ? -1 : 1;
             }
           });
+
         final jobTemplates = [...vm.jobTemplates];
 
         final containerWidth = context.width * .2;
@@ -490,26 +668,31 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                //Quote, Work Address, Timing, Product table
                 SizedBox(
                   width: containerWidth * 3.5,
                   child: SingleChildScrollView(
                     child: FormWrap(alignment: WrapAlignment.center, children: [
-                      //Quote Widget
-                      quoteWidget(
-                          containerWidth: containerWidth, vm: vm, quote: quote),
-                      //Work address
-                      workAddressWidget(
-                          containerWidth: containerWidth,
-                          client: client,
-                          workLocation: workLocation,
-                          locations: locations,
-                          countries: vm.lists.countries),
-                      //Timing
-                      timingWidget(
-                          containerWidth: containerWidth, vm: vm, quote: quote),
+                      // //Quote Widget
+                      // quoteWidget(
+                      //     containerWidth: containerWidth, vm: vm, quote: quote),
+                      // //Work address
+                      // workAddressWidget(
+                      //     containerWidth: containerWidth,
+                      //     client: client,
+                      //     workLocation: workLocation,
+                      //     locations: locations,
+                      //     countries: vm.lists.countries),
+                      // //Timing
+                      // timingWidget(
+                      //     containerWidth: containerWidth, vm: vm, quote: quote),
+                      //Product table
+                      productTable(
+                          packages: jobTemplates, storageItems: storageItems),
                     ]),
                   ),
                 ),
+                //Divider
                 Container(
                   margin: const EdgeInsets.only(right: 40),
                   height: context.height * 1.2,

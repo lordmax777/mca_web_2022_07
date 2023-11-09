@@ -6,6 +6,7 @@ class DropdownModel {
   final String? initialValue;
   final String? hintText;
   final String? helperText;
+  final String? labelText;
   final bool enabled;
   final bool hasSearchBox;
   final String? Function(String?)? validator;
@@ -15,6 +16,7 @@ class DropdownModel {
     required this.name,
     required this.items,
     this.initialValue,
+    this.labelText,
     this.hintText,
     this.onChanged,
     this.helperText,

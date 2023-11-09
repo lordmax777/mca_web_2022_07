@@ -87,6 +87,7 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
             : null,
         customButton: InputDecorator(
             decoration: InputDecoration(
+              label: vm.labelText != null ? Text(vm.labelText!) : null,
               border: InputBorder.none,
               errorText: errorText,
               helperText: vm.helperText,
