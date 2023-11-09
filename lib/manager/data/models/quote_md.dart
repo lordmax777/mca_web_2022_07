@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/data/models.dart';
+import 'package:mca_dashboard/manager/manager.dart';
 
 final class QuoteMd extends Equatable {
   //{
@@ -146,6 +147,14 @@ final class QuoteMd extends Equatable {
     return TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1]));
   }
 
+  bool get allDay {
+    if (workStartTime == null) return false;
+    if (workFinishTime == null) return false;
+    if (workStartTime!.isEmpty) return false;
+    if (workFinishTime!.isEmpty) return false;
+    return workStartTime == "00:00" && workFinishTime == "23:59";
+  }
+
   final int? workRepeat;
   WorkRepeatMd? workRepeatMd(List<WorkRepeatMd> workRepeats) {
     return workRepeats.firstWhereOrNull((element) => element.id == workRepeat);
@@ -161,6 +170,10 @@ final class QuoteMd extends Equatable {
   final String quoteComments;
   final num quoteValue;
   final num quoteTax;
+  TaxMd? quoteTaxMd(List<TaxMd> taxes) {
+    return taxes.firstWhereOrNull((element) => element.id == quoteTax);
+  }
+
   final int currencyId;
   CurrencyMd? currencyMd(List<CurrencyMd> currencies) {
     return currencies.firstWhereOrNull((element) => element.id == currencyId);
@@ -211,6 +224,32 @@ final class QuoteMd extends Equatable {
   final List<QuoteMessageMd> messages;
 
   final String processStatus;
+  QuoteProcess get processStatusEnum => processStatus.toQuoteProcess;
+
+  final String identifier;
+
+  // "work_location_latitude": 0,
+  // "work_location_longitude": 0,
+  // "work_location_radius": 0,
+  // "work_static_ip_addresses": null,
+  final num workLocationLatitude;
+  final num workLocationLongitude;
+  final num workLocationRadius;
+  final dynamic workStaticIpAddresses; //todo:
+  final List<QuoteAllocationMd> allocations;
+  final int? lastAllocationId;
+  QuoteAllocationMd? get lastAllocationMd {
+    if (lastAllocationId == null) return null;
+    return allocations
+        .firstWhereOrNull((element) => element.id == lastAllocationId);
+  }
+
+  final int nextAllocationId;
+  QuoteAllocationMd? get nextAllocationMd {
+    if (lastAllocationId == null) return null;
+    return allocations
+        .firstWhereOrNull((element) => element.id == nextAllocationId);
+  }
 
   const QuoteMd({
     required this.addressLine1,
@@ -264,6 +303,14 @@ final class QuoteMd extends Equatable {
     required this.lastSent,
     required this.messages,
     required this.processStatus,
+    required this.allocations,
+    required this.identifier,
+    required this.lastAllocationId,
+    required this.workLocationLatitude,
+    required this.workLocationLongitude,
+    required this.workLocationRadius,
+    required this.workStaticIpAddresses,
+    required this.nextAllocationId,
   });
 
   @override
@@ -319,6 +366,14 @@ final class QuoteMd extends Equatable {
         workAddressLine1,
         workAddressLine2,
         processStatus,
+        allocations,
+        identifier,
+        lastAllocationId,
+        workLocationLatitude,
+        workLocationLongitude,
+        workLocationRadius,
+        workStaticIpAddresses,
+        nextAllocationId,
       ];
 
   //from json
@@ -393,6 +448,15 @@ final class QuoteMd extends Equatable {
       workAddressLine1: json["work_address_line1"],
       workAddressLine2: json["work_address_line2"],
       processStatus: json["process_status"],
+      allocations: List<QuoteAllocationMd>.from((json["allocations"] ?? [])
+          .map((x) => QuoteAllocationMd.fromJson(x))),
+      identifier: json["identifier"],
+      lastAllocationId: json["last_allocation_id"],
+      workLocationLatitude: json["work_location_latitude"],
+      workLocationLongitude: json["work_location_longitude"],
+      workLocationRadius: json["work_location_radius"],
+      workStaticIpAddresses: json["work_static_ip_addresses"],
+      nextAllocationId: json["next_allocation_id"],
     );
   }
 }
@@ -516,4 +580,97 @@ final class QuoteUserMd extends Equatable {
   @override
   List<Object?> get props =>
       [userId, specialStartTime, specialFinishTime, specialRate];
+}
+
+class QuoteAllocationMd extends Equatable {
+  // {
+  //                     "id": 46084,
+  //                     "date": "2023-09-05",
+  //                     "user_id": 807,
+  //                     "location_id": 359,
+  //                     "shift_id": 491,
+  //                     "special_start_time": null,
+  //                     "special_finish_time": null,
+  //                     "special_rate": null,
+  //                     "service_shift_id": null
+  //                 }
+  final int id;
+  final String date;
+  DateTime get dateDt => DateTime.parse(date);
+  final int userId;
+  UserMd? userMd(List<UserMd> users) {
+    return users.firstWhereOrNull((element) => element.id == userId);
+  }
+
+  final int locationId;
+  LocationMd? locationMd(List<LocationMd> locations) {
+    return locations.firstWhereOrNull((element) => element.id == locationId);
+  }
+
+  final int shiftId;
+  PropertyMd? shiftMd(List<PropertyMd> properties) {
+    return properties.firstWhereOrNull((element) => element.id == shiftId);
+  }
+
+  final String? specialStartTime;
+  TimeOfDay? get specialStartTimeDt {
+    if (specialStartTime == null) return null;
+    final parts = specialStartTime!.split(":");
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
+
+  final String? specialFinishTime;
+  TimeOfDay? get specialFinishTimeDt {
+    if (specialFinishTime == null) return null;
+    final parts = specialFinishTime!.split(":");
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
+
+  final num? specialRate;
+  final int? serviceShiftId;
+
+  const QuoteAllocationMd({
+    required this.id,
+    required this.date,
+    required this.userId,
+    required this.locationId,
+    required this.shiftId,
+    required this.specialStartTime,
+    required this.specialFinishTime,
+    required this.specialRate,
+    required this.serviceShiftId,
+  });
+
+  //from json
+  factory QuoteAllocationMd.fromJson(Map<String, dynamic> json) =>
+      QuoteAllocationMd(
+        id: json["id"],
+        date: json["date"],
+        userId: json["user_id"],
+        locationId: json["location_id"],
+        shiftId: json["shift_id"],
+        specialStartTime: json["special_start_time"],
+        specialFinishTime: json["special_finish_time"],
+        specialRate: json["special_rate"],
+        serviceShiftId: json["service_shift_id"],
+      );
+
+  @override
+  List<Object?> get props => [
+        id,
+        date,
+        userId,
+        locationId,
+        shiftId,
+        specialStartTime,
+        specialFinishTime,
+        specialRate,
+        serviceShiftId,
+      ];
 }

@@ -6,39 +6,27 @@ import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
-import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_dialog.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
-import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
-import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/shift_card.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../scheduling_view/data/week_days_m.dart';
 
 class CreateQuoteDialog extends StatefulWidget {
-  final UserMd? userResource;
-  final PropertyMd? propertyResource;
-  final DateTime? selectedDate;
-  final AllocationMd? allocation;
+  final QuoteMd? quote;
 
-  const CreateQuoteDialog(
-      {super.key,
-      this.selectedDate,
-      this.propertyResource,
-      this.userResource,
-      this.allocation});
+  const CreateQuoteDialog({
+    super.key,
+    this.quote,
+  });
 
   @override
   State<CreateQuoteDialog> createState() => _CreateQuoteDialogState();
 }
 
 class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
-  final _dependencies = DependencyManager.instance;
-
-  UserMd? get userResource => widget.userResource;
-  PropertyMd? get propertyResource => widget.propertyResource;
-  DateTime? get selectedDate => widget.selectedDate;
-  AllocationMd? get allocation => widget.allocation;
-  bool get isCreate => allocation == null;
+  QuoteMd? get quote => widget.quote;
+  QuoteProcess get processStatus =>
+      quote?.processStatusEnum ?? QuoteProcess.idle;
 
   final List<UserMd> unavailableUsers = [];
   String? currentIpAddress;
@@ -89,6 +77,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           ),
         );
       },
+      renderer: (rendererContext) =>
+          rendererContext.defaultEditableCellWidget(),
     ),
     PlutoColumn(
       title: "Quantity",
@@ -98,6 +88,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       field: "quantity",
       enableAutoEditing: true,
       enableEditingMode: true,
+      renderer: (rendererContext) =>
+          rendererContext.defaultEditableCellWidget(),
     ),
     //included in service checkbox
     PlutoColumn(
@@ -148,6 +140,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       (_) async {
         if (mounted) {
           setIp();
+          setupVars();
           //todo: init
         }
       },
@@ -159,14 +152,41 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     updateUI(() => currentIpAddress = ipAddress);
   }
 
+  void setupVars() {
+    updateUI(() {
+      if (quote != null) {
+        formVm.patchValue({
+          quoteName: quote?.name,
+          quoteComment: quote?.notes,
+          quoteActive: quote?.active,
+          clientId: quote?.clientId.toString(),
+          workLocationId: quote?.locationId.toString(),
+          workLine1: quote?.addressLine1,
+          workLine2: quote?.addressLine2,
+          workCity: quote?.addressCity,
+          workPostcode: quote?.addressPostcode,
+          workCountryId: quote?.addressCountry,
+          workCounty: quote?.addressCounty,
+          workLocationLatitude: quote?.workLocationLatitude,
+          workLocationLongitude: quote?.workLocationLongitude,
+          workLocationRadius: quote?.workLocationRadius,
+          // workStaticIpAddresses: quote?.,//TODO:
+          startTime: quote?.workStartTime?.timeToDateTime,
+          endTime: quote?.workFinishTime?.timeToDateTime,
+          allDay: quote?.allDay,
+          timingRepeatId: quote?.workRepeat?.toString(),
+          timingWeek1: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? []),
+          timingWeek2: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [],
+              isFortnightly: true),
+        });
+        formVm.save();
+      }
+    });
+  }
+
   final formVm = FormModel();
-  static const String quoteId = "quoteId";
+  // static const String quoteId = "quoteId";
   static const String quoteName = "quoteName";
-  static const String quoteStatus = "quoteStatus";
-  static const String quoteNextScheduledDate = "quoteNextScheduledDate";
-  static const String quoteRepeatId = "quoteRepeatId";
-  static const String quoteWeek1 = "quoteWeek1";
-  static const String quoteWeek2 = "quoteWeek2";
   static const String quoteActive = "quoteActive";
   static const String quoteComment = "quoteComment";
   static const String clientId = "clientId";
@@ -194,43 +214,21 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const DpItem noneItem = DpItem(id: "-1", title: "None");
 
   FormContainer quoteWidget(
-      {required double containerWidth,
-      required GeneralState vm,
-      QuoteMd? quote}) {
+      {required double containerWidth, required GeneralState vm}) {
     return FormContainer(
       title: "Quote Details",
       width: containerWidth,
       left: <Widget>[
-        FormWithLabel(
-            labelVm: const LabelModel(text: "Quote"),
-            formBuilderField: FormDropdown(
-              vm: DropdownModel(
-                  name: quoteId,
-                  hasSearchBox: true,
-                  onChanged: (p0) {
-                    final quote = vm.quotes.firstWhereOrNull(
-                        (element) => element.id.toString() == p0);
-                    formVm.formKey.currentState?.patchValue({
-                      quoteName: quote?.name,
-                      quoteComment: quote?.notes,
-                      quoteStatus: quote?.processStatus,
-                      //todo: ask imre
-                      quoteNextScheduledDate: null,
-                      quoteRepeatId: quote
-                          ?.workRepeatMd(vm.lists.workRepeats)
-                          ?.id
-                          .toString(),
-                    });
-                    updateUI(formVm.save);
-                  },
-                  items: vm.quotes
-                      .map((e) => DpItem(
-                          id: e.id.toString(),
-                          title: e.name,
-                          subtitle: e.company))
-                      .toList()
-                    ..insert(0, noneItem)),
-            )),
+        if (processStatus == QuoteProcess.idle)
+          FormWithLabel(
+              labelVm: const LabelModel(text: "Job Title"),
+              formBuilderField: processStatus == QuoteProcess.idle
+                  ? const FormInput(
+                      vm: InputModel(
+                          name: quoteName,
+                          helperText:
+                              "Leave empty to use default name\nDefault name is used from company settings"))
+                  : buildText(quote!.name)),
         if (quote != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Quote Number"),
@@ -239,36 +237,20 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         if (quote != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Status"),
-              formBuilderField: buildText(quote.processStatus)),
-        const FormWithLabel(
-            labelVm: LabelModel(text: "Job Title", isRequired: true),
-            formBuilderField: FormInput(
-                vm: InputModel(
-                    name: quoteName,
-                    helperText:
-                        "Leave empty to use default name\nDefault name is used from company settings"))),
-      ],
-      hidden: [
-        if (quote != null)
-          //todo: ask imre for previous shift
+              formBuilderField: buildText(processStatus.name)),
+        if (quote?.lastAllocationMd != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Previous shift"),
-              formBuilderField: buildText("quote.previousShift")),
-        //next scheduled date
-        // todo: ask imre
-        const FormWithLabel(
-            labelVm: LabelModel(text: 'Next Scheduled Date'),
-            formBuilderField: FormDatePicker(
-                vm: DatePickerModel(name: quoteNextScheduledDate))),
-        //repeat days
-        RepeatWidget(
-            repeatName: quoteRepeatId,
-            week1Name: quoteWeek1,
-            week2Name: quoteWeek2,
-            formVm: formVm,
-            onDpChanged: (_) => updateUI(formVm.save)),
-        const SizedBox(height: 4),
-        const FormSwitch(vm: SwitchModel(name: quoteActive, title: "Active")),
+              formBuilderField:
+                  buildText(quote!.shiftMd(vm.properties)?.title ?? "-")),
+
+        if (quote?.nextAllocationMd != null)
+          FormWithLabel(
+              labelVm: const LabelModel(text: "Next scheduled date"),
+              formBuilderField:
+                  buildText(quote!.nextAllocationMd?.date ?? "-")),
+        if (processStatus != QuoteProcess.idle)
+          const FormSwitch(vm: SwitchModel(name: quoteActive, title: "Active")),
         const FormWithLabel(
             labelVm: LabelModel(text: "Comment"),
             formBuilderField: FormInput(
@@ -379,12 +361,14 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             formBuilderField: FormInput(
                 vm: InputModel(
               name: workLocationLatitude,
+              valueTransformer: (value) => double.tryParse(value ?? ""),
               inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
             ))),
         FormWithLabel(
             labelVm: const LabelModel(text: "Longitude"),
             formBuilderField: FormInput(
                 vm: InputModel(
+              valueTransformer: (value) => double.tryParse(value ?? ""),
               name: workLocationLongitude,
               inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
             ))),
@@ -392,6 +376,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             labelVm: const LabelModel(text: "Radius"),
             formBuilderField: FormInput(
                 vm: InputModel(
+              valueTransformer: (value) => double.tryParse(value ?? ""),
               name: workLocationRadius,
               inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
             ))),
@@ -418,6 +403,24 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       title: "Timing",
       width: containerWidth,
       left: [
+        FormSwitch(
+            vm: SwitchModel(
+          name: allDay,
+          title: "All Day",
+          onChanged: (value) {
+            if (value == true) {
+              formVm.patchValue({
+                startTime: DateTime(2021, 1, 1, 0, 0),
+                endTime: DateTime(2021, 1, 1, 23, 59),
+              });
+            } else {
+              formVm.patchValue({
+                startTime: null,
+                endTime: null,
+              });
+            }
+          },
+        )),
         const FormWithLabel(
             labelVm: LabelModel(text: "Start Time"),
             formBuilderField: FormDatePicker(
@@ -453,25 +456,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               },
               inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
             ))),
-        const SizedBox(height: 4),
-        FormSwitch(
-            vm: SwitchModel(
-          name: allDay,
-          title: "All Day",
-          onChanged: (value) {
-            if (value == true) {
-              formVm.patchValue({
-                startTime: DateTime(2021, 1, 1, 0, 0),
-                endTime: DateTime(2021, 1, 1, 23, 59),
-              });
-            } else {
-              formVm.patchValue({
-                startTime: null,
-                endTime: null,
-              });
-            }
-          },
-        )),
         const SizedBox(height: 4),
         RepeatWidget(
             onDpChanged: (_) => updateUI(formVm.save),
@@ -691,9 +675,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             (element) =>
                 element.id.toString() == formVm.getValue(workLocationId));
 
-        final QuoteMd? quote = vm.quotes.firstWhereOrNull(
-            (element) => element.id.toString() == formVm.getValue(quoteId));
-
         final List<LocationMd> locations = [
           ...vm.clientBasedFullLocations(client?.id)
         ];
@@ -725,8 +706,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   child: SingleChildScrollView(
                     child: FormWrap(alignment: WrapAlignment.center, children: [
                       //Quote Widget
-                      quoteWidget(
-                          containerWidth: containerWidth, vm: vm, quote: quote),
+                      quoteWidget(containerWidth: containerWidth, vm: vm),
                       //Work address
                       workAddressWidget(
                           containerWidth: containerWidth,
@@ -785,8 +765,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     if (updatedClientId != null) {
       formVm.patchValue({clientId: updatedClientId.toString()});
       updateUI(formVm.save);
-    } else {
-      context.showError("Client not updated");
     }
   }
 

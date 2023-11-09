@@ -530,3 +530,55 @@ mixin ActionMixin<R> {
 }
 
 //////////////////////
+
+//create enum for these values and call it QuoteProcessStatus
+//quote requested, quote prepared, quote revision, quote sent, declined, accepted, job created, job scheduled, job started, job completed, invoiced, closed
+enum QuoteProcess {
+  quoteRequested,
+  quotePrepared,
+  quoteRevision,
+  quoteSent,
+  declined,
+  accepted,
+  jobCreated,
+  jobScheduled,
+  jobStarted,
+  jobCompleted,
+  invoiced,
+  closed,
+  idle,
+}
+
+//from String extension for QuoteProcessStatus
+extension QuoteProcessStatusHelper on String {
+  QuoteProcess get toQuoteProcess {
+    switch (this) {
+      case "quoteRequested":
+        return QuoteProcess.quoteRequested;
+      case "quotePrepared":
+        return QuoteProcess.quotePrepared;
+      case "quoteRevision":
+        return QuoteProcess.quoteRevision;
+      case "quoteSent":
+        return QuoteProcess.quoteSent;
+      case "declined":
+        return QuoteProcess.declined;
+      case "accepted":
+        return QuoteProcess.accepted;
+      case "jobCreated":
+        return QuoteProcess.jobCreated;
+      case "jobScheduled":
+        return QuoteProcess.jobScheduled;
+      case "jobStarted":
+        return QuoteProcess.jobStarted;
+      case "jobCompleted":
+        return QuoteProcess.jobCompleted;
+      case "invoiced":
+        return QuoteProcess.invoiced;
+      case "closed":
+        return QuoteProcess.closed;
+      default:
+        return QuoteProcess.idle;
+    }
+  }
+}
