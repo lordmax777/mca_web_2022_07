@@ -334,14 +334,13 @@ mixin TableFocusNodeMixin<T extends StatefulWidget, MD, MD1> on State<T> {
     if (stateManager!.hasFocus) {
       stateManager?.gridFocusNode.removeListener(handleFocus);
     }
-    final res =
-        await DependencyManager.instance.navigation.showCustomDialog<bool>(
-            context: context,
-            builder: (context) {
-              return child(model);
-            });
+    final res = await DependencyManager.instance.navigation.showCustomDialog(
+        context: context,
+        builder: (context) {
+          return child(model);
+        });
 
-    if (res != null && res) {
+    if (res != null && res == true) {
       final l = await loading<List<MD>?>(() async => await fetch());
       setRows(stateManager!, l!.map((e) => buildRow(e)).toList());
       if (showSuccess) {

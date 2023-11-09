@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
+import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
+import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_dialog.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/shift_card.dart';
@@ -41,6 +43,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
 
   final List<UserMd> unavailableUsers = [];
 
+  String? currentIpAddress;
+
   void updateUI(VoidCallback? callback) {
     if (mounted) {
       setState(callback ?? () {});
@@ -53,10 +57,16 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) async {
         if (mounted) {
+          setIp();
           //todo: init
         }
       },
     );
+  }
+
+  void setIp() async {
+    final ipAddress = await getIpAddress();
+    updateUI(() => currentIpAddress = ipAddress);
   }
 
   final formVm = FormModel();
@@ -76,6 +86,11 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const String workCity = "workCity";
   static const String workPostcode = "workPostcode";
   static const String workCountryId = "workCountryId";
+  static const String workCounty = "workCounty";
+  static const String workLocationLatitude = "workLocationLatitude";
+  static const String workLocationLongitude = "workLocationLongitude";
+  static const String workLocationRadius = "workLocationRadius";
+  static const String workStaticIpAddresses = "workStaticIpAddresses";
   static const String startTime = "startTime";
   static const String endTime = "endTime";
   static const String duration = "duration";
@@ -206,43 +221,101 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       required LocationMd? workLocation,
       required List<LocationMd> locations,
       required List<CountryMd> countries}) {
-    return FormContainer(title: "Work Address", width: containerWidth, left: [
-      if (client != null && locations.isNotEmpty)
+    return FormContainer(
+      title: "Work Address",
+      width: containerWidth,
+      left: [
+        if (client != null && locations.isNotEmpty)
+          FormWithLabel(
+              labelVm: const LabelModel(text: "Locations", isRequired: true),
+              formBuilderField: FormDropdown(
+                  vm: DropdownModel(
+                      helperText: "Select location or search for address",
+                      onChanged: (p0) => updateUI(formVm.save),
+                      name: workLocationId,
+                      items: locations
+                          .map(
+                              (e) => DpItem(id: e.id.toString(), title: e.name))
+                          .toList())))
+        else
+          Text("No locations found. Please select client with location!",
+              textAlign: TextAlign.center, style: context.textTheme.bodyLarge),
         FormWithLabel(
-            labelVm: const LabelModel(text: "Locations", isRequired: true),
+          labelVm: const LabelModel(text: "Search Address"),
+          formBuilderField: AddressAutocompleteWidget(
+              width: containerWidth * .95,
+              onSelected: (value) {
+                formVm.patchValue({
+                  workLine1: value.line1,
+                  workLine2: value.line2,
+                  workCity: value.city,
+                  workPostcode: value.postcode,
+                  workCountryId: value.country?.code,
+                });
+              }),
+        ),
+        const FormWithLabel(
+            labelVm: LabelModel(text: "Line 1"),
+            formBuilderField: FormInput(vm: InputModel(name: workLine1))),
+        const FormWithLabel(
+            labelVm: LabelModel(text: "City"),
+            formBuilderField: FormInput(vm: InputModel(name: workCity))),
+        const FormWithLabel(
+            labelVm: LabelModel(text: "Postcode"),
+            formBuilderField: FormInput(vm: InputModel(name: workPostcode))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Country", isRequired: true),
             formBuilderField: FormDropdown(
-                vm: DropdownModel(
-                    onChanged: (p0) => updateUI(formVm.save),
-                    name: workLocationId,
-                    items: locations
-                        .map((e) => DpItem(id: e.id.toString(), title: e.name))
-                        .toList())))
-      else
-        Text("No locations found. Please select client with location!",
-            textAlign: TextAlign.center, style: context.textTheme.bodyLarge),
-      const FormWithLabel(
-          labelVm: LabelModel(text: "Line 1"),
-          formBuilderField: FormInput(vm: InputModel(name: workLine1))),
-      const FormWithLabel(
-          labelVm: LabelModel(text: "Line 2"),
-          formBuilderField: FormInput(vm: InputModel(name: workLine2))),
-      const FormWithLabel(
-          labelVm: LabelModel(text: "City"),
-          formBuilderField: FormInput(vm: InputModel(name: workCity))),
-      const FormWithLabel(
-          labelVm: LabelModel(text: "Postcode"),
-          formBuilderField: FormInput(vm: InputModel(name: workPostcode))),
-      FormWithLabel(
-          labelVm: const LabelModel(text: "Country", isRequired: true),
-          formBuilderField: FormDropdown(
-            vm: DropdownModel(
-              name: workCountryId,
-              items: countries
-                  .map((e) => DpItem(id: e.code, title: e.name))
-                  .toList(),
-            ),
-          )),
-    ]);
+              vm: DropdownModel(
+                name: workCountryId,
+                items: countries
+                    .map((e) => DpItem(id: e.code, title: e.name))
+                    .toList(),
+              ),
+            )),
+      ],
+      additionalText: "Show additional details",
+      hidden: [
+        const FormWithLabel(
+            labelVm: LabelModel(text: "Line 2"),
+            formBuilderField: FormInput(vm: InputModel(name: workLine2))),
+        const FormWithLabel(
+            labelVm: LabelModel(text: "County"),
+            formBuilderField: FormInput(vm: InputModel(name: workCounty))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Latitude"),
+            formBuilderField: FormInput(
+                vm: InputModel(
+              name: workLocationLatitude,
+              inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
+            ))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Longitude"),
+            formBuilderField: FormInput(
+                vm: InputModel(
+              name: workLocationLongitude,
+              inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
+            ))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Radius"),
+            formBuilderField: FormInput(
+                vm: InputModel(
+              name: workLocationRadius,
+              inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
+            ))),
+        FormWithLabel(
+          labelVm: const LabelModel(text: "Current IP Address"),
+          formBuilderField: buildText(currentIpAddress ?? "-"),
+        ),
+        const FormWithLabel(
+            labelVm: LabelModel(text: "Static IP Addresses"),
+            formBuilderField: FormInput(
+                vm: InputModel(
+              name: workStaticIpAddresses,
+              helperText: "Separate with new line (ENTER)",
+            ))),
+      ],
+    );
   }
 
   FormContainer timingWidget(
@@ -326,10 +399,20 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     return FormContainer(
       width: containerWidth,
       title: "Client Details",
-      trailing: IconButton(
-          onPressed: formVm.getValue(clientId) == null ? null : () async {},
-          color: context.theme.primaryColor,
-          icon: const Icon(Icons.edit)),
+      trailing: Row(
+        children: [
+          IconButton(
+              tooltip: "Edit client",
+              onPressed: client == null ? null : () => onEditClient(client),
+              color: context.theme.primaryColor,
+              icon: const Icon(Icons.edit_outlined)),
+          IconButton(
+              tooltip: "Add new client",
+              onPressed: () => onEditClient(null),
+              color: context.theme.primaryColor,
+              icon: const Icon(Icons.add_circle_outline)),
+        ],
+      ),
       left: [
         FormWithLabel(
             labelVm: const LabelModel(text: "Client", isRequired: true),
@@ -345,7 +428,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                             id: e.id.toString(),
                             title: e.name,
                             subtitle: e.company))
-                        .toList()))),
+                        .toList()
+                      ..insert(0, noneItem)))),
         FormWithLabel(
           labelVm: const LabelModel(text: "Company"),
           formBuilderField: buildText(client?.company ?? "-"),
@@ -426,7 +510,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.only(right: 40),
                   height: context.height * 1.2,
                   decoration: BoxDecoration(
                     border: Border(
@@ -455,6 +539,20 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         );
       },
     );
+  }
+
+  void onEditClient(ClientMd? client) async {
+    final int? updatedClientId = await showDialog(
+        context: context,
+        builder: (context) {
+          return ClientsEdit2Dialog(client: client);
+        });
+    if (updatedClientId != null) {
+      formVm.patchValue({clientId: updatedClientId.toString()});
+      updateUI(formVm.save);
+    } else {
+      context.showError("Client not updated");
+    }
   }
 
   PlutoRow buildStorageRow(StorageItemMd storageItem, {bool checked = false}) {

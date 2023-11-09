@@ -4,7 +4,6 @@ import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
-import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/shift_card.dart';
 
 ///Once saved, returns the id of the client
 class ClientsEdit2Dialog extends StatefulWidget {
@@ -27,186 +26,204 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!isNew) init();
+      init();
     });
   }
 
   void init() {
-    final c = client!;
-    formVm.formKey.currentState?.patchValue({
-      "name": c.name,
-      "company": c.company,
-      "email": c.email,
-      "phone": c.phone,
-      "fax": c.fax,
-      "addressLine1": c.address.line1,
-      "addressLine2": c.address.line2,
-      "addressCity": c.address.city,
-      "addressCounty": c.address.county,
-      "addressPostcode": c.address.postcode,
-      "country": c.address.country,
-      "currencyId": c.currencyId,
-      "paymentMethodId": c.paymentMethodId,
-      "invoicePeriodId": c.invoicePeriodId,
-      "paymentDays": c.payingDays.toString(),
-      "invoiceDay": c.invoiceDay.toString(),
-      "comment": c.notes,
-      "active": c.active,
-      "combineInvoices": c.combineInvoices,
-      "sendInvoices": c.sendInvoices,
-    });
-
+    final c = client;
+    if (c != null) {
+      formVm.formKey.currentState?.patchValue({
+        "name": c.name,
+        "company": c.company ?? '',
+        "email": c.email ?? '',
+        "phone": c.phone ?? '',
+        "fax": c.fax ?? '',
+        "addressLine1": c.address.line1 ?? '',
+        "addressLine2": c.address.line2 ?? '',
+        "addressCity": c.address.city ?? '',
+        "addressCounty": c.address.county ?? '',
+        "addressPostcode": c.address.postcode ?? '',
+        "country": c.address.country,
+        "currencyId": c.currencyId,
+        "paymentMethodId": c.paymentMethodId,
+        "invoicePeriodId": c.invoicePeriodId,
+        "paymentDays": c.payingDays.toString(),
+        "invoiceDay": c.invoiceDay.toString(),
+        "comment": c.notes,
+        "active": c.active,
+        "combineInvoices": c.combineInvoices,
+        "sendInvoices": c.sendInvoices,
+      });
+    } else {
+      formVm.formKey.currentState?.patchValue({
+        "currencyId": appStore.state.generalState.defaultCurrency.id.toString(),
+        "paymentMethodId":
+            appStore.state.generalState.defaultPaymentMethod?.id.toString(),
+        // "invoicePeriodId": ,
+        //todo: get default invoice period
+        // "paymentDays": c.payingDays.toString(),
+        //todo: get default payment days
+        // "invoiceDay": c.invoiceDay.toString(),
+        //todo: get default invoice day
+        "active": true,
+      });
+    }
+    formVm.save();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final containerWidth = context.width * .3;
+    final containerWidth = context.width * .2;
     return AlertDialog(
+        shape: const RoundedRectangleBorder(),
         scrollable: true,
         content: SizedBox(
-          height: context.height * 1.2,
+          height: context.height,
           width: context.width * .7,
           child: DefaultForm(
             vm: formVm,
-            child: FormWrap(
+            child: SpacedRow(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SpacedColumn(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  verticalSpace: 20,
-                  children: [
-                    FormContainer(
-                      width: containerWidth,
-                      title: "Personal Info",
-                      left: [
-                        FormWithLabel(
-                          labelVm:
-                              const LabelModel(text: "Name", isRequired: true),
-                          formBuilderField: FormInput(
-                              vm: InputModel(
-                            name: "name",
-                            validators: [FormBuilderValidators.required()],
-                          )),
-                        ),
-                      ],
-                      hidden: [
-                        const FormWithLabel(
-                          labelVm: LabelModel(text: "Company"),
-                          formBuilderField: FormInput(
-                              vm: InputModel(
-                            name: "company",
-                          )),
-                        ),
-                        //email
-                        FormWithLabel(
-                          labelVm: const LabelModel(text: "Email"),
-                          formBuilderField: FormInput(
-                              vm: InputModel(
-                            hintText: "example@mail.com",
-                            name: "email",
-                            validators: [FormBuilderValidators.email()],
-                          )),
-                        ),
-                        //phone
-                        FormWithLabel(
-                          labelVm: const LabelModel(text: "Phone"),
-                          formBuilderField: FormInput(
-                              vm: InputModel(
-                            name: "phone",
-                            valueTransformer: (value) =>
-                                num.tryParse(value ?? ""),
-                            validators: [
-                              FormBuilderValidators.numeric(
-                                  errorText: "Phone must be a number")
-                            ],
-                            inputFormatters: [
-                              GlobalConstants.numbersOnlyFormatter
-                            ],
-                          )),
-                        ),
-                        //fax
-                        FormWithLabel(
-                          labelVm: const LabelModel(text: "Fax"),
-                          formBuilderField: FormInput(
-                              vm: InputModel(
-                            name: "fax",
-                            valueTransformer: (value) =>
-                                num.tryParse(value ?? ""),
-                            validators: [
-                              FormBuilderValidators.numeric(
-                                  errorText: "Fax must be a number")
-                            ],
-                            inputFormatters: [
-                              GlobalConstants.numbersOnlyFormatter
-                            ],
-                          )),
-                        ),
-                      ],
+                FormContainer(
+                  width: containerWidth,
+                  title: "Personal Info",
+                  left: [
+                    FormWithLabel(
+                      labelVm: const LabelModel(text: "Name", isRequired: true),
+                      formBuilderField: FormInput(
+                          vm: InputModel(
+                        name: "name",
+                        validators: [FormBuilderValidators.required()],
+                      )),
                     ),
-                    FormContainer(
-                      title: "Address",
-                      width: containerWidth,
-                      left: [
-                        FormWithLabel(
-                            labelVm: const LabelModel(
-                                text: "Line 1", isRequired: true),
-                            formBuilderField: FormInput(
-                                vm: InputModel(
-                              name: "addressLine1",
-                              validators: [
-                                FormBuilderValidators.required(),
-                              ],
-                            ))),
-                        FormWithLabel(
-                            labelVm: const LabelModel(
-                                text: "City", isRequired: true),
-                            formBuilderField: FormInput(
-                                vm: InputModel(
-                              name: "addressCity",
-                              validators: [
-                                FormBuilderValidators.required(),
-                              ],
-                            ))),
-                        FormWithLabel(
-                            labelVm: const LabelModel(
-                                text: "Country", isRequired: true),
-                            formBuilderField: FormDropdown(
-                                vm: DropdownModel(
-                                    name: "country",
-                                    items: lists.countries
-                                        .map((e) =>
-                                            DpItem(id: e.code, title: e.name))
-                                        .toList(),
-                                    validator: FormBuilderValidators.required(),
-                                    hasSearchBox: true,
-                                    hintText: ""))),
-                        FormWithLabel(
-                            labelVm: const LabelModel(
-                                text: "Postcode", isRequired: true),
-                            formBuilderField: FormInput(
-                                vm: InputModel(
-                              name: "addressPostcode",
-                              validators: [
-                                FormBuilderValidators.required(),
-                              ],
-                            ))),
-                      ],
-                      hidden: const [
-                        FormWithLabel(
-                            labelVm: LabelModel(text: "Line 2"),
-                            formBuilderField: FormInput(
-                                vm: InputModel(
-                              name: "addressLine2",
-                            ))),
-                        FormWithLabel(
-                            labelVm: LabelModel(text: "County"),
-                            formBuilderField: FormInput(
-                                vm: InputModel(
-                              name: "addressCounty",
-                            ))),
-                      ],
-                    )
+                  ],
+                  hidden: [
+                    const FormWithLabel(
+                      labelVm: LabelModel(text: "Company"),
+                      formBuilderField: FormInput(
+                          vm: InputModel(
+                        name: "company",
+                      )),
+                    ),
+                    //email
+                    FormWithLabel(
+                      labelVm: const LabelModel(text: "Email"),
+                      formBuilderField: FormInput(
+                          vm: InputModel(
+                        hintText: "example@mail.com",
+                        name: "email",
+                        validators: [FormBuilderValidators.email()],
+                      )),
+                    ),
+                    //phone
+                    FormWithLabel(
+                      labelVm: const LabelModel(text: "Phone"),
+                      formBuilderField: FormInput(
+                          vm: InputModel(
+                        name: "phone",
+                        valueTransformer: (value) => num.tryParse(value ?? ""),
+                        validators: [
+                          FormBuilderValidators.numeric(
+                              errorText: "Phone must be a number")
+                        ],
+                        inputFormatters: [GlobalConstants.numbersOnlyFormatter],
+                      )),
+                    ),
+                    //fax
+                    FormWithLabel(
+                      labelVm: const LabelModel(text: "Fax"),
+                      formBuilderField: FormInput(
+                          vm: InputModel(
+                        name: "fax",
+                        valueTransformer: (value) => num.tryParse(value ?? ""),
+                        validators: [
+                          FormBuilderValidators.numeric(
+                              errorText: "Fax must be a number")
+                        ],
+                        inputFormatters: [GlobalConstants.numbersOnlyFormatter],
+                      )),
+                    ),
+                  ],
+                ),
+                FormContainer(
+                  title: "Address",
+                  width: containerWidth,
+                  left: [
+                    FormWithLabel(
+                      labelVm: const LabelModel(text: "Search Address"),
+                      formBuilderField: AddressAutocompleteWidget(
+                          width: containerWidth * .95,
+                          onSelected: (value) {
+                            formVm.patchValue({
+                              "addressLine1": value.line1,
+                              "addressLine2": value.line2,
+                              "addressCity": value.city,
+                              "addressPostcode": value.postcode,
+                              "country": value.country?.code,
+                            });
+                          }),
+                    ),
+                    FormWithLabel(
+                        labelVm:
+                            const LabelModel(text: "Line 1", isRequired: true),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "addressLine1",
+                          validators: [
+                            FormBuilderValidators.required(),
+                          ],
+                        ))),
+                    FormWithLabel(
+                        labelVm:
+                            const LabelModel(text: "City", isRequired: true),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "addressCity",
+                          validators: [
+                            FormBuilderValidators.required(),
+                          ],
+                        ))),
+                    FormWithLabel(
+                        labelVm:
+                            const LabelModel(text: "Country", isRequired: true),
+                        formBuilderField: FormDropdown(
+                            vm: DropdownModel(
+                                name: "country",
+                                items: lists.countries
+                                    .map((e) =>
+                                        DpItem(id: e.code, title: e.name))
+                                    .toList(),
+                                validator: FormBuilderValidators.required(),
+                                hasSearchBox: true,
+                                hintText: ""))),
+                    FormWithLabel(
+                        labelVm: const LabelModel(
+                            text: "Postcode", isRequired: true),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "addressPostcode",
+                          validators: [
+                            FormBuilderValidators.required(),
+                          ],
+                        ))),
+                  ],
+                  hidden: const [
+                    FormWithLabel(
+                        labelVm: LabelModel(text: "Line 2"),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "addressLine2",
+                        ))),
+                    FormWithLabel(
+                        labelVm: LabelModel(text: "County"),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "addressCounty",
+                        ))),
                   ],
                 ),
                 FormContainer(
@@ -253,23 +270,14 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
                         ))),
                     FormWithLabel(
                         labelVm: const LabelModel(
-                            text: "Paying Days", isRequired: true),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "paymentDays",
-                          valueTransformer: (value) =>
-                              num.tryParse(value ?? ""),
-                          hintText: "1",
-                          validators: [FormBuilderValidators.required()],
-                        ))),
-                    FormWithLabel(
-                        labelVm: const LabelModel(text: "Invoice Day"),
+                            text: "Invoice Day", isRequired: true),
                         formBuilderField: FormInput(
                             vm: InputModel(
                           name: "invoiceDay",
                           valueTransformer: (value) =>
                               num.tryParse(value ?? ""),
                           validators: [
+                            FormBuilderValidators.required(),
                             (value) {
                               if (formVm.value['invoicePeriodId'] == null) {
                                 return null;
@@ -281,6 +289,17 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
                               return "Invoice day is required";
                             }
                           ],
+                        ))),
+                    FormWithLabel(
+                        labelVm: const LabelModel(
+                            text: "Paying Days", isRequired: true),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "paymentDays",
+                          valueTransformer: (value) =>
+                              num.tryParse(value ?? ""),
+                          hintText: "1",
+                          validators: [FormBuilderValidators.required()],
                         ))),
                   ],
                   hidden: const [
@@ -304,6 +323,8 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
             ),
           ),
         ),
+        actionsPadding:
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         actions: [
           //Cancel
           ElevatedButton(
@@ -348,13 +369,12 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
       final isSendInvoices = formVm.value['sendInvoices'] ?? false;
       final isCombineInvoices = formVm.value['combineInvoices'] ?? false;
       final isActive = formVm.value['active'] ?? false;
-      print(invoiceDay.runtimeType);
       return await dispatch<int>(PostClientAction(
         PersonalData(
           clientId: saveAsNew ? null : client?.id,
           name: name,
-          phone: phone.toString(),
-          email: email,
+          phone: phone?.toString() ?? "",
+          email: email ?? "",
           fax: fax?.toString(),
           invoicePeriod: lists.invoicePeriods.firstWhereOrNull(
               (element) => element.id == int.tryParse(invoicePeriod ?? "")),
@@ -362,10 +382,10 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
           paymentDays: paymentDue,
           sendInvoices: isSendInvoices,
           combineInvoices: isCombineInvoices,
-          companyName: company,
+          companyName: company ?? '',
           currency: lists.currencies.firstWhereOrNull(
               (element) => element.id == int.tryParse(currency ?? "")),
-          notes: comment,
+          notes: comment ?? '',
           paymentMethod: lists.paymentMethods.firstWhereOrNull(
               (element) => element.id == int.tryParse(paymentMethod ?? "")),
           active: isActive,
@@ -374,7 +394,7 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
           line1: address1,
           line2: address2,
           city: city,
-          county: county,
+          county: county ?? '',
           country: lists.countries
               .firstWhereOrNull((element) => element.code == country),
           postcode: postcode,
@@ -385,6 +405,10 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
       context.showError(res.right.message);
       return;
     }
-    context.pop(res.isLeft);
+    if (res.isLeft) {
+      context.pop(res.left);
+    } else {
+      context.showError("Something went wrong");
+    }
   }
 }

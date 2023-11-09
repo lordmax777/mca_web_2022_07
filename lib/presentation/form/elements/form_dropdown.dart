@@ -89,6 +89,7 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
             decoration: InputDecoration(
               border: InputBorder.none,
               errorText: errorText,
+              helperText: vm.helperText,
             ),
             child: LayoutBuilder(builder: (context, constraints) {
               return Row(

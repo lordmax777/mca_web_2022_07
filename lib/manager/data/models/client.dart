@@ -165,11 +165,11 @@ final class ClientMd extends Equatable {
   factory ClientMd.fromJson(Map<String, dynamic> json) {
     try {
       return ClientMd(
-        id: json['id'] as int,
+        id: json['id'],
         name: json['name'] ?? "",
         contact: json['contact'],
         company: json['company'],
-        active: json['active'] ?? false,
+        active: json['active'] ?? true,
         notes: json['notes'] ?? "",
         email: json['email'],
         phone: json['phone'],

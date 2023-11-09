@@ -80,7 +80,8 @@ class _FormContainerState extends State<FormContainer> {
                 // style: ButtonStyle(
                 //     padding: MaterialStateProperty.all(EdgeInsets.zero)),
                 onPressed: toggleHidden,
-                label: Text(additionalText ?? "Show More"),
+                label: Text(
+                    additionalText ?? "Show ${showHidden ? "less" : "more"}"),
                 icon: Icon(showHidden
                     ? Icons.keyboard_arrow_up
                     : Icons.keyboard_arrow_down),

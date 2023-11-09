@@ -26,25 +26,18 @@ class DefaultDropdownMenu extends StatelessWidget {
       width: width,
       menuHeight: 300,
       controller: controller,
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.0),
-            borderSide: BorderSide(color: context.colorScheme.primary)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(color: Colors.grey[400]!),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        errorStyle: const TextStyle(color: Colors.red),
-        labelStyle: const TextStyle(color: Colors.grey),
-      ),
+      textStyle: const TextStyle(
+          color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
       initialSelection: initialValue,
       dropdownMenuEntries: getItems(),
-      label: label != null ? Text(label!) : null,
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
+      ),
+      // label: label != null ? Text(label!) : null,
+      hintText: label,
       leadingIcon: isLoading ? const CircularProgressIndicator() : null,
+      trailingIcon: const SizedBox(),
+      selectedTrailingIcon: const SizedBox(),
       onSelected: (value) {
         if (value != null) {
           onSelected(value);
