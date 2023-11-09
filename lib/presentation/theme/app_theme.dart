@@ -32,11 +32,17 @@ final class AppTheme {
       ),
       textTheme: GoogleFonts.nunitoTextTheme(),
       dividerColor: Colors.grey,
-      scrollbarTheme: const ScrollbarThemeData(
+      scrollbarTheme: ScrollbarThemeData(
         thumbVisibility: MaterialStatePropertyAll(true),
         trackVisibility: MaterialStatePropertyAll(true),
-        trackColor: MaterialStatePropertyAll(Colors.grey),
-        thumbColor: MaterialStatePropertyAll(Colors.blueGrey),
+        trackColor: MaterialStatePropertyAll(Colors.grey.shade300),
+        thumbColor: MaterialStatePropertyAll(Colors.blue.shade300),
+        radius: const Radius.circular(8),
+        crossAxisMargin: 2,
+        mainAxisMargin: 2,
+        minThumbLength: 30,
+        thickness: MaterialStatePropertyAll(6),
+        interactive: true,
       ));
 
   ThemeData? _theme;

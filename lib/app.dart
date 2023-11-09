@@ -66,6 +66,9 @@ class _MCADashboardAppState extends State<MCADashboardApp> {
                   borderSide: BorderSide(color: Colors.grey.shade400)),
               helperStyle: const TextStyle(color: Colors.grey),
               errorMaxLines: 3),
+          scrollbarTheme: appTheme.scrollbarTheme.copyWith(
+              thumbColor: MaterialStatePropertyAll(
+                  appTheme.colorScheme.primary.withOpacity(.8))),
         ),
         title: 'MCA Dashboard',
         builder: (context, child) => botToastBuilder(
