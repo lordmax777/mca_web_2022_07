@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
@@ -13,10 +11,12 @@ import '../../scheduling_view/data/week_days_m.dart';
 
 class CreateQuoteDialog extends StatefulWidget {
   final QuoteMd? quote;
+  final bool isJob;
 
   const CreateQuoteDialog({
     super.key,
     this.quote,
+    this.isJob = false,
   });
 
   @override
@@ -25,8 +25,11 @@ class CreateQuoteDialog extends StatefulWidget {
 
 class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   QuoteMd? get quote => widget.quote;
-  QuoteProcess get processStatus =>
-      quote?.processStatusEnum ?? QuoteProcess.idle;
+  QuoteProcess? get processStatus => quote?.processStatusEnum;
+  bool get isCreate => quote == null;
+
+  bool get isJob => widget.isJob;
+  bool get isQuote => !isJob;
 
   final List<UserMd> unavailableUsers = [];
   String? currentIpAddress;
@@ -49,8 +52,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           symbol: appStore.state.generalState.companyInfo.currency.sign),
       field: "price",
       enableAutoEditing: true,
-      width: 200,
-      minWidth: 200,
+      width: 150,
+      minWidth: 150,
       enableEditingMode: true,
       footerRenderer: (context) {
         final double total = context.stateManager.rows
@@ -82,8 +85,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     ),
     PlutoColumn(
       title: "Quantity",
-      width: 150,
-      minWidth: 150,
+      width: 120,
+      minWidth: 120,
       type: PlutoColumnType.number(),
       field: "quantity",
       enableAutoEditing: true,
@@ -94,6 +97,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     //included in service checkbox
     PlutoColumn(
       width: 120,
+      minWidth: 120,
       title: "Included in service (All)",
       type: PlutoColumnType.text(),
       enableRowChecked: true,
@@ -105,6 +109,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     ),
     PlutoColumn(
       width: 40,
+      minWidth: 40,
       title: "",
       field: "deleteBtn",
       enableAutoEditing: false,
@@ -141,7 +146,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         if (mounted) {
           setIp();
           setupVars();
-          //todo: init
         }
       },
     );
@@ -153,8 +157,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   }
 
   void setupVars() {
-    updateUI(() {
-      if (quote != null) {
+    if (quote != null) {
+      try {
         formVm.patchValue({
           quoteName: quote?.name,
           quoteComment: quote?.notes,
@@ -167,21 +171,39 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           workPostcode: quote?.addressPostcode,
           workCountryId: quote?.addressCountry,
           workCounty: quote?.addressCounty,
-          workLocationLatitude: quote?.workLocationLatitude,
-          workLocationLongitude: quote?.workLocationLongitude,
-          workLocationRadius: quote?.workLocationRadius,
-          // workStaticIpAddresses: quote?.,//TODO:
+          workLocationLatitude: quote?.workLocationLatitude.toString(),
+          workLocationLongitude: quote?.workLocationLongitude.toString(),
+          workLocationRadius: quote?.workLocationRadius.toString(),
+          workStaticIpAddresses:
+              quote?.workStaticIpAddresses?.split(",").join("\n"),
           startTime: quote?.workStartTime?.timeToDateTime,
           endTime: quote?.workFinishTime?.timeToDateTime,
           allDay: quote?.allDay,
-          timingRepeatId: quote?.workRepeat?.toString(),
-          timingWeek1: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? []),
-          timingWeek2: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [],
-              isFortnightly: true),
+          timingRepeatId: quote
+              ?.workRepeatMd(appStore.state.generalState.lists.workRepeats)
+              .id
+              .toString(),
+          timingDate: quote?.workStartDateDt,
+          // timingRepeatUntil: quote?.workRepeatUntilDt,//todo: when api is ready
         });
-        formVm.save();
+
+        //The weekdays are hidden until the repeat day validates it.
+        //So need to wait UI until it opens weekdays
+        Future.delayed(const Duration(milliseconds: 100), () {
+          formVm.patchValue({
+            timingWeek1: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [])
+                .asListString,
+            timingWeek2: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [],
+                    isFortnightly: true)
+                .asListString,
+          });
+        });
+        updateUI(formVm.save);
+      } on TypeError catch (e) {
+        print(e.toString());
+        print(e.stackTrace);
       }
-    });
+    }
   }
 
   final formVm = FormModel();
@@ -210,47 +232,53 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const String timingWeek2 = "timingWeek2";
   static const String productSelect = "productSelect";
   static const String packageSelect = "packageSelect";
+  static const String timingDate = "timingDate";
+  static const String timingRepeatUntil = "timingRepeatUntil";
 
   static const DpItem noneItem = DpItem(id: "-1", title: "None");
 
   FormContainer quoteWidget(
       {required double containerWidth, required GeneralState vm}) {
     return FormContainer(
-      title: "Quote Details",
+      title: "${isJob ? "Job" : "Quote"} Details",
       width: containerWidth,
       left: <Widget>[
-        if (processStatus == QuoteProcess.idle)
-          FormWithLabel(
-              labelVm: const LabelModel(text: "Job Title"),
-              formBuilderField: processStatus == QuoteProcess.idle
-                  ? const FormInput(
-                      vm: InputModel(
-                          name: quoteName,
-                          helperText:
-                              "Leave empty to use default name\nDefault name is used from company settings"))
-                  : buildText(quote!.name)),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Job Title"),
+            formBuilderField: isCreate
+                ? const FormInput(
+                    vm: InputModel(
+                        name: quoteName,
+                        helperText:
+                            "Leave empty to use default name\nDefault name is used from company settings"))
+                : buildText(quote!.name)),
+        if (quote != null) divider(),
         if (quote != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Quote Number"),
-              formBuilderField:
-                  buildText("quote!.identifier")), //todo: update quote model
+              formBuilderField: buildText(quote!.identifier)),
+        if (quote != null) divider(),
         if (quote != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Status"),
-              formBuilderField: buildText(processStatus.name)),
+              formBuilderField: buildText(quote!.processStatus)),
+        if (quote?.lastAllocationMd != null) divider(),
         if (quote?.lastAllocationMd != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Previous shift"),
               formBuilderField:
                   buildText(quote!.shiftMd(vm.properties)?.title ?? "-")),
-
+        if (quote?.nextAllocationMd != null) divider(),
         if (quote?.nextAllocationMd != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Next scheduled date"),
               formBuilderField:
                   buildText(quote!.nextAllocationMd?.date ?? "-")),
-        if (processStatus != QuoteProcess.idle)
-          const FormSwitch(vm: SwitchModel(name: quoteActive, title: "Active")),
+        Visibility(
+            maintainState: true,
+            visible: !isCreate,
+            child: const FormSwitch(
+                vm: SwitchModel(name: quoteActive, title: "Active"))),
         const FormWithLabel(
             labelVm: LabelModel(text: "Comment"),
             formBuilderField: FormInput(
@@ -272,15 +300,19 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           FormWithLabel(
               labelVm: const LabelModel(text: "Line 1"),
               formBuilderField: buildText(client?.address.line1 ?? "-")),
+          divider(),
           FormWithLabel(
               labelVm: const LabelModel(text: "Line 2"),
               formBuilderField: buildText(client?.address.line2 ?? "-")),
+          divider(),
           FormWithLabel(
               labelVm: const LabelModel(text: "City"),
               formBuilderField: buildText(client?.address.city ?? "-")),
+          divider(),
           FormWithLabel(
               labelVm: const LabelModel(text: "Postcode"),
               formBuilderField: buildText(client?.address.postcode ?? "-")),
+          divider(),
           FormWithLabel(
               labelVm: const LabelModel(text: "Country"),
               formBuilderField: buildText(
@@ -307,6 +339,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                       helperText: "Select location or search for address",
                       onChanged: (p0) => updateUI(formVm.save),
                       name: workLocationId,
+                      hasSearchBox: true,
                       items: locations
                           .map(
                               (e) => DpItem(id: e.id.toString(), title: e.name))
@@ -328,20 +361,32 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 });
               }),
         ),
-        const FormWithLabel(
-            labelVm: LabelModel(text: "Line 1"),
-            formBuilderField: FormInput(vm: InputModel(name: workLine1))),
-        const FormWithLabel(
-            labelVm: LabelModel(text: "City"),
-            formBuilderField: FormInput(vm: InputModel(name: workCity))),
-        const FormWithLabel(
-            labelVm: LabelModel(text: "Postcode"),
-            formBuilderField: FormInput(vm: InputModel(name: workPostcode))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Line 1", isRequired: true),
+            formBuilderField: FormInput(
+                vm: InputModel(
+                    name: workLine1,
+                    validators: [FormBuilderValidators.required()]))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "City", isRequired: true),
+            formBuilderField: FormInput(
+                vm: InputModel(
+                    name: workCity,
+                    validators: [FormBuilderValidators.required()]))),
+        FormWithLabel(
+            labelVm: const LabelModel(text: "Postcode", isRequired: true),
+            formBuilderField: FormInput(
+                vm: InputModel(
+                    name: workPostcode,
+                    validators: [FormBuilderValidators.required()]))),
         FormWithLabel(
             labelVm: const LabelModel(text: "Country", isRequired: true),
             formBuilderField: FormDropdown(
               vm: DropdownModel(
                 name: workCountryId,
+                hasSearchBox: true,
+                hintText: "",
+                validator: FormBuilderValidators.required(),
                 items: countries
                     .map((e) => DpItem(id: e.code, title: e.name))
                     .toList(),
@@ -403,6 +448,17 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       title: "Timing",
       width: containerWidth,
       left: [
+        FormWithLabel(
+            labelVm: LabelModel(
+                text: "Date",
+                isRequired: processStatus == QuoteProcess.jobCreated),
+            formBuilderField: FormDatePicker(
+              vm: DatePickerModel(name: timingDate, validators: [
+                if (processStatus == QuoteProcess.jobCreated)
+                  FormBuilderValidators.required()
+              ]),
+            )),
+        const SizedBox(),
         FormSwitch(
             vm: SwitchModel(
           name: allDay,
@@ -421,16 +477,31 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             }
           },
         )),
-        const FormWithLabel(
-            labelVm: LabelModel(text: "Start Time"),
+        FormWithLabel(
+            labelVm: LabelModel(
+                text: "Start Time",
+                isRequired: processStatus == QuoteProcess.jobCreated),
             formBuilderField: FormDatePicker(
-                vm: DatePickerModel(name: startTime, type: InputType.time))),
-        const FormWithLabel(
-            labelVm: LabelModel(text: "End Time"),
+                vm: DatePickerModel(
+              name: startTime,
+              type: InputType.time,
+              validators: [
+                if (processStatus == QuoteProcess.jobCreated)
+                  FormBuilderValidators.required(),
+              ],
+            ))),
+        FormWithLabel(
+            labelVm: LabelModel(
+                text: "End Time",
+                isRequired: processStatus == QuoteProcess.jobCreated),
             formBuilderField: FormDatePicker(
                 vm: DatePickerModel(
                     name: endTime,
                     type: InputType.time,
+                    validators: [
+                      if (processStatus == QuoteProcess.jobCreated)
+                        FormBuilderValidators.required(),
+                    ],
                     helperText: "Can add duration instead of end time"))),
         FormWithLabel(
             labelVm: const LabelModel(text: "Duration (hours)"),
@@ -442,7 +513,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 final start = formVm.getValue(startTime);
                 if (start == null) return;
                 if (double.tryParse(value ?? "") == null) {
-                  print(value);
                   formVm.patchValue({endTime: null});
                   formVm.save();
                   return;
@@ -456,14 +526,22 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               },
               inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
             ))),
-        const SizedBox(height: 4),
+        if (formVm.getValue(timingRepeatId) != null &&
+            formVm.getValue(timingRepeatId) != "1")
+          FormWithLabel(
+              labelVm: const LabelModel(text: "Repeat until", isRequired: true),
+              formBuilderField: FormDatePicker(
+                vm: DatePickerModel(
+                    name: timingRepeatUntil,
+                    validators: [FormBuilderValidators.required()]),
+              )),
         RepeatWidget(
             onDpChanged: (_) => updateUI(formVm.save),
             label: "Repeat Frequency",
             repeatName: timingRepeatId,
             week1Name: timingWeek1,
             week2Name: timingWeek2,
-            formVm: formVm)
+            formVm: formVm),
       ],
     );
   }
@@ -475,46 +553,52 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     return FormContainer(
       width: containerWidth,
       title: "Client Details",
-      trailing: Row(
-        children: [
-          if (client != null)
-            IconButton(
-                tooltip: "Edit client",
-                onPressed: () => onEditClient(client),
-                color: context.theme.primaryColor,
-                icon: const Icon(Icons.edit_outlined)),
-          IconButton(
-              tooltip: "Add new client",
-              onPressed: () => onEditClient(null),
-              color: context.theme.primaryColor,
-              icon: const Icon(Icons.add_circle_outline)),
-        ],
-      ),
+      trailing: isCreate
+          ? Row(
+              children: [
+                if (client != null)
+                  IconButton(
+                      tooltip: "Edit client",
+                      onPressed: () => onEditClient(client),
+                      color: context.theme.primaryColor,
+                      icon: const Icon(Icons.edit_outlined)),
+                IconButton(
+                    tooltip: "Add new client",
+                    onPressed: () => onEditClient(null),
+                    color: context.theme.primaryColor,
+                    icon: const Icon(Icons.add_circle_outline)),
+              ],
+            )
+          : null,
       left: [
         FormWithLabel(
             labelVm: const LabelModel(text: "Client", isRequired: true),
-            formBuilderField: FormDropdown(
-                vm: DropdownModel(
-                    name: clientId,
-                    onChanged: (p0) {
-                      updateUI(formVm.save);
-                    },
-                    hasSearchBox: true,
-                    items: clients
-                        .map((e) => DpItem(
-                            id: e.id.toString(),
-                            title: e.name,
-                            subtitle: e.company))
-                        .toList()
-                      ..insert(0, noneItem)))),
+            formBuilderField: isCreate
+                ? FormDropdown(
+                    vm: DropdownModel(
+                        name: clientId,
+                        onChanged: (p0) {
+                          updateUI(formVm.save);
+                        },
+                        hasSearchBox: true,
+                        items: clients
+                            .map((e) => DpItem(
+                                id: e.id.toString(),
+                                title: e.name,
+                                subtitle: e.company))
+                            .toList()
+                          ..insert(0, noneItem)))
+                : buildText(client?.name ?? "-")),
         FormWithLabel(
           labelVm: const LabelModel(text: "Company"),
           formBuilderField: buildText(client?.company ?? "-"),
         ),
+        divider(),
         FormWithLabel(
           labelVm: const LabelModel(text: "Phone"),
           formBuilderField: buildText(client?.phone ?? "-"),
         ),
+        divider(),
         FormWithLabel(
           labelVm: const LabelModel(text: "Email"),
           formBuilderField: buildText(client?.email ?? "-"),
@@ -540,106 +624,118 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   Text("Products and Services",
                       style: context.textTheme.headlineMedium!
                           .copyWith(color: Colors.black)),
-                  SizedBox(
-                    child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          //Product select
-                          SizedBox(
-                            width: 400,
-                            height: 50,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const FormLabel(
-                                    vm: LabelModel(text: "Product")),
-                                const SizedBox(width: 10),
-                                SizedBox(
-                                  width: 300,
-                                  height: 50,
-                                  child: FormDropdown(
-                                      vm: DropdownModel(
-                                          name: productSelect,
-                                          hasSearchBox: true,
-                                          onChanged: (p0) {
-                                            onAddProduct(storageItems
-                                                .firstWhereOrNull((element) =>
-                                                    element.id.toString() ==
-                                                    p0));
-                                          },
-                                          hintText:
-                                              "Search for product or service",
-                                          items: storageItems
-                                              .map((e) => DpItem(
-                                                  id: e.id.toString(),
-                                                  title: e.name,
-                                                  subtitle: e.service
-                                                      ? "Service"
-                                                      : null))
-                                              .toList())),
-                                ),
-                              ],
-                            ),
-                          ),
-                          //Package select
-                          SizedBox(
-                            width: 400,
-                            height: 50,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const FormLabel(
-                                    vm: LabelModel(text: "Package")),
-                                const SizedBox(width: 10),
-                                SizedBox(
-                                  width: 300,
-                                  height: 50,
-                                  child: FormDropdown(
-                                      vm: DropdownModel(
-                                          name: packageSelect,
-                                          hasSearchBox: true,
-                                          hintText: "Search for package",
-                                          onChanged: (p0) {
-                                            final int? templateId =
-                                                int.tryParse(p0 ?? "");
-                                            if (templateId != null) {
-                                              final template = packages
+                  if (isJob && !isCreate)
+                    const SizedBox()
+                  else
+                    SizedBox(
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            //Product select
+                            SizedBox(
+                              width: 400,
+                              height: 50,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const FormLabel(
+                                      vm: LabelModel(text: "Product")),
+                                  const SizedBox(width: 10),
+                                  SizedBox(
+                                    width: 300,
+                                    height: 50,
+                                    child: FormDropdown(
+                                        vm: DropdownModel(
+                                            name: productSelect,
+                                            hasSearchBox: true,
+                                            onChanged: (p0) {
+                                              onAddProduct(storageItems
                                                   .firstWhereOrNull((element) =>
-                                                      element.id == templateId);
-                                              if (template != null) {
-                                                //remove all items before adding
-                                                productSm?.removeAllRows();
-                                                //add all items
-                                                for (var item
-                                                    in template.items) {
-                                                  onAddProduct(storageItems
-                                                      .firstWhereOrNull(
-                                                          (element) =>
-                                                              element.id ==
-                                                              item.itemId));
+                                                      element.id.toString() ==
+                                                      p0));
+                                            },
+                                            hintText:
+                                                "Search for product or service",
+                                            items: storageItems
+                                                .map((e) => DpItem(
+                                                    id: e.id.toString(),
+                                                    title: e.name,
+                                                    subtitle: e.service
+                                                        ? "Service"
+                                                        : null))
+                                                .toList())),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            //Package select
+                            SizedBox(
+                              width: 400,
+                              height: 50,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const FormLabel(
+                                      vm: LabelModel(text: "Package")),
+                                  const SizedBox(width: 10),
+                                  SizedBox(
+                                    width: 300,
+                                    height: 50,
+                                    child: FormDropdown(
+                                        vm: DropdownModel(
+                                            name: packageSelect,
+                                            hasSearchBox: true,
+                                            hintText: "Search for package",
+                                            onChanged: (p0) {
+                                              final int? templateId =
+                                                  int.tryParse(p0 ?? "");
+                                              if (templateId != null) {
+                                                final template =
+                                                    packages.firstWhereOrNull(
+                                                        (element) =>
+                                                            element.id ==
+                                                            templateId);
+                                                if (template != null) {
+                                                  //remove all items before adding
+                                                  productSm?.removeAllRows();
+                                                  //add all items
+                                                  for (var item
+                                                      in template.items) {
+                                                    onAddProduct(storageItems
+                                                        .firstWhereOrNull(
+                                                            (element) =>
+                                                                element.id ==
+                                                                item.itemId));
+                                                  }
                                                 }
                                               }
-                                            }
-                                          },
-                                          items: packages
-                                              .map((e) => DpItem(
-                                                  id: e.id.toString(),
-                                                  title: e.name,
-                                                  subtitle:
-                                                      "${e.items.length} items"))
-                                              .toList())),
-                                ),
-                              ],
+                                            },
+                                            items: packages
+                                                .map((e) => DpItem(
+                                                    id: e.id.toString(),
+                                                    title: e.name,
+                                                    subtitle:
+                                                        "${e.items.length} items"))
+                                                .toList())),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ]),
-                  ),
+                          ]),
+                    ),
                 ],
               ),
               onLoaded: (p0) {
                 p0.stateManager.setPageSize(100);
                 productSm = p0.stateManager;
+
+                if (quote != null) {
+                  //Add all items from quote
+                  for (var item in quote!.items) {
+                    onAddProduct(item.itemMd(storageItems));
+                  }
+                }
 
                 productSm?.addListener(() {
                   updateUI(() {});
@@ -647,7 +743,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               },
               columns: productTableColumns,
               hasFooter: false,
-              mode: PlutoGridMode.normal,
+              mode: isJob && !isCreate
+                  ? PlutoGridMode.selectWithOneTap
+                  : PlutoGridMode.normal,
               rows: [])),
     );
   }
@@ -658,6 +756,10 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       style:
           context.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
     );
+  }
+
+  Divider divider() {
+    return const Divider(indent: 0, endIndent: 0, height: 0);
   }
 
   @override

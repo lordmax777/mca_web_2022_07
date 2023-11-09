@@ -132,9 +132,16 @@ class _DefaultDropdown2State extends State<DefaultDropdown2> {
             })),
         dropdownStyleData: DropdownStyleData(
           offset: const Offset(0, -10),
-          elevation: 10,
           maxHeight: vm.hasSearchBox ? 300 : null,
           decoration: BoxDecoration(
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.grey,
+                spreadRadius: 0,
+                blurRadius: 10,
+                offset: Offset(0, 6), // changes position of shadow
+              ),
+            ],
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(color: Colors.grey[400]!),
           ),

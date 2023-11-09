@@ -156,8 +156,11 @@ final class QuoteMd extends Equatable {
   }
 
   final int? workRepeat;
-  WorkRepeatMd? workRepeatMd(List<WorkRepeatMd> workRepeats) {
-    return workRepeats.firstWhereOrNull((element) => element.id == workRepeat);
+  WorkRepeatMd workRepeatMd(List<WorkRepeatMd> workRepeats) {
+    final a =
+        workRepeats.firstWhereOrNull((element) => element.days == workRepeat);
+    if (a == null) return workRepeats.first;
+    return a;
   }
 
   final List<int> workDays;
@@ -235,7 +238,7 @@ final class QuoteMd extends Equatable {
   final num workLocationLatitude;
   final num workLocationLongitude;
   final num workLocationRadius;
-  final dynamic workStaticIpAddresses; //todo:
+  final String? workStaticIpAddresses;
   final List<QuoteAllocationMd> allocations;
   final int? lastAllocationId;
   QuoteAllocationMd? get lastAllocationMd {
@@ -244,7 +247,7 @@ final class QuoteMd extends Equatable {
         .firstWhereOrNull((element) => element.id == lastAllocationId);
   }
 
-  final int nextAllocationId;
+  final int? nextAllocationId;
   QuoteAllocationMd? get nextAllocationMd {
     if (lastAllocationId == null) return null;
     return allocations

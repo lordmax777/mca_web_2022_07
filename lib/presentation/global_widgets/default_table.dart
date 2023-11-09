@@ -79,14 +79,17 @@ class DefaultTable extends StatelessWidget {
                   headerEnd: headerEnd);
             }
           : null,
-      rowColorCallback: rowColorCallback ??
-          (rowColorContext) {
-            if (rowColorContext.row.type.isGroup) {
-              return Colors.grey[50]!;
-            }
-
-            return Colors.white;
-          },
+      // rowColorCallback: rowColorCallback ??
+      //     (rowColorContext) {
+      //       // if (rowColorContext.row.type.isGroup) {
+      //       //   return Colors.grey[50]!;
+      //       // }
+      //       rowColorContext.stateManager.style.group
+      //       // return Colors.white;
+      //       return rowColorContext.rowIdx % 2 == 0
+      //           ? context.colorScheme.surface
+      //           : Colors.grey[50]!;
+      //     },
       configuration: PlutoGridConfiguration(
         columnFilter: columnFilter ?? const PlutoGridColumnFilterConfig(),
         style: PlutoGridStyleConfig(
@@ -94,6 +97,9 @@ class DefaultTable extends StatelessWidget {
           activatedBorderColor: context.colorScheme.primary,
           borderColor: Colors.grey[200]!,
           gridBorderColor: Colors.grey[300]!,
+          oddRowColor: context.colorScheme.surface,
+          evenRowColor: Colors.grey[50]!,
+          // enableCellBorderVertical: false,
         ),
         columnSize: PlutoGridColumnSizeConfig(
           autoSizeMode: autoSizeMode,

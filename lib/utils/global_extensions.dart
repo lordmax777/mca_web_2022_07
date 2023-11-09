@@ -546,39 +546,36 @@ enum QuoteProcess {
   jobCompleted,
   invoiced,
   closed,
-  idle,
 }
 
 //from String extension for QuoteProcessStatus
 extension QuoteProcessStatusHelper on String {
   QuoteProcess get toQuoteProcess {
     switch (this) {
-      case "quoteRequested":
+      case "quote requested":
         return QuoteProcess.quoteRequested;
-      case "quotePrepared":
+      case "quote prepared":
         return QuoteProcess.quotePrepared;
-      case "quoteRevision":
+      case "quote revision":
         return QuoteProcess.quoteRevision;
-      case "quoteSent":
+      case "quote sent":
         return QuoteProcess.quoteSent;
       case "declined":
         return QuoteProcess.declined;
       case "accepted":
         return QuoteProcess.accepted;
-      case "jobCreated":
+      case "job created":
         return QuoteProcess.jobCreated;
-      case "jobScheduled":
+      case "job scheduled":
         return QuoteProcess.jobScheduled;
-      case "jobStarted":
+      case "job started":
         return QuoteProcess.jobStarted;
-      case "jobCompleted":
+      case "job completed":
         return QuoteProcess.jobCompleted;
       case "invoiced":
         return QuoteProcess.invoiced;
-      case "closed":
-        return QuoteProcess.closed;
       default:
-        return QuoteProcess.idle;
+        return QuoteProcess.closed;
     }
   }
 }

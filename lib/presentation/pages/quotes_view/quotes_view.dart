@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
@@ -31,26 +32,51 @@ class _QuotesViewState extends State<QuotesView>
                   p0.row.cells['status']?.value == "accepted";
               return isAccepted ? Colors.green[50]! : Colors.grey[100]!;
             },
-            headerEnd: ElevatedButton.icon(
-                onPressed: () {
-                  if (stateManager!.hasFocus) {
-                    stateManager?.gridFocusNode.removeListener(handleFocus);
-                  }
-                  dependencyManager.navigation.showCustomDialog(
-                      context: context,
-                      builder: (context) {
-                        return DefaultDialog(
-                            builder: (context) {
-                              return CreateQuoteDialog();
-                              return CreateSchedulePopup(
-                                shiftData: ShiftData.init(isQuote: true),
-                              );
-                            },
-                            title: "Create Quote");
-                      });
-                },
-                icon: const Icon(Icons.add),
-                label: const Text("Create Quote")),
+            headerEnd: SpacedRow(
+              horizontalSpace: 8,
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () {
+                      if (stateManager!.hasFocus) {
+                        stateManager?.gridFocusNode.removeListener(handleFocus);
+                      }
+                      dependencyManager.navigation.showCustomDialog(
+                          context: context,
+                          builder: (context) {
+                            return DefaultDialog(
+                                builder: (context) {
+                                  return const CreateQuoteDialog(isJob: true);
+                                  return CreateSchedulePopup(
+                                    shiftData: ShiftData.init(isQuote: true),
+                                  );
+                                },
+                                title: "Create Job");
+                          });
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text("Create Job")),
+                ElevatedButton.icon(
+                    onPressed: () {
+                      if (stateManager!.hasFocus) {
+                        stateManager?.gridFocusNode.removeListener(handleFocus);
+                      }
+                      dependencyManager.navigation.showCustomDialog(
+                          context: context,
+                          builder: (context) {
+                            return DefaultDialog(
+                                builder: (context) {
+                                  return CreateQuoteDialog();
+                                  return CreateSchedulePopup(
+                                    shiftData: ShiftData.init(isQuote: true),
+                                  );
+                                },
+                                title: "Create Quote");
+                          });
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text("Create Quote")),
+              ],
+            ),
             rows: kDebugMode
                 ? appStore.state.generalState.quotes
                     .map((e) => buildRow(e))
@@ -190,6 +216,11 @@ class _QuotesViewState extends State<QuotesView>
                         builder: (context) {
                           return DefaultDialog(
                               builder: (context) {
+                                return CreateQuoteDialog(
+                                  quote: appStore.state.generalState.quotes
+                                      .firstWhereOrNull(
+                                          (element) => element.id == quoteId),
+                                );
                                 return CreateSchedulePopup(shiftData: data);
                               },
                               title: "Edit Quote");
