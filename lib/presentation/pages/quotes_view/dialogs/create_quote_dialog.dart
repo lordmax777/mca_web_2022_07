@@ -401,11 +401,12 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       title: "Client Details",
       trailing: Row(
         children: [
-          IconButton(
-              tooltip: "Edit client",
-              onPressed: client == null ? null : () => onEditClient(client),
-              color: context.theme.primaryColor,
-              icon: const Icon(Icons.edit_outlined)),
+          if (client != null)
+            IconButton(
+                tooltip: "Edit client",
+                onPressed: () => onEditClient(client),
+                color: context.theme.primaryColor,
+                icon: const Icon(Icons.edit_outlined)),
           IconButton(
               tooltip: "Add new client",
               onPressed: () => onEditClient(null),
