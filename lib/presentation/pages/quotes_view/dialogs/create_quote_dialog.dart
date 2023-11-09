@@ -50,13 +50,19 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       field: "id",
       hide: true,
     ),
-    PlutoColumn(title: "Title", type: PlutoColumnType.text(), field: "title"),
+    PlutoColumn(
+        title: "Title",
+        enableEditingMode: false,
+        type: PlutoColumnType.text(),
+        field: "title"),
     PlutoColumn(
       title: "Customer's price",
       type: PlutoColumnType.currency(
           symbol: appStore.state.generalState.companyInfo.currency.sign),
       field: "price",
       enableAutoEditing: true,
+      width: 200,
+      minWidth: 200,
       enableEditingMode: true,
       footerRenderer: (context) {
         final double total = context.stateManager.rows
@@ -86,6 +92,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     ),
     PlutoColumn(
       title: "Quantity",
+      width: 150,
+      minWidth: 150,
       type: PlutoColumnType.number(),
       field: "quantity",
       enableAutoEditing: true,
@@ -93,7 +101,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     ),
     //included in service checkbox
     PlutoColumn(
-      width: 80,
+      width: 120,
       title: "Included in service (All)",
       type: PlutoColumnType.text(),
       enableRowChecked: true,
@@ -570,6 +578,12 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                                       vm: DropdownModel(
                                           name: productSelect,
                                           hasSearchBox: true,
+                                          onChanged: (p0) {
+                                            onAddProduct(storageItems
+                                                .firstWhereOrNull((element) =>
+                                                    element.id.toString() ==
+                                                    p0));
+                                          },
                                           hintText:
                                               "Search for product or service",
                                           items: storageItems
@@ -602,6 +616,28 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                                           name: packageSelect,
                                           hasSearchBox: true,
                                           hintText: "Search for package",
+                                          onChanged: (p0) {
+                                            final int? templateId =
+                                                int.tryParse(p0 ?? "");
+                                            if (templateId != null) {
+                                              final template = packages
+                                                  .firstWhereOrNull((element) =>
+                                                      element.id == templateId);
+                                              if (template != null) {
+                                                //remove all items before adding
+                                                productSm?.removeAllRows();
+                                                //add all items
+                                                for (var item
+                                                    in template.items) {
+                                                  onAddProduct(storageItems
+                                                      .firstWhereOrNull(
+                                                          (element) =>
+                                                              element.id ==
+                                                              item.itemId));
+                                                }
+                                              }
+                                            }
+                                          },
                                           items: packages
                                               .map((e) => DpItem(
                                                   id: e.id.toString(),
@@ -618,10 +654,25 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 ],
               ),
               onLoaded: (p0) {
+                p0.stateManager.setPageSize(100);
                 productSm = p0.stateManager;
+
+                productSm?.addListener(() {
+                  updateUI(() {});
+                });
               },
               columns: productTableColumns,
+              hasFooter: false,
+              mode: PlutoGridMode.normal,
               rows: [])),
+    );
+  }
+
+  Widget buildText(String text) {
+    return SelectableText(
+      text.isEmpty ? "-" : text,
+      style:
+          context.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
@@ -740,17 +791,40 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   }
 
   PlutoRow buildStorageRow(StorageItemMd storageItem, {bool checked = false}) {
+    final isService = storageItem.service;
     return PlutoRow(
       checked: checked,
       cells: {
         "id": PlutoCell(value: storageItem.id),
-        "title": PlutoCell(value: storageItem.name),
+        "title": PlutoCell(
+            value: "${storageItem.name} ${isService ? "(Service)" : ""}"),
         "price": PlutoCell(value: storageItem.outgoingPrice),
         "quantity": PlutoCell(value: storageItem.quantity),
         "auto": PlutoCell(value: "Included in service"),
         "deleteBtn": PlutoCell(value: ""),
       },
     );
+  }
+
+  void onAddProduct([StorageItemMd? storageItem]) {
+    if (storageItem != null) {
+      //Add to table
+      if (productSm?.rows
+              .any((element) => element.cells['id']!.value == storageItem.id) ==
+          true) {
+        final rowIdx = productSm?.rows.indexWhere(
+            (element) => element.cells['id']!.value == storageItem.id);
+        if (rowIdx == null) return;
+        final row = productSm?.rows[rowIdx];
+        if (row == null) return;
+        final qty = row.cells['quantity']!.value as int;
+        productSm?.rows[rowIdx].cells['quantity']!.value = qty + 1;
+        updateUI(() {});
+      } else {
+        productSm?.insertRows(
+            0, [buildStorageRow(storageItem, checked: storageItem.auto)]);
+      }
+    }
   }
 
   Future<void> emailQuoteToClient(int quoteId) async {
@@ -784,13 +858,5 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         await dispatch<bool>(SendQuoteEmailAction(quoteId));
       });
     }
-  }
-
-  Widget buildText(String text) {
-    return SelectableText(
-      text.isEmpty ? "-" : text,
-      style:
-          context.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-    );
   }
 }
