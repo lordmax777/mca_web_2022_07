@@ -673,19 +673,19 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   width: containerWidth * 3.5,
                   child: SingleChildScrollView(
                     child: FormWrap(alignment: WrapAlignment.center, children: [
-                      // //Quote Widget
-                      // quoteWidget(
-                      //     containerWidth: containerWidth, vm: vm, quote: quote),
-                      // //Work address
-                      // workAddressWidget(
-                      //     containerWidth: containerWidth,
-                      //     client: client,
-                      //     workLocation: workLocation,
-                      //     locations: locations,
-                      //     countries: vm.lists.countries),
-                      // //Timing
-                      // timingWidget(
-                      //     containerWidth: containerWidth, vm: vm, quote: quote),
+                      //Quote Widget
+                      quoteWidget(
+                          containerWidth: containerWidth, vm: vm, quote: quote),
+                      //Work address
+                      workAddressWidget(
+                          containerWidth: containerWidth,
+                          client: client,
+                          workLocation: workLocation,
+                          locations: locations,
+                          countries: vm.lists.countries),
+                      //Timing
+                      timingWidget(
+                          containerWidth: containerWidth, vm: vm, quote: quote),
                       //Product table
                       productTable(
                           packages: jobTemplates, storageItems: storageItems),
