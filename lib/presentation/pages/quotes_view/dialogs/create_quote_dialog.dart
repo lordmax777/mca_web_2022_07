@@ -4,8 +4,8 @@ import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
+import 'package:mca_dashboard/presentation/pages/locations_view/create_location_popup.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
-import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/team_member_widget.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../scheduling_view/data/week_days_m.dart';
@@ -40,6 +40,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   final List<UserMd> unavailableUsers = [];
   final List<UserMd> addedUsers = [];
   String? currentIpAddress;
+  int? tempLocationId;
 
   late final List<PlutoColumn> productTableColumns = [
     PlutoColumn(
@@ -942,7 +943,11 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             (element) =>
                 element.id.toString() == formVm.getValue(workLocationId));
 
+        final LocationMd? tempLocation = vm.locations
+            .firstWhereOrNull((element) => element.id == tempLocationId);
+
         final List<LocationMd> locations = [
+          if (tempLocation != null) tempLocation,
           ...vm.clientBasedFullLocations(client?.id)
         ];
         final List<StorageItemMd> storageItems = [...vm.storageItems]
@@ -1063,7 +1068,14 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     );
   }
 
-  void onCreateLocation() {}
+  void onCreateLocation() async {
+    final int? res = await context.showDialog(const CreateLocationPopup());
+    if (res != null) {
+      updateUI(() => tempLocationId = res);
+      formVm.patchValue({workLocationId: res.toString()});
+      formVm.save();
+    }
+  }
 
   void onAddTeamMember() async {
     final res = await DependencyManager.instance.navigation

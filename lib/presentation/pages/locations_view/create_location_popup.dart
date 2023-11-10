@@ -337,7 +337,7 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                               return;
                             }
                             context.futureLoading(() async {
-                              final success = await dispatch(PostLocationAction(
+                              final res = await dispatch(PostLocationAction(
                                   active: checked1,
                                   anywhere: checked2,
                                   sendChecklist: checked4,
@@ -365,15 +365,17 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                     phoneLandline: controller5.text,
                                     phoneFax: controller6.text,
                                   )));
-                              if (success.isRight) {
-                                if (success.right.code == 409) {
+                              if (res.isRight) {
+                                if (res.right.code == 409) {
                                   context.showError(
                                       "Location already exists, cannot be edited!");
                                   return;
                                 }
-                                context.showError(success.right.message);
+                                context.showError(res.right.message);
+                              } else if (res.isLeft) {
+                                context.pop(res.left);
                               } else {
-                                context.pop(true);
+                                context.showError("Something went wrong");
                               }
                             });
                           },
