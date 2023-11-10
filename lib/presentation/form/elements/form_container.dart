@@ -11,12 +11,14 @@ class FormContainer extends StatefulWidget {
   final String? title;
   final Widget? trailing;
   final Widget? titleWidget;
+  final bool hiddenInitially;
 
   const FormContainer(
       {super.key,
       required this.left,
       this.right,
       this.trailing,
+      this.hiddenInitially = true,
       this.title,
       this.width,
       this.titleWidget,
@@ -37,7 +39,7 @@ class _FormContainerState extends State<FormContainer> {
   Widget? get trailing => widget.trailing;
   Widget? get titleWidget => widget.titleWidget;
 
-  bool showHidden = false;
+  late bool showHidden = !widget.hiddenInitially;
 
   void toggleHidden() {
     setState(() {

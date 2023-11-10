@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/utils/global_functions.dart';
 
 final class UserMd extends Equatable {
@@ -73,6 +75,11 @@ final class UserMd extends Equatable {
 
   TimeOfDay? specialStartTime;
   TimeOfDay? specialFinishTime;
+  int? specialRateId;
+  SpecialRateMd? specialRateMd(List<SpecialRateMd> specialRates) {
+    return specialRates
+        .firstWhereOrNull((element) => element.id == specialRateId);
+  }
 
   double? specialPrice;
 

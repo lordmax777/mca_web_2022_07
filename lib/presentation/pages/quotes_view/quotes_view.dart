@@ -43,14 +43,7 @@ class _QuotesViewState extends State<QuotesView>
                       dependencyManager.navigation.showCustomDialog(
                           context: context,
                           builder: (context) {
-                            return DefaultDialog(
-                                builder: (context) {
-                                  return const CreateQuoteDialog(isJob: true);
-                                  return CreateSchedulePopup(
-                                    shiftData: ShiftData.init(isQuote: true),
-                                  );
-                                },
-                                title: "Create Job");
+                            return const CreateQuoteDialog(isJob: true);
                           });
                     },
                     icon: const Icon(Icons.add),
@@ -63,14 +56,7 @@ class _QuotesViewState extends State<QuotesView>
                       dependencyManager.navigation.showCustomDialog(
                           context: context,
                           builder: (context) {
-                            return DefaultDialog(
-                                builder: (context) {
-                                  return CreateQuoteDialog();
-                                  return CreateSchedulePopup(
-                                    shiftData: ShiftData.init(isQuote: true),
-                                  );
-                                },
-                                title: "Create Quote");
+                            return const CreateQuoteDialog();
                           });
                     },
                     icon: const Icon(Icons.add),
@@ -214,17 +200,12 @@ class _QuotesViewState extends State<QuotesView>
                     dependencyManager.navigation.showCustomDialog(
                         context: context,
                         builder: (context) {
-                          return DefaultDialog(
-                              builder: (context) {
-                                return CreateQuoteDialog(
-                                  quote: appStore.state.generalState.quotes
-                                      .firstWhereOrNull(
-                                          (element) => element.id == quoteId),
-                                );
-                                return CreateSchedulePopup(shiftData: data);
-                              },
-                              title: "Edit Quote");
+                          return CreateQuoteDialog(
+                              quote: appStore.state.generalState.quotes
+                                  .firstWhereOrNull(
+                                      (element) => element.id == quoteId));
                         });
+
                     break;
                   case "email":
                     loading(() async {

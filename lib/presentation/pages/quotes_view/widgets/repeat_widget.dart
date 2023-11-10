@@ -50,7 +50,7 @@ class RepeatWidget extends StatelessWidget {
                 formBuilderField: FormCheckbox(
                   vm: CheckboxModel(
                       name: week1Name,
-                      validator: FormBuilderValidators.maxLength(6,
+                      validator: FormBuilderValidators.minLength(1,
                           errorText: "At least 1 day must be available"),
                       items: WeekDaysMd()
                           .asMap
@@ -66,7 +66,7 @@ class RepeatWidget extends StatelessWidget {
                   vm: CheckboxModel(
                       name: week2Name,
                       //at least 1 day is required
-                      validator: FormBuilderValidators.maxLength(6,
+                      validator: FormBuilderValidators.minLength(1,
                           errorText: "At least 1 day must be available"),
                       items: WeekDaysMd()
                           .asMap

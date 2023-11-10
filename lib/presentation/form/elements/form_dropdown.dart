@@ -22,23 +22,23 @@ class FormDropdown extends StatelessWidget {
       initialValue: vm.initialValue,
       onChanged: vm.onChanged,
       builder: (FormFieldState<String> state) {
-        return DefaultDropdown2(state: state, vm: vm);
+        return _DefaultDropdown2(state: state, vm: vm);
       },
     );
   }
 }
 
-class DefaultDropdown2 extends StatefulWidget {
+class _DefaultDropdown2 extends StatefulWidget {
   final FormFieldState<String> state;
   final DropdownModel vm;
 
-  const DefaultDropdown2({super.key, required this.state, required this.vm});
+  const _DefaultDropdown2({super.key, required this.state, required this.vm});
 
   @override
-  State<DefaultDropdown2> createState() => _DefaultDropdown2State();
+  State<_DefaultDropdown2> createState() => __DefaultDropdown2State();
 }
 
-class _DefaultDropdown2State extends State<DefaultDropdown2> {
+class __DefaultDropdown2State extends State<_DefaultDropdown2> {
   final TextEditingController searchController = TextEditingController();
 
   DropdownModel get vm => widget.vm;

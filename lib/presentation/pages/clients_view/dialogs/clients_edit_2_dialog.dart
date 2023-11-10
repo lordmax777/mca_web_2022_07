@@ -80,7 +80,7 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
         shape: const RoundedRectangleBorder(),
         scrollable: true,
         content: SizedBox(
-          height: context.height,
+          height: context.height * .6,
           width: context.width * .7,
           child: DefaultForm(
             vm: formVm,
@@ -89,6 +89,7 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FormContainer(
+                  hiddenInitially: false,
                   width: containerWidth,
                   title: "Personal Info",
                   left: [

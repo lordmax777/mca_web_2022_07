@@ -5,9 +5,12 @@ import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
+import 'package:mca_dashboard/presentation/pages/scheduling_view/schedule_widgets/team_member_widget.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../scheduling_view/data/week_days_m.dart';
+import '../../scheduling_view/dialogs/team_popup2.dart';
+import '../../scheduling_view/schedule_widgets/team_member2_widget.dart';
 
 class CreateQuoteDialog extends StatefulWidget {
   final QuoteMd? quote;
@@ -25,13 +28,17 @@ class CreateQuoteDialog extends StatefulWidget {
 
 class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   QuoteMd? get quote => widget.quote;
+
   QuoteProcess? get processStatus => quote?.processStatusEnum;
+
   bool get isCreate => quote == null;
 
   bool get isJob => widget.isJob;
+
   bool get isQuote => !isJob;
 
   final List<UserMd> unavailableUsers = [];
+  final List<UserMd> addedUsers = [];
   String? currentIpAddress;
 
   late final List<PlutoColumn> productTableColumns = [
@@ -130,13 +137,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       },
     )
   ];
-  PlutoGridStateManager? productSm;
 
-  void updateUI(VoidCallback? callback) {
-    if (mounted) {
-      setState(callback ?? () {});
-    }
-  }
+  PlutoGridStateManager? productSm;
 
   @override
   void initState() {
@@ -146,14 +148,49 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         if (mounted) {
           setIp();
           setupVars();
+          fetchUnavailableUsers();
         }
       },
     );
   }
 
+  void updateUI(VoidCallback? callback) {
+    if (mounted) {
+      setState(callback ?? () {});
+    }
+  }
+
   void setIp() async {
     final ipAddress = await getIpAddress();
     updateUI(() => currentIpAddress = ipAddress);
+  }
+
+  Future<void> fetchUnavailableUsers() async {
+    if (getStartTime == null) return;
+    DependencyManager.instance.navigation.futureLoading(() async {
+      final users = await dispatch<List<UserMd>>(
+          //2023, 04, 23 => can use for testing, that has unav users
+          GetUnavailableUserListAction(
+              // DateTime(2023, 04, 23),
+              getStartTime!));
+      if (users.isLeft) {
+        // can use users from store
+        unavailableUsers.clear();
+        unavailableUsers.addAll(users.left);
+
+        //removing initially added members if they are unavailable
+        for (final user in users.left) {
+          if (user.unavailability.isUnavailable) {
+            addedUsers.removeWhere((element) => element.id == user.id);
+          }
+        }
+      } else {
+        updateUI(() {
+          DependencyManager.instance.navigation.showFail(
+              'Failed to fetch unavailable users. ${users.right.message}');
+        });
+      }
+    });
   }
 
   void setupVars() {
@@ -207,6 +244,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   }
 
   final formVm = FormModel();
+
   // static const String quoteId = "quoteId";
   static const String quoteName = "quoteName";
   static const String quoteActive = "quoteActive";
@@ -235,6 +273,32 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const String timingDate = "timingDate";
   static const String timingRepeatUntil = "timingRepeatUntil";
 
+  String? get getQuoteName => formVm.getValue(quoteName);
+  bool? get getQuoteActive => formVm.getValue(quoteActive);
+  String? get getQuoteComment => formVm.getValue(quoteComment);
+  String? get getClientId => formVm.getValue(clientId);
+  String? get getWorkLocationId => formVm.getValue(workLocationId);
+  String? get getWorkLine1 => formVm.getValue(workLine1);
+  String? get getWorkLine2 => formVm.getValue(workLine2);
+  String? get getWorkCity => formVm.getValue(workCity);
+  String? get getWorkPostcode => formVm.getValue(workPostcode);
+  String? get getWorkCountryId => formVm.getValue(workCountryId);
+  String? get getWorkCounty => formVm.getValue(workCounty);
+  String? get getWorkLocationLatitude => formVm.getValue(workLocationLatitude);
+  String? get getWorkLocationLongitude =>
+      formVm.getValue(workLocationLongitude);
+  String? get getWorkLocationRadius => formVm.getValue(workLocationRadius);
+  String? get getWorkStaticIpAddresses =>
+      formVm.getValue(workStaticIpAddresses);
+  DateTime? get getStartTime => formVm.getValue(startTime);
+  DateTime? get getEndTime => formVm.getValue(endTime);
+  bool? get getAllDay => formVm.getValue(allDay);
+  String? get getTimingRepeatId => formVm.getValue(timingRepeatId);
+  String? get getTimingWeek1 => formVm.getValue(timingWeek1);
+  String? get getTimingWeek2 => formVm.getValue(timingWeek2);
+  DateTime? get getTimingDate => formVm.getValue(timingDate);
+  String? get getTimingRepeatUntil => formVm.getValue(timingRepeatUntil);
+
   static const DpItem noneItem = DpItem(id: "-1", title: "None");
 
   FormContainer quoteWidget(
@@ -252,23 +316,23 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                         helperText:
                             "Leave empty to use default name\nDefault name is used from company settings"))
                 : buildText(quote!.name)),
-        if (quote != null) divider(),
+        // if (quote != null) divider(),
         if (quote != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Quote Number"),
               formBuilderField: buildText(quote!.identifier)),
-        if (quote != null) divider(),
+        // if (quote != null) divider(),
         if (quote != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Status"),
               formBuilderField: buildText(quote!.processStatus)),
-        if (quote?.lastAllocationMd != null) divider(),
+        // if (quote?.lastAllocationMd != null) divider(),
         if (quote?.lastAllocationMd != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Previous shift"),
               formBuilderField:
                   buildText(quote!.shiftMd(vm.properties)?.title ?? "-")),
-        if (quote?.nextAllocationMd != null) divider(),
+        // if (quote?.nextAllocationMd != null) divider(),
         if (quote?.nextAllocationMd != null)
           FormWithLabel(
               labelVm: const LabelModel(text: "Next scheduled date"),
@@ -277,8 +341,11 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         Visibility(
             maintainState: true,
             visible: !isCreate,
-            child: const FormSwitch(
-                vm: SwitchModel(name: quoteActive, title: "Active"))),
+            child: FormSwitch(
+                vm: SwitchModel(
+                    name: quoteActive,
+                    initialValue: isCreate,
+                    title: "Active"))),
         const FormWithLabel(
             labelVm: LabelModel(text: "Comment"),
             formBuilderField: FormInput(
@@ -292,32 +359,73 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   FormContainer invoiceAddressWidget(
       {required double containerWidth,
       required GeneralState vm,
-      required ClientMd? client}) {
+      required AddressMd address}) {
     return FormContainer(
         title: "Invoice Address",
         width: containerWidth,
         left: [
-          FormWithLabel(
-              labelVm: const LabelModel(text: "Line 1"),
-              formBuilderField: buildText(client?.address.line1 ?? "-")),
-          divider(),
-          FormWithLabel(
-              labelVm: const LabelModel(text: "Line 2"),
-              formBuilderField: buildText(client?.address.line2 ?? "-")),
-          divider(),
-          FormWithLabel(
-              labelVm: const LabelModel(text: "City"),
-              formBuilderField: buildText(client?.address.city ?? "-")),
-          divider(),
-          FormWithLabel(
-              labelVm: const LabelModel(text: "Postcode"),
-              formBuilderField: buildText(client?.address.postcode ?? "-")),
-          divider(),
-          FormWithLabel(
-              labelVm: const LabelModel(text: "Country"),
-              formBuilderField: buildText(
-                  client?.address.getCountryMd(vm.lists.countries)?.name ??
-                      "-")),
+          buildText("${address.line1}, "
+              "${address.postcode ?? ""}, ${address.city ?? ""}, ${address.getCountryMd(vm.lists.countries)?.name ?? ""}"),
+          // // divider(),
+          // FormWithLabel(
+          //     labelVm: const LabelModel(text: "Line 2"),
+          //     formBuilderField: buildText(client?.address.line2 ?? "-")),
+          // // divider(),
+          // FormWithLabel(
+          //     labelVm: const LabelModel(text: "City"),
+          //     formBuilderField: buildText(client?.address.city ?? "-")),
+          // // divider(),
+          // FormWithLabel(
+          //     labelVm: const LabelModel(text: "Postcode"),
+          //     formBuilderField: buildText(client?.address.postcode ?? "-")),
+          // // divider(),
+          // FormWithLabel(
+          //     labelVm: const LabelModel(text: "Country"),
+          //     formBuilderField: buildText(
+          //         client?.address.getCountryMd(vm.lists.countries)?.name ??
+          //             "-")),
+        ]);
+  }
+
+  Widget workAddressWidget2(
+      {required double containerWidth,
+      required List<LocationMd> locations,
+      required List<CountryMd> countries,
+      required ClientMd? client}) {
+    final LocationMd? location = locations.firstWhereOrNull(
+        (element) => element.id.toString() == getWorkLocationId);
+    return FormContainer(
+        title: "Work address",
+        width: containerWidth,
+        trailing: IconButton(
+          tooltip: "Create location",
+          icon: const Icon(Icons.add_circle_outline),
+          color: context.theme.primaryColor,
+          onPressed: onCreateLocation,
+        ),
+        left: [
+          if (client != null && locations.isNotEmpty)
+            FormWithLabel(
+                labelVm: const LabelModel(text: "Locations", isRequired: true),
+                formBuilderField: FormDropdown(
+                    vm: DropdownModel(
+                        helperText: "Select location or search for address",
+                        onChanged: (p0) => updateUI(formVm.save),
+                        name: workLocationId,
+                        hasSearchBox: true,
+                        items: locations
+                            .map((e) =>
+                                DpItem(id: e.id.toString(), title: e.name))
+                            .toList())))
+          else
+            Text("No locations found. Please select client with location!",
+                textAlign: TextAlign.center,
+                style: context.textTheme.bodyLarge),
+          if (location == null)
+            const SizedBox()
+          else
+            buildText(
+                "${location.address.line1}, ${location.address.city}, ${location.address.getCountryMd(countries)?.name ?? ""}"),
         ]);
   }
 
@@ -593,12 +701,12 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           labelVm: const LabelModel(text: "Company"),
           formBuilderField: buildText(client?.company ?? "-"),
         ),
-        divider(),
+        // divider(),
         FormWithLabel(
           labelVm: const LabelModel(text: "Phone"),
           formBuilderField: buildText(client?.phone ?? "-"),
         ),
-        divider(),
+        // divider(),
         FormWithLabel(
           labelVm: const LabelModel(text: "Email"),
           formBuilderField: buildText(client?.email ?? "-"),
@@ -615,7 +723,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
           width: double.infinity,
-          height: context.height * .7,
+          height: context.height * .5,
           child: DefaultTable(
               headerStart: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -750,6 +858,63 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     );
   }
 
+  Widget teamsWidget(
+      {required double containerWidth, required GeneralState vm}) {
+    return FormContainer(
+      title: "Teams",
+      trailing: isCreate
+          ? IconButton(
+              tooltip: "Add team member",
+              onPressed: onAddTeamMember,
+              color: context.theme.primaryColor,
+              icon: const Icon(Icons.add_circle_outline))
+          : null,
+      width: containerWidth,
+      left: [
+        if (addedUsers.isNotEmpty)
+          ...addedUsers.map((e) {
+            return Column(
+              children: [
+                TeamMember2Widget(
+                  userName: e.fullname,
+                  specialStartTime: e.specialStartTime,
+                  specialFinishTime: e.specialFinishTime,
+                  onSpecialFinishTimeChanged: (value) {
+                    updateUI(() {
+                      e.specialFinishTime = value;
+                    });
+                  },
+                  onSpecialStartTimeChanged: (value) {
+                    updateUI(() {
+                      e.specialStartTime = value;
+                    });
+                  },
+                  onDeleted: () {
+                    updateUI(() {
+                      addedUsers.remove(e);
+                    });
+                  },
+                  specialRateId: e.specialRateId,
+                  onSpecialRateChanged: (value) {
+                    updateUI(() {
+                      e.specialRateId = value;
+                    });
+                  },
+                ),
+                if (addedUsers.last != e) const SizedBox(height: 10),
+                if (addedUsers.last != e) divider(),
+              ],
+            );
+          })
+        else
+          const Center(
+            child: Text("No team members added.",
+                textAlign: TextAlign.center, style: TextStyle(fontSize: 14)),
+          ),
+      ],
+    );
+  }
+
   Widget buildText(String text) {
     return SelectableText(
       text.isEmpty ? "-" : text,
@@ -758,7 +923,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     );
   }
 
-  Divider divider() {
+  Widget divider() {
     return const Divider(indent: 0, endIndent: 0, height: 0);
   }
 
@@ -794,68 +959,128 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
 
         final containerWidth = context.width * .2;
 
-        return DefaultForm(
-          vm: formVm,
-          child: SizedBox(
-            height: context.height * 1.2,
-            width: context.width,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //Quote, Work Address, Timing, Product table
-                SizedBox(
-                  width: containerWidth * 3.5,
-                  child: SingleChildScrollView(
-                    child: FormWrap(alignment: WrapAlignment.center, children: [
-                      //Quote Widget
-                      quoteWidget(containerWidth: containerWidth, vm: vm),
-                      //Work address
-                      workAddressWidget(
-                          containerWidth: containerWidth,
-                          client: client,
-                          workLocation: workLocation,
-                          locations: locations,
-                          countries: vm.lists.countries),
-                      //Timing
-                      timingWidget(
-                          containerWidth: containerWidth, vm: vm, quote: quote),
-                      //Product table
-                      productTable(
-                          packages: jobTemplates, storageItems: storageItems),
-                    ]),
-                  ),
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          insetPadding: const EdgeInsets.all(16),
+          surfaceTintColor: Theme.of(context).colorScheme.surface,
+          elevation: 10,
+          title: SpacedRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            horizontalSpace: 8,
+            children: [
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: IconButton(
+                  onPressed: context.pop,
+                  icon: const Icon(Icons.arrow_back),
                 ),
-                //Divider
-                Container(
-                  margin: const EdgeInsets.only(right: 40),
-                  height: context.height * 1.2,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(
-                          color: context.theme.dividerColor, width: 1),
+              ),
+              Text(
+                isJob ? "Job" : "Quote",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
+          ),
+          actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
+          actions: [
+            ElevatedButton(onPressed: onSave, child: Text(getSaveText()))
+          ],
+          content: DefaultForm(
+            vm: formVm,
+            child: SizedBox(
+              height: context.height * 1.2,
+              width: context.width,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //Quote, Work Address, Timing, Product table
+                  SizedBox(
+                    width: containerWidth * 3.5,
+                    child: SingleChildScrollView(
+                      child:
+                          FormWrap(alignment: WrapAlignment.center, children: [
+                        //Quote Widget
+                        quoteWidget(containerWidth: containerWidth, vm: vm),
+                        //Work address
+                        // workAddressWidget(
+                        //     containerWidth: containerWidth,
+                        //     client: client,
+                        //     workLocation: workLocation,
+                        //     locations: locations,
+                        //     countries: vm.lists.countries),
+                        teamsWidget(containerWidth: containerWidth, vm: vm),
+                        //Timing
+                        timingWidget(
+                            containerWidth: containerWidth,
+                            vm: vm,
+                            quote: quote),
+                        //Product table
+                        productTable(
+                            packages: jobTemplates, storageItems: storageItems),
+                      ]),
                     ),
                   ),
-                ),
-                //Client
-                SpacedColumn(
-                  mainAxisSize: MainAxisSize.min,
-                  verticalSpace: 10,
-                  children: [
-                    clientWidget(
-                        containerWidth: containerWidth,
-                        clients: clients,
-                        client: client),
-                    //Invoice address
-                    invoiceAddressWidget(
-                        containerWidth: containerWidth, vm: vm, client: client),
-                  ],
-                ),
-              ],
+                  //Divider
+                  Container(
+                    margin: const EdgeInsets.only(right: 40),
+                    height: context.height * 1.2,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                            color: context.theme.dividerColor, width: 1),
+                      ),
+                    ),
+                  ),
+                  //Client
+                  SpacedColumn(
+                    mainAxisSize: MainAxisSize.min,
+                    verticalSpace: 10,
+                    children: [
+                      clientWidget(
+                          containerWidth: containerWidth,
+                          clients: clients,
+                          client: client),
+                      //Invoice address
+                      if (client != null)
+                        invoiceAddressWidget(
+                            containerWidth: containerWidth,
+                            vm: vm,
+                            address: client.address),
+                      //Work address
+                      workAddressWidget2(
+                          containerWidth: containerWidth,
+                          client: client,
+                          countries: vm.lists.countries,
+                          locations: locations),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
+  }
+
+  void onCreateLocation() {}
+
+  void onAddTeamMember() async {
+    final res = await DependencyManager.instance.navigation
+        .showCustomDialog<List<UserMd>?>(
+            context: context,
+            builder: (context) {
+              return TeamPopup2(
+                addedUsers: addedUsers,
+                unavailableUsers: unavailableUsers,
+              );
+            });
+    if (res != null) {
+      updateUI(() {
+        addedUsers.clear();
+        addedUsers.addAll(res);
+      });
+    }
   }
 
   void onEditClient(ClientMd? client) async {
@@ -937,6 +1162,26 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       await context.futureLoading(() async {
         await dispatch<bool>(SendQuoteEmailAction(quoteId));
       });
+    }
+  }
+
+  void onSave() {
+    formVm.saveAndValidate();
+    if (!formVm.isValid) return;
+  }
+
+  String getSaveText() {
+    switch (processStatus) {
+      case null:
+        if (isJob) {
+          return "Create Job";
+        } else {
+          return "Create Quote";
+        }
+      case QuoteProcess.jobCreated:
+        return "Schedule Job";
+      default:
+        return "Save";
     }
   }
 }
