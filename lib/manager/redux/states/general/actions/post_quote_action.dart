@@ -32,7 +32,7 @@ final class PostQuoteAction {
 
 class PostQuoteAction2 {
   final int? quoteId;
-  final String jobTitle;
+  final String? jobTitle;
   final ClientMd client;
   AddressMd get invoiceAddress => client.address;
   final LocationMd workLocation;
@@ -72,6 +72,7 @@ class PostQuoteAction2 {
     this.checklistTemplateId,
     this.workLocationId,
   });
+
   final deps = DependencyManager.instance;
   Future<Either<int?, ErrorMd>> call(AppState state) async {
     return await apiCall(() async {
@@ -80,7 +81,18 @@ class PostQuoteAction2 {
       final FormData formData = FormData();
 
       //Job Title
-      formData.fields.add(MapEntry("jobTitle", jobTitle));
+      String? jobName;
+      if (jobTitle != null && jobTitle!.isNotEmpty) {
+        jobName = jobTitle;
+      } else {
+        final workAddress =
+            "${workLocation.address.line1}, ${workLocation.address.city}, ${workLocation.address.postcode}, ${workLocation.address.getCountryMd(state.generalState.lists.countries)?.name}";
+        final firstProduct =
+            products.items(state.generalState.storageItems).first.name;
+        final clientName = client.name;
+        jobName = "$workAddress - $firstProduct - $clientName";
+      }
+      formData.fields.add(MapEntry("name", jobName!));
 
       //client_id
       formData.fields.add(MapEntry("client_id", client.id.toString()));
@@ -144,12 +156,12 @@ class PostQuoteAction2 {
             .add(MapEntry("workAddressCountry", workAddress.country));
       }
       if (workAddress.latitude != null) {
-        formData.fields
-            .add(MapEntry("workLocationLat", workAddress.latitude.toString()));
+        formData.fields.add(
+            MapEntry("workLocationLatitude", workAddress.latitude.toString()));
       }
       if (workAddress.longitude != null) {
-        formData.fields
-            .add(MapEntry("workLocationLng", workAddress.longitude.toString()));
+        formData.fields.add(MapEntry(
+            "workLocationLongitude", workAddress.longitude.toString()));
       }
       if (workAddress.radius != null) {
         formData.fields
@@ -174,7 +186,7 @@ class PostQuoteAction2 {
       //Work start date
       if (workStartDate != null) {
         formData.fields
-            .add(MapEntry("workStartDate", workStartDate!.toApiDateTime));
+            .add(MapEntry("workStartDate", workStartDate!.toApiDateWithSlash));
       }
       //Work start time
       if (workStartTime != null) {
@@ -287,7 +299,7 @@ class MakeJobFromQuoteAction {
   Future<Either<int?, ErrorMd>> call(AppState state) {
     return apiCall(() async {
       final res = await DependencyManager.instance.apiClient
-          .makeJobFromQuote(quoteId, date: date?.toApiDateTime);
+          .makeJobFromQuote(quoteId, date: date?.toApiDateWithDash);
       if (res.response.statusCode == 200) {
         if (res.data is num) {
           return res.data;

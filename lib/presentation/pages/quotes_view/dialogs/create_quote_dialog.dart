@@ -7,7 +7,6 @@ import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_ed
 import 'package:mca_dashboard/presentation/pages/locations_view/create_location_popup.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
-import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/timing_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../scheduling_view/data/week_days_m.dart';
@@ -101,6 +100,63 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       field: "quantity",
       enableAutoEditing: true,
       enableEditingMode: true,
+      // footerRenderer: (context) {
+      //   final TextEditingController controller = TextEditingController();
+      //   context.stateManager.keyManager?.eventResult
+      //       .skip(KeyEventResult.ignored);
+      //   final double total = context.stateManager.rows
+      //       .where((element) => element.checked ?? false)
+      //       .map((e) =>
+      //           (e.cells["price"]?.value ?? 0) *
+      //           (e.cells["quantity"]?.value ?? 0))
+      //       .fold(0, (a, b) {
+      //     return a + b;
+      //   });
+      //
+      //   FocusNode focusNode = FocusNode(onKey: (_, __) {
+      //     return KeyEventResult.handled;
+      //   });
+      //   return Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      //     child: Row(
+      //       mainAxisSize: MainAxisSize.min,
+      //       children: [
+      //         const Text(
+      //           "Discount:",
+      //           maxLines: 2,
+      //           textAlign: TextAlign.end,
+      //           softWrap: true,
+      //           overflow: TextOverflow.ellipsis,
+      //           style: TextStyle(fontWeight: FontWeight.bold),
+      //         ),
+      //         const SizedBox(width: 10),
+      //         SizedBox(
+      //           width: 100,
+      //           height: 50,
+      //           child: TextField(
+      //             focusNode: focusNode,
+      //           ),
+      //           // FormInput(
+      //           //     vm: InputModel(
+      //           //   name: productsDiscount,
+      //           //   valueTransformer: (value) => double.tryParse(value ?? ""),
+      //           //   // inputFormatters: [
+      //           //   //   GlobalConstants.numbersAndDecimalOnlyFormatter
+      //           //   // ],
+      //           // )),
+      //         ),
+      //         const Text(
+      //           "%",
+      //           maxLines: 2,
+      //           textAlign: TextAlign.end,
+      //           softWrap: true,
+      //           overflow: TextOverflow.ellipsis,
+      //           style: TextStyle(fontWeight: FontWeight.bold),
+      //         ),
+      //       ],
+      //     ),
+      //   );
+      // },
       renderer: (rendererContext) =>
           rendererContext.defaultEditableCellWidget(),
     ),
@@ -169,13 +225,14 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   }
 
   Future<void> fetchUnavailableUsers() async {
-    if (getStartTime == null) return;
+    if (getTimingDate == null) return;
     DependencyManager.instance.navigation.futureLoading(() async {
       final users = await dispatch<List<UserMd>>(
           //2023, 04, 23 => can use for testing, that has unav users
           GetUnavailableUserListAction(
-              // DateTime(2023, 04, 23),
-              getStartTime!));
+        // DateTime(2023, 04, 23),
+        getTimingDate!,
+      ));
       if (users.isLeft) {
         // can use users from store
         unavailableUsers.clear();
@@ -187,6 +244,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             addedUsers.removeWhere((element) => element.id == user.id);
           }
         }
+        updateUI(() {});
       } else {
         updateUI(() {
           DependencyManager.instance.navigation.showFail(
@@ -204,7 +262,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           quoteComment: quote!.notes,
           quoteActive: quote!.active,
           clientId: quote!.clientId.toString(),
-          workLocationId: quote!.locationId.toString(),
           workLine1: quote!.addressLine1,
           workLine2: quote!.addressLine2,
           workCity: quote!.addressCity,
@@ -240,6 +297,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             timingWeek2: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [],
                     isFortnightly: true)
                 .asListString,
+            workLocationId: quote!.locationId.toString(),
           });
         });
         updateUI(formVm.save);
@@ -279,9 +337,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const String packageSelect = "packageSelect";
   static const String timingDate = "timingDate";
   static const String timingRepeatUntil = "timingRepeatUntil";
+  static const String productsDiscount = "productsDiscount";
 
   String? get getQuoteName => formVm.getValue(quoteName);
-
   bool? get getQuoteActive => formVm.getValue(quoteActive);
   String? get getQuoteComment => formVm.getValue(quoteComment);
   String? get getClientId => formVm.getValue(clientId);
@@ -322,7 +380,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                     vm: InputModel(
                         name: quoteName,
                         helperText:
-                            "Leave empty to use default name\nDefault name is used from company settings"))
+                            "Leave empty to use default name\nWork address + First Service/Package + Client"))
                 : buildText(quote!.name)),
         // if (quote != null) divider(),
         if (quote != null)
@@ -571,10 +629,17 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 text: "Date",
                 isRequired: processStatus == QuoteProcess.jobCreated),
             formBuilderField: FormDatePicker(
-              vm: DatePickerModel(name: timingDate, validators: [
-                if (processStatus == QuoteProcess.jobCreated)
-                  FormBuilderValidators.required()
-              ]),
+              vm: DatePickerModel(
+                  name: timingDate,
+                  onChanged: (value) {
+                    updateUI(() {
+                      fetchUnavailableUsers();
+                    });
+                  },
+                  validators: [
+                    if (processStatus == QuoteProcess.jobCreated)
+                      FormBuilderValidators.required()
+                  ]),
             )),
         const SizedBox(),
         FormSwitch(
@@ -689,24 +754,30 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             )
           : null,
       left: [
-        FormWithLabel(
-            labelVm: const LabelModel(text: "Client", isRequired: true),
-            formBuilderField: isCreate
-                ? FormDropdown(
-                    vm: DropdownModel(
-                        name: clientId,
-                        onChanged: (p0) {
-                          updateUI(formVm.save);
-                        },
-                        hasSearchBox: true,
-                        items: clients
-                            .map((e) => DpItem(
-                                id: e.id.toString(),
-                                title: e.name,
-                                subtitle: e.company))
-                            .toList()
-                          ..insert(0, noneItem)))
-                : buildText(client?.name ?? "-")),
+        Visibility(
+          maintainState: true,
+          visible: isCreate,
+          child: FormWithLabel(
+              labelVm: const LabelModel(text: "Client", isRequired: true),
+              formBuilderField: FormDropdown(
+                  vm: DropdownModel(
+                      name: clientId,
+                      onChanged: (p0) {
+                        updateUI(formVm.save);
+                      },
+                      hasSearchBox: true,
+                      items: clients
+                          .map((e) => DpItem(
+                              id: e.id.toString(),
+                              title: e.name,
+                              subtitle: e.company))
+                          .toList()
+                        ..insert(0, noneItem)))),
+        ),
+        if (!isCreate)
+          FormWithLabel(
+              labelVm: const LabelModel(text: "Client"),
+              formBuilderField: buildText(client?.name ?? "-")),
         FormWithLabel(
           labelVm: const LabelModel(text: "Company"),
           formBuilderField: buildText(client?.company ?? "-"),
@@ -849,9 +920,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 productSm = p0.stateManager;
 
                 if (quote != null) {
-                  for (var item
+                  for (JobTemplateItemMd item
                       in (quote?.jobTemplateMd(packages)?.items ?? [])) {
-                    onAddProduct(item.itemMd(storageItems));
+                    onAddProduct(item.item(storageItems));
                   }
                   //Add all items from quote
                   for (var item in quote!.items) {
@@ -884,7 +955,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       {required double containerWidth, required GeneralState vm}) {
     return FormContainer(
       title: "Teams",
-      trailing: isCreate
+      trailing: isCreate && getTimingDate != null
           ? IconButton(
               tooltip: "Add team member",
               onPressed: onAddTeamMember,
@@ -927,11 +998,18 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 if (addedUsers.last != e) divider(),
               ],
             );
-          })
+          }),
+        if (getTimingDate == null)
+          Center(
+            child: Text("Please select date to add team members.",
+                textAlign: TextAlign.center,
+                style: context.textTheme.bodyLarge),
+          )
         else
-          const Center(
+          Center(
             child: Text("No team members added.",
-                textAlign: TextAlign.center, style: TextStyle(fontSize: 14)),
+                textAlign: TextAlign.center,
+                style: context.textTheme.bodyLarge),
           ),
       ],
     );
@@ -994,12 +1072,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             crossAxisAlignment: CrossAxisAlignment.center,
             horizontalSpace: 8,
             children: [
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: IconButton(
-                  onPressed: context.pop,
-                  icon: const Icon(Icons.arrow_back),
-                ),
+              IconButton(
+                onPressed: context.pop,
+                icon: const Icon(Icons.arrow_back),
               ),
               Text(
                 isJob ? "Job" : "Quote",
@@ -1302,7 +1377,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         (element) => element.id.toString() == getPackageSelect);
     final res = await dispatch<int?>(PostQuoteAction2(
       quoteId: quote?.id,
-      jobTitle: getQuoteName!,
+      jobTitle: getQuoteName,
       client: clientMd!,
       quoteComment: getQuoteComment,
       products: ProductData(stateManager: productSm),
@@ -1330,8 +1405,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     return res;
   }
 
-  Future<Either<int, ErrorMd>> makeJobFromQuote({required int quoteId}) async {
-    final res = await dispatch<int>(
+  Future<Either<int?, ErrorMd>> makeJobFromQuote({required int quoteId}) async {
+    final res = await dispatch<int?>(
         MakeJobFromQuoteAction(quoteId: quoteId, date: getTimingDate));
     return res;
   }

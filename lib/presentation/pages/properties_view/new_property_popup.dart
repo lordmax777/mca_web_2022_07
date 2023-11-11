@@ -278,8 +278,7 @@ class _NewPropertyPopupState extends State<NewPropertyPopup>
           ? [
               ElevatedButton(
                 onPressed: () {
-                  shiftDetailsFormVm.saveAndValidate();
-                  print(shiftDetailsFormVm.value);
+                  context.pop();
                 },
                 child: const Text('Cancel'),
               ),

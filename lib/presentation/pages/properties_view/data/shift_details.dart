@@ -151,7 +151,7 @@ class ShiftDetailsData with DataSourceMixin<ShiftDetailsData> {
 
   factory ShiftDetailsData.from(PropertyMd? p) {
     if (p == null) return ShiftDetailsData.init();
-
+    logger(p.days, hint: "days");
     return ShiftDetailsData(
       id: p.id,
       propertyName: TextEditingController(text: p.title),

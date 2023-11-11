@@ -112,7 +112,6 @@ class DefaultTable extends StatelessWidget {
         onLoaded(event);
       },
       mode: mode,
-      columnMenuDelegate: PlutoColumnMenuDelegateDefault(),
       onSelected: onSelected,
       rows: rows,
       noRowsWidget: Center(
