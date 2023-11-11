@@ -82,245 +82,254 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
         content: SizedBox(
           height: context.height * .6,
           width: context.width * .7,
-          child: DefaultForm(
-            vm: formVm,
-            child: SpacedRow(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FormContainer(
-                  hiddenInitially: false,
-                  width: containerWidth,
-                  title: "Personal Info",
-                  left: [
-                    FormWithLabel(
-                      labelVm: const LabelModel(text: "Name", isRequired: true),
-                      formBuilderField: FormInput(
-                          vm: InputModel(
-                        name: "name",
-                        validators: [FormBuilderValidators.required()],
-                      )),
-                    ),
-                  ],
-                  hidden: [
-                    const FormWithLabel(
-                      labelVm: LabelModel(text: "Company"),
-                      formBuilderField: FormInput(
-                          vm: InputModel(
-                        name: "company",
-                      )),
-                    ),
-                    //email
-                    FormWithLabel(
-                      labelVm: const LabelModel(text: "Email"),
-                      formBuilderField: FormInput(
-                          vm: InputModel(
-                        hintText: "example@mail.com",
-                        name: "email",
-                        validators: [FormBuilderValidators.email()],
-                      )),
-                    ),
-                    //phone
-                    FormWithLabel(
-                      labelVm: const LabelModel(text: "Phone"),
-                      formBuilderField: FormInput(
-                          vm: InputModel(
-                        name: "phone",
-                        valueTransformer: (value) => num.tryParse(value ?? ""),
-                        validators: [
-                          FormBuilderValidators.numeric(
-                              errorText: "Phone must be a number")
-                        ],
-                        inputFormatters: [GlobalConstants.numbersOnlyFormatter],
-                      )),
-                    ),
-                    //fax
-                    FormWithLabel(
-                      labelVm: const LabelModel(text: "Fax"),
-                      formBuilderField: FormInput(
-                          vm: InputModel(
-                        name: "fax",
-                        valueTransformer: (value) => num.tryParse(value ?? ""),
-                        validators: [
-                          FormBuilderValidators.numeric(
-                              errorText: "Fax must be a number")
-                        ],
-                        inputFormatters: [GlobalConstants.numbersOnlyFormatter],
-                      )),
-                    ),
-                  ],
-                ),
-                FormContainer(
-                  title: "Address",
-                  width: containerWidth,
-                  left: [
-                    FormWithLabel(
-                      labelVm: const LabelModel(text: "Search Address"),
-                      formBuilderField: AddressAutocompleteWidget(
-                          width: containerWidth * .95,
-                          onSelected: (value) {
-                            formVm.patchValue({
-                              "addressLine1": value.line1,
-                              "addressLine2": value.line2,
-                              "addressCity": value.city,
-                              "addressPostcode": value.postcode,
-                              "country": value.country?.code,
-                            });
-                          }),
-                    ),
-                    FormWithLabel(
+          child: SingleChildScrollView(
+            child: DefaultForm(
+              vm: formVm,
+              child: SpacedRow(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FormContainer(
+                    hiddenInitially: false,
+                    width: containerWidth,
+                    title: "Personal Info",
+                    left: [
+                      FormWithLabel(
                         labelVm:
-                            const LabelModel(text: "Line 1", isRequired: true),
+                            const LabelModel(text: "Name", isRequired: true),
                         formBuilderField: FormInput(
                             vm: InputModel(
-                          name: "addressLine1",
-                          validators: [
-                            FormBuilderValidators.required(),
-                          ],
-                        ))),
-                    FormWithLabel(
-                        labelVm:
-                            const LabelModel(text: "City", isRequired: true),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "addressCity",
-                          validators: [
-                            FormBuilderValidators.required(),
-                          ],
-                        ))),
-                    FormWithLabel(
-                        labelVm:
-                            const LabelModel(text: "Country", isRequired: true),
-                        formBuilderField: FormDropdown(
-                            vm: DropdownModel(
-                                name: "country",
-                                items: lists.countries
-                                    .map((e) =>
-                                        DpItem(id: e.code, title: e.name))
-                                    .toList(),
-                                validator: FormBuilderValidators.required(),
-                                hasSearchBox: true,
-                                hintText: ""))),
-                    FormWithLabel(
-                        labelVm: const LabelModel(
-                            text: "Postcode", isRequired: true),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "addressPostcode",
-                          validators: [
-                            FormBuilderValidators.required(),
-                          ],
-                        ))),
-                  ],
-                  hidden: const [
-                    FormWithLabel(
-                        labelVm: LabelModel(text: "Line 2"),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "addressLine2",
-                        ))),
-                    FormWithLabel(
-                        labelVm: LabelModel(text: "County"),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "addressCounty",
-                        ))),
-                  ],
-                ),
-                FormContainer(
-                  width: containerWidth,
-                  title: "Payment Info",
-                  left: [
-                    FormWithLabel(
-                        labelVm: const LabelModel(
-                            text: "Currency", isRequired: true),
-                        formBuilderField: FormDropdown(
-                            vm: DropdownModel(
-                          name: "currencyId",
-                          items: lists.currencies
-                              .map((e) => DpItem(
-                                  id: e.id.toString(),
-                                  title: e.code,
-                                  subtitle: e.sign))
-                              .toList(),
-                          validator: FormBuilderValidators.required(),
-                        ))),
-                    FormWithLabel(
-                        labelVm: const LabelModel(
-                            text: "Payment Method", isRequired: true),
-                        formBuilderField: FormDropdown(
-                            vm: DropdownModel(
-                          name: "paymentMethodId",
-                          items: lists.paymentMethods
-                              .map((e) =>
-                                  DpItem(id: e.id.toString(), title: e.name))
-                              .toList(),
-                          validator: FormBuilderValidators.required(),
-                        ))),
-                    FormWithLabel(
-                        labelVm: const LabelModel(
-                            text: "Invoice Period", isRequired: true),
-                        formBuilderField: FormDropdown(
-                            vm: DropdownModel(
-                          name: "invoicePeriodId",
-                          items: lists.invoicePeriods
-                              .map((e) =>
-                                  DpItem(id: e.id.toString(), title: e.name))
-                              .toList(),
-                          validator: FormBuilderValidators.required(),
-                        ))),
-                    FormWithLabel(
-                        labelVm: const LabelModel(
-                            text: "Invoice Day", isRequired: true),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "invoiceDay",
-                          valueTransformer: (value) =>
-                              num.tryParse(value ?? ""),
-                          validators: [
-                            FormBuilderValidators.required(),
-                            (value) {
-                              if (formVm.value['invoicePeriodId'] == null) {
-                                return null;
-                              }
-                              if (formVm.value['invoicePeriodId'] == "1" ||
-                                  formVm.value['invoicePeriodId'] == "2") {
-                                return null;
-                              }
-                              return "Invoice day is required";
-                            }
-                          ],
-                        ))),
-                    FormWithLabel(
-                        labelVm: const LabelModel(
-                            text: "Paying Days", isRequired: true),
-                        formBuilderField: FormInput(
-                            vm: InputModel(
-                          name: "paymentDays",
-                          valueTransformer: (value) =>
-                              num.tryParse(value ?? ""),
-                          hintText: "1",
+                          name: "name",
                           validators: [FormBuilderValidators.required()],
-                        ))),
-                  ],
-                  hidden: const [
-                    FormWithLabel(
-                        labelVm: LabelModel(text: "Comment"),
+                        )),
+                      ),
+                    ],
+                    hidden: [
+                      const FormWithLabel(
+                        labelVm: LabelModel(text: "Company"),
                         formBuilderField: FormInput(
                             vm: InputModel(
-                                name: "comment", hintText: "no comment"))),
-                    FormSwitch(
-                        vm: SwitchModel(name: "active", title: "Active")),
-                    FormSwitch(
-                        vm: SwitchModel(
-                            name: "combineInvoices",
-                            title: "Combine Invoices")),
-                    FormSwitch(
-                        vm: SwitchModel(
-                            name: "sendInvoices", title: "Send Invoices")),
-                  ],
-                ),
-              ],
+                          name: "company",
+                        )),
+                      ),
+                      //email
+                      FormWithLabel(
+                        labelVm: const LabelModel(text: "Email"),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          hintText: "example@mail.com",
+                          name: "email",
+                          validators: [FormBuilderValidators.email()],
+                        )),
+                      ),
+                      //phone
+                      FormWithLabel(
+                        labelVm: const LabelModel(text: "Phone"),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "phone",
+                          valueTransformer: (value) =>
+                              num.tryParse(value ?? ""),
+                          validators: [
+                            FormBuilderValidators.numeric(
+                                errorText: "Phone must be a number")
+                          ],
+                          inputFormatters: [
+                            GlobalConstants.numbersOnlyFormatter
+                          ],
+                        )),
+                      ),
+                      //fax
+                      FormWithLabel(
+                        labelVm: const LabelModel(text: "Fax"),
+                        formBuilderField: FormInput(
+                            vm: InputModel(
+                          name: "fax",
+                          valueTransformer: (value) =>
+                              num.tryParse(value ?? ""),
+                          validators: [
+                            FormBuilderValidators.numeric(
+                                errorText: "Fax must be a number")
+                          ],
+                          inputFormatters: [
+                            GlobalConstants.numbersOnlyFormatter
+                          ],
+                        )),
+                      ),
+                    ],
+                  ),
+                  FormContainer(
+                    title: "Address",
+                    width: containerWidth,
+                    left: [
+                      FormWithLabel(
+                        labelVm: const LabelModel(text: "Search Address"),
+                        formBuilderField: AddressAutocompleteWidget(
+                            width: containerWidth * .95,
+                            onSelected: (value) {
+                              formVm.patchValue({
+                                "addressLine1": value.line1,
+                                "addressLine2": value.line2,
+                                "addressCity": value.city,
+                                "addressPostcode": value.postcode,
+                                "country": value.country?.code,
+                              });
+                            }),
+                      ),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Line 1", isRequired: true),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "addressLine1",
+                            validators: [
+                              FormBuilderValidators.required(),
+                            ],
+                          ))),
+                      FormWithLabel(
+                          labelVm:
+                              const LabelModel(text: "City", isRequired: true),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "addressCity",
+                            validators: [
+                              FormBuilderValidators.required(),
+                            ],
+                          ))),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Country", isRequired: true),
+                          formBuilderField: FormDropdown(
+                              vm: DropdownModel(
+                                  name: "country",
+                                  items: lists.countries
+                                      .map((e) =>
+                                          DpItem(id: e.code, title: e.name))
+                                      .toList(),
+                                  validator: FormBuilderValidators.required(),
+                                  hasSearchBox: true,
+                                  hintText: ""))),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Postcode", isRequired: true),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "addressPostcode",
+                            validators: [
+                              FormBuilderValidators.required(),
+                            ],
+                          ))),
+                    ],
+                    hidden: const [
+                      FormWithLabel(
+                          labelVm: LabelModel(text: "Line 2"),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "addressLine2",
+                          ))),
+                      FormWithLabel(
+                          labelVm: LabelModel(text: "County"),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "addressCounty",
+                          ))),
+                    ],
+                  ),
+                  FormContainer(
+                    width: containerWidth,
+                    title: "Payment Info",
+                    left: [
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Currency", isRequired: true),
+                          formBuilderField: FormDropdown(
+                              vm: DropdownModel(
+                            name: "currencyId",
+                            items: lists.currencies
+                                .map((e) => DpItem(
+                                    id: e.id.toString(),
+                                    title: e.code,
+                                    subtitle: e.sign))
+                                .toList(),
+                            validator: FormBuilderValidators.required(),
+                          ))),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Payment Method", isRequired: true),
+                          formBuilderField: FormDropdown(
+                              vm: DropdownModel(
+                            name: "paymentMethodId",
+                            items: lists.paymentMethods
+                                .map((e) =>
+                                    DpItem(id: e.id.toString(), title: e.name))
+                                .toList(),
+                            validator: FormBuilderValidators.required(),
+                          ))),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Invoice Period", isRequired: true),
+                          formBuilderField: FormDropdown(
+                              vm: DropdownModel(
+                            name: "invoicePeriodId",
+                            items: lists.invoicePeriods
+                                .map((e) =>
+                                    DpItem(id: e.id.toString(), title: e.name))
+                                .toList(),
+                            validator: FormBuilderValidators.required(),
+                          ))),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Invoice Day", isRequired: true),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "invoiceDay",
+                            valueTransformer: (value) =>
+                                num.tryParse(value ?? ""),
+                            validators: [
+                              FormBuilderValidators.required(),
+                              (value) {
+                                if (formVm.value['invoicePeriodId'] == null) {
+                                  return null;
+                                }
+                                if (formVm.value['invoicePeriodId'] == "1" ||
+                                    formVm.value['invoicePeriodId'] == "2") {
+                                  return null;
+                                }
+                                return "Invoice day is required";
+                              }
+                            ],
+                          ))),
+                      FormWithLabel(
+                          labelVm: const LabelModel(
+                              text: "Paying Days", isRequired: true),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                            name: "paymentDays",
+                            valueTransformer: (value) =>
+                                num.tryParse(value ?? ""),
+                            hintText: "1",
+                            validators: [FormBuilderValidators.required()],
+                          ))),
+                    ],
+                    hidden: const [
+                      FormWithLabel(
+                          labelVm: LabelModel(text: "Comment"),
+                          formBuilderField: FormInput(
+                              vm: InputModel(
+                                  name: "comment", hintText: "no comment"))),
+                      FormSwitch(
+                          vm: SwitchModel(name: "active", title: "Active")),
+                      FormSwitch(
+                          vm: SwitchModel(
+                              name: "combineInvoices",
+                              title: "Combine Invoices")),
+                      FormSwitch(
+                          vm: SwitchModel(
+                              name: "sendInvoices", title: "Send Invoices")),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

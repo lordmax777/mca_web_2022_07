@@ -632,6 +632,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               vm: DatePickerModel(
                   name: timingDate,
                   onChanged: (value) {
+                    if (value == null) return;
                     updateUI(() {
                       fetchUnavailableUsers();
                     });
@@ -955,7 +956,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       {required double containerWidth, required GeneralState vm}) {
     return FormContainer(
       title: "Teams",
-      trailing: isCreate && getTimingDate != null
+      trailing: getTimingDate != null
           ? IconButton(
               tooltip: "Add team member",
               onPressed: onAddTeamMember,
@@ -1337,7 +1338,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   packages: vm.jobTemplates);
               postQuoteResponse.fold((l) {
                 if (l != null) {
-                  emailQuoteToClient(l);
+                  emailQuoteToClient(l).then((value) {
+                    context.pop();
+                  });
                 } else {
                   context.showError("Error creating quote. Please try again.");
                 }
@@ -1350,6 +1353,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             }
           });
         }
+
         break;
       case QuoteProcess.jobCreated:
         // todo: Schedule Job Api
@@ -1395,6 +1399,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       week2: getTimingWeek2,
       // checklistTemplateId: //todo:
     ));
+    await dispatch(const GetLocationsAction());
     return res;
   }
 
