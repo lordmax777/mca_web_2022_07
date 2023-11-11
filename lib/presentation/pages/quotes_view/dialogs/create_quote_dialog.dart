@@ -6,6 +6,8 @@ import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
 import 'package:mca_dashboard/presentation/pages/locations_view/create_location_popup.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
+import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
+import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/timing_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../scheduling_view/data/week_days_m.dart';
@@ -198,30 +200,34 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     if (quote != null) {
       try {
         formVm.patchValue({
-          quoteName: quote?.name,
-          quoteComment: quote?.notes,
-          quoteActive: quote?.active,
-          clientId: quote?.clientId.toString(),
-          workLocationId: quote?.locationId.toString(),
-          workLine1: quote?.addressLine1,
-          workLine2: quote?.addressLine2,
-          workCity: quote?.addressCity,
-          workPostcode: quote?.addressPostcode,
-          workCountryId: quote?.addressCountry,
-          workCounty: quote?.addressCounty,
-          workLocationLatitude: quote?.workLocationLatitude.toString(),
-          workLocationLongitude: quote?.workLocationLongitude.toString(),
-          workLocationRadius: quote?.workLocationRadius.toString(),
+          quoteName: quote!.name,
+          quoteComment: quote!.notes,
+          quoteActive: quote!.active,
+          clientId: quote!.clientId.toString(),
+          workLocationId: quote!.locationId.toString(),
+          workLine1: quote!.addressLine1,
+          workLine2: quote!.addressLine2,
+          workCity: quote!.addressCity,
+          workPostcode: quote!.addressPostcode,
+          workCountryId: quote!.addressCountry,
+          workCounty: quote!.addressCounty,
+          workLocationLatitude: quote!.workLocationLatitude.toString(),
+          workLocationLongitude: quote!.workLocationLongitude.toString(),
+          workLocationRadius: quote!.workLocationRadius.toString(),
           workStaticIpAddresses:
-              quote?.workStaticIpAddresses?.split(",").join("\n"),
-          startTime: quote?.workStartTime?.timeToDateTime,
-          endTime: quote?.workFinishTime?.timeToDateTime,
-          allDay: quote?.allDay,
+              quote!.workStaticIpAddresses?.split(",").join("\n"),
+          startTime: quote!.workStartTime?.timeToDateTime,
+          endTime: quote!.workFinishTime?.timeToDateTime,
+          allDay: quote!.allDay,
           timingRepeatId: quote
               ?.workRepeatMd(appStore.state.generalState.lists.workRepeats)
               .id
               .toString(),
-          timingDate: quote?.workStartDateDt,
+          timingDate: quote!.workStartDateDt,
+          packageSelect: quote!
+              .jobTemplateMd(appStore.state.generalState.jobTemplates)
+              ?.id
+              .toString(),
           // timingRepeatUntil: quote?.workRepeatUntilDt,//todo: when api is ready
         });
 
@@ -275,6 +281,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   static const String timingRepeatUntil = "timingRepeatUntil";
 
   String? get getQuoteName => formVm.getValue(quoteName);
+
   bool? get getQuoteActive => formVm.getValue(quoteActive);
   String? get getQuoteComment => formVm.getValue(quoteComment);
   String? get getClientId => formVm.getValue(clientId);
@@ -295,11 +302,11 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   DateTime? get getEndTime => formVm.getValue(endTime);
   bool? get getAllDay => formVm.getValue(allDay);
   String? get getTimingRepeatId => formVm.getValue(timingRepeatId);
-  String? get getTimingWeek1 => formVm.getValue(timingWeek1);
-  String? get getTimingWeek2 => formVm.getValue(timingWeek2);
+  List<String>? get getTimingWeek1 => formVm.getValue(timingWeek1);
+  List<String>? get getTimingWeek2 => formVm.getValue(timingWeek2);
   DateTime? get getTimingDate => formVm.getValue(timingDate);
-  String? get getTimingRepeatUntil => formVm.getValue(timingRepeatUntil);
-
+  DateTime? get getTimingRepeatUntil => formVm.getValue(timingRepeatUntil);
+  String? get getPackageSelect => formVm.getValue(packageSelect);
   static const DpItem noneItem = DpItem(id: "-1", title: "None");
 
   FormContainer quoteWidget(
@@ -413,6 +420,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                         helperText: "Select location or search for address",
                         onChanged: (p0) => updateUI(formVm.save),
                         name: workLocationId,
+                        validator: FormBuilderValidators.required(
+                            errorText: "Please select location"),
                         hasSearchBox: true,
                         items: locations
                             .map((e) =>
@@ -840,6 +849,10 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 productSm = p0.stateManager;
 
                 if (quote != null) {
+                  for (var item
+                      in (quote?.jobTemplateMd(packages)?.items ?? [])) {
+                    onAddProduct(item.itemMd(storageItems));
+                  }
                   //Add all items from quote
                   for (var item in quote!.items) {
                     onAddProduct(item.itemMd(storageItems));
@@ -847,6 +860,14 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 }
 
                 productSm?.addListener(() {
+                  if (productSm?.rows.isEmpty == true) {
+                    //clear product and package select if the table is empty
+                    updateUI(() {
+                      formVm.patchValue(
+                          {productSelect: null, packageSelect: null});
+                      formVm.save();
+                    });
+                  }
                   updateUI(() {});
                 });
               },
@@ -988,7 +1009,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [
-            ElevatedButton(onPressed: onSave, child: Text(getSaveText()))
+            ElevatedButton(
+                onPressed: () => onSave(vm), child: Text(getSaveText()))
           ],
           content: DefaultForm(
             vm: formVm,
@@ -1177,9 +1199,141 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     }
   }
 
-  void onSave() {
+  void onSave(GeneralState vm) {
     formVm.saveAndValidate();
     if (!formVm.isValid) return;
+    if (productSm!.rows.isEmpty) {
+      context.showError("Please add at least one product or service");
+      return;
+    }
+    //If Quote Create -> POST quote
+    //If Job -> POST quote, POST quotestatus(accept), POST job from quote
+    switch (processStatus) {
+      case null:
+        if (isJob) {
+          //Create Job
+          context.futureLoading(() async {
+            try {
+              final postQuoteResponse = await postQuote(
+                  clients: vm.clients,
+                  locations: vm.locations,
+                  packages: vm.jobTemplates);
+              postQuoteResponse.fold((l) async {
+                if (l != null) {
+                  //success accept quote
+                  final quoteAccepted = await changeQuoteStatus(
+                      quoteId: l, status: QuoteStatus.accept);
+                  quoteAccepted.fold((left) async {
+                    //success make job from quote
+                    //todo: make job from quote
+                    final jobFromQuote = await makeJobFromQuote(quoteId: l);
+                    jobFromQuote.fold((left) {
+                      //success pop the page or continue
+                      context.showSuccess("Job created successfully");
+                    }, (right) {
+                      //error
+                      context.showError(right.message);
+                    });
+                    // emailQuoteToClient(l);
+                  }, (right) {
+                    //error
+                    context.showError(right.message);
+                  });
+                } else {
+                  context.showError("Error creating quote. Please try again.");
+                }
+              }, (r) {
+                context.showError(r.message);
+              });
+            } on TypeError catch (e) {
+              print(e.stackTrace);
+              context.showError("Error creating quote. ${e.toString()}");
+            } catch (e) {
+              print(e);
+            }
+          });
+        } else {
+          //Create quote
+          context.futureLoading(() async {
+            try {
+              final postQuoteResponse = await postQuote(
+                  clients: vm.clients,
+                  locations: vm.locations,
+                  packages: vm.jobTemplates);
+              postQuoteResponse.fold((l) {
+                if (l != null) {
+                  emailQuoteToClient(l);
+                } else {
+                  context.showError("Error creating quote. Please try again.");
+                }
+              }, (r) {
+                context.showError(r.message);
+              });
+            } on TypeError catch (e) {
+              print(e.stackTrace);
+              context.showError("Error creating quote. ${e.toString()}");
+            }
+          });
+        }
+        break;
+      case QuoteProcess.jobCreated:
+        // todo: Schedule Job Api
+        print("schedule job api");
+        break;
+      default:
+        //todo: do other processes'
+        print("default");
+        changeQuoteStatus(quoteId: quote!.id, status: QuoteStatus.accept);
+    }
+  }
+
+  Future<Either<int?, ErrorMd>> postQuote(
+      {required List<ClientMd> clients,
+      required List<LocationMd> locations,
+      required List<JobTemplateMd> packages}) async {
+    final clientMd = clients
+        .firstWhereOrNull((element) => element.id.toString() == getClientId);
+    final repeat = appStore.state.generalState.lists.workRepeats
+        .firstWhereOrNull(
+            (element) => element.id.toString() == getTimingRepeatId);
+    final workLocation = locations.firstWhereOrNull(
+        (element) => element.id.toString() == getWorkLocationId);
+    final package = packages.firstWhereOrNull(
+        (element) => element.id.toString() == getPackageSelect);
+    final res = await dispatch<int?>(PostQuoteAction2(
+      quoteId: quote?.id,
+      jobTitle: getQuoteName!,
+      client: clientMd!,
+      quoteComment: getQuoteComment,
+      products: ProductData(stateManager: productSm),
+      workLocation: workLocation!,
+      active: getQuoteActive,
+      workLocationId: getWorkLocationId,
+      workStartDate: getTimingDate,
+      workStartTime: getStartTime,
+      workEndTime: getEndTime,
+      packageName: package?.name,
+      repeatId: getTimingRepeatId,
+      repeatUntilDate: getTimingRepeatUntil,
+      team: addedUsers,
+      week1: getTimingWeek1,
+      week2: getTimingWeek2,
+      // checklistTemplateId: //todo:
+    ));
+    return res;
+  }
+
+  Future<Either<bool, ErrorMd>> changeQuoteStatus(
+      {required int quoteId, required QuoteStatus status}) async {
+    final res = await dispatch<bool>(
+        ChangeQuoteStatusAction(id: quoteId, status: status.toStr));
+    return res;
+  }
+
+  Future<Either<int, ErrorMd>> makeJobFromQuote({required int quoteId}) async {
+    final res = await dispatch<int>(
+        MakeJobFromQuoteAction(quoteId: quoteId, date: getTimingDate));
+    return res;
   }
 
   String getSaveText() {

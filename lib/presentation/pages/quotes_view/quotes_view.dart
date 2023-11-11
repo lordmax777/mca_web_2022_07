@@ -76,7 +76,7 @@ class _QuotesViewState extends State<QuotesView>
   PlutoRow buildRow(model) {
     String name = model.name;
     String contact = "-";
-    final String status = model.quoteStatus ? "accepted" : model.processStatus;
+    final String status = model.processStatus;
     double value = model.quoteValue.toDouble();
     if (model.company.isNotEmpty) {
       name += " (${model.company})";
@@ -91,6 +91,7 @@ class _QuotesViewState extends State<QuotesView>
       cells: {
         "id": PlutoCell(value: model.id),
         "name": PlutoCell(value: name),
+        "identifier": PlutoCell(value: model.identifier),
         "contact": PlutoCell(value: contact),
         "status": PlutoCell(value: status),
         "value": PlutoCell(value: value),
@@ -109,6 +110,12 @@ class _QuotesViewState extends State<QuotesView>
           title: "",
           field: "id",
           hide: true,
+          type: PlutoColumnType.text(),
+          textAlign: PlutoColumnTextAlign.center,
+        ),
+        PlutoColumn(
+          title: "Identifier",
+          field: "identifier",
           type: PlutoColumnType.text(),
           textAlign: PlutoColumnTextAlign.center,
         ),

@@ -922,13 +922,14 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                 children: [
                                   label('Week 1', isRequired: true),
                                   for (var item
-                                      in timingData.week1.asMap.entries)
+                                      in timingData.week1?.asMap.entries ??
+                                          Iterable.generate(0))
                                     DefaultCheckbox(
                                       label: item.key,
                                       value: item.value,
                                       onChanged: (value) {
                                         timingData.week1
-                                            .updateValueByKey(item.key);
+                                            ?.updateValueByKey(item.key);
                                         setState(() {});
                                       },
                                     ),
@@ -941,13 +942,14 @@ class _CreateSchedulePopupState extends State<CreateSchedulePopup> {
                                     label('Week 2', isRequired: true),
                                     if (timingData.showWeek2)
                                       for (var item
-                                          in timingData.week2.asMap.entries)
+                                          in (timingData.week2?.asMap.entries ??
+                                              Iterable.generate(0)))
                                         DefaultCheckbox(
                                           label: item.key,
                                           value: item.value,
                                           onChanged: (value) {
                                             timingData.week2
-                                                .updateValueByKey(item.key);
+                                                ?.updateValueByKey(item.key);
                                             setState(() {});
                                           },
                                         ),

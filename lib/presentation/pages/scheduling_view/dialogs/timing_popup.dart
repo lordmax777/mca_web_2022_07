@@ -185,24 +185,26 @@ class _TimingPopupState extends State<TimingPopup> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       label('Week 1', isRequired: true),
-                      for (var item in data.week1.asMap.entries)
+                      for (var item
+                          in data.week1?.asMap.entries ?? Iterable.generate(0))
                         DefaultCheckbox(
                           label: item.key,
                           value: item.value,
                           onChanged: (value) {
-                            data.week1.updateValueByKey(item.key);
+                            data.week1?.updateValueByKey(item.key);
                             setState(() {});
                           },
                         ),
                       if (data.showWeek2) const SizedBox(height: 8),
                       if (data.showWeek2) label('Week 2', isRequired: true),
                       if (data.showWeek2)
-                        for (var item in data.week2.asMap.entries)
+                        for (var item in data.week2?.asMap.entries ??
+                            Iterable.generate(0))
                           DefaultCheckbox(
                             label: item.key,
                             value: item.value,
                             onChanged: (value) {
-                              data.week2.updateValueByKey(item.key);
+                              data.week2?.updateValueByKey(item.key);
                               setState(() {});
                             },
                           ),
@@ -224,12 +226,12 @@ class _TimingPopupState extends State<TimingPopup> {
                     if (!_formKey.currentState!.validate()) return;
                     if (isDateRequired) {
                       if (data.showRepeatDays) {
-                        if (!data.week1.isAnyChecked) {
+                        if (!data.week1!.isAnyChecked == true) {
                           context.showError(
                               'Please select at least one day in week 1');
                           return;
                         }
-                        if (data.showWeek2 && !data.week2.isAnyChecked) {
+                        if (data.showWeek2 && !data.week2!.isAnyChecked) {
                           context.showError(
                               'Please select at least one day in week 2');
                           return;

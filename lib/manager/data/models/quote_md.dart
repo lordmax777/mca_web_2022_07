@@ -254,6 +254,19 @@ final class QuoteMd extends Equatable {
         .firstWhereOrNull((element) => element.id == nextAllocationId);
   }
 
+  final int? checklistTemplateId;
+  ChecklistTemplateMd? checklistTemplateMd(
+      List<ChecklistTemplateMd> checklistTemplates) {
+    return checklistTemplates
+        .firstWhereOrNull((element) => element.id == checklistTemplateId);
+  }
+
+  final String? jobTemplateName;
+  JobTemplateMd? jobTemplateMd(List<JobTemplateMd> jobTemplates) {
+    return jobTemplates
+        .firstWhereOrNull((element) => element.name == jobTemplateName);
+  }
+
   const QuoteMd({
     required this.addressLine1,
     required this.addressLine2,
@@ -314,6 +327,8 @@ final class QuoteMd extends Equatable {
     required this.workLocationRadius,
     required this.workStaticIpAddresses,
     required this.nextAllocationId,
+    required this.checklistTemplateId,
+    required this.jobTemplateName,
   });
 
   @override
@@ -377,6 +392,8 @@ final class QuoteMd extends Equatable {
         workLocationRadius,
         workStaticIpAddresses,
         nextAllocationId,
+        checklistTemplateId,
+        jobTemplateName,
       ];
 
   //from json
@@ -460,6 +477,8 @@ final class QuoteMd extends Equatable {
       workLocationRadius: json["work_location_radius"],
       workStaticIpAddresses: json["work_static_ip_addresses"],
       nextAllocationId: json["next_allocation_id"],
+      checklistTemplateId: json["checklist_template_id"],
+      jobTemplateName: json["job_template_name"],
     );
   }
 }

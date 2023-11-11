@@ -29,6 +29,12 @@ logger(var str, {String? hint, bool json = false}) {
 FutureOr<Either<T, ErrorMd>> dispatch<T>(Object action) {
   try {
     return appStore.dispatch(action);
+  } on TypeError catch (e) {
+    Logger.e("Value is invalid", tag: "Message");
+    Logger.e(e.runtimeType, tag: "Type");
+    Logger.e(e.stackTrace, tag: "Stack Trace");
+    return const Right(ErrorMd(
+        message: "Error occurred. Invalid value", code: null, data: null));
   } catch (e) {
     Logger.e(e.toString(), tag: "Message in [dispatch] function");
     return const Right(
@@ -57,6 +63,12 @@ Future<Either<T, ErrorMd>> apiCall<T>(Future<T> Function() callback) async {
     Logger.e(e.runtimeType, tag: "Type");
     return const Right(
         ErrorMd(message: "Error occurred", code: null, data: null));
+  } on TypeError catch (e) {
+    Logger.e("Value is invalid", tag: "Message");
+    Logger.e(e.runtimeType, tag: "Type");
+    Logger.e(e.stackTrace, tag: "Stack Trace");
+    return const Right(ErrorMd(
+        message: "Error occurred. Invalid value", code: null, data: null));
   } catch (e, st) {
     await Sentry.captureException(e, stackTrace: st);
     Logger.e(e.toString(), tag: "Message catch");

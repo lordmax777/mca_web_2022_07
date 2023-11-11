@@ -392,7 +392,7 @@ mixin FormsMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  bool checked1 = false;
+  bool checked1 = true;
   bool checked2 = false;
   bool checked3 = false;
   bool checked4 = false;
@@ -549,7 +549,7 @@ enum QuoteProcess {
 }
 
 //from String extension for QuoteProcessStatus
-extension QuoteProcessStatusHelper on String {
+extension QuoteProcessStatusHelperString on String {
   QuoteProcess get toQuoteProcess {
     switch (this) {
       case "quote requested":
@@ -576,6 +576,74 @@ extension QuoteProcessStatusHelper on String {
         return QuoteProcess.invoiced;
       default:
         return QuoteProcess.closed;
+    }
+  }
+}
+
+//from QuoteProcessStatus extension to String
+extension QuoteProcessStatusHelper on QuoteProcess {
+  String get toStr {
+    switch (this) {
+      case QuoteProcess.quoteRequested:
+        return "quote requested";
+      case QuoteProcess.quotePrepared:
+        return "quote prepared";
+      case QuoteProcess.quoteRevision:
+        return "quote revision";
+      case QuoteProcess.quoteSent:
+        return "quote sent";
+      case QuoteProcess.declined:
+        return "declined";
+      case QuoteProcess.accepted:
+        return "accepted";
+      case QuoteProcess.jobCreated:
+        return "job created";
+      case QuoteProcess.jobScheduled:
+        return "job scheduled";
+      case QuoteProcess.jobStarted:
+        return "job started";
+      case QuoteProcess.jobCompleted:
+        return "job completed";
+      case QuoteProcess.invoiced:
+        return "invoiced";
+      default:
+        return "closed";
+    }
+  }
+}
+
+//Create a quote status enum and call it QuoteStatus
+//pending, accept, decline
+enum QuoteStatus {
+  pending,
+  accept,
+  decline,
+}
+
+//from String extension for QuoteStatus
+extension QuoteStatusHelperString on String {
+  QuoteStatus get toQuoteStatus {
+    switch (this) {
+      case "pending":
+        return QuoteStatus.pending;
+      case "accept":
+        return QuoteStatus.accept;
+      default:
+        return QuoteStatus.decline;
+    }
+  }
+}
+
+//from QuoteStatus extension to String
+extension QuoteStatusHelper on QuoteStatus {
+  String get toStr {
+    switch (this) {
+      case QuoteStatus.pending:
+        return "pending";
+      case QuoteStatus.accept:
+        return "accept";
+      default:
+        return "decline";
     }
   }
 }

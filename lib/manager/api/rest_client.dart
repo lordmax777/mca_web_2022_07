@@ -573,7 +573,6 @@ abstract class ApiClient {
 
   @GET("/api/fe/shifts/{id}/qualification")
   Future<HttpResponse> getPropertyQualification(@Path() int id);
-
   @POST("/api/fe/shifts/{id}/qualification")
   @FormUrlEncoded()
   Future<HttpResponse> postPropertyQualification({
@@ -582,14 +581,11 @@ abstract class ApiClient {
     @Field() required int numberOfStaff,
     @Field() int? levelId,
   });
-
   @DELETE("/api/fe/shifts/{id}/qualification")
   Future<HttpResponse> deletePropertyQualification(
       @Path('id') int shiftId, @Query("qualificationId") int qualificationId);
-
   @GET("/api/fe/approvals")
   Future<HttpResponse> getApprovals();
-
   @POST("/api/fe/approvals")
   @FormUrlEncoded()
   Future<HttpResponse> postApprovals({
@@ -599,11 +595,9 @@ abstract class ApiClient {
     @Field() required bool status,
     @Field() required String? comment,
   });
-
   //get current stock list
   @GET("/api/fe/stocklist/{warehouseId}/current")
   Future<HttpResponse> getStockList(@Path() int warehouseId);
-
   //approve user qualification
   @POST("/api/fe/userdetails/{userId}/userqualificationapprove")
   @FormUrlEncoded()
@@ -611,7 +605,6 @@ abstract class ApiClient {
     @Path() int userId, {
     @Field() required int userqualificationId,
   });
-
   //shiftrelease
   @POST("/api/fe/shiftrelease/{allocationId}")
   @FormUrlEncoded()
@@ -621,21 +614,18 @@ abstract class ApiClient {
     @Field() required String action,
     @Field() String? comment,
   });
-
   //get checklist
   @GET("/api/fe/checklists")
   Future<HttpResponse> getChecklists(
       {@Query('page') required int page,
       @Query('page_size') int? pageSize,
       @Query("filters") String? filters});
-
   //get checklist pdf
   @GET("/api/fe/checklist/{id}/pdf")
   Future<HttpResponse> getChecklistPdfs(
       {
       ///if multiple ids, separate with comma
       @Path() required String id});
-
   //get checklist images
   @GET("/api/fe/checklist/{id}/images")
   Future<HttpResponse> getChecklistImages(
@@ -647,18 +637,15 @@ abstract class ApiClient {
   @GET("/api/fe/stockhistory/{storageid}/{itemid}")
   Future<HttpResponse> getStockHistory(
       {@Path() required int storageid, @Path() required int itemid});
-
   //get account user availability
   @GET("/api/fe/myaccount/unavailability")
   Future<HttpResponse> getAccountUserAvailability();
-
   //delete account user availability
   @DELETE("/api/fe/myaccount/unavailability")
   Future<HttpResponse> deleteAccountUserAvailability(
 
       ///date in ISO format: yyyy-MM-dd
       @Query("date") String date);
-
   //create account user availability: startDate, endDate, startTime, endTime, isFullDay, comment
   @POST("/api/fe/myaccount/unavailability")
   @FormUrlEncoded()
@@ -670,7 +657,6 @@ abstract class ApiClient {
     @Field('finish_time') String? endTime,
     @Field() String? comment,
   });
-
   //change account password
   @POST("/api/fe/myaccount/password")
   @FormUrlEncoded()
@@ -678,7 +664,6 @@ abstract class ApiClient {
     @Field("oldpassword") required String oldPassword,
     @Field('newpassword') required String newPassword,
   });
-
   //save company details
   @POST("/api/fe/company")
   @FormUrlEncoded()
@@ -776,16 +761,13 @@ abstract class ApiClient {
     ///Special word
     @Field('specialword') String? specialWord,
   });
-
   //GET languages
   @GET("/api/fe/myaccount/language")
   Future<HttpResponse> getLanguages();
-
   //POST language
   @POST("/api/fe/myaccount/language")
   @FormUrlEncoded()
   Future<HttpResponse> postLanguage(@Field('language') String language);
-
   //POST change min level
   @POST("/api/fe/stocklevel/{storageid}/{itemid}")
   @FormUrlEncoded()
@@ -794,7 +776,6 @@ abstract class ApiClient {
     @Path() required int itemid,
     @Field('minimum') required int minLevel,
   });
-
   //GET Timesheet
   @GET("/api/fe/timesheet")
   Future<HttpResponse> getTimesheet({
@@ -803,12 +784,10 @@ abstract class ApiClient {
     ///-1 if all
     @Query('user_id') required int userId,
   });
-
   //get timesheet pdf
   @GET("/api/fe/timesheetpdf/{userId}/{timestamp}")
   Future<HttpResponse> getTimesheetPdf(
       {@Path() required int userId, @Path() required int timestamp});
-
   //POST Timesheet (type:int,user:int,loc:int,shift:int,date:String,time:String,original:String,comment:String
   @POST("/api/fe/timesheet")
   @FormUrlEncoded()
@@ -824,7 +803,6 @@ abstract class ApiClient {
     @Field('original') String? original,
     @Field('comment') String? comment,
   });
-
   @POST("/api/fe/timesheet/worktime")
   @FormUrlEncoded()
   Future<HttpResponse> postTimesheetWorkTime({
@@ -834,16 +812,23 @@ abstract class ApiClient {
     @Field('date') required String date,
     @Field('worktime') required String worktime,
   });
-
   @DELETE("/api/fe/clients/{id}")
   Future<HttpResponse> deleteClient(@Path("id") int id);
-
   // get job templates
   @GET("/api/fe/jobtemplates/{id}")
   Future<HttpResponse> getJobTemplates(@Path("id") int id);
-
-  //delete job template item
+  // delete job template item
   @DELETE("/api/fe/jobtemplateitems/{id}/{item_id}")
   Future<HttpResponse> deleteJobTemplateItem(
       @Path("id") int id, @Path("item_id") int itemId);
+  // make job form quote
+  @POST("/api/fe/makejob/{quoteId}")
+  @FormUrlEncoded()
+  Future<HttpResponse> makeJobFromQuote(
+    @Path("quoteId") int quoteId, {
+    ///example: 2023-20-10
+    @Field("date") String? date,
+  });
 }
+
+///If giving error on generated file, remove new lines between methods

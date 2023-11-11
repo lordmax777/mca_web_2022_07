@@ -49,7 +49,7 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
         "paymentMethodId": c.paymentMethodId,
         "invoicePeriodId": c.invoicePeriodId,
         "paymentDays": c.payingDays.toString(),
-        "invoiceDay": c.invoiceDay.toString(),
+        "invoiceDay": c.invoiceDay?.toString(),
         "comment": c.notes,
         "active": c.active,
         "combineInvoices": c.combineInvoices,

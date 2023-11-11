@@ -326,4 +326,24 @@ class WeekDaysMd extends Equatable {
     }
     return weekDays;
   }
+
+  String get week1Str {
+    String str = "";
+    for (var i = 0; i < asMap.length; i++) {
+      if (asMap.values.toList()[i] == true) {
+        str += "${i + 1},";
+      }
+    }
+    return str.substring(0, str.length - 1);
+  }
+
+  String get week2Str {
+    String str = "";
+    for (var i = 0; i < asMap.length; i++) {
+      if (asMap.values.toList()[i] == true) {
+        str += "${i + 8},";
+      }
+    }
+    return str.substring(0, str.length - 1);
+  }
 }

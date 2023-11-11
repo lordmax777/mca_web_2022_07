@@ -253,6 +253,10 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         return action.fetch(store.state);
       case DeleteJobTemplateItemAction:
         return action.fetch(store.state);
+      case PostQuoteAction2:
+        return action.call(store.state);
+      case MakeJobFromQuoteAction:
+        return action.call(store.state);
       default:
         return next(action);
     }
@@ -778,41 +782,42 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         deps.navigation.showFail("Please enter name");
         return -1;
       }
+
       if (personal.companyName.isNotEmpty) {
         formData.fields.add(MapEntry('company', personal.companyName));
       }
       if (personal.email.isNotEmpty) {
         formData.fields.add(MapEntry('email', personal.email));
       }
-      // else {
-      //   deps.navigation.showFail("Please enter email");
-      //   return -1;
-      // }
+
       if (personal.phone.isNotEmpty) {
         formData.fields.add(MapEntry('phone', personal.phone));
       }
-      // else {
-      //   deps.navigation.showFail("Please enter phone");
-      //   return -1;
-      // }
+
       formData.fields
           .add(MapEntry('payingDays', personal.paymentDays.toString()));
+
       formData.fields.add(MapEntry('active', time.active.toString()));
+
       if (personal.currency != null) {
         formData.fields
             .add(MapEntry('currencyId', personal.currency!.id.toString()));
       }
+
       if (personal.paymentMethod != null) {
         formData.fields.add(
             MapEntry('paymentMethodId', personal.paymentMethod!.id.toString()));
       }
+
       if (personal.clientId != null) {
         formData.fields
             .add(MapEntry('client_id', personal.clientId!.toString()));
       }
+
       if (personal.notes.isNotEmpty) {
         formData.fields.add(MapEntry('notes', personal.notes));
       }
+
       if (personal.shiftId != null) {
         formData.fields.add(MapEntry('shift_id', personal.shiftId.toString()));
       }
@@ -824,24 +829,30 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         deps.navigation.showFail("Please enter address line 1");
         return -1;
       }
+
       if (address.line2.isNotEmpty) {
         formData.fields.add(MapEntry('addressLine2', address.line2));
       }
+
       if (address.city.isNotEmpty) {
         formData.fields.add(MapEntry('addressCity', address.city));
       }
+
       if (address.county.isNotEmpty) {
         formData.fields.add(MapEntry('addressCounty', address.county));
       }
+
       if (address.postcode.isNotEmpty) {
         formData.fields.add(MapEntry('addressPostcode', address.postcode));
       }
+
       if (address.country != null) {
         formData.fields.add(MapEntry('addressCountry', address.country!.code));
       } else {
         deps.navigation.showFail("Please select country");
         return -1;
       }
+
       if (address.locationId != null) {
         formData.fields
             .add(MapEntry('location_id', address.locationId!.toString()));
@@ -852,20 +863,25 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         if (workAddress.line1.isNotEmpty) {
           formData.fields.add(MapEntry('workAddressLine1', workAddress.line1));
         }
+
         if (workAddress.line2.isNotEmpty) {
           formData.fields.add(MapEntry('workAddressLine2', workAddress.line2));
         }
+
         if (workAddress.city.isNotEmpty) {
           formData.fields.add(MapEntry('workAddressCity', workAddress.city));
         }
+
         if (workAddress.county.isNotEmpty) {
           formData.fields
               .add(MapEntry('workAddressCounty', workAddress.county));
         }
+
         if (workAddress.postcode.isNotEmpty) {
           formData.fields
               .add(MapEntry('workAddressPostcode', workAddress.postcode));
         }
+
         if (workAddress.country != null) {
           formData.fields
               .add(MapEntry('workAddressCountry', workAddress.country!.code));
@@ -877,41 +893,31 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         formData.fields
             .add(MapEntry('workStartDate', time.start!.toApiDateWithSlash));
       }
+
       if (time.altStartDate != null) {
         formData.fields.add(MapEntry(
             'altWorkStartDate', time.altStartDate!.toApiDateWithSlash));
       }
+
       if (time.repeat != null) {
         formData.fields
             .add(MapEntry('workRepeatId', time.repeat!.id.toString()));
-      } else {
-        if (!action.isQuote) {
-          deps.navigation.showFail("Please select repeat");
-          return -1;
-        }
       }
+
       if (time.startTime != null) {
         formData.fields
             .add(MapEntry('workStartTime', time.startTime!.toApiTime));
-      } else {
-        if (!action.isQuote) {
-          deps.navigation.showFail("Please select start time");
-          return -1;
-        }
       }
+
       if (time.endTime != null) {
         formData.fields
             .add(MapEntry('workFinishTime', time.endTime!.toApiTime));
-      } else {
-        if (!action.isQuote) {
-          deps.navigation.showFail("Please select end time");
-          return -1;
-        }
       }
       //"1,2,3,4,5" - Monday to Friday (1-7) week1 = week1Str
       //"8,9,10,11,12" - Monday to Friday (8-14) week2 = week2Str
       if (time.week1Str != null) {
         formData.fields.add(MapEntry('workDays', time.week1Str!));
+
         if (time.week2Str != null) {
           formData.fields.add(MapEntry('workDays2', time.week2Str!));
         }
@@ -968,7 +974,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
 
       dio.Response res = await apiClient.post('/api/fe/quotes/${quote.id ?? 0}',
           data: formData);
-      //
+
       await Future.wait([
         appStore.dispatch(const GetListsAction()) as Future,
         appStore.dispatch(const GetQuotesAction()) as Future,

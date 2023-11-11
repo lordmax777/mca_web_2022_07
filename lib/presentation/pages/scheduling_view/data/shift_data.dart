@@ -489,8 +489,8 @@ class TimeData extends Equatable {
   TimeOfDay? endTime;
   WorkRepeatMd? repeat;
   bool active;
-  final WeekDaysMd week1;
-  final WeekDaysMd week2;
+  final WeekDaysMd? week1;
+  final WeekDaysMd? week2;
   final bool showAltDate;
 
   bool get isAllDay =>
@@ -507,10 +507,11 @@ class TimeData extends Equatable {
   //"1,2,3,4,5" - Monday to Friday (1-7) week1
   //"8,9,10,11,12" - Monday to Friday (8-14) week2
   String? get week1Str {
+    if (week1 == null) return null;
     if (showRepeatDays) {
       String str = "";
-      for (var i = 0; i < week1.asMap.length; i++) {
-        if (week1.asMap.values.toList()[i] == true) {
+      for (var i = 0; i < week1!.asMap.length; i++) {
+        if (week1!.asMap.values.toList()[i] == true) {
           str += "${i + 1},";
         }
       }
@@ -520,10 +521,11 @@ class TimeData extends Equatable {
   }
 
   String? get week2Str {
+    if (week2 == null) return null;
     if (showWeek2) {
       String str = "";
-      for (var i = 0; i < week2.asMap.length; i++) {
-        if (week2.asMap.values.toList()[i] == true) {
+      for (var i = 0; i < week2!.asMap.length; i++) {
+        if (week2!.asMap.values.toList()[i] == true) {
           str += "${i + 8},";
         }
       }
@@ -538,8 +540,8 @@ class TimeData extends Equatable {
     this.startTime,
     this.endTime,
     this.repeat,
-    required this.week1,
-    required this.week2,
+    this.week1,
+    this.week2,
     this.active = true,
     this.showAltDate = false,
   });
@@ -767,16 +769,20 @@ class ProductData extends Equatable {
 
   List<StorageItemMd> items(List<StorageItemMd> storageItems) {
     final list = <StorageItemMd>[];
-    for (var row in (stateManager?.rows ?? [])) {
-      final item = storageItems
-          .firstWhereOrNull((e) => e.id == row.cells["id"]!.value)
-          ?.copyWith();
-      if (item != null) {
-        item.quantity = row.cells["quantity"]!.value;
-        item.auto = row.checked == true;
-        item.outgoingPrice = row.cells["price"]!.value;
-        list.add(item);
+    try {
+      for (var row in (stateManager?.rows ?? [])) {
+        final item = storageItems
+            .firstWhereOrNull((e) => e.id == row.cells["id"]!.value)
+            ?.copyWith();
+        if (item != null) {
+          item.quantity = row.cells["quantity"]!.value;
+          item.auto = row.checked == true;
+          item.outgoingPrice = row.cells["price"]!.value;
+          list.add(item);
+        }
       }
+    } catch (e) {
+      logger(e.toString(), hint: 'Error in ProductData.items');
     }
 
     return list;
