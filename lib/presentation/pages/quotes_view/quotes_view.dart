@@ -310,17 +310,15 @@ class _QuotesViewState extends State<QuotesView>
         //     type: PlutoColumnType.text())
       ];
 
-  // @override
-  // Future<List<QuoteMd>?> fetch() async {
-  //   print(isJob);
-  //   print(isInvoice);
-  //   final res = await dispatch<List<QuoteMd>>(GetQuotesAction(
-  //       isJobOnly: isJob,
-  //       isInvoiceOnly: isInvoice,
-  //       isQuoteOnly: !isJob && !isInvoice));
-  //   if (res.isLeft) {
-  //     return res.left;
-  //   }
-  //   return null;
-  // }
+  @override
+  Future<List<QuoteMd>?> fetch() async {
+    final res = await dispatch<List<QuoteMd>>(GetQuotesAction(
+        isJobOnly: isJob,
+        isInvoiceOnly: isInvoice,
+        isQuoteOnly: !isJob && !isInvoice));
+    if (res.isLeft) {
+      return res.left;
+    }
+    return null;
+  }
 }
