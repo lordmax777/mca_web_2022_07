@@ -133,8 +133,7 @@ class PostQuoteAction2 {
         formData.fields.add(MapEntry("addressCountry", invoiceAddress.country));
       }
       //Work address
-      formData.fields
-          .add(MapEntry("workLocationId", workLocation.id.toString()));
+      formData.fields.add(MapEntry("location_id", workLocation.id.toString()));
       if (workAddress.line1.isNotEmpty) {
         formData.fields.add(MapEntry("workAddressLine1", workAddress.line1));
       }

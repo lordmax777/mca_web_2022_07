@@ -1409,20 +1409,46 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             getStartTime != null &&
             getEndTime != null &&
             processStatus == QuoteProcess.accepted) {
-          //todo: make job
           context.futureLoading(() async {
             try {
-              final jobFromQuote = await makeJobFromQuote(quoteId: quote!.id);
-              jobFromQuote.fold((left) {
-                //success pop the page or continue
-                context.showSuccess("Job created and published successfully");
-              }, (right) {
-                //error
-                context.showError(right.message);
+              final postQuoteResponse = await postQuote(
+                  clients: vm.clients,
+                  locations: vm.locations,
+                  packages: vm.jobTemplates);
+              postQuoteResponse.fold((l) async {
+                if (l != null) {
+                  //success accept quote
+                  final quoteAccepted = await changeQuoteStatus(
+                      quoteId: l, status: QuoteStatus.accept);
+                  quoteAccepted.fold((left) async {
+                    //success make job from quote
+                    // make job from quote
+                    final jobFromQuote = await makeJobFromQuote(quoteId: l);
+                    jobFromQuote.fold((left) {
+                      //success pop the page or continue
+                      emailQuoteToClient(l).then((value) {
+                        context.showSuccess("Job created successfully");
+                      });
+                    }, (right) {
+                      //error
+                      context.showError(right.message);
+                    });
+                    // emailQuoteToClient(l);
+                  }, (right) {
+                    //error
+                    context.showError(right.message);
+                  });
+                } else {
+                  context.showError("Error creating quote. Please try again.");
+                }
+              }, (r) {
+                context.showError(r.message);
               });
             } on TypeError catch (e) {
               print(e.stackTrace);
               context.showError("Error creating quote. ${e.toString()}");
+            } catch (e) {
+              print(e);
             }
           });
         } else {
