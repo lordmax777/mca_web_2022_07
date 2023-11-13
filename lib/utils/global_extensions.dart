@@ -552,6 +552,7 @@ enum QuoteProcess {
 extension QuoteProcessStatusHelperString on String {
   QuoteProcess get toQuoteProcess {
     switch (this) {
+      //quote
       case "quote requested":
         return QuoteProcess.quoteRequested;
       case "quote prepared":
@@ -564,18 +565,26 @@ extension QuoteProcessStatusHelperString on String {
         return QuoteProcess.declined;
       case "accepted":
         return QuoteProcess.accepted;
+
+      //if products is changed then send quote email
+      //job
       case "job created":
-        return QuoteProcess.jobCreated;
+        return QuoteProcess.jobCreated; //missing in db
       case "job scheduled":
         return QuoteProcess.jobScheduled;
       case "job started":
         return QuoteProcess.jobStarted;
+
+      //POST invoice, if client invoice period is manual make a button to send invoice, else remove button
       case "job completed":
         return QuoteProcess.jobCompleted;
+
+      //invoice
       case "invoiced":
         return QuoteProcess.invoiced;
+
       default:
-        return QuoteProcess.closed;
+        return QuoteProcess.closed; //todo: check later
     }
   }
 }

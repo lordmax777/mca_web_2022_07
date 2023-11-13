@@ -65,6 +65,7 @@ class _DefaultTabWrapperState extends State<DefaultTabWrapper>
                 title: TabBar(
                   unselectedLabelColor: Colors.black,
                   controller: tabController,
+                  labelPadding: EdgeInsets.zero,
                   tabs: _tabs,
                   isScrollable: isLarge,
                   indicatorSize: isLarge

@@ -64,6 +64,7 @@ class _AddressAutocompleteWidgetState extends State<AddressAutocompleteWidget> {
             additionalId: item.placeId,
             title: item.formattedAddress ?? "",
           ));
+          logger(items.toList(), hint: "address");
           logger(items.length, hint: "items.length");
         }
         setState(() {
@@ -124,7 +125,14 @@ class _AddressAutocompleteWidgetState extends State<AddressAutocompleteWidget> {
 
           //local1 + locale2 + streetNumber
           final line1 =
-              "${road != null ? "$road," : ""}${local1 != null ? "$local1, " : ""}${local2 != null ? "$local2, " : ""}${streetNumber != null ? "$streetNumber, " : ""}";
+              "${streetNumber} ${road != null ? "$road," : ""}${local1 != null ? "$local1, " : ""}${local2 != null ? "$local2, " : ""}${streetNumber != null ? "$streetNumber, " : ""}";
+
+          logger(
+              res.results
+                  .map((e) =>
+                      e.addressComponents.map((e) => e.toJson()).toList())
+                  .toList(),
+              hint: "address");
 
           address.latitude = place.geometry.location.lat;
           address.longitude = place.geometry.location.lng;
