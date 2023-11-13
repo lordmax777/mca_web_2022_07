@@ -486,6 +486,16 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
             quotes: quotes
               ..sort((a, b) => b.createdOn.compareTo(a.createdOn))));
       }
+      if (action.isJobOnly) {
+        return quotes.where((element) => element.isJob).toList();
+      }
+      if (action.isInvoiceOnly) {
+        return quotes.where((element) => element.isInvoice).toList();
+      }
+      if (action.isQuoteOnly) {
+        return quotes.where((element) => element.isQuote).toList();
+      }
+
       return quotes;
     });
   }

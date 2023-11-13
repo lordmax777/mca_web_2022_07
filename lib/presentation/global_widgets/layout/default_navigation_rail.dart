@@ -67,7 +67,7 @@ final List<Map<String, dynamic>> _destinations = [
     "children": [
       {
         'route': MCANavigation.quotes,
-        'title': 'Quotes',
+        'title': 'Quotes / Jobs / Invoices',
         'icon': Icons.request_quote_rounded,
       },
       {
@@ -105,16 +105,16 @@ final List<Map<String, dynamic>> _destinations = [
   },
   //Settings
   {
-    "group": "Settings",
-    "icon": Icons.settings,
-    "children": [
-      {
-        'route': MCANavigation.settings,
-        'title': 'Settings',
-        'icon': Icons.settings,
-      },
-    ]
+    'route': MCANavigation.settings,
+    'title': 'Settings',
+    'icon': Icons.settings,
   },
+  // {
+  //   "group": "Settings",
+  //   "icon": Icons.settings,
+  //   "children": [
+  //   ]
+  // },
 
   if (kDebugMode)
     {
@@ -149,7 +149,7 @@ class DefaultNavigationRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       width: 300,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -160,7 +160,7 @@ class DefaultNavigationRail extends StatelessWidget {
         children: [
           //top
           SizedBox(
-            height: context.height * 0.9,
+            height: context.height - kToolbarHeight,
             child: ListView(
               children: [
                 ..._destinations.map((e) {
@@ -282,7 +282,7 @@ class DestinationItem extends StatelessWidget {
                     child: Text(
                         child['title'] == "specialWord"
                             ? appStore.state.generalState.propertyName
-                                .replaceAll(
+                                .replaceFirst(
                                     appStore.state.generalState.propertyName[0],
                                     appStore.state.generalState.propertyName[0]
                                         .toUpperCase())

@@ -3,5 +3,18 @@ final class GetQuotesAction {
   final DateTime? date;
   final int? shiftId;
   final int? locationId;
-  const GetQuotesAction({this.id, this.date, this.shiftId, this.locationId});
+
+  final bool isJobOnly;
+  final bool isInvoiceOnly;
+  final bool isQuoteOnly;
+
+  ///if all are false then it will get all quotes mixed
+  const GetQuotesAction(
+      {this.id,
+      this.date,
+      this.shiftId,
+      this.locationId,
+      this.isInvoiceOnly = false,
+      this.isJobOnly = false,
+      this.isQuoteOnly = false});
 }

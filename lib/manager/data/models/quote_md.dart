@@ -228,6 +228,14 @@ final class QuoteMd extends Equatable {
 
   final String processStatus;
   QuoteProcess get processStatusEnum => processStatus.toQuoteProcess;
+  bool get isQuote =>
+      processStatus.contains("quote") ||
+      processStatusEnum == QuoteProcess.accepted ||
+      processStatusEnum == QuoteProcess.declined;
+  bool get isJob => processStatus.contains("job");
+  bool get isInvoice =>
+      processStatus.contains("invoice") ||
+      processStatusEnum == QuoteProcess.closed;
 
   final String identifier;
 

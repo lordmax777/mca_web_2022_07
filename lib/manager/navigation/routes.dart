@@ -8,6 +8,7 @@ import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/pages.dart';
+import 'package:mca_dashboard/presentation/pages/quotes_view/quotes_wrapper.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 
 class MCANavigation extends IMCANavigation {
@@ -142,7 +143,7 @@ class MCANavigation extends IMCANavigation {
               pageBuilder: (context, state) {
                 return NoTransitionPage<void>(
                   key: state.pageKey,
-                  child: const QuotesView(),
+                  child: const QuotesWrapper(),
                 );
               },
             ),

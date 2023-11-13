@@ -90,6 +90,18 @@ class GeneralState extends Equatable {
 
   final List<JobTemplateMd> jobTemplates;
 
+  List<QuoteMd> get getQuotesOnly {
+    return quotes.where((element) => element.isQuote).toList();
+  }
+
+  List<QuoteMd> get getJobsOnly {
+    return quotes.where((element) => element.isJob).toList();
+  }
+
+  List<QuoteMd> get getInvoicesOnly {
+    return quotes.where((element) => element.isInvoice).toList();
+  }
+
   const GeneralState({
     required this.formatMd,
     required this.users,

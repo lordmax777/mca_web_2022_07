@@ -9,7 +9,10 @@ import 'package:mca_dashboard/presentation/pages/scheduling_view/dialogs/create_
 import 'package:pluto_grid/pluto_grid.dart';
 
 class QuotesView extends StatefulWidget {
-  const QuotesView({super.key});
+  final bool isJob;
+  final bool isInvoice;
+
+  const QuotesView({super.key, this.isInvoice = false, this.isJob = false});
 
   @override
   State<QuotesView> createState() => _QuotesViewState();
@@ -17,10 +20,21 @@ class QuotesView extends StatefulWidget {
 
 class _QuotesViewState extends State<QuotesView>
     with TableFocusNodeMixin<QuotesView, QuoteMd, QuoteMd> {
+  bool get isJob => widget.isJob;
+  bool get isInvoice => widget.isInvoice;
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, List<QuoteMd>>(
-        converter: (store) => store.state.generalState.quotes,
+        converter: (store) {
+          if (isJob) {
+            return store.state.generalState.getJobsOnly;
+          }
+          if (isInvoice) {
+            return store.state.generalState.getInvoicesOnly;
+          }
+          return store.state.generalState.getQuotesOnly;
+        },
         onDidChange: onDidChange,
         builder: (context, vm) {
           return DefaultTable(
@@ -64,7 +78,11 @@ class _QuotesViewState extends State<QuotesView>
               ],
             ),
             rows: kDebugMode
-                ? appStore.state.generalState.quotes
+                ? (isJob
+                        ? appStore.state.generalState.getJobsOnly
+                        : (isInvoice
+                            ? appStore.state.generalState.getInvoicesOnly
+                            : appStore.state.generalState.getQuotesOnly))
                     .map((e) => buildRow(e))
                     .toList()
                 : [],
@@ -98,7 +116,6 @@ class _QuotesViewState extends State<QuotesView>
         "last_sent": PlutoCell(value: model.lastSent ?? "Never"),
         "created_on": PlutoCell(value: model.createdOn),
         "valid_until": PlutoCell(value: model.validUntil),
-        // "processStatus": PlutoCell(value: model.processStatus),
         "action": PlutoCell(value: ""),
       },
     );
@@ -117,6 +134,8 @@ class _QuotesViewState extends State<QuotesView>
           title: "Identifier",
           field: "identifier",
           type: PlutoColumnType.text(),
+          width: 100,
+          minWidth: 100,
           textAlign: PlutoColumnTextAlign.center,
         ),
         PlutoColumn(
@@ -281,12 +300,17 @@ class _QuotesViewState extends State<QuotesView>
         //     type: PlutoColumnType.text())
       ];
 
-  @override
-  Future<List<QuoteMd>?> fetch() async {
-    final res = await dispatch<List<QuoteMd>>(const GetQuotesAction());
-    if (res.isLeft) {
-      return res.left;
-    }
-    return null;
-  }
+  // @override
+  // Future<List<QuoteMd>?> fetch() async {
+  //   print(isJob);
+  //   print(isInvoice);
+  //   final res = await dispatch<List<QuoteMd>>(GetQuotesAction(
+  //       isJobOnly: isJob,
+  //       isInvoiceOnly: isInvoice,
+  //       isQuoteOnly: !isJob && !isInvoice));
+  //   if (res.isLeft) {
+  //     return res.left;
+  //   }
+  //   return null;
+  // }
 }
