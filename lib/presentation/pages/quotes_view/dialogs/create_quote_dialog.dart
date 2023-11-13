@@ -207,7 +207,11 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         if (mounted) {
           setIp();
           setupVars();
-          fetchUnavailableUsers();
+          //do not fetch initially,
+          //because this method called when the date field is changed
+          if (quote?.workStartDate == null) {
+            fetchUnavailableUsers();
+          }
         }
       },
     );
@@ -219,42 +223,47 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     }
   }
 
-  void setIp() async {
+  Future<void> setIp() async {
     final ipAddress = await getIpAddress();
     updateUI(() => currentIpAddress = ipAddress);
   }
 
   Future<void> fetchUnavailableUsers() async {
     if (getTimingDate == null) return;
-    DependencyManager.instance.navigation.futureLoading(() async {
-      final users = await dispatch<List<UserMd>>(
-          //2023, 04, 23 => can use for testing, that has unav users
-          GetUnavailableUserListAction(
-        // DateTime(2023, 04, 23),
-        getTimingDate!,
-      ));
-      if (users.isLeft) {
-        // can use users from store
-        unavailableUsers.clear();
-        unavailableUsers.addAll(users.left);
+    try {
+      context.futureLoading(() async {
+        final users = await dispatch<List<UserMd>>(
+            //2023, 04, 23 => can use for testing, that has unav users
+            GetUnavailableUserListAction(
+          // DateTime(2023, 04, 23),
+          getTimingDate!,
+        ));
+        if (users.isLeft) {
+          // can use users from store
+          unavailableUsers.clear();
+          unavailableUsers.addAll(users.left);
 
-        //removing initially added members if they are unavailable
-        for (final user in users.left) {
-          if (user.unavailability.isUnavailable) {
-            addedUsers.removeWhere((element) => element.id == user.id);
+          //removing initially added members if they are unavailable
+          for (final user in users.left) {
+            if (user.unavailability.isUnavailable) {
+              addedUsers.removeWhere((element) => element.id == user.id);
+            }
           }
+          updateUI(() {});
+        } else {
+          updateUI(() {
+            context.showError(
+                'Failed to fetch unavailable users. ${users.right.message}');
+          });
         }
-        updateUI(() {});
-      } else {
-        updateUI(() {
-          DependencyManager.instance.navigation.showFail(
-              'Failed to fetch unavailable users. ${users.right.message}');
-        });
-      }
-    });
+      });
+    } catch (e) {
+      print(e.toString());
+      // print(e.stackTrace);
+    }
   }
 
-  void setupVars() {
+  Future<void> setupVars() async {
     if (quote != null) {
       try {
         formVm.patchValue({
@@ -290,7 +299,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
 
         //The weekdays are hidden until the repeat day validates it.
         //So need to wait UI until it opens weekdays
-        Future.delayed(const Duration(milliseconds: 100), () {
+        await Future.delayed(const Duration(milliseconds: 100), () {
           formVm.patchValue({
             timingWeek1: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [])
                 .asListString,
@@ -657,6 +666,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   name: timingDate,
                   onChanged: (value) {
                     if (value == null) return;
+                    if (value == getTimingDate) return;
                     updateUI(() {
                       fetchUnavailableUsers();
                     });
@@ -693,6 +703,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 vm: DatePickerModel(
               name: startTime,
               type: InputType.time,
+              onChanged: (value) {
+                updateUI(() {});
+              },
               validators: [
                 if (processStatus == QuoteProcess.jobCreated)
                   FormBuilderValidators.required(),
@@ -706,6 +719,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 vm: DatePickerModel(
                     name: endTime,
                     type: InputType.time,
+                    onChanged: (value) {
+                      updateUI(() {});
+                    },
                     validators: [
                       if (processStatus == QuoteProcess.jobCreated)
                         FormBuilderValidators.required(),
@@ -1312,6 +1328,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     //If Quote Create -> POST quote
     //If Job -> POST quote, POST quotestatus(accept), POST job from quote
     switch (processStatus) {
+      //null is always create quote or job
       case null:
         if (isJob) {
           //Create Job
@@ -1382,14 +1399,35 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         }
 
         break;
-      case QuoteProcess.jobCreated:
-        // todo: Schedule Job Api
-        print("schedule job api");
-        break;
       default:
-        //todo: do other processes'
-        print("default");
-        changeQuoteStatus(quoteId: quote!.id, status: QuoteStatus.accept);
+        //Update quote/job
+        //after update ask to send email
+        //if is quote and date and time is selected, then accept quote and make job and is accepted
+        if (isQuote &&
+            getTimingDate != null &&
+            getTimingDate != null &&
+            getStartTime != null &&
+            getEndTime != null &&
+            processStatus == QuoteProcess.accepted) {
+          //todo: make job
+          context.futureLoading(() async {
+            try {
+              final jobFromQuote = await makeJobFromQuote(quoteId: quote!.id);
+              jobFromQuote.fold((left) {
+                //success pop the page or continue
+                context.showSuccess("Job created and published successfully");
+              }, (right) {
+                //error
+                context.showError(right.message);
+              });
+            } on TypeError catch (e) {
+              print(e.stackTrace);
+              context.showError("Error creating quote. ${e.toString()}");
+            }
+          });
+        } else {
+          //todo:update quote only
+        }
     }
   }
 
@@ -1451,9 +1489,19 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         } else {
           return "Create Quote";
         }
-      case QuoteProcess.jobCreated:
-        return "Schedule Job";
       default:
+        //if is quote and date and time is selected
+        if (isQuote &&
+            getTimingDate != null &&
+            getTimingDate != null &&
+            getStartTime != null &&
+            getEndTime != null &&
+            processStatus == QuoteProcess.accepted) {
+          return "Create and publish job";
+        } else {
+          return "Update Quote";
+        }
+
         return "Save";
     }
   }
