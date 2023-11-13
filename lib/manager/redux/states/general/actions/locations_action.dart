@@ -8,12 +8,14 @@ final class PostLocationAction {
   final AddressData addressData;
   final bool active;
   final bool anywhere;
-  final bool? sendChecklist;
+  final bool sendChecklist;
+  final bool createWarehouse;
   const PostLocationAction(
       {required this.addressData,
       this.active = true,
       this.anywhere = false,
-      this.sendChecklist});
+      this.createWarehouse = false,
+      this.sendChecklist = false});
 }
 
 final class DeleteLocationAction {

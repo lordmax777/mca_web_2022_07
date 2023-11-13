@@ -721,6 +721,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         longitude: address.longitude.toString(),
         ipaddress: address.ipAddress,
         fixedipaddress: address.fixedIpAddress,
+        // createWarehouse: action.createWarehouse, //todo: add to api
       );
       if (res.response.statusCode == 409) {
         throw const ErrorMd(

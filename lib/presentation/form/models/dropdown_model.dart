@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
 
 class DropdownModel {
@@ -11,11 +12,13 @@ class DropdownModel {
   final bool hasSearchBox;
   final String? Function(String?)? validator;
   final void Function(String?)? onChanged;
+  final Widget? leftIcon;
 
   const DropdownModel({
     required this.name,
     required this.items,
     this.initialValue,
+    this.leftIcon,
     this.labelText,
     this.hintText,
     this.onChanged,

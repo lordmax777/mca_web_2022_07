@@ -10,7 +10,8 @@ import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/u
 
 class CreateLocationPopup extends StatefulWidget {
   final LocationMd? model;
-  const CreateLocationPopup({super.key, this.model});
+  final ClientMd? client;
+  const CreateLocationPopup({super.key, this.model, this.client});
 
   @override
   State<CreateLocationPopup> createState() => _CreateLocationPopupState();
@@ -21,10 +22,17 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
   bool isCreate = true;
   String? currentIpAddress;
 
+  ClientMd? get client => widget.client;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (client != null) {
+        controller3.text = client!.email ?? "";
+        controller4.text = client!.phone ?? "";
+        controller6.text = client!.fax ?? "";
+      }
       if (widget.model != null) {
         isCreate = false;
         controller1.text = widget.model!.name;
@@ -38,6 +46,7 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
         checked2 = widget.model!.anywhere;
         checked3 = widget.model!.fixedipaddress;
         checked4 = widget.model!.sendChecklist;
+        // checked5 = widget.model!.createWarehouse;//todo:
         controller7.text = widget.model!.address.line1;
         controller8.text = widget.model!.address.line2;
         controller9.text = widget.model!.address.city;
@@ -99,16 +108,18 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                   controller: controller1,
                                   isRequired: true,
                                 ),
-                                UserCardItem(
-                                  title: "Current IP Address",
-                                  simpleText: currentIpAddress,
-                                ),
-                                UserCardItem(
-                                  title: "IP Address(es)",
-                                  isRequired: checked3,
-                                  controller: controller2,
-                                  maxLines: 4,
-                                ),
+                                if (checked3)
+                                  UserCardItem(
+                                    title: "Current IP Address",
+                                    simpleText: currentIpAddress,
+                                  ),
+                                if (checked3)
+                                  UserCardItem(
+                                    title: "IP Address(es)",
+                                    isRequired: checked3,
+                                    controller: controller2,
+                                    maxLines: 4,
+                                  ),
                                 UserCardItem(
                                   title: "Fixed IP Address",
                                   checked: checked3,
@@ -133,6 +144,15 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                   onChecked: (value) {
                                     setState(() {
                                       checked2 = value;
+                                    });
+                                  },
+                                ),
+                                UserCardItem(
+                                  title: "Create Warehouse",
+                                  checked: checked5,
+                                  onChecked: (value) {
+                                    setState(() {
+                                      checked5 = value;
                                     });
                                   },
                                 ),
@@ -342,6 +362,7 @@ class _CreateLocationPopupState extends State<CreateLocationPopup>
                                   active: checked1,
                                   anywhere: checked2,
                                   sendChecklist: checked4,
+                                  createWarehouse: checked5,
                                   addressData: AddressData(
                                     // locationId: widget.model?.id,
                                     name: controller1.text,

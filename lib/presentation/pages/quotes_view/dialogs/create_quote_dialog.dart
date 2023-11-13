@@ -471,13 +471,13 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 tooltip: "Edit location",
                 icon: const Icon(Icons.edit_outlined),
                 color: context.theme.primaryColor,
-                onPressed: () => onCreateLocation(location),
+                onPressed: () => onCreateLocation(location, client),
               ),
             IconButton(
               tooltip: "Create location",
               icon: const Icon(Icons.add_circle_outline),
               color: context.theme.primaryColor,
-              onPressed: onCreateLocation,
+              onPressed: () => onCreateLocation(null, client),
             ),
           ],
         ),
@@ -487,6 +487,13 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                 labelVm: const LabelModel(text: "Locations", isRequired: true),
                 formBuilderField: FormDropdown(
                     vm: DropdownModel(
+                        leftIcon: location != null && !location.anywhere
+                            ? Tooltip(
+                                message: "Location is in bound",
+                                child: Icon(Icons.lock_outline,
+                                    color: context.colorScheme.error),
+                              )
+                            : null,
                         helperText: "Select location or search for address",
                         onChanged: (p0) => updateUI(formVm.save),
                         name: workLocationId,
@@ -1185,9 +1192,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     );
   }
 
-  void onCreateLocation([LocationMd? location]) async {
-    final int? res =
-        await context.showDialog(CreateLocationPopup(model: location));
+  void onCreateLocation([LocationMd? location, ClientMd? client]) async {
+    final int? res = await context
+        .showDialog(CreateLocationPopup(model: location, client: client));
     if (res != null) {
       updateUI(() => tempLocationId = res);
       formVm.patchValue({workLocationId: res.toString()});

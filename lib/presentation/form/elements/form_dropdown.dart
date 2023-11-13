@@ -91,6 +91,7 @@ class __DefaultDropdown2State extends State<_DefaultDropdown2> {
               border: InputBorder.none,
               errorText: errorText,
               helperText: vm.helperText,
+              icon: vm.leftIcon,
             ),
             child: LayoutBuilder(builder: (context, constraints) {
               return Row(
