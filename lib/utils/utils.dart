@@ -6,3 +6,4 @@ export 'table_helpers.dart';
 export 'base64_download/base_64_download.dart';
 export 'timezone/get_timezones.dart';
 export 'setup_domain/setup_domain.dart';
+export 'open_url/open_url.dart';

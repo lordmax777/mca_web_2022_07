@@ -1298,8 +1298,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
   void onSave(GeneralState vm) {
     formVm.saveAndValidate();
     if (!formVm.isValid) return;
-    print('dfsdf');
-    return;
     if (productSm!.rows.isEmpty) {
       context.showError("Please add at least one product or service");
       return;

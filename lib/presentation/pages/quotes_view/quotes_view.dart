@@ -116,7 +116,7 @@ class _QuotesViewState extends State<QuotesView>
         "last_sent": PlutoCell(value: model.lastSent ?? "Never"),
         "created_on": PlutoCell(value: model.createdOn),
         "valid_until": PlutoCell(value: model.validUntil),
-        "action": PlutoCell(value: ""),
+        "action": PlutoCell(value: model),
       },
     );
   }
@@ -265,6 +265,10 @@ class _QuotesViewState extends State<QuotesView>
                       }
                     });
                     break;
+                  case "clientPortal":
+                    openUrl(rendererContext
+                        .row.cells['action']!.value.clientPortalUrl);
+                    break;
                 }
               },
               itemBuilder: (context) {
@@ -288,6 +292,12 @@ class _QuotesViewState extends State<QuotesView>
                           Icon(Icons.check),
                           Text("Accept")
                         ])),
+                  PopupMenuItem(
+                      value: "clientPortal",
+                      child: SpacedRow(horizontalSpace: 4, children: const [
+                        Icon(Icons.link),
+                        Text("Client Portal")
+                      ])),
                 ];
               },
               icon: const Icon(Icons.more_vert),

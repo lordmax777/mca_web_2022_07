@@ -275,6 +275,8 @@ final class QuoteMd extends Equatable {
         .firstWhereOrNull((element) => element.name == jobTemplateName);
   }
 
+  final String clientPortalUrl;
+
   const QuoteMd({
     required this.addressLine1,
     required this.addressLine2,
@@ -337,6 +339,7 @@ final class QuoteMd extends Equatable {
     required this.nextAllocationId,
     required this.checklistTemplateId,
     required this.jobTemplateName,
+    required this.clientPortalUrl,
   });
 
   @override
@@ -402,6 +405,7 @@ final class QuoteMd extends Equatable {
         nextAllocationId,
         checklistTemplateId,
         jobTemplateName,
+        clientPortalUrl,
       ];
 
   //from json
@@ -487,6 +491,7 @@ final class QuoteMd extends Equatable {
       nextAllocationId: json["next_allocation_id"],
       checklistTemplateId: json["checklist_template_id"],
       jobTemplateName: json["job_template_name"],
+      clientPortalUrl: json["client_portal_url"],
     );
   }
 }
