@@ -13,12 +13,15 @@ class PageTitle extends StatelessWidget {
     if (title == MCANavigation.properties.substring(1)) {
       title = appStore.state.generalState.propertyName;
     }
+    String t = title[0].toUpperCase() + title.substring(1);
+    //separate words by capital letters
+    t = t.replaceAllMapped(RegExp(r'([A-Z])'), (match) => ' ${match[0]}');
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.only(left: 16, right: 16),
       height: 56,
       width: double.infinity,
-      child: Text(title, style: Theme.of(context).textTheme.headlineLarge),
+      child: Text(t, style: Theme.of(context).textTheme.headlineLarge),
     );
   }
 }

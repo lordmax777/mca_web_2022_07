@@ -33,8 +33,8 @@ class LoginView extends StatelessWidget {
           return Scaffold(
             body: Center(
               child: SizedBox(
-                width: 600,
-                height: 400,
+                width: context.width * 0.3,
+                height: context.height * 0.5,
                 child: Card(
                   elevation: 10,
                   shape: RoundedRectangleBorder(

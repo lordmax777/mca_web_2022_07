@@ -39,7 +39,7 @@ class MCANavigation extends IMCANavigation {
   static const String quotes = '/quotes';
 
   //Deps and Groups
-  static const String depsAndGroups = '/depsAndGroups';
+  static const String depsAndGroups = '/departmentsAndGroups';
 
   //Qualifications
   static const String qualifications = '/qualifications';
