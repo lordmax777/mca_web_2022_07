@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/post_shift_release_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/post_shift_release_action.dart';
 import 'package:mca_dashboard/presentation/pages/approvals_view/tabs/shift_release/shift_release_pending_table.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 

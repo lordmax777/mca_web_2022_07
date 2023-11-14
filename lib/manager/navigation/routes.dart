@@ -5,11 +5,14 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
-import 'package:mca_dashboard/manager/redux/redux.dart';
+import 'package:mca_dashboard/manager/redux/actions/clear_data_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/formats_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/pages.dart';
 import 'package:mca_dashboard/presentation/pages/quotes_view/quotes_wrapper.dart';
 import 'package:mca_dashboard/utils/utils.dart';
+
+import '../redux/actions/init_actions_action.dart';
 
 class MCANavigation extends IMCANavigation {
   final MCALoginState loginState = MCALoginState();

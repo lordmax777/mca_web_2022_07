@@ -1,6 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
+import 'package:mca_dashboard/manager/redux/actions/change_quote_status_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/locations_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/post_quote_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/send_quote_email_action.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
@@ -9,6 +13,7 @@ import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widg
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
+import '../../../../manager/redux/actions/unavailable_user_list_action.dart';
 import '../../scheduling_view/data/week_days_m.dart';
 import '../../scheduling_view/dialogs/team_popup2.dart';
 import '../../scheduling_view/schedule_widgets/team_member2_widget.dart';
@@ -1349,7 +1354,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                     final jobFromQuote = await makeJobFromQuote(quoteId: l);
                     jobFromQuote.fold((left) {
                       //success pop the page or continue
-                      context.showSuccess("Job created successfully");
+                      context.showSuccess("Job created successfully",
+                          onClose: context.pop);
                     }, (right) {
                       //error
                       context.showError(right.message);
@@ -1411,38 +1417,47 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             processStatus == QuoteProcess.accepted) {
           context.futureLoading(() async {
             try {
-              final postQuoteResponse = await postQuote(
-                  clients: vm.clients,
-                  locations: vm.locations,
-                  packages: vm.jobTemplates);
-              postQuoteResponse.fold((l) async {
-                if (l != null) {
-                  //success accept quote
-                  final quoteAccepted = await changeQuoteStatus(
-                      quoteId: l, status: QuoteStatus.accept);
-                  quoteAccepted.fold((left) async {
-                    //success make job from quote
-                    // make job from quote
-                    final jobFromQuote = await makeJobFromQuote(quoteId: l);
-                    jobFromQuote.fold((left) {
-                      //success pop the page or continue
-                      emailQuoteToClient(l).then((value) {
-                        context.showSuccess("Job created successfully");
+              final quoteAccepted = await changeQuoteStatus(
+                  quoteId: quote!.id, status: QuoteStatus.pending);
+              quoteAccepted.fold((left) async {
+                final postQuoteResponse = await postQuote(
+                    clients: vm.clients,
+                    locations: vm.locations,
+                    packages: vm.jobTemplates);
+                postQuoteResponse.fold((l) async {
+                  if (l != null) {
+                    //success accept quote
+                    final quoteAccepted = await changeQuoteStatus(
+                        quoteId: l, status: QuoteStatus.accept);
+                    quoteAccepted.fold((left) async {
+                      //success make job from quote
+                      // make job from quote
+                      final jobFromQuote = await makeJobFromQuote(quoteId: l);
+                      jobFromQuote.fold((left) {
+                        //success pop the page or continue
+                        emailQuoteToClient(l).then((value) {
+                          context.showSuccess("Job created successfully",
+                              onClose: context.pop);
+                        });
+                      }, (right) {
+                        //error
+                        context.showError(right.message);
                       });
+                      // emailQuoteToClient(l);
                     }, (right) {
                       //error
                       context.showError(right.message);
                     });
-                    // emailQuoteToClient(l);
-                  }, (right) {
-                    //error
-                    context.showError(right.message);
-                  });
-                } else {
-                  context.showError("Error creating quote. Please try again.");
-                }
-              }, (r) {
-                context.showError(r.message);
+                  } else {
+                    context
+                        .showError("Error creating quote. Please try again.");
+                  }
+                }, (r) {
+                  context.showError(r.message);
+                });
+              }, (right) {
+                //error
+                context.showError(right.message);
               });
             } on TypeError catch (e) {
               print(e.stackTrace);
@@ -1452,7 +1467,34 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             }
           });
         } else {
-          //todo:update quote only
+          //update quote only
+          context.futureLoading(() async {
+            final quoteAccepted = await changeQuoteStatus(
+                quoteId: quote!.id, status: QuoteStatus.pending);
+            quoteAccepted.fold((left) async {
+              final postQuoteResponse = await postQuote(
+                  clients: vm.clients,
+                  locations: vm.locations,
+                  packages: vm.jobTemplates);
+              postQuoteResponse.fold((l) async {
+                if (l != null) {
+                  //email to client
+                  emailQuoteToClient(l).then((value) {
+                    context.showSuccess("Quote updated successfully",
+                        onClose: context.pop);
+                  });
+                } else {
+                  context.showError("Error updating quote. Please try again.");
+                }
+              }, (right) {
+                //error
+                context.showError(right.message);
+              });
+            }, (right) {
+              //error
+              context.showError(right.message);
+            });
+          });
         }
     }
   }
@@ -1488,9 +1530,11 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       team: addedUsers,
       week1: getTimingWeek1,
       week2: getTimingWeek2,
-      // checklistTemplateId: //todo:
+      // checklistTemplateId:
     ));
-    await dispatch(const GetLocationsAction());
+    if (res.isLeft) {
+      await dispatch(const GetLocationsAction());
+    }
     return res;
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/approvals_action.dart';
 import 'package:mca_dashboard/presentation/pages/approvals_view/tabs/request/request_wrapper.dart';
 import 'package:mca_dashboard/presentation/pages/approvals_view/tabs/shift_release/shift_release_wrapper.dart';
 import 'package:mca_dashboard/presentation/pages/approvals_view/tabs/user_qualif/user_qualif_wrapper.dart';

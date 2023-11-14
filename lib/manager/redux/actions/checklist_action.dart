@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../../../manager.dart';
+import '../../manager.dart';
 
 final class GetChecklistsAction {
   final int page;

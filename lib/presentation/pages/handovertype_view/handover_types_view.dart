@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/handover_type_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/handovertype_view/new_handover_type_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';

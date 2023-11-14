@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/jobtemplate_action.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
-import 'package:mca_dashboard/presentation/form/models/dp_item.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+
+import '../../../../manager/redux/actions/jobtemplate_action.dart';
 
 class NewJobTemplatePopup extends StatefulWidget {
   final JobTemplateMd? model;

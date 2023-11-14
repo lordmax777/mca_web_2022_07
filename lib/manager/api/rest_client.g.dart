@@ -1156,6 +1156,7 @@ class _ApiClient implements ApiClient {
     addressPostcode,
     required fixedipaddress,
     ipaddress,
+    required create_warehouse,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1184,6 +1185,7 @@ class _ApiClient implements ApiClient {
       'addressPostcode': addressPostcode,
       'fixedipaddress': fixedipaddress,
       'ipaddress': ipaddress,
+      'create_warehouse': create_warehouse,
     };
     _data.removeWhere((k, v) => v == null);
     final _result =

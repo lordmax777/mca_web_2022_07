@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:mca_dashboard/manager/redux/actions/fetch_lists_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/quotes_action.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/week_days_m.dart';
 
-import '../../../../manager.dart';
+import '../../manager.dart';
 
 final class PostQuoteAction {
   final PersonalData personalData;

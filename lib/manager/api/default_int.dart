@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import '../manager.dart';
+import '../redux/actions/refresh_token_action.dart';
 
 class DefaultInterceptor {
   final deps = DependencyManager.instance;

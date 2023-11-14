@@ -10,21 +10,20 @@ import 'package:flutter_easylogger/flutter_logger.dart';
 import 'package:intl/intl.dart';
 import 'package:mca_dashboard/manager/data/data.dart';
 import 'package:mca_dashboard/manager/dependencies/dependencies.dart';
+import 'package:mca_dashboard/manager/redux/actions/approvals_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/checklist_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/checklist_templates_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/handover_type_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/jobtemplate_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/post_shift_release_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/stocks_action.dart';
 import 'package:mca_dashboard/manager/redux/redux.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/approvals_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/jobtemplate_action.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/post_shift_release_action.dart';
 import 'package:mca_dashboard/utils/utils.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:dio/dio.dart' as dio;
 
-import '../../../../presentation/pages/users_view/data/user_data_source.dart';
-import 'actions/get_timesheet_action.dart';
-import 'actions/stocks_action.dart';
+import '../../presentation/pages/users_view/data/user_data_source.dart';
 
 final class ErrorMd extends Equatable {
   final String message;
@@ -721,7 +720,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
         longitude: address.longitude.toString(),
         ipaddress: address.ipAddress,
         fixedipaddress: address.fixedIpAddress,
-        // createWarehouse: action.createWarehouse, //todo: add to api
+        create_warehouse: action.createWarehouse,
       );
       if (res.response.statusCode == 409) {
         throw const ErrorMd(

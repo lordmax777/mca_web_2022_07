@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/checklist_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/checklists_view/users_view_popup.dart';

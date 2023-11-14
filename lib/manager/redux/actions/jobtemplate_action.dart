@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../../../../manager.dart';
+import '../../manager.dart';
 
 class GetJobTemplatesAction {
   final int? id;

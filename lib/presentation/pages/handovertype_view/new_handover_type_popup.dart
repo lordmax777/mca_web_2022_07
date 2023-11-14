@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/handover_type_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/handover_type_action.dart';
 import 'package:mca_dashboard/presentation/pages/users_view/users_view_widgets/user_card.dart';
 
 class NewHandoverTypePopup extends StatefulWidget {
@@ -64,10 +64,9 @@ class _NewHandoverTypePopupState extends State<NewHandoverTypePopup>
               if (!validateForm()) return;
               context.futureLoading(() async {
                 final success = await dispatch<bool>(PostHandoverTypeAction(
-                  id: widget.model?.id,
-                  title: controller1.text,
-                  isActive: checked1,
-                ));
+                    id: widget.model?.id,
+                    title: controller1.text,
+                    isActive: checked1));
                 if (success.isRight) {
                   context.showError(success.right.message);
                   return;

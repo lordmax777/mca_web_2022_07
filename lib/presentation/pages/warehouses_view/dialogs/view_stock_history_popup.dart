@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/stocks_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/stocks_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 

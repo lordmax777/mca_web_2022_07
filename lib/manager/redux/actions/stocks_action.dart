@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import '../../../../manager.dart';
 import 'package:dio/dio.dart' as dio;
+
+import '../../manager.dart';
 
 final class GetCurrentStockListAction {
   final int warehouseId;

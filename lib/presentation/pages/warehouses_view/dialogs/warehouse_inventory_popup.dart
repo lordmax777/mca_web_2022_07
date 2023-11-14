@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/stocks_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/stocks_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/add_to_stock_popup.dart';
 import 'package:mca_dashboard/presentation/pages/warehouses_view/dialogs/change_min_level_popup.dart';

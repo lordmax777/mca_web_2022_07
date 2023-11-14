@@ -208,10 +208,8 @@ class _QuotesViewState extends State<QuotesView>
           textAlign: PlutoColumnTextAlign.center,
           width: 80,
           renderer: (rendererContext) {
-            final quoteId = rendererContext.row.cells["id"]?.value;
-            final status = rendererContext.row.cells["status"]?.value
-                .toString()
-                .toLowerCase();
+            final model = rendererContext.row.cells["action"]?.value as QuoteMd;
+            final quoteId = model.id;
             return PopupMenuButton(
               onSelected: (value) {
                 if (stateManager!.hasFocus) {
@@ -278,14 +276,14 @@ class _QuotesViewState extends State<QuotesView>
                       child: SpacedRow(
                           horizontalSpace: 4,
                           children: const [Icon(Icons.edit), Text("Edit")])),
-                  if (quoteId != null)
-                    PopupMenuItem(
-                        value: "email",
-                        child: SpacedRow(horizontalSpace: 4, children: const [
-                          Icon(Icons.email),
-                          Text("Send Email")
-                        ])),
-                  if (status == "pending" && quoteId != null)
+                  PopupMenuItem(
+                      value: "email",
+                      child: SpacedRow(horizontalSpace: 4, children: const [
+                        Icon(Icons.email),
+                        Text("Send Email")
+                      ])),
+                  if (model.isQuote &&
+                      model.processStatusEnum != QuoteProcess.accepted)
                     PopupMenuItem(
                         value: "accept",
                         child: SpacedRow(horizontalSpace: 4, children: const [

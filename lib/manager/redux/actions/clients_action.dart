@@ -1,4 +1,4 @@
-import '../../../../manager.dart';
+import '../../manager.dart';
 
 class GetClientsAction {
   const GetClientsAction();

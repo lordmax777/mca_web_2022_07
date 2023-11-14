@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/checklist_templates_action.dart';
+import 'package:mca_dashboard/manager/redux/actions/checklist_templates_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_table.dart';
 import 'package:mca_dashboard/presentation/pages/checklist_template_view/new_checklist_template_popup.dart';
 import 'package:pluto_grid/pluto_grid.dart';

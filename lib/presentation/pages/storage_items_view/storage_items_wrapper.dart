@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mca_dashboard/manager/data/data.dart';
-import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/states/general/actions/jobtemplate_action.dart';
 import 'package:mca_dashboard/presentation/global_widgets/default_tab_wrapper.dart';
 import 'package:mca_dashboard/presentation/pages/storage_items_view/packages_view.dart';
 import 'package:mca_dashboard/presentation/pages/storage_items_view/storage_items_view.dart';
