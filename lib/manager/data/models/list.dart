@@ -152,7 +152,7 @@ final class CurrencyMd extends Equatable {
 
   factory CurrencyMd.fromJson(Map<String, dynamic> json) {
     return CurrencyMd(
-      id: (json['id'] ?? 0) as int,
+      id: (json['id'] ?? 1) as int,
       code: json['code'] ?? "",
       sign: json['sign'] ?? "",
       front: (json['front'] ?? false) as bool,

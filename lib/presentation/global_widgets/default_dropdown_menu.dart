@@ -30,12 +30,16 @@ class DefaultDropdownMenu extends StatelessWidget {
           color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
       initialSelection: initialValue,
       dropdownMenuEntries: getItems(),
+
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
       ),
       // label: label != null ? Text(label!) : null,
       hintText: label,
-      leadingIcon: isLoading ? const CircularProgressIndicator() : null,
+      leadingIcon: isLoading
+          ? Transform.scale(
+              scale: 0.5, child: const CircularProgressIndicator())
+          : null,
       trailingIcon: const SizedBox(),
       selectedTrailingIcon: const SizedBox(),
       onSelected: (value) {

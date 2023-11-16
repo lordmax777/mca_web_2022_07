@@ -510,7 +510,7 @@ extension StringHelpers on String {
       final time = split(':');
       return DateTime(DateTime.now().year, DateTime.now().month,
           DateTime.now().day, int.parse(time[0]), int.parse(time[1]));
-    } catch (e) {
+    } on FormatException catch (e) {
       return null;
     }
   }

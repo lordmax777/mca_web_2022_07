@@ -242,20 +242,20 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
                     width: containerWidth,
                     title: "Payment Info",
                     left: [
-                      FormWithLabel(
-                          labelVm: const LabelModel(
-                              text: "Currency", isRequired: true),
-                          formBuilderField: FormDropdown(
-                              vm: DropdownModel(
-                            name: "currencyId",
-                            items: lists.currencies
-                                .map((e) => DpItem(
-                                    id: e.id.toString(),
-                                    title: e.code,
-                                    subtitle: e.sign))
-                                .toList(),
-                            validator: FormBuilderValidators.required(),
-                          ))),
+                      // FormWithLabel(
+                      //     labelVm: const LabelModel(
+                      //         text: "Currency", isRequired: true),
+                      //     formBuilderField: FormDropdown(
+                      //         vm: DropdownModel(
+                      //       name: "currencyId",
+                      //       items: lists.currencies
+                      //           .map((e) => DpItem(
+                      //               id: e.id.toString(),
+                      //               title: e.code,
+                      //               subtitle: e.sign))
+                      //           .toList(),
+                      //       validator: FormBuilderValidators.required(),
+                      //     ))),
                       FormWithLabel(
                           labelVm: const LabelModel(
                               text: "Payment Method", isRequired: true),
@@ -296,13 +296,18 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
                               valueTransformer: (value) =>
                                   num.tryParse(value ?? ""),
                               validators: [
-                                FormBuilderValidators.required(),
+                                if (getInvoicePeriod != null &&
+                                    getInvoicePeriod != "1")
+                                  FormBuilderValidators.required(),
                                 (value) {
-                                  if (formVm.value['invoicePeriodId'] == null) {
+                                  if (formVm.getValue('invoicePeriodId') ==
+                                      null) {
                                     return null;
                                   }
-                                  if (formVm.value['invoicePeriodId'] == "1" ||
-                                      formVm.value['invoicePeriodId'] == "2") {
+                                  if (formVm.getValue('invoicePeriodId') ==
+                                          "1" ||
+                                      formVm.getValue('invoicePeriodId') ==
+                                          "2") {
                                     return null;
                                   }
                                   return "Invoice day is required";
@@ -381,7 +386,6 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
       final county = formVm.getValue('addressCounty');
       final postcode = formVm.getValue('addressPostcode');
       final country = formVm.getValue('country');
-      final currency = formVm.getValue('currencyId');
       final paymentMethod = formVm.getValue('paymentMethodId');
       final invoicePeriod = formVm.getValue('invoicePeriodId');
       final paymentDue = formVm.getValue('paymentDays');
@@ -397,15 +401,13 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
           phone: phone?.toString() ?? "",
           email: email ?? "",
           fax: fax?.toString(),
-          invoicePeriod: lists.invoicePeriods.firstWhereOrNull(
+          invoicePeriod: lists.invoicePeriods.firstWhere(
               (element) => element.id == int.tryParse(invoicePeriod ?? "")),
-          invoiceDay: invoiceDay,
-          paymentDays: paymentDue,
+          invoiceDay: int.tryParse(invoiceDay ?? ""),
+          paymentDays: int.parse(paymentDue),
           sendInvoices: isSendInvoices,
           combineInvoices: isCombineInvoices,
           companyName: company ?? '',
-          currency: lists.currencies.firstWhereOrNull(
-              (element) => element.id == int.tryParse(currency ?? "")),
           notes: comment ?? '',
           paymentMethod: lists.paymentMethods.firstWhereOrNull(
               (element) => element.id == int.tryParse(paymentMethod ?? "")),

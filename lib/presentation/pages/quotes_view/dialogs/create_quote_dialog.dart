@@ -1,10 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
-import 'package:mca_dashboard/manager/redux/actions/change_quote_status_action.dart';
-import 'package:mca_dashboard/manager/redux/actions/locations_action.dart';
-import 'package:mca_dashboard/manager/redux/actions/post_quote_action.dart';
-import 'package:mca_dashboard/manager/redux/actions/send_quote_email_action.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
 import 'package:mca_dashboard/presentation/global_widgets/widgets.dart';
 import 'package:mca_dashboard/presentation/pages/clients_view/dialogs/clients_edit_2_dialog.dart';
@@ -12,8 +8,6 @@ import 'package:mca_dashboard/presentation/pages/locations_view/create_location_
 import 'package:mca_dashboard/presentation/pages/quotes_view/widgets/repeat_widget.dart';
 import 'package:mca_dashboard/presentation/pages/scheduling_view/data/schedule_models.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-
-import '../../../../manager/redux/actions/unavailable_user_list_action.dart';
 import '../../scheduling_view/data/week_days_m.dart';
 import '../../scheduling_view/dialogs/team_popup2.dart';
 import '../../scheduling_view/schedule_widgets/team_member2_widget.dart';
@@ -270,6 +264,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
 
   Future<void> setupVars() async {
     if (quote != null) {
+      print(quote!.locationId);
       try {
         formVm.patchValue({
           quoteName: quote!.name,
@@ -287,8 +282,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           workLocationRadius: quote!.workLocationRadius.toString(),
           workStaticIpAddresses:
               quote!.workStaticIpAddresses?.split(",").join("\n"),
-          startTime: quote!.workStartTime?.timeToDateTime,
-          endTime: quote!.workFinishTime?.timeToDateTime,
+
           allDay: quote!.allDay,
           timingRepeatId: quote
               ?.workRepeatMd(appStore.state.generalState.lists.workRepeats)
@@ -311,6 +305,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             timingWeek2: WeekDaysMd.fromQuoteWorkDays(quote?.workDays ?? [],
                     isFortnightly: true)
                 .asListString,
+            startTime: quote!.workStartTime?.timeToDateTime,
+            endTime: quote!.workFinishTime?.timeToDateTime,
             workLocationId: quote!.locationId.toString(),
           });
         });
@@ -1110,7 +1106,13 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
 
         final List<LocationMd> locations = [
           if (tempLocation != null) tempLocation,
-          ...vm.clientBasedFullLocations(client?.id)
+          ...vm.clientBasedFullLocations(client?.id),
+          if (quote?.locationId != null &&
+              vm.locations.firstWhereOrNull(
+                      (element) => element.id == quote!.locationId) !=
+                  null)
+            vm.locations
+                .firstWhereOrNull((element) => element.id == quote!.locationId)!
         ];
         final List<StorageItemMd> storageItems = [...vm.storageItems]
           ..sort((a, b) {
@@ -1147,6 +1149,13 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [
+            if (isQuote && getStartTime != null && getEndTime != null)
+              ElevatedButton(
+                onPressed: () {
+                  context.futureLoading(() async {});
+                },
+                child: const Text("Accept quote"),
+              ),
             ElevatedButton(
                 onPressed: () => onSave(vm), child: Text(getSaveText()))
           ],
@@ -1418,7 +1427,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
             }
           });
         }
-
         break;
       default:
         //Update quote/job

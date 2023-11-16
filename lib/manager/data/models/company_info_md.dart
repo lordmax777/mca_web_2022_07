@@ -199,11 +199,16 @@ final class CompanyInfoMd extends Equatable {
         locktime,
       ];
 
-  factory CompanyInfoMd.fromJson(Map<String, dynamic> json) => CompanyInfoMd(
+  factory CompanyInfoMd.fromJson(Map<String, dynamic> json,
+          {required List<CurrencyMd> currencies}) =>
+      CompanyInfoMd(
         name: json['name'] ?? "",
         domain: json['domain'] ?? '',
         timezone: json['timezone'] ?? '',
-        currency: CurrencyMd.fromJson(json['currency'] ?? {}),
+        currency: currencies.firstWhereOrNull(
+                (element) => element.code == json['currency']['code']) ??
+            const CurrencyMd(
+                id: 1, code: "", digits: 0, front: false, sign: ""),
         paymentMethodId: json['payment_method_id'] ?? 0,
         payingDays: json['paying_days'] ?? 0,
         logo: json['logo'] ?? '',
@@ -245,5 +250,6 @@ final class CompanyInfoMd extends Equatable {
       );
 
   //init
-  factory CompanyInfoMd.init() => CompanyInfoMd.fromJson(const {});
+  factory CompanyInfoMd.init() =>
+      CompanyInfoMd.fromJson(const {}, currencies: const []);
 }

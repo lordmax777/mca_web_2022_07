@@ -281,6 +281,7 @@ class _QuotesViewState extends State<QuotesView>
                     context.futureLoading(() async {
                       final res = await dispatch(
                           MakeJobFromQuoteAction(quoteId: model.id));
+                      await fetch();
                       res.fold((left) {
                         //success
                         context.showSuccess("Successfully created job");

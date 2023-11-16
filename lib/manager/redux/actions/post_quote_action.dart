@@ -94,7 +94,10 @@ class PostQuoteAction2 {
         final clientName = client.name;
         jobName = "$workAddress - $firstProduct - $clientName";
       }
-      formData.fields.add(MapEntry("name", jobName!));
+      if (jobName!.length > 20) {
+        jobName = jobName.substring(0, 20);
+      }
+      formData.fields.add(MapEntry("name", jobName));
 
       //client_id
       formData.fields.add(MapEntry("client_id", client.id.toString()));
@@ -196,7 +199,7 @@ class PostQuoteAction2 {
       }
       //Work end time
       if (workEndTime != null) {
-        formData.fields.add(MapEntry("workEndTime", workEndTime!.toApiTime));
+        formData.fields.add(MapEntry("workFinishTime", workEndTime!.toApiTime));
       }
       //Work repeat id
       formData.fields.add(MapEntry("repeatId", repeatId ?? "1"));

@@ -516,7 +516,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
       AppState state, GetCompanyInfoAction action) async {
     return await apiCall(() async {
       final res = await deps.apiClient.getCompanyInfo();
-      final CompanyInfoMd companyInfo = CompanyInfoMd.fromJson(res.data);
+      final CompanyInfoMd companyInfo = CompanyInfoMd.fromJson(res.data,
+          currencies: state.generalState.lists.currencies);
       appStore.dispatch(UpdateGeneralState(companyInfo: companyInfo));
       final color =
           companyInfo.colourSchemaMd(state.generalState.lists.colorSchemas);
@@ -745,7 +746,8 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           company: data.companyName,
           email: data.email,
           phone: data.phone,
-          currencyId: data.currency!.id,
+          currencyId:
+              data.currency?.id ?? state.generalState.defaultCurrency.id,
           payingDays: data.paymentDays,
           paymentMethodId: data.paymentMethod!.id,
           notes: data.notes,
@@ -754,7 +756,7 @@ class GeneralMiddleware extends MiddlewareClass<AppState> {
           addressCountry: addressData.country!.code,
           addressCity: addressData.city,
           combineInvoices: data.combineInvoices,
-          invoiceDay: data.invoiceDay,
+          invoiceDay: data.invoiceDay ?? 1,
           sendInvoices: data.sendInvoices,
           addressCounty: addressData.county,
           addressLine2: addressData.line2,

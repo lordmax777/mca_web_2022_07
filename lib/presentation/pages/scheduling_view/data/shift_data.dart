@@ -118,7 +118,7 @@ class PersonalData extends Equatable {
   String notes;
   int? shiftId;
   InvoicePeriod? invoicePeriod;
-  int invoiceDay;
+  int? invoiceDay;
   bool combineInvoices;
   bool sendInvoices;
   String? fax;

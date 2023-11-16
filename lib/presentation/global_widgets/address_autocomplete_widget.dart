@@ -96,7 +96,7 @@ class _AddressAutocompleteWidgetState extends State<AddressAutocompleteWidget> {
           final res = await geocoding.searchByPlaceId(placeId);
           if (res.results.isEmpty) return;
           final place = res.results.first;
-          logger(place.addressComponents.map((e) => e.toJson()));
+          logger(place.toJson());
           final countryCode = place.addressComponents
               .firstWhereOrNull((element) => element.types.contains("country"))
               ?.shortName;
@@ -112,27 +112,30 @@ class _AddressAutocompleteWidgetState extends State<AddressAutocompleteWidget> {
               .firstWhereOrNull((element) => element.types.contains("route"))
               ?.longName;
           final streetNumber = place.addressComponents
-              .firstWhereOrNull((element) => element.types.contains("premise"))
-              ?.longName;
-          final local1 = place.addressComponents
               .firstWhereOrNull(
-                  (element) => element.types.contains("sublocality_level_1"))
+                  (element) => element.types.contains("street_number"))
               ?.longName;
-          final local2 = place.addressComponents
-              .firstWhereOrNull(
-                  (element) => element.types.contains("sublocality_level_2"))
-              ?.longName;
+          // final local1 = place.addressComponents
+          //     .firstWhereOrNull(
+          //         (element) => element.types.contains("sublocality_level_1"))
+          //     ?.longName;
+          // final local2 = place.addressComponents
+          //     .firstWhereOrNull(
+          //         (element) => element.types.contains("sublocality_level_2"))
+          //     ?.longName;
 
           //local1 + locale2 + streetNumber
-          final line1 =
-              "${streetNumber} ${road != null ? "$road," : ""}${local1 != null ? "$local1, " : ""}${local2 != null ? "$local2, " : ""}${streetNumber != null ? "$streetNumber, " : ""}";
+          String line1 = "";
+          // "$streetNumber ${road != null ? "$road," : ""}${local1 != null ? "$local1, " : ""}${local2 != null ? "$local2, " : ""}${streetNumber != null ? "$streetNumber, " : ""}";
+          if (streetNumber != null) {
+            line1 = streetNumber;
+          }
+          if (road != null) {
+            line1 = "$line1, $road";
+          }
 
-          logger(
-              res.results
-                  .map((e) =>
-                      e.addressComponents.map((e) => e.toJson()).toList())
-                  .toList(),
-              hint: "address");
+          // logger(place.addressComponents.map((e) => e.toJson()).toList(),
+          //     hint: "address");
 
           address.latitude = place.geometry.location.lat;
           address.longitude = place.geometry.location.lng;
