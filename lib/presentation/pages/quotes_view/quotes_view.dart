@@ -217,10 +217,6 @@ class _QuotesViewState extends State<QuotesView>
                 }
                 switch (value) {
                   case "edit":
-                    ShiftData data = ShiftData.init(
-                        isCreate: false,
-                        isQuote: true,
-                        quoteData: QuoteData(id: quoteId));
                     dependencyManager.navigation.showCustomDialog(
                         context: context,
                         builder: (context) {
@@ -251,7 +247,7 @@ class _QuotesViewState extends State<QuotesView>
                     loading(() async {
                       final success = await dispatch<bool>(
                           ChangeQuoteStatusAction(
-                              id: quoteId!, status: 'accept'));
+                              id: quoteId, status: 'accept'));
                       if (success.isLeft && success.left) {
                         await dispatch(const GetQuotesAction());
                         context.showSuccess("Successfully accepted quote");
@@ -266,6 +262,34 @@ class _QuotesViewState extends State<QuotesView>
                   case "clientPortal":
                     openUrl(rendererContext
                         .row.cells['action']!.value.clientPortalUrl);
+                    break;
+                  case "createJob":
+                    final bool hasDateAndTime = model.workStartDateDt != null &&
+                        model.workStartTimeDt != null &&
+                        model.workFinishTimeDt != null;
+                    print(hasDateAndTime);
+                    if (!hasDateAndTime) {
+                      context.showError("Please set work start date and time",
+                          closeText: "Set", onClose: () {
+                        context.showDialog(CreateQuoteDialog(
+                            quote: appStore.state.generalState.quotes
+                                .firstWhereOrNull(
+                                    (element) => element.id == quoteId)));
+                      });
+                      return;
+                    }
+                    context.futureLoading(() async {
+                      final res = await dispatch(
+                          MakeJobFromQuoteAction(quoteId: model.id));
+                      res.fold((left) {
+                        //success
+                        context.showSuccess("Successfully created job");
+                      }, (right) {
+                        //error
+                        context.showError(right.message);
+                      });
+                    });
+
                     break;
                 }
               },
@@ -289,6 +313,14 @@ class _QuotesViewState extends State<QuotesView>
                         child: SpacedRow(horizontalSpace: 4, children: const [
                           Icon(Icons.check),
                           Text("Accept")
+                        ])),
+                  if (model.isQuote &&
+                      model.processStatusEnum == QuoteProcess.accepted)
+                    PopupMenuItem(
+                        value: "createJob",
+                        child: SpacedRow(horizontalSpace: 4, children: const [
+                          Icon(Icons.work),
+                          Text("Create Job")
                         ])),
                   PopupMenuItem(
                       value: "clientPortal",

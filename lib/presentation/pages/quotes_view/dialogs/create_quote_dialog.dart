@@ -442,6 +442,21 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       required AddressMd address}) {
     return FormContainer(
         title: "Invoice Address",
+        // trailing: IconButton(
+        //   icon: const Icon(Icons.copy_rounded),
+        //   color: context.colorScheme.primary,
+        //   tooltip: "Use as Work address",
+        //   onPressed: () {
+        //     formVm.patchValue({
+        //       workLine1: address.line1,
+        //       workLine2: address.line2,
+        //       workCity: address.city,
+        //       workCounty: address.county,
+        //       workPostcode: address.postcode,
+        //       workCountryId: address.country,
+        //     });
+        //   },
+        // ),
         width: containerWidth,
         left: [
           buildText("${address.line1}, "
@@ -484,13 +499,13 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               IconButton(
                 tooltip: "Edit location",
                 icon: const Icon(Icons.edit_outlined),
-                color: context.theme.primaryColor,
+                color: context.colorScheme.primary,
                 onPressed: () => onCreateLocation(location, client),
               ),
             IconButton(
               tooltip: "Create location",
               icon: const Icon(Icons.add_circle_outline),
-              color: context.theme.primaryColor,
+              color: context.colorScheme.primary,
               onPressed: () => onCreateLocation(null, client),
             ),
           ],
@@ -789,12 +804,12 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                   IconButton(
                       tooltip: "Edit client",
                       onPressed: () => onEditClient(client),
-                      color: context.theme.primaryColor,
+                      color: context.colorScheme.primary,
                       icon: const Icon(Icons.edit_outlined)),
                 IconButton(
                     tooltip: "Add new client",
                     onPressed: () => onEditClient(null),
-                    color: context.theme.primaryColor,
+                    color: context.colorScheme.primary,
                     icon: const Icon(Icons.add_circle_outline)),
               ],
             )
@@ -1007,7 +1022,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           ? IconButton(
               tooltip: "Add team member",
               onPressed: onAddTeamMember,
-              color: context.theme.primaryColor,
+              color: context.colorScheme.primary,
               icon: const Icon(Icons.add_circle_outline))
           : null,
       width: containerWidth,

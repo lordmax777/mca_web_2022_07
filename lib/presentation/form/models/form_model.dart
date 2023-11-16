@@ -6,12 +6,16 @@ class FormModel {
   final ValueNotifier<bool> isValidFormNotifier = ValueNotifier(false);
 
   bool get isValid => formKey.currentState?.isValid ?? false;
+
+  @Deprecated('Use getValue instead')
   Map<String, dynamic> get value => formKey.currentState?.value ?? {};
 
   dynamic getValue(String name) => formKey.currentState?.fields[name]?.value;
 
-  void patchValue(Map<String, dynamic> value) =>
-      formKey.currentState?.patchValue(value);
+  void patchValue(Map<String, dynamic> value, {bool isSave = true}) {
+    formKey.currentState?.patchValue(value);
+    if (isSave) save();
+  }
 
   void save() => formKey.currentState?.save();
   void reset() => formKey.currentState?.reset();

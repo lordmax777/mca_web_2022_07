@@ -459,7 +459,7 @@ class MCANavigation extends IMCANavigation {
   }
 
   @override
-  void showFail(String msg, {VoidCallback? onClose}) {
+  void showFail(String msg, {VoidCallback? onClose, String? closeText}) {
     CancelFunc cancel = BotToast.showCustomText(
       duration: null,
       wrapToastAnimation: (controller, cancelFunc, widget) {
@@ -510,7 +510,7 @@ class MCANavigation extends IMCANavigation {
                     cancelFunc();
                     onClose?.call();
                   },
-                  child: const Text('Close'),
+                  child: Text(closeText ?? 'Close'),
                 ),
               ],
               content: Text(msg, textAlign: TextAlign.center),

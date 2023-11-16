@@ -22,6 +22,8 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
 
   final formVm = FormModel();
 
+  String? get getInvoicePeriod => formVm.getValue('invoicePeriodId');
+
   @override
   void initState() {
     super.initState();
@@ -76,6 +78,7 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
   @override
   Widget build(BuildContext context) {
     final containerWidth = context.width * .2;
+    print(getInvoicePeriod);
     return AlertDialog(
         shape: const RoundedRectangleBorder(),
         scrollable: true,
@@ -271,34 +274,42 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
                           formBuilderField: FormDropdown(
                               vm: DropdownModel(
                             name: "invoicePeriodId",
+                            onChanged: (p0) {
+                              setState(() {});
+                            },
                             items: lists.invoicePeriods
                                 .map((e) =>
                                     DpItem(id: e.id.toString(), title: e.name))
                                 .toList(),
                             validator: FormBuilderValidators.required(),
                           ))),
-                      FormWithLabel(
-                          labelVm: const LabelModel(
-                              text: "Invoice Day", isRequired: true),
-                          formBuilderField: FormInput(
-                              vm: InputModel(
-                            name: "invoiceDay",
-                            valueTransformer: (value) =>
-                                num.tryParse(value ?? ""),
-                            validators: [
-                              FormBuilderValidators.required(),
-                              (value) {
-                                if (formVm.value['invoicePeriodId'] == null) {
-                                  return null;
+                      Visibility(
+                        maintainState: true,
+                        visible:
+                            getInvoicePeriod != null && getInvoicePeriod != "1",
+                        child: FormWithLabel(
+                            labelVm: const LabelModel(
+                                text: "Invoice Day", isRequired: true),
+                            formBuilderField: FormInput(
+                                vm: InputModel(
+                              name: "invoiceDay",
+                              valueTransformer: (value) =>
+                                  num.tryParse(value ?? ""),
+                              validators: [
+                                FormBuilderValidators.required(),
+                                (value) {
+                                  if (formVm.value['invoicePeriodId'] == null) {
+                                    return null;
+                                  }
+                                  if (formVm.value['invoicePeriodId'] == "1" ||
+                                      formVm.value['invoicePeriodId'] == "2") {
+                                    return null;
+                                  }
+                                  return "Invoice day is required";
                                 }
-                                if (formVm.value['invoicePeriodId'] == "1" ||
-                                    formVm.value['invoicePeriodId'] == "2") {
-                                  return null;
-                                }
-                                return "Invoice day is required";
-                              }
-                            ],
-                          ))),
+                              ],
+                            ))),
+                      ),
                       FormWithLabel(
                           labelVm: const LabelModel(
                               text: "Paying Days", isRequired: true),
@@ -359,26 +370,26 @@ class _ClientsEdit2DialogState extends State<ClientsEdit2Dialog> {
     if (!formVm.isValid) return;
 
     final res = await context.futureLoading(() async {
-      final name = formVm.value['name'];
-      final company = formVm.value['company'];
-      final email = formVm.value['email'];
-      final phone = formVm.value['phone'];
-      final fax = formVm.value['fax'];
-      final address1 = formVm.value['addressLine1'];
-      final address2 = formVm.value['addressLine2'];
-      final city = formVm.value['addressCity'];
-      final county = formVm.value['addressCounty'];
-      final postcode = formVm.value['addressPostcode'];
-      final country = formVm.value['country'];
-      final currency = formVm.value['currencyId'];
-      final paymentMethod = formVm.value['paymentMethodId'];
-      final invoicePeriod = formVm.value['invoicePeriodId'];
-      final paymentDue = formVm.value['paymentDays'];
-      final invoiceDay = formVm.value['invoiceDay'];
-      final comment = formVm.value['comment'];
-      final isSendInvoices = formVm.value['sendInvoices'] ?? false;
-      final isCombineInvoices = formVm.value['combineInvoices'] ?? false;
-      final isActive = formVm.value['active'] ?? false;
+      final name = formVm.getValue('name');
+      final company = formVm.getValue('company');
+      final email = formVm.getValue('email');
+      final phone = formVm.getValue('phone');
+      final fax = formVm.getValue('fax');
+      final address1 = formVm.getValue('addressLine1');
+      final address2 = formVm.getValue('addressLine2');
+      final city = formVm.getValue('addressCity');
+      final county = formVm.getValue('addressCounty');
+      final postcode = formVm.getValue('addressPostcode');
+      final country = formVm.getValue('country');
+      final currency = formVm.getValue('currencyId');
+      final paymentMethod = formVm.getValue('paymentMethodId');
+      final invoicePeriod = formVm.getValue('invoicePeriodId');
+      final paymentDue = formVm.getValue('paymentDays');
+      final invoiceDay = formVm.getValue('invoiceDay');
+      final comment = formVm.getValue('comment');
+      final isSendInvoices = formVm.getValue('sendInvoices') ?? false;
+      final isCombineInvoices = formVm.getValue('combineInvoices') ?? false;
+      final isActive = formVm.getValue('active') ?? false;
       return await dispatch<int>(PostClientAction(
         PersonalData(
           clientId: saveAsNew ? null : client?.id,

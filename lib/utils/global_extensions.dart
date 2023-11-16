@@ -431,8 +431,8 @@ final _deps = DependencyManager.instance;
 /////////
 
 extension ContextHelper on BuildContext {
-  void showError(String message, {VoidCallback? onClose}) {
-    _deps.navigation.showFail(message, onClose: onClose);
+  void showError(String message, {VoidCallback? onClose, String? closeText}) {
+    _deps.navigation.showFail(message, onClose: onClose, closeText: closeText);
   }
 
   Future<T> futureLoading<T>(Future<T> Function() callback) async {
