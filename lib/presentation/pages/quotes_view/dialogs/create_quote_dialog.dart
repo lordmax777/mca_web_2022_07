@@ -1149,10 +1149,34 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
           ),
           actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
           actions: [
-            if (isQuote && getStartTime != null && getEndTime != null)
+            if (isQuote &&
+                getStartTime != null &&
+                getEndTime != null &&
+                !isCreate)
               ElevatedButton(
                 onPressed: () {
-                  context.futureLoading(() async {});
+                  context.futureLoading(() async {
+                    final updatedQuote = await postQuote(
+                        clients: clients,
+                        locations: locations,
+                        packages: jobTemplates);
+                    updatedQuote.fold((left) async {
+                      final accepted = await changeQuoteStatus(
+                          quoteId: quote!.id, status: QuoteStatus.accept);
+                      accepted.fold((left) {
+                        emailQuoteToClient(quote!.id).then((value) async {
+                          await appStore.dispatch(const GetQuotesAction());
+                          context.pop();
+                        }).catchError((e) {
+                          context.showError(e.toString());
+                        });
+                      }, (right) {
+                        context.showError(right.message);
+                      });
+                    }, (right) {
+                      context.showError(right.message);
+                    });
+                  });
                 },
                 child: const Text("Accept quote"),
               ),
