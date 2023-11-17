@@ -244,7 +244,49 @@ class _QuotesViewState extends State<QuotesView>
                     });
                     break;
                   case "accept":
+                    final bool hasDateAndTime = model.workStartDateDt != null &&
+                        model.workStartTimeDt != null &&
+                        model.workFinishTimeDt != null;
+                    //if !hasDateAndTime then update quote with start and end time 00:00 and 23:59 respectively
                     loading(() async {
+                      bool quoteUpdated = false;
+                      String? errorMsg;
+                      if (!hasDateAndTime) {
+                        final res = await dispatch<int?>(PostQuoteAction2(
+                            quoteId: model.id,
+                            jobTitle: model.name,
+                            client: model
+                                .clientMd(appStore.state.generalState.clients)!,
+                            quoteComment: model.quoteComments,
+                            products: ProductData(
+                                storageItems: model.items
+                                    .map((e) => e.itemMd(appStore
+                                        .state.generalState.storageItems)!)
+                                    .toList()),
+                            workLocation: model.locationMd(
+                                appStore.state.generalState.locations)!,
+                            active: model.active,
+                            workLocationId: model.locationId?.toString(),
+                            workStartDate: model.workStartDateDt,
+                            workStartTime: DateTime(0000, 1, 1, 0, 0),
+                            workEndTime: DateTime(0000, 1, 1, 23, 59),
+                            packageName: model.jobTemplateName,
+                            repeatId: model.workRepeat?.toString(),
+                            // repeatUntilDate: model.workRepeatUntilDt,
+                            team: [],
+                            checklistTemplateId:
+                                model.checklistTemplateId?.toString()));
+                        res.fold((left) {
+                          quoteUpdated = left != null;
+                        }, (right) {
+                          errorMsg = right.message;
+                        });
+                      }
+                      if (!quoteUpdated) {
+                        context.showError(errorMsg ?? "Failed to update quote");
+                        return;
+                      }
+
                       final success = await dispatch<bool>(
                           ChangeQuoteStatusAction(
                               id: quoteId, status: 'accept'));
@@ -267,7 +309,6 @@ class _QuotesViewState extends State<QuotesView>
                     final bool hasDateAndTime = model.workStartDateDt != null &&
                         model.workStartTimeDt != null &&
                         model.workFinishTimeDt != null;
-                    print(hasDateAndTime);
                     if (!hasDateAndTime) {
                       context.showError("Please set work start date and time",
                           closeText: "Set", onClose: () {
@@ -308,7 +349,9 @@ class _QuotesViewState extends State<QuotesView>
                         Text("Send Email")
                       ])),
                   if (model.isQuote &&
-                      model.processStatusEnum != QuoteProcess.accepted)
+                      model.processStatusEnum != QuoteProcess.accepted &&
+                      model.clientId != null &&
+                      model.locationId != null)
                     PopupMenuItem(
                         value: "accept",
                         child: SpacedRow(horizontalSpace: 4, children: const [

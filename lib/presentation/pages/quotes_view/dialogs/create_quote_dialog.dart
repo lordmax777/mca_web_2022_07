@@ -964,7 +964,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                                                     id: e.id.toString(),
                                                     title: e.name,
                                                     subtitle:
-                                                        "${e.items.length} items"))
+                                                        "${e.items.length} item(s)"))
                                                 .toList())),
                                   ),
                                 ],
@@ -1553,7 +1553,7 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
       team: addedUsers,
       week1: getTimingWeek1,
       week2: getTimingWeek2,
-      // checklistTemplateId:
+      // checklistTemplateId: getChecklistTemplateId,
     ));
     if (res.isLeft) {
       await dispatch(const GetLocationsAction());

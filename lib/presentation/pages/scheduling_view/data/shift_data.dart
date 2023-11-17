@@ -764,8 +764,14 @@ class QuoteData extends Equatable {
 
 class ProductData extends Equatable {
   PlutoGridStateManager? stateManager;
+  final List<StorageItemMd>? storageItems;
 
-  ProductData({this.stateManager});
+  ProductData(
+      {this.stateManager,
+
+      ///can use this to pass items only
+      ///but first stateManager is checked
+      this.storageItems});
 
   List<StorageItemMd> items(List<StorageItemMd> storageItems) {
     final list = <StorageItemMd>[];

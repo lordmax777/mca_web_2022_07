@@ -226,11 +226,11 @@ class PostQuoteAction2 {
       if (quoteComment != null) {
         formData.fields.add(MapEntry("quoteComments", quoteComment!));
       }
+      final items = products.storageItems ??
+          products.items(state.generalState.storageItems);
       //products
-      for (int i = 0;
-          i < products.items(state.generalState.storageItems).length;
-          i++) {
-        final item = products.items(state.generalState.storageItems)[i];
+      for (int i = 0; i < items.length; i++) {
+        final item = items[i];
 
         formData.fields.add(MapEntry('quoteItem_$i', item.id.toString()));
         formData.fields
