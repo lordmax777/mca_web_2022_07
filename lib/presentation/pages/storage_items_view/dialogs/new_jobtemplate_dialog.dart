@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mca_dashboard/manager/manager.dart';
 import 'package:mca_dashboard/presentation/form/form.dart';
@@ -41,11 +42,18 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
                     ? null
                     : rendererContext.row.cells["itemId"]?.value?.toString(),
                 onChanged: (id) {
+                  //update id
+                  rendererContext.row.cells["itemId"]?.value = id;
+                  final item = appStore.state.generalState.storageItems
+                      .firstWhereOrNull((e) => e.id == int.tryParse(id ?? ""));
+                  if (item?.outgoingPrice != null) {
+                    rendererContext.row.cells["price"]?.value =
+                        item?.outgoingPrice;
+                    setState(() {});
+                  }
                   //update name
                   rendererContext.stateManager
                       .changeCellValue(rendererContext.cell, id);
-                  //update id
-                  rendererContext.row.cells["itemId"]?.value = id;
                 },
                 items: appStore.state.generalState.storageItems
                     .map((e) => DpItem(id: e.id.toString(), title: e.name))
