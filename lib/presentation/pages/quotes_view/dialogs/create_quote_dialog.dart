@@ -204,13 +204,13 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) async {
         if (mounted) {
-          setIp();
-          setupVars();
           //do not fetch initially,
           //because this method called when the date field is changed
           if (quote?.workStartDate == null) {
-            fetchUnavailableUsers();
+            await fetchUnavailableUsers();
           }
+          setIp();
+          setupVars();
         }
       },
     );
@@ -295,6 +295,16 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
               .toString(),
           // timingRepeatUntil: quote?.workRepeatUntilDt,//todo: when api is ready
         });
+
+        if (quote!.userIds.isNotEmpty) {
+          for (var quoteUser in quote!.userIds) {
+            final user = appStore.state.generalState.users
+                .firstWhereOrNull((element) => element.id == quoteUser.userId);
+            if (user != null) {
+              addedUsers.add(user);
+            }
+          }
+        }
 
         //The weekdays are hidden until the repeat day validates it.
         //So need to wait UI until it opens weekdays
