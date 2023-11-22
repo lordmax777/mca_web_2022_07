@@ -103,6 +103,8 @@ class JobTemplateItemMd extends Equatable {
   StorageItemMd? item(List<StorageItemMd> items) =>
       items.firstWhereOrNull((element) => element.id == itemId);
 
+  num get totalPrice => price * quantity;
+
   const JobTemplateItemMd({
     ///Id of the item in the job template
     required this.id,

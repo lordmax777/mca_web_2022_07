@@ -25,7 +25,23 @@ class _PackagesViewState extends State<PackagesView>
           type: PlutoColumnType.text(),
         ),
         PlutoColumn(
-            title: "Client", field: "client", type: PlutoColumnType.text()),
+          title: "Client",
+          field: "client",
+          type: PlutoColumnType.text(),
+          renderer: (rendererContext) {
+            if (rendererContext.row.type.isGroup) {
+              final templateName =
+                  rendererContext.row.cells['packageName']!.value as String;
+              final template = appStore.state.generalState.jobTemplates
+                  .firstWhereOrNull((element) => element.name == templateName);
+              String clientName =
+                  template?.client(appStore.state.generalState.clients)?.name ??
+                      "ALL";
+              return Text(clientName);
+            }
+            return const SizedBox();
+          },
+        ),
         PlutoColumn(
           title: "Item Name",
           type: PlutoColumnType.text(),
@@ -45,7 +61,8 @@ class _PackagesViewState extends State<PackagesView>
           type: PlutoColumnType.text(),
           renderer: (rendererContext) {
             if (!rendererContext.row.type.isGroup) {
-              return const SizedBox();
+              final item = rendererContext.cell.value as JobTemplateItemMd;
+              return Text(item.totalPrice.getPriceMap());
             }
             final templateName =
                 (rendererContext.row.cells["packageName"]!.value as String);
@@ -107,8 +124,8 @@ class _PackagesViewState extends State<PackagesView>
             rows: stateManager == null ? [] : stateManager!.rows,
             columns: columns,
             headerEnd: ElevatedButton(
-              child: const Text("New package"),
               onPressed: onAddNewPackage,
+              child: const Text("New package"),
             ),
             onLoaded: (e) {
               e.stateManager.setRowGroup(

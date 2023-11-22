@@ -29,8 +29,10 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       title: "Item name",
       field: 'itemName',
       type: PlutoColumnType.text(),
-      cellPadding: EdgeInsets.zero,
+      cellPadding: const EdgeInsets.all(4),
       renderer: (rendererContext) {
+        final isNew =
+            rendererContext.row.cells["id"]?.value?.toString() == "-1";
         final hash = rendererContext.row.hashCode;
         return FormDropdown(
             vm: DropdownModel(
@@ -43,14 +45,17 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
                     : rendererContext.row.cells["itemId"]?.value?.toString(),
                 onChanged: (id) {
                   //update id
-                  rendererContext.row.cells["itemId"]?.value = id;
                   final item = appStore.state.generalState.storageItems
                       .firstWhereOrNull((e) => e.id == int.tryParse(id ?? ""));
-                  if (item?.outgoingPrice != null) {
-                    rendererContext.row.cells["price"]?.value =
-                        item?.outgoingPrice;
+                  if (isNew) {
+                    if (item?.outgoingPrice != null) {
+                      rendererContext.row.cells["price"]?.value =
+                          item?.outgoingPrice;
+                    }
+                    rendererContext.row.cells["qty"]?.value = 1;
                     setState(() {});
                   }
+                  rendererContext.row.cells["itemId"]?.value = id;
                   //update name
                   rendererContext.stateManager
                       .changeCellValue(rendererContext.cell, id);
@@ -66,25 +71,27 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
         title: "Price",
         width: 100,
         minWidth: 100,
-        cellPadding: EdgeInsets.zero,
         field: 'price',
-        type: PlutoColumnType.number()),
+        type: PlutoColumnType.number(),
+        renderer: (rendererContext) =>
+            rendererContext.defaultEditableCellWidget()),
     PlutoColumn(
         enableAutoEditing: true,
         enableEditingMode: true,
         title: "Quantity",
-        cellPadding: EdgeInsets.zero,
         field: "qty",
         width: 100,
         minWidth: 100,
-        type: PlutoColumnType.number()),
+        type: PlutoColumnType.number(),
+        renderer: (rendererContext) =>
+            rendererContext.defaultEditableCellWidget()),
     PlutoColumn(
         title: "Combine",
         field: "combine",
         enableEditingMode: false,
+        cellPadding: const EdgeInsets.all(4),
         width: 120,
         minWidth: 120,
-        cellPadding: EdgeInsets.zero,
         type: PlutoColumnType.text(),
         renderer: (rendererContext) {
           final hash = rendererContext.row.hashCode;
@@ -109,8 +116,9 @@ class _NewJobTemplatePopupState extends State<NewJobTemplatePopup> {
       enableAutoEditing: true,
       title: "Comment",
       field: "comment",
-      cellPadding: EdgeInsets.zero,
       type: PlutoColumnType.text(),
+      renderer: (rendererContext) =>
+          rendererContext.defaultEditableCellWidget(),
       // renderer: (rendererContext) {
       //   final comment = rendererContext.cell.value?.toString();
       //   final hash = rendererContext.row.hashCode;

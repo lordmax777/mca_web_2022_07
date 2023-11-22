@@ -556,125 +556,6 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
         ]);
   }
 
-  // FormContainer workAddressWidget(
-  //     {required double containerWidth,
-  //     required ClientMd? client,
-  //     required LocationMd? workLocation,
-  //     required List<LocationMd> locations,
-  //     required List<CountryMd> countries}) {
-  //   return FormContainer(
-  //     title: "Work Address",
-  //     width: containerWidth,
-  //     left: [
-  //       if (client != null && locations.isNotEmpty)
-  //         FormWithLabel(
-  //             labelVm: const LabelModel(text: "Locations", isRequired: true),
-  //             formBuilderField: FormDropdown(
-  //                 vm: DropdownModel(
-  //                     helperText: "Select location or search for address",
-  //                     onChanged: (p0) => updateUI(formVm.save),
-  //                     name: workLocationId,
-  //                     hasSearchBox: true,
-  //                     items: locations
-  //                         .map(
-  //                             (e) => DpItem(id: e.id.toString(), title: e.name))
-  //                         .toList())))
-  //       else
-  //         Text("No locations found. Please select client with location!",
-  //             textAlign: TextAlign.center, style: context.textTheme.bodyLarge),
-  //       FormWithLabel(
-  //         labelVm: const LabelModel(text: "Search Address"),
-  //         formBuilderField: AddressAutocompleteWidget(
-  //             width: containerWidth * .95,
-  //             onSelected: (value) {
-  //               formVm.patchValue({
-  //                 workLine1: value.line1,
-  //                 workLine2: value.line2,
-  //                 workCity: value.city,
-  //                 workPostcode: value.postcode,
-  //                 workCountryId: value.country?.code,
-  //               });
-  //             }),
-  //       ),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "Line 1", isRequired: true),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //                   name: workLine1,
-  //                   validators: [FormBuilderValidators.required()]))),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "City", isRequired: true),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //                   name: workCity,
-  //                   validators: [FormBuilderValidators.required()]))),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "Postcode", isRequired: true),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //                   name: workPostcode,
-  //                   validators: [FormBuilderValidators.required()]))),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "Country", isRequired: true),
-  //           formBuilderField: FormDropdown(
-  //             vm: DropdownModel(
-  //               name: workCountryId,
-  //               hasSearchBox: true,
-  //               hintText: "",
-  //               validator: FormBuilderValidators.required(),
-  //               items: countries
-  //                   .map((e) => DpItem(id: e.code, title: e.name))
-  //                   .toList(),
-  //             ),
-  //           )),
-  //     ],
-  //     additionalText: "Show additional details",
-  //     hidden: [
-  //       const FormWithLabel(
-  //           labelVm: LabelModel(text: "Line 2"),
-  //           formBuilderField: FormInput(vm: InputModel(name: workLine2))),
-  //       const FormWithLabel(
-  //           labelVm: LabelModel(text: "County"),
-  //           formBuilderField: FormInput(vm: InputModel(name: workCounty))),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "Latitude"),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //             name: workLocationLatitude,
-  //             valueTransformer: (value) => double.tryParse(value ?? ""),
-  //             inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
-  //           ))),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "Longitude"),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //             valueTransformer: (value) => double.tryParse(value ?? ""),
-  //             name: workLocationLongitude,
-  //             inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
-  //           ))),
-  //       FormWithLabel(
-  //           labelVm: const LabelModel(text: "Radius"),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //             valueTransformer: (value) => double.tryParse(value ?? ""),
-  //             name: workLocationRadius,
-  //             inputFormatters: [GlobalConstants.numbersAndDecimalOnlyFormatter],
-  //           ))),
-  //       FormWithLabel(
-  //         labelVm: const LabelModel(text: "Current IP Address"),
-  //         formBuilderField: buildText(currentIpAddress ?? "-"),
-  //       ),
-  //       const FormWithLabel(
-  //           labelVm: LabelModel(text: "Static IP Addresses"),
-  //           formBuilderField: FormInput(
-  //               vm: InputModel(
-  //             name: workStaticIpAddresses,
-  //             helperText: "Separate with new line (ENTER)",
-  //           ))),
-  //     ],
-  //   );
-  // }
-
   FormContainer timingWidget(
       {required double containerWidth,
       required GeneralState vm,
@@ -868,7 +749,8 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
 
   Widget productTable(
       {required List<StorageItemMd> storageItems,
-      required List<JobTemplateMd> packages}) {
+      required List<JobTemplateMd> packages,
+      ClientMd? client}) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
@@ -970,6 +852,10 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                                               }
                                             },
                                             items: packages
+                                                .where((element) =>
+                                                    element.clientId ==
+                                                    client?.id)
+                                                .toList()
                                                 .map((e) => DpItem(
                                                     id: e.id.toString(),
                                                     title: e.name,
@@ -1224,7 +1110,9 @@ class _CreateQuoteDialogState extends State<CreateQuoteDialog> {
                             quote: quote),
                         //Product table
                         productTable(
-                            packages: jobTemplates, storageItems: storageItems),
+                            client: client,
+                            packages: jobTemplates,
+                            storageItems: storageItems),
                       ]),
                     ),
                   ),
